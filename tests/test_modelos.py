@@ -1,24 +1,29 @@
 import pytest
 import numpy as np
-from src.modelos.fabrica_modelos import FabricaModelos
+import pytest
+from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
 
-@pytest.mark.parametrize("modelo_nome", [
-    "RegressaoLogistica",
-    "ArvoreDecisao",
-    "FlorestaAleatoria",
-    "KNN",
-    "NaiveBayes"
-])
-def test_treinamento_modelos_basicos(modelo_nome):
-    modelo = FabricaModelos.criar_modelo(modelo_nome)
+def test_criacao_modelos_suportados():
+    modelos = [
+        'RegressaoLogistica', 'ArvoreDecisao', 'FlorestaAleatoria',
+        'ImpulsionamentoGradiente', 'SVM', 'KNN', 'NaiveBayes'
+    ]
+    for nome in modelos:
+        modelo = FabricaModelos.criar_modelo(nome)
+        assert isinstance(modelo, ModeloSklearn)
+        assert modelo.nome_log == nome
+
+def test_criacao_modelo_invalido():
+    with pytest.raises(ValueError, match="desconhecido"):
+        FabricaModelos.criar_modelo('ModeloInexistenteRedeNeural')
+
+def test_treinamento_e_predicao(mocker):
+    modelo = FabricaModelos.criar_modelo('RegressaoLogistica')
     
-    # Dados fictícios pequenos para teste rápido
     X_treino = np.random.rand(10, 5)
     y_treino = np.random.randint(0, 2, 10)
-    
     X_teste = np.random.rand(2, 5)
     
-    # Treina
     modelo.treinar(X_treino, y_treino)
     
     # Preve
