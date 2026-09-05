@@ -16,45 +16,42 @@ def run_cmd(cmd):
         sys.exit(1)
 
 def criar_issue(titulo, tipo, descricao):
-    print(f"🚀 Criando Issue Semântica: [{tipo}] {titulo}...")
+    print(f"Criando Issue Semantica: [{tipo}] {titulo}...")
     label = tipo.lower()
     cmd = f'gh issue create --title "{tipo}: {titulo}" --body "{descricao}" --label "{label}"'
     output = run_cmd(cmd)
-    print(f"✅ Issue criada: {output}")
+    print(f"Issue criada: {output}")
     
-    # Extrai a URL para pegar o ID numérico da issue e vincular ao projeto
-    # O output típico é a URL da issue
     issue_url = output
     issue_number = issue_url.split("/")[-1]
     
-    # Linka a issue ao Kanban
     vincular_ao_kanban(issue_url)
     
     return issue_number
 
 def vincular_ao_kanban(item_url):
-    print(f"📋 Vinculando {item_url} ao Projeto Kanban {PROJECT_ID}...")
-    cmd = f'gh project item-create {PROJECT_ID} --owner {OWNER} --url {item_url}'
+    print(f"Vinculando {item_url} ao Projeto Kanban {PROJECT_ID}...")
+    cmd = f'gh project item-add {PROJECT_ID} --owner {OWNER} --url {item_url}'
     try:
         run_cmd(cmd)
-        print(f"✅ Vinculado ao Kanban!")
+        print(f"Vinculado ao Kanban!")
     except Exception:
-        print("⚠️ Aviso: Não foi possível vincular automaticamente ao Kanban. Verifique suas permissões de 'project' no GitHub Token.")
+        print("Aviso: Nao foi possivel vincular automaticamente ao Kanban. Verifique suas permissoes.")
 
 def criar_branch(issue_number, tipo, nome_descritivo):
     branch_name = f"{tipo}/issue-{issue_number}-{nome_descritivo.replace(' ', '-')}"
-    print(f"🌿 Criando branch semântica: {branch_name} a partir da develop...")
+    print(f"Criando branch semantica: {branch_name} a partir da develop...")
     run_cmd("git checkout develop")
     run_cmd("git pull origin develop")
     run_cmd(f"git checkout -b {branch_name}")
-    print(f"✅ Branch {branch_name} criada e selecionada!")
+    print(f"Branch {branch_name} criada e selecionada!")
 
 def abrir_pr(issue_number, branch_name):
-    print("🔄 Fazendo push e abrindo PR para a develop...")
+    print("Fazendo push e abrindo PR para a develop...")
     run_cmd(f"git push -u origin {branch_name}")
     cmd = f'gh pr create --base develop --head {branch_name} --title "Merge {branch_name}" --body "Closes #{issue_number}"'
     output = run_cmd(cmd)
-    print(f"✅ Pull Request criado com sucesso: {output}")
+    print(f"Pull Request criado com sucesso: {output}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Orquestrador Semântico do GitHub e Kanban (TreinarMnist)")
