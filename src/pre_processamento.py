@@ -19,7 +19,7 @@ def pre_processar_dados(X, y):
     X_treino_norm = scaler.fit_transform(X_treino)
     X_teste_norm = scaler.transform(X_teste) # Evita Data Leakage (Vazamento de dados)
     
-    # Validação de Vazamento de Dados (Assertiva simples de integridade)
-    assert np.min(X_treino_norm) >= 0.0 and np.max(X_treino_norm) <= 1.0, "Falha na normalizacao MinMax no Treino"
+    # Validação de Vazamento de Dados (Assertiva simples de integridade com tolerancia float)
+    assert np.min(X_treino_norm) >= -1e-7 and np.max(X_treino_norm) <= 1.0 + 1e-7, "Falha na normalizacao MinMax no Treino"
     
     return X_treino_norm, X_teste_norm, y_treino, y_teste, scaler
