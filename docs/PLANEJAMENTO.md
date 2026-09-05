@@ -15,12 +15,12 @@ Para cumprir a diretriz de **"colocar o máximo possível do projeto em Python"*
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                               FRONTEND INTERATIVO (app.py)                                       │
 │                           Interface Reativa em Python Puro                                       │
-├───────────────────┬───────────────────┬───────────────────┬───────────────────┬──────────────────┤
-│ 📊 Aba 1: EDA     │ 🏆 Aba 2: Modelos │ 🧪 Aba 3: OOD     │ ✍️ Aba 4: Canvas  │ 🗄️ Aba 5: Bancos │
-│ • Grade 2x5       │ • 12 Modelos      │ • Mascaramento    │ • Desenho Mouse   │ • PostgreSQL     │
-│ • Balanceamento   │ • Matrizes 10x10  │ • Falsa Certeza   │ • Upload Fotos    │ • MongoDB        │
-│ • Pixels 28x28    │ • Tabela Métricas │ • Entropia Softmax│ • Bubble Sort TopK│ • Chatbot RAG    │
-└───────────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┘
+├───────────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────────┬──────────────────┤
+│ 📊 Aba 1: EDA     │ 📈 Aba 2: Estat.  │ 🏆 Aba 3: Modelos │ 🧪 Aba 4: OOD     │ ✍️ Aba 5: Canvas  │ 🗄️ Aba 6: Bancos │
+│ • Grade 2x5       │ • Brutos vs Tratam│ • 12 Modelos      │ • Mascaramento    │ • Desenho Mouse   │ • PostgreSQL     │
+│ • Balanceamento   │ • Medidas & Testes│ • Matrizes 10x10  │ • Falsa Certeza   │ • Upload Fotos    │ • MongoDB        │
+│ • Pixels 28x28    │ • Currículo SPA   │ • Tabela Métricas │ • Entropia Softmax│ • Bubble Sort TopK│ • Chatbot RAG    │
+└───────────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┘
                                                    │
                                                    ▼
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -47,11 +47,13 @@ TreinarMnist/
 │   │   ├── __init__.py
 │   │   ├── estilos.py                 # Injeção de CSS Dark Mode e Glassmorphism
 │   │   ├── painel_eda.py              # Visualizador da Análise Exploratória e Amostras
+│   │   ├── painel_estatistica.py      # Explorador Estatístico Interativo (Bruto vs Tratado + Currículo SPA)
 │   │   ├── painel_benchmarks.py       # Tabela comparativa e Matrizes 10x10 interativas
 │   │   ├── painel_robustez_ood.py     # Experimentos de Class Masking e Falsa Certeza
 │   │   ├── painel_laboratorio_visao.py# Canvas interativo de desenho e upload de imagens reais
 │   │   ├── painel_bancos_dados.py     # Visualizador em tempo real do PostgreSQL e MongoDB
-│   │   └── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
+│   │   ├── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
+│   │   └── curriculo_estatistica.html # Aplicação Web SPA interativa do Currículo de Estatística
 ```
 
 ---

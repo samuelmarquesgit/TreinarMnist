@@ -56,13 +56,14 @@ EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
 * **Entregáveis:**
   - `app.py`: Ponto de entrada do frontend web (`streamlit run app.py` ou `python main.py --modo web`).
   - `src/frontend/estilos.py`: Injeção de CSS personalizado com tema escuro profissional, cards com efeito glassmorphism e tipografia moderna.
-  - `src/frontend/navegacao.py`: Barra lateral responsiva com seleção de 6 abas temáticas:
+  - `src/frontend/navegacao.py`: Barra lateral responsiva com seleção de 7 abas temáticas:
     1. 📊 *Painel 1: Análise Exploratória (EDA)*
-    2. 🏆 *Painel 2: Benchmarks & Comparação dos 12 Modelos*
-    3. 🧪 *Painel 3: Testes de Robustez & Generalização OOD*
-    4. ✍️ *Painel 4: Laboratório de Visão Computacional (Canvas & Upload)*
-    5. 🗄️ *Painel 5: Monitor de Bancos de Dados (PostgreSQL + MongoDB)*
-    6. 💬 *Painel 6: Chatbot Assistente RAG*
+    2. 📈 *Painel 2: Explorador Estatístico & Currículo (Bruto vs Tratado + SPA)*
+    3. 🏆 *Painel 3: Benchmarks & Comparação dos 12 Modelos*
+    4. 🧪 *Painel 4: Testes de Robustez & Generalização OOD*
+    5. ✍️ *Painel 5: Laboratório de Visão Computacional (Canvas & Upload)*
+    6. 🗄️ *Painel 6: Monitor de Bancos de Dados (PostgreSQL + MongoDB)*
+    7. 💬 *Painel 7: Chatbot Assistente RAG*
 * **Critérios de Aceite:**
   - [ ] Interface carrega sem erros com layout responsivo e fluído.
 
@@ -77,6 +78,33 @@ EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
   - Inspeção visual interativa de um dígito específico: exibe a matriz $28 \times 28$, o mapa de calor de intensidades de pixel (0 a 255) e o histograma de distribuição de brilho.
 * **Critérios de Aceite:**
   - [ ] Exibição interativa e instantânea dos dados do MNIST.
+
+---
+
+### 🔹 Issue #18.1: Explorador Estatístico de Dados (Brutos vs Tratados) & Currículo Interativo
+* **Branch:** `feature/frontend-dashboard-interativo`
+* **Tipo:** Frontend / Estatística Aplicada & Visualização
+* **Componentes:**
+  - **Seletor de Tipo de Dados:** Alternância dinâmica entre **Dados Brutos** (pixels [0, 255]) e **Dados Tratados** (normalizados MinMax [0, 1] ou padronizados Standard Scaler).
+  - **Filtro de Amostragem & Classes:** Opção de calcular estatísticas para o dataset global ou segmentado por classe/dígito (0 a 9).
+  - **Medidas Descritivas e de Posição (Python / NumPy / SciPy / Pandas):**
+    - Média, Mediana, Moda, Variância, Desvio Padrão, Intervalo Interquartílico (IQR), Mínimo, Máximo, Quartis (Q1, Q2, Q3), Coeficiente de Variação.
+    - Assimetria (*Skewness*) e Curtose (*Kurtosis*) com diagnóstico de formato de distribuição.
+  - **Testes de Hipótese e Normalidade:**
+    - Teste de Shapiro-Wilk e Kolmogorov-Smirnov sobre a distribuição de intensidades.
+    - Teste ANOVA de 1 Fator comparando a média de brilho entre as 10 classes de dígitos.
+  - **Visualizações Gráficas Estatísticas Interativas (Plotly):**
+    - Histograma com Curva de Densidade KDE estimada.
+    - Boxplots múltiplos por classe com destaque para detecção de outliers.
+    - Gráfico Q-Q (Quantil-Quantil) para validação visual de normalidade.
+    - Matriz de Correlação e Heatmap espacial de variância dos pixels $28 \times 28$.
+  - **Módulo do Currículo de Estatística Integrado (`curriculo_estatistica.html`):**
+    - Aplicação Web SPA interativa incorporada no Streamlit e acessível como standalone offline.
+    - Rastreamento dos 12 módulos de estatística com status (Aplicado / Relevante / Não Aplicável), barra de progresso em tempo real, filtros dinâmicos, busca e notas salvas no `localStorage`.
+* **Critérios de Aceite:**
+  - [ ] Alternância instantânea entre dados brutos e tratados com recálculo estatístico.
+  - [ ] Todas as métricas e testes calculados com precisão matemática em Python.
+  - [ ] SPA do currículo de estatística totalmente funcional e responsivo.
 
 ---
 

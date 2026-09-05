@@ -46,11 +46,13 @@ TreinarMnist/
 │   │   ├── __init__.py
 │   │   ├── estilos.py                 # Injeção de CSS Dark Mode e Glassmorphism
 │   │   ├── painel_eda.py              # Visualizador da Análise Exploratória e Amostras
+│   │   ├── painel_estatistica.py      # Explorador Estatístico Interativo (Bruto vs Tratado + Currículo SPA)
 │   │   ├── painel_benchmarks.py       # Tabela comparativa e Matrizes 10x10 interativas
 │   │   ├── painel_robustez_ood.py     # Experimentos de Class Masking e Falsa Certeza
 │   │   ├── painel_laboratorio_visao.py# Canvas interativo de desenho e upload de fotos
 │   │   ├── painel_bancos_dados.py     # Visualizador em tempo real do Postgres e Mongo
-│   │   └── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
+│   │   ├── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
+│   │   └── curriculo_estatistica.html # SPA interativa do Currículo de Estatística (HTML/CSS/JS offline)
 │   ├── banco_dados/                   # Conexões e Repositórios SQL/NoSQL
 │   ├── modelos/                       # 12 algoritmos + ViT + Bubble Sort
 │   ├── rag/                           # Indexador ChromaDB e Assistente
