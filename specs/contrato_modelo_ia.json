@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContratoModeloIA",
+  "description": "Especificação formal de interface e contratos de dados para modelos preditivos da plataforma MNIST",
+  "type": "object",
+  "properties": {
+    "entrada_treinamento": {
+      "type": "object",
+      "properties": {
+        "X": {
+          "type": "array",
+          "description": "Matriz 2D de features (N amostras, 784 pixels normalizados entre 0.0 e 1.0)",
+          "items": {
+            "type": "array",
+            "items": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+          }
+        },
+        "y": {
+          "type": "array",
+          "description": "Vetor 1D de rótulos inteiros de 0 a 9",
+          "items": { "type": "integer", "minimum": 0, "maximum": 9 }
+        }
+      },
+      "required": ["X", "y"]
+    },
+    "saida_predicao": {
+      "type": "object",
+      "properties": {
+        "predicao_classe": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "probabilidades": {
+          "type": "array",
+          "description": "Vetor de 10 probabilidades cuja soma é igual a 1.0",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+        }
+      },
+      "required": ["predicao_classe", "probabilidades"]
+    }
+  }
+}

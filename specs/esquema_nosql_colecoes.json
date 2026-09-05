@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EsquemaColecoesNoSQL",
+  "description": "Especificação dos documentos armazenados nas coleções do MongoDB",
+  "colecoes": {
+    "matrizes_confusao": {
+      "tipo": "documento",
+      "campos": {
+        "id_execucao": "string (UUID)",
+        "nome_modelo": "string",
+        "matriz_10x10": "array de 10 arrays de inteiros",
+        "rotulos_classes": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        "timestamp": "ISO Date"
+      }
+    },
+    "predicoes_detalhadas": {
+      "tipo": "documento",
+      "campos": {
+        "id_execucao": "string (UUID)",
+        "nome_modelo": "string",
+        "amostra_id": "integer",
+        "rotulo_real": "integer",
+        "rotulo_previsto": "integer",
+        "vetor_probabilidades": "array de 10 floats [0.0..1.0]",
+        "correto": "boolean"
+      }
+    },
+    "relatorios_ood": {
+      "tipo": "documento",
+      "campos": {
+        "id_execucao": "string (UUID)",
+        "classes_mascaradas": ["integer"],
+        "distribuicao_predicoes": "object",
+        "media_confianca_falsa_certeza": "float",
+        "entropia_media": "float",
+        "conclusoes_tecnicas": "string"
+      }
+    },
+    "imagens_customizadas": {
+      "tipo": "documento",
+      "campos": {
+        "id_imagem": "string",
+        "nome_arquivo": "string",
+        "imagem_base64": "string",
+        "dimensoes_originais": ["integer", "integer"],
+        "predicao_resultado": {
+          "classe": "integer",
+          "confianca_percentual": "float",
+          "ranking_top3": ["object"]
+        },
+        "criado_em": "ISO Date"
+      }
+    }
+  }
+}

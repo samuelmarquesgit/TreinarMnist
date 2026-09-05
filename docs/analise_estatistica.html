@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TreinarMinist — Painel de Análise Estatística Interativa</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #1f2937;
+      --bg-card-hover: #283548;
+      --border-color: #374151;
+      --border-focus: #6366f1;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      
+      --status-applied: #10b981;
+      --status-applied-bg: rgba(16, 185, 129, 0.15);
+      --status-applied-border: rgba(16, 185, 129, 0.4);
+      
+      --status-relevant: #3b82f6;
+      --status-relevant-bg: rgba(59, 130, 246, 0.15);
+      --status-relevant-border: rgba(59, 130, 246, 0.4);
+      
+      --status-na: #6b7280;
+      --status-na-bg: rgba(107, 114, 128, 0.15);
+      --status-na-border: rgba(107, 114, 128, 0.4);
+
+      --accent: #8b5cf6;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --radius: 10px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .project-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-badge {
+      background: var(--accent-gradient);
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-section {
+      flex: 1;
+      max-width: 450px;
+      min-width: 260px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-labels strong {
+      color: var(--status-applied);
+    }
+
+    .progress-track {
+      background: var(--bg-card);
+      height: 10px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+
+    /* CONTROLS BAR */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .filter-btn.active {
+      background: var(--accent-gradient);
+      color: #fff;
+      border-color: transparent;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 360px;
+      min-width: 220px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 0.5rem 1rem 0.5rem 2.2rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    /* MAIN CONTAINER */
+    .app-container {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      flex: 1;
+      height: calc(100vh - 126px);
+      overflow: hidden;
+    }
+
+    /* SIDEBAR TOPIC TREE */
+    .sidebar-tree {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      overflow-y: auto;
+      padding: 1rem;
+      scroll-behavior: smooth;
+    }
+
+    .sidebar-tree::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar-tree::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .section-header {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(255, 255, 255, 0.02);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .section-header:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .chevron {
+      font-size: 0.75rem;
+      transition: transform 0.3s ease;
+      color: var(--text-muted);
+    }
+
+    .section-card.open .chevron {
+      transform: rotate(90deg);
+    }
+
+    .section-count-badge {
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.72rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 12px;
+      color: var(--text-secondary);
+    }
+
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--bg-secondary);
+    }
+
+    .section-card.open .section-content {
+      max-height: 1500px;
+    }
+
+    .subsection-block {
+      padding: 0.4rem 0.75rem;
+    }
+
+    .subsection-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 0.4rem 0.25rem 0.2rem 0.25rem;
+    }
+
+    .topic-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.83rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .topic-item:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+      transform: translateX(3px);
+    }
+
+    .topic-item.active {
+      background: rgba(99, 102, 241, 0.18);
+      color: var(--text-primary);
+      border-left: 3px solid var(--border-focus);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .status-dot.applied { background: var(--status-applied); box-shadow: 0 0 6px var(--status-applied); }
+    .status-dot.relevant { background: var(--status-relevant); box-shadow: 0 0 6px var(--status-relevant); }
+    .status-dot.not_applicable { background: var(--status-na); }
+
+    /* DETAIL VIEW */
+    .detail-area {
+      background: var(--bg-primary);
+      overflow-y: auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .detail-breadcrumb {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .detail-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .status-badge.applied {
+      background: var(--status-applied-bg);
+      color: var(--status-applied);
+      border: 1px solid var(--status-applied-border);
+    }
+
+    .status-badge.relevant {
+      background: var(--status-relevant-bg);
+      color: var(--status-relevant);
+      border: 1px solid var(--status-relevant-border);
+    }
+
+    .status-badge.not_applicable {
+      background: var(--status-na-bg);
+      color: var(--text-secondary);
+      border: 1px solid var(--status-na-border);
+    }
+
+    .detail-section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 1.25rem 0 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .detail-description {
+      font-size: 0.98rem;
+      line-height: 1.65;
+      color: #d1d5db;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .usage-editor {
+      margin-top: 1.5rem;
+    }
+
+    .usage-textarea {
+      width: 100%;
+      min-height: 120px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      padding: 0.9rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .usage-textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .usage-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .save-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--status-applied);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-weight: 500;
+    }
+
+    .save-indicator.show {
+      opacity: 1;
+    }
+
+    .status-toggles {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 900px) {
+      .app-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .sidebar-tree {
+        max-height: 400px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="project-brand">
+        <div class="logo-badge">∑</div>
+        <div class="brand-text">
+          <h1>TreinarMinist — Currículo de Estatística & IA</h1>
+          <p>Rastreamento de Fundamentos Matemáticos e Estatísticos Aplicados</p>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="progress-labels">
+          <span>Cobertura no TreinarMinist: <strong id="progress-text">0%</strong></span>
+          <span id="progress-counts">0 de 0 tópicos</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-bar">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">Todos (<span id="count-all">0</span>)</button>
+        <button class="filter-btn" data-filter="applied">✅ Aplicados (<span id="count-applied">0</span>)</button>
+        <button class="filter-btn" data-filter="relevant">🔵 Relevantes (<span id="count-relevant">0</span>)</button>
+        <button class="filter-btn" data-filter="not_applicable">⚪ Não Aplicáveis (<span id="count-na">0</span>)</button>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar conceito ou tópico...">
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="app-container">
+    <!-- LEFT SIDEBAR ACCORDION -->
+    <aside class="sidebar-tree" id="sidebar-tree">
+      <!-- Generated via JS -->
+    </aside>
+
+    <!-- RIGHT DETAIL VIEW -->
+    <main class="detail-area" id="detail-area">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-state-icon">📊</div>
+        <h2>Selecione um tópico na árvore</h2>
+        <p>Explore as seções de estatística à esquerda para ver a fundamentação matemática, relevância e aplicação no projeto TreinarMinist.</p>
+      </div>
+
+      <div class="detail-card" id="detail-card" style="display: none;">
+        <div class="detail-breadcrumb" id="detail-breadcrumb">SEÇÃO > SUBSEÇÃO</div>
+        <div class="detail-header">
+          <h2 class="detail-title" id="detail-title">Nome do Tópico</h2>
+          <span class="status-badge applied" id="detail-badge">✅ Aplicado no TreinarMinist</span>
+        </div>
+
+        <div class="detail-section-title">📖 Fundamentação Estatística & Conceitual</div>
+        <p class="detail-description" id="detail-description"></p>
+
+        <div class="usage-editor">
+          <div class="detail-section-title">
+            🛠️ Como foi usado no TreinarMinist
+          </div>
+          <textarea class="usage-textarea" id="usage-textarea" placeholder="Descreva como este conceito é aplicado no código, funções ou experimentos do TreinarMinist..."></textarea>
+          <div class="usage-footer">
+            <span>💾 Salvo automaticamente no navegador (localStorage)</span>
+            <span class="save-indicator" id="save-indicator">✓ Alterações salvas</span>
+          </div>
+        </div>
+
+        <div class="status-toggles">
+          <span style="font-size: 0.78rem; color: var(--text-muted); align-self: center; margin-right: 0.4rem;">Alterar Status:</span>
+          <button class="toggle-btn" onclick="atualizarStatusAtual('applied')">✅ Marcar como Aplicado</button>
+          <button class="toggle-btn" onclick="atualizarStatusAtual('relevant')">🔵 Marcar como Relevante</button>
+          <button class="toggle-btn" onclick="atualizarStatusAtual('not_applicable')">⚪ Marcar como Não Aplicável</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- EMBEDDED DATA & LOGIC -->
+  <script>
+    const TOPICOS_ANALISE_ESTATISTICA = [
+      // 1. PRÉ-REQUISITOS MATEMÁTICOS
+      {
+        id: "1.1.1", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.1 Aritmética e Álgebra Básica",
+        topic: "Frações, potências e raízes",
+        description: "Operações fundamentais de aritmética e álgebra utilizadas em escalonamento, normalização e cálculo de normas euclidianas.",
+        status: "applied",
+        defaultUsage: "Utilizado na divisão de reescalonamento dos pixels por 255.0 e no cálculo de normas de vetores para distâncias euclidianas."
+      },
+      {
+        id: "1.1.2", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.1 Aritmética e Álgebra Básica",
+        topic: "Equações e inequações",
+        description: "Resolução de igualdades e limites algébricos essenciais para funções de ativação com limiar e restrições de otimização.",
+        status: "applied",
+        defaultUsage: "Utilizado na função degrau do Perceptron (z >= 0) e nos limiares de decisão e binarização de imagens."
+      },
+      {
+        id: "1.1.3", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.1 Aritmética e Álgebra Básica",
+        topic: "Notação sigma (Σ) e produtório (Π)",
+        description: "Notações matemáticas para somatórios e produtos indexados, base do produto escalar, funções de perda e cálculo de probabilidades conjuntas.",
+        status: "applied",
+        defaultUsage: "Utilizado nos somatórios de combinações lineares z = Σ(w_i * x_i) + b e no cálculo da função de perda Cross-Entropy."
+      },
+      {
+        id: "1.2.1", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.2 Funções Matemáticas",
+        topic: "Funções lineares e afins",
+        description: "Mapeamentos f(x) = ax + b que modelam transformações lineares, camadas densas sem ativação e hiperplanos de separação.",
+        status: "applied",
+        defaultUsage: "Base das camadas lineares densas (W * X + b) no MLP e da formulação da Regressão Linear."
+      },
+      {
+        id: "1.2.2", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.2 Funções Matemáticas",
+        topic: "Funções exponenciais",
+        description: "Funções de crescimento base e^(x), fundamentais para normalização probabilística (Softmax), sigmóides e kernels gaussianos.",
+        status: "applied",
+        defaultUsage: "Núcleo da função Softmax na camada de saída multiclasse e no Kernel RBF da Máquina de Vetores de Suporte (SVM)."
+      },
+      {
+        id: "1.2.3", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.2 Funções Matemáticas",
+        topic: "Funções logarítmicas",
+        description: "Inversas da exponencial, cruciais para calcular log-verossimilhança, entropia cruzada e estabilização de produtos probabilísticos.",
+        status: "applied",
+        defaultUsage: "Cálculo da perda de entropia cruzada categórica (Categorical Cross-Entropy) e logaritmos de probabilidades no Naive Bayes."
+      },
+      {
+        id: "1.3.1", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.3 Cálculo Diferencial e Integral",
+        topic: "Limites e continuidade",
+        description: "Definição formal de derivadas e estabilidade numérica de funções suaves para propagação de gradientes.",
+        status: "relevant",
+        defaultUsage: "Garante a diferenciabilidade contínua das funções de ativação e perda durante o treinamento das redes neurais."
+      },
+      {
+        id: "1.3.2", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.3 Cálculo Diferencial e Integral",
+        topic: "Derivadas e regras de derivação",
+        description: "Taxas instantâneas de variação e regra da cadeia, alicerce absoluto do algoritmo de Backpropagation.",
+        status: "applied",
+        defaultUsage: "Aplicação direta da regra da cadeia no cálculo dos gradientes dL/dW e dL/db na retropropagação do erro."
+      },
+      {
+        id: "1.3.3", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.3 Cálculo Diferencial e Integral",
+        topic: "Derivadas parciais",
+        description: "Derivação multivariável para isolar a sensibilidade da função de custo em relação a cada peso e viés individualmente.",
+        status: "applied",
+        defaultUsage: "Cálculo das derivadas parciais ∂Loss/∂w_ij para cada conexão sináptica entre as camadas da rede neural."
+      },
+      {
+        id: "1.3.4", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.3 Cálculo Diferencial e Integral",
+        topic: "Integrais definidas e indefinidas",
+        description: "Acumulação contínua e cálculo de áreas sob curvas contínuas (PDFs e AUC-ROC).",
+        status: "relevant",
+        defaultUsage: "Base teórica para o cálculo da área sob a curva ROC (AUC-ROC) e distribuições contínuas."
+      },
+      {
+        id: "1.3.5", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.3 Cálculo Diferencial e Integral",
+        topic: "Gradiente e otimização",
+        description: "Vetor de derivadas direcionais que aponta no sentido de máxima subida, usado negativamente no Gradiente Descendente.",
+        status: "applied",
+        defaultUsage: "Implementação direta do Gradiente Descendente Estocástico (SGD) e Adam para minimização da função de custo."
+      },
+      {
+        id: "1.4.1", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Vetores e operações vetoriais",
+        description: "Representação de pontos no espaço R^n e operações de soma, multiplicação por escalar e transposição.",
+        status: "applied",
+        defaultUsage: "Cada imagem 28x28 do MNIST é representada como um vetor unidimensional de 784 elementos no R^784."
+      },
+      {
+        id: "1.4.2", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Matrizes e operações matriciais",
+        description: "Multiplicação de matrizes (dot product) para processamento em lote (batches) de dados e pesos sinápticos.",
+        status: "applied",
+        defaultUsage: "Cálculo vetorial acelerado via NumPy: Z = np.dot(X, W) + b para todas as amostras do batch simultaneamente."
+      },
+      {
+        id: "1.4.3", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Produto interno e normas",
+        description: "Medição de similaridade angular (cosseno) e comprimento de vetores (norma L1 e L2) para regularização e distâncias.",
+        status: "applied",
+        defaultUsage: "Cálculo da norma L2 na distância euclidiana do KNN e na regularização Ridge (Weight Decay)."
+      },
+      {
+        id: "1.4.4", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Determinantes",
+        description: "Escalar associado a matrizes quadradas que indica transformações de volume e invertibilidade.",
+        status: "relevant",
+        defaultUsage: "Utilizado na análise de invertibilidade da matriz de covariância em modelos gaussianos multivariados."
+      },
+      {
+        id: "1.4.5", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Sistemas lineares",
+        description: "Equações matriciais do tipo Ax = b, base para solução exata de mínimos quadrados (OLS).",
+        status: "applied",
+        defaultUsage: "Solução da equação normal matricial (X^T * X)^(-1) * X^T * y na Regressão Linear clássica."
+      },
+      {
+        id: "1.4.6", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Autovalores e autovetores",
+        description: "Direções principais onde transformações lineares atuam apenas como escalonamento, base da PCA.",
+        status: "relevant",
+        defaultUsage: "Fundamental para redução de dimensionalidade e análise das direções de maior variância nos pixels."
+      },
+      {
+        id: "1.4.7", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Decomposição matricial (SVD, LU, QR)",
+        description: "Fatoração de matrizes em componentes fundamentais para compressão e estabilidade numérica.",
+        status: "relevant",
+        defaultUsage: "Utilizado em algoritmos de decomposição em valores singulares para compressão e projeção latente."
+      },
+      {
+        id: "1.4.8", section: "1. PRÉ-REQUISITOS MATEMÁTICOS", subsection: "1.4 Álgebra Linear",
+        topic: "Álgebra linear aplicada a dados",
+        description: "Conceitualização de datasets como tensores e matrizes de dados estruturados para Machine Learning.",
+        status: "applied",
+        defaultUsage: "Estruturação das matrizes X de shape (70000, 784) e tensores de imagem (28, 28) em todo o pipeline."
+      },
+
+      // 2. ESTATÍSTICA DESCRITIVA
+      {
+        id: "2.1.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.1 Tipos de Dados",
+        topic: "Dados qualitativos (nominais e ordinais)",
+        description: "Classificação de variáveis categóricas sem ordem métrica inerente, como rótulos de dígitos.",
+        status: "applied",
+        defaultUsage: "Os rótulos das classes (dígitos de 0 a 9) são tratados como variáveis qualitativas nominais multiclasse."
+      },
+      {
+        id: "2.1.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.1 Tipos de Dados",
+        topic: "Dados quantitativos (discretos e contínuos)",
+        description: "Dados numéricos: contagens discretas de pixels e valores contínuos após normalização.",
+        status: "applied",
+        defaultUsage: "Pixels brutos inteiros [0, 255] (quantitativos discretos) convertidos em floats [0.0, 1.0] (contínuos)."
+      },
+      {
+        id: "2.1.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.1 Tipos de Dados",
+        topic: "Escalas de medição (nominal, ordinal, intervalar, razão)",
+        description: "Propriedades matemáticas das medições: a escala de razão possui zero absoluto (ausência de luz).",
+        status: "applied",
+        defaultUsage: "Intensidade de pixel (0 = preto absoluto, 255 = branco total) segue escala de razão."
+      },
+      {
+        id: "2.2.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.2 Distribuição de Frequências",
+        topic: "Tabelas de frequência simples e acumulada",
+        description: "Contagem de ocorrências por categoria para avaliar proporção de amostras no dataset.",
+        status: "applied",
+        defaultUsage: "Geração da contagem de frequência de cada dígito para comprovar o balanceamento (~7.000 amostras por classe)."
+      },
+      {
+        id: "2.2.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.2 Distribuição de Frequências",
+        topic: "Amplitude de classes e intervalos",
+        description: "Particionamento de variáveis contínuas em faixas para análise de histogramas.",
+        status: "applied",
+        defaultUsage: "Agrupamento dos valores de intensidade de pixel e de probabilidades Softmax em faixas de confiança [0..1]."
+      },
+      {
+        id: "2.2.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.2 Distribuição de Frequências",
+        topic: "Histogramas e polígonos de frequência",
+        description: "Visualização gráfica da densidade empírica de probabilidades de amostras numéricas.",
+        status: "applied",
+        defaultUsage: "Plotagem do histograma de distribuição de brilho dos pixels e distribuição de confiança no teste OOD."
+      },
+      {
+        id: "2.3.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.3 Medidas de Tendência Central",
+        topic: "Média aritmética (simples e ponderada)",
+        description: "Soma ponderada dos valores dividida pelo total, indicador central de desempenho e centróide.",
+        status: "applied",
+        defaultUsage: "Cálculo da acurácia global e cálculo das médias ponderadas de Precision, Recall e F1-Score."
+      },
+      {
+        id: "2.3.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.3 Medidas de Tendência Central",
+        topic: "Mediana",
+        description: "Ponto central ordenado que divide a distribuição em duas metades iguais, robusto a outliers.",
+        status: "relevant",
+        defaultUsage: "Utilizado na análise exploratória de intensidades de pixel e tempos de inferência."
+      },
+      {
+        id: "2.3.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.3 Medidas de Tendência Central",
+        topic: "Moda",
+        description: "Valor com maior frequência em uma amostra ou distribuição.",
+        status: "applied",
+        defaultUsage: "Utilizado no voto majoritário de vizinhos do KNN e no voto do ensemble de árvores da Random Forest."
+      },
+      {
+        id: "2.3.4", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.3 Medidas de Tendência Central",
+        topic: "Média geométrica e harmônica",
+        description: "Médias especializadas: a média harmônica é a base do cálculo do F1-Score entre Precisão e Recall.",
+        status: "applied",
+        defaultUsage: "Fórmula matemática do F1-Score: F1 = 2 * (Precision * Recall) / (Precision + Recall)."
+      },
+      {
+        id: "2.4.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.4 Medidas de Dispersão",
+        topic: "Amplitude total",
+        description: "Diferença entre o valor máximo e mínimo de uma variável.",
+        status: "applied",
+        defaultUsage: "Utilizado no escalonamento MinMaxScaler: (X - min) / (max - min) = (X - 0) / (255 - 0)."
+      },
+      {
+        id: "2.4.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.4 Medidas de Dispersão",
+        topic: "Variância (populacional e amostral)",
+        description: "Média dos desvios quadráticos em relação à média, medindo a dispersão dos dados.",
+        status: "applied",
+        defaultUsage: "Utilizado na padronização StandardScaler e no cálculo de variância das probabilidades no Naive Bayes."
+      },
+      {
+        id: "2.4.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.4 Medidas de Dispersão",
+        topic: "Desvio padrão",
+        description: "Raiz quadrada da variância, trazendo a dispersão para a mesma escala dos dados.",
+        status: "applied",
+        defaultUsage: "Padronização Z-score dos pixels: Z = (X - média) / desvio_padrao."
+      },
+      {
+        id: "2.4.4", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.4 Medidas de Dispersão",
+        topic: "Coeficiente de variação",
+        description: "Razão entre desvio padrão e média, medindo variabilidade relativa.",
+        status: "relevant",
+        defaultUsage: "Análise da dispersão de brilho entre os diferentes pixels de fundo e traço."
+      },
+      {
+        id: "2.4.5", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.4 Medidas de Dispersão",
+        topic: "Intervalo interquartílico (IQR)",
+        description: "Diferença entre o terceiro e primeiro quartil (Q3 - Q1), base do boxplot.",
+        status: "relevant",
+        defaultUsage: "Filtragem robusta de ruído em imagens e detecção de pixels anômalos."
+      },
+      {
+        id: "2.5.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.5 Medidas de Posição",
+        topic: "Quartis, decis e percentis",
+        description: "Divisores de posição acumulada de uma amostra ordenada.",
+        status: "applied",
+        defaultUsage: "Cálculo de percentis de confiança no histograma de inferência OOD e limiares de certeza."
+      },
+      {
+        id: "2.5.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.5 Medidas de Posição",
+        topic: "Boxplot e detecção de outliers",
+        description: "Diagrama visual de 5 números para identificar valores discrepantes fora das cercas [Q1 - 1.5*IQR, Q3 + 1.5*IQR].",
+        status: "applied",
+        defaultUsage: "Diagnóstico de amostras com tempo de inferência atípico e detecção de imagens corrompidas."
+      },
+      {
+        id: "2.5.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.5 Medidas de Posição",
+        topic: "Z-score (escore padronizado)",
+        description: "Número de desvios padrão que um ponto está distante da média amostral.",
+        status: "applied",
+        defaultUsage: "Padronização de features de entrada no StandardScaler do Scikit-Learn."
+      },
+      {
+        id: "2.6.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.6 Forma da Distribuição",
+        topic: "Assimetria (skewness)",
+        description: "Medida do grau de desvio em relação à simetria de uma curva normal.",
+        status: "applied",
+        defaultUsage: "A maioria dos 784 pixels do MNIST possui assimetria positiva acentuada (fundo preto dominante em 0)."
+      },
+      {
+        id: "2.6.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.6 Forma da Distribuição",
+        topic: "Curtose (kurtosis)",
+        description: "Medida do achatamento ou pico da distribuição em relação à distribuição normal.",
+        status: "relevant",
+        defaultUsage: "Análise da concentração extrema de pixels no valor zero (leptocurtose)."
+      },
+      {
+        id: "2.6.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.6 Forma da Distribuição",
+        topic: "Distribuições simétricas vs. assimétricas",
+        description: "Comparação estrutural de distribuições de probabilidades.",
+        status: "applied",
+        defaultUsage: "Fundamentação teórica de por que a normalização MinMax [0..1] é preferível à padronização gaussiana para imagens esparsas."
+      },
+      {
+        id: "2.7.1", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Gráfico de barras e colunas",
+        description: "Representação de frequências absolutas e relativas por categoria.",
+        status: "applied",
+        defaultUsage: "Gráfico de barras da distribuição de classes do MNIST e gráfico de probabilidades Top-K da predição."
+      },
+      {
+        id: "2.7.2", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Gráfico de pizza e setores",
+        description: "Visualização proporcional de partes em relação ao todo.",
+        status: "relevant",
+        defaultUsage: "Visualização alternativa da divisão entre splits de Treino, Validação e Teste."
+      },
+      {
+        id: "2.7.3", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Histograma",
+        description: "Gráfico de colunas adjacentes para densidade de variáveis contínuas.",
+        status: "applied",
+        defaultUsage: "Plotagem do histograma de confiança Softmax evidenciando Overconfidence no teste OOD."
+      },
+      {
+        id: "2.7.4", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Boxplot",
+        description: "Gráfico de caixas para distribuição e identificação de outliers.",
+        status: "applied",
+        defaultUsage: "Visualização comparativa da dispersão de tempos de inferência entre os 12 algoritmos."
+      },
+      {
+        id: "2.7.5", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Gráfico de dispersão (scatter plot)",
+        description: "Plotagem bidimensional de pares de variáveis para identificação de correlação e clusters.",
+        status: "applied",
+        defaultUsage: "Visualização das projeções dos clusters do K-Means e fronteiras de decisão do Perceptron."
+      },
+      {
+        id: "2.7.6", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Heatmap de correlação",
+        description: "Matriz colorida por intensidade para visualizar coeficientes de correlação ou confusão.",
+        status: "applied",
+        defaultUsage: "Renderização da Matriz de Confusão 10x10 com Seaborn/Plotly destacando erros e acertos."
+      },
+      {
+        id: "2.7.7", section: "2. ESTATÍSTICA DESCRITIVA", subsection: "2.7 Visualização de Dados",
+        topic: "Gráfico de linhas (séries temporais)",
+        description: "Evolução sequencial de métricas ao longo de iterações ou tempo.",
+        status: "applied",
+        defaultUsage: "Curvas de aprendizado de perda (loss) e acurácia por época no treinamento da Rede Neural MLP."
+      },
+
+      // 3. PROBABILIDADE
+      {
+        id: "3.1.1", section: "3. PROBABILIDADE", subsection: "3.1 Fundamentos de Probabilidade",
+        topic: "Experimento aleatório e espaço amostral",
+        description: "Formalização matemática de processos não-determinísticos e conjunto de todos os resultados possíveis Ω = {0, 1, ..., 9}.",
+        status: "applied",
+        defaultUsage: "Definição do espaço amostral discreto com 10 classes mutuamente exclusivas na saída multiclasse."
+      },
+      {
+        id: "3.1.2", section: "3. PROBABILIDADE", subsection: "3.1 Fundamentos de Probabilidade",
+        topic: "Eventos, uniões e interseções",
+        description: "Operações de conjuntos aplicadas a probabilidades conjuntas e marginais.",
+        status: "applied",
+        defaultUsage: "Cálculo de probabilidade conjunta de ativação de múltiplos pixels no Naive Bayes."
+      },
+      {
+        id: "3.1.3", section: "3. PROBABILIDADE", subsection: "3.1 Fundamentos de Probabilidade",
+        topic: "Axiomas de Kolmogorov",
+        description: "Regras formais: 0 <= P(A) <= 1, P(Ω) = 1 e aditividade de eventos disjuntos.",
+        status: "applied",
+        defaultUsage: "A função de ativação Softmax garante estritamente os axiomas de Kolmogorov: Σ P(y=k|X) = 1.0."
+      },
+      {
+        id: "3.1.4", section: "3. PROBABILIDADE", subsection: "3.1 Fundamentos de Probabilidade",
+        topic: "Regra da adição e multiplicação",
+        description: "Cálculo de probabilidade de uniões P(A∪B) e interseções P(A∩B) = P(A|B)*P(B).",
+        status: "applied",
+        defaultUsage: "Aplicação na expansão da probabilidade conjunta no classificador Naive Bayes Gaussiano."
+      },
+      {
+        id: "3.2.1", section: "3. PROBABILIDADE", subsection: "3.2 Probabilidade Condicional",
+        topic: "Definição e cálculo",
+        description: "Probabilidade de ocorrência de um evento A dado que o evento B ocorreu: P(A|B) = P(A∩B)/P(B).",
+        status: "applied",
+        defaultUsage: "Modelação da probabilidade a posteriori P(classe=k | imagem=X) fornecida pela rede neural."
+      },
+      {
+        id: "3.2.2", section: "3. PROBABILIDADE", subsection: "3.2 Probabilidade Condicional",
+        topic: "Independência de eventos",
+        description: "Dois eventos são independentes se P(A∩B) = P(A)*P(B).",
+        status: "applied",
+        defaultUsage: "Hipótese de independência condicional fundamental adotada no algoritmo Naive Bayes."
+      },
+      {
+        id: "3.2.3", section: "3. PROBABILIDADE", subsection: "3.2 Probabilidade Condicional",
+        topic: "Teorema de Bayes",
+        description: "Atualização da probabilidade a priori de uma hipótese com base em novas evidências: P(H|E) = P(E|H)*P(H)/P(E).",
+        status: "applied",
+        defaultUsage: "Implementado no modelo Naive Bayes Gaussiano para calcular a classe mais provável dado o vetor de pixels."
+      },
+      {
+        id: "3.2.4", section: "3. PROBABILIDADE", subsection: "3.2 Probabilidade Condicional",
+        topic: "Redes Bayesianas (introdução)",
+        description: "Modelos gráficos probabilísticos acíclicos representando dependências condicionais.",
+        status: "relevant",
+        defaultUsage: "Fundamentação teórica para modelagem gráfica de incerteza e dependência entre pixels."
+      },
+      {
+        id: "3.3.1", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Função de probabilidade (PMF)",
+        description: "Mapeamento que associa a cada valor discreto sua probabilidade exata.",
+        status: "applied",
+        defaultUsage: "A saída da camada Softmax é a PMF estimada para os 10 dígitos possíveis."
+      },
+      {
+        id: "3.3.2", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Função de distribuição acumulada (CDF)",
+        description: "Probabilidade acumulada P(X <= x) de uma variável aleatória.",
+        status: "applied",
+        defaultUsage: "Utilizado na ordenação de probabilidades acumuladas para cálculo do ranking Top-K e amostragem."
+      },
+      {
+        id: "3.3.3", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Valor esperado e variância",
+        description: "E[X] = Σ x*p(x) e Var(X) = E[(X - E[X])^2], momentos centrais de variáveis discretas.",
+        status: "applied",
+        defaultUsage: "Cálculo do valor esperado de acertos (acurácia esperada) e variância das previsões dos ensembles."
+      },
+      {
+        id: "3.3.4", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Distribuição Binomial",
+        description: "Número de sucessos em n ensaios de Bernoulli independentes.",
+        status: "relevant",
+        defaultUsage: "Modelação estatística de classificação binária (ex: detector de dígito 5 vs não-5)."
+      },
+      {
+        id: "3.3.5", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Distribuição de Poisson",
+        description: "Modela contagens de eventos raros em um intervalo fixo de tempo ou espaço.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável diretamente à classificação estática de imagens de dígitos no MNIST."
+      },
+      {
+        id: "3.3.6", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Distribuição Geométrica",
+        description: "Número de tentativas de Bernoulli até o primeiro sucesso.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao pipeline de visão computacional e benchmark do MNIST."
+      },
+      {
+        id: "3.3.7", section: "3. PROBABILIDADE", subsection: "3.3 Variáveis Aleatórias Discretas",
+        topic: "Distribuição Hipergeométrica",
+        description: "Amostragem sem reposição de uma população finita.",
+        status: "relevant",
+        defaultUsage: "Relevante para a teoria de amostragem sem reposição em k-fold cross validation."
+      },
+      {
+        id: "3.4.1", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Função densidade de probabilidade (PDF)",
+        description: "Função f(x) cuja integral sobre um intervalo fornece a probabilidade de uma variável contínua.",
+        status: "applied",
+        defaultUsage: "Utilizado na modelagem da densidade de brilho dos pixels no Naive Bayes Gaussiano."
+      },
+      {
+        id: "3.4.2", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "CDF para variáveis contínuas",
+        description: "Integral acumulada da densidade de probabilidade F(x) = ∫ f(t) dt.",
+        status: "relevant",
+        defaultUsage: "Base para cálculo de p-valores em testes estatísticos de significância."
+      },
+      {
+        id: "3.4.3", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição Uniforme Contínua",
+        description: "Densidade constante sobre um intervalo [a, b].",
+        status: "applied",
+        defaultUsage: "Utilizado na inicialização de pesos aleatórios (Random Uniform Initialization) nas camadas da rede neural."
+      },
+      {
+        id: "3.4.4", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição Normal (Gaussiana)",
+        description: "Curva em forma de sino parametrizada por média μ e variância σ², central na estatística.",
+        status: "applied",
+        defaultUsage: "Utilizado na inicialização normal de pesos (Glorot/He Normal) e no classificador Naive Bayes Gaussiano."
+      },
+      {
+        id: "3.4.5", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição Exponencial",
+        description: "Modela o tempo entre eventos contínuos e memória nula.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à análise de reconhecimento de dígitos estáticos."
+      },
+      {
+        id: "3.4.6", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição Qui-Quadrado",
+        description: "Soma dos quadrados de k variáveis normais padrão independentes.",
+        status: "relevant",
+        defaultUsage: "Base para testes de independência em matrizes de contingência e confusão."
+      },
+      {
+        id: "3.4.7", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição t de Student",
+        description: "Distribuição simétrica com caudas mais pesadas que a normal, usada em amostras pequenas.",
+        status: "relevant",
+        defaultUsage: "Utilizado no teste t para comparação estatística de acurácias entre dois modelos distintos."
+      },
+      {
+        id: "3.4.8", section: "3. PROBABILIDADE", subsection: "3.4 Variáveis Aleatórias Contínuas",
+        topic: "Distribuição F de Snedecor",
+        description: "Razão entre duas variáveis Qui-Quadrado independentes divididas por seus graus de liberdade.",
+        status: "relevant",
+        defaultUsage: "Base estatística para testes ANOVA na comparação de múltiplos modelos."
+      },
+      {
+        id: "3.5.1", section: "3. PROBABILIDADE", subsection: "3.5 Teoremas Fundamentais",
+        topic: "Lei dos Grandes Números (fraca e forte)",
+        description: "Garante que a média amostral converge quase certamente para o valor esperado com o aumento de N.",
+        status: "applied",
+        defaultUsage: "Fundamenta a confiabilidade do benchmark com 10.000 amostras de teste independentes no MNIST."
+      },
+      {
+        id: "3.5.2", section: "3. PROBABILIDADE", subsection: "3.5 Teoremas Fundamentais",
+        topic: "Teorema Central do Limite (TCL)",
+        description: "A soma ou média de variáveis independentes converge para uma distribuição normal.",
+        status: "applied",
+        defaultUsage: "Justifica o comportamento gaussiano dos gradientes acumulados em mini-batches durante o treinamento."
+      },
+      {
+        id: "3.5.3", section: "3. PROBABILIDADE", subsection: "3.5 Teoremas Fundamentais",
+        topic: "Desigualdade de Chebyshev",
+        description: "Limites probabilísticos superiores para o desvio de uma variável em relação à sua média.",
+        status: "relevant",
+        defaultUsage: "Base teórica para estabelecer limites de confiança e dispersão sem supor normalidade estrita."
+      },
+      {
+        id: "3.5.4", section: "3. PROBABILIDADE", subsection: "3.5 Teoremas Fundamentais",
+        topic: "Desigualdade de Markov",
+        description: "Limite superior para a probabilidade de uma variável não-negativa exceder um valor positivo.",
+        status: "relevant",
+        defaultUsage: "Utilizado na teoria de aprendizado estatístico para limites de erro de generalização (PAC Learning)."
+      },
+
+      // 4. INFERÊNCIA ESTATÍSTICA
+      {
+        id: "4.1.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.1 Conceitos Fundamentais",
+        topic: "Parâmetro vs. estatística",
+        description: "Distinção entre a característica da população inteira e a medida calculada sobre uma amostra finita.",
+        status: "applied",
+        defaultUsage: "Acurácia amostral no conjunto de teste é a estatística utilizada para estimar o parâmetro de acurácia real do modelo."
+      },
+      {
+        id: "4.1.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.1 Conceitos Fundamentais",
+        topic: "Distribuição amostral",
+        description: "Distribuição de probabilidade de uma dada estatística calculada sobre múltiplas reamostragens.",
+        status: "relevant",
+        defaultUsage: "Análise da variabilidade do F1-Score através de reamostragens com diferentes sementes aleatórias."
+      },
+      {
+        id: "4.1.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.1 Conceitos Fundamentais",
+        topic: "Erro padrão",
+        description: "Desvio padrão da distribuição amostral de um estimador.",
+        status: "applied",
+        defaultUsage: "Cálculo da margem de incerteza das métricas de acurácia nos relatórios estatísticos."
+      },
+      {
+        id: "4.1.4", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.1 Conceitos Fundamentais",
+        topic: "Viés e eficiência de estimadores",
+        description: "E[θ̂] - θ (viés) e variância mínima entre estimadores não-viesados.",
+        status: "applied",
+        defaultUsage: "Avaliação do trade-off entre viés de subajuste e variância de sobreajuste (Bias-Variance Tradeoff)."
+      },
+      {
+        id: "4.2.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.2 Estimação Pontual",
+        topic: "Método dos momentos",
+        description: "Iguala os momentos teóricos populacionais aos momentos amostrais para estimar parâmetros.",
+        status: "relevant",
+        defaultUsage: "Método clássico para estimar média e variância de conjuntos de dados brutos."
+      },
+      {
+        id: "4.2.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.2 Estimação Pontual",
+        topic: "Máxima verossimilhança (MLE)",
+        description: "Encontra os parâmetros que maximizam a probabilidade dos dados observados.",
+        status: "applied",
+        defaultUsage: "Minimizar a perda Cross-Entropy no MLP e Regressão Logística equivale a maximizar a log-verossimilhança (MLE)."
+      },
+      {
+        id: "4.2.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.2 Estimação Pontual",
+        topic: "Propriedades dos estimadores (não-viesado, consistente, eficiente)",
+        description: "Critérios de qualidade assintótica de estimadores estatísticos.",
+        status: "relevant",
+        defaultUsage: "Garante a consistência dos estimadores de erro e métricas com o aumento do volume de dados."
+      },
+      {
+        id: "4.3.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.3 Intervalos de Confiança",
+        topic: "IC para média (σ conhecido e desconhecido)",
+        description: "Faixa de valores prováveis para o parâmetro populacional a um nível 1-α.",
+        status: "applied",
+        defaultUsage: "Geração de intervalos de confiança de 95% para o tempo médio de inferência por imagem."
+      },
+      {
+        id: "4.3.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.3 Intervalos de Confiança",
+        topic: "IC para proporção",
+        description: "Intervalo de confiança de Wald / Wilson para proporções binomiais.",
+        status: "applied",
+        defaultUsage: "Cálculo do intervalo de confiança da acurácia global p̂ ± z * sqrt(p̂(1-p̂)/n) no conjunto de teste."
+      },
+      {
+        id: "4.3.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.3 Intervalos de Confiança",
+        topic: "IC para variância",
+        description: "Intervalo baseado na distribuição Qui-Quadrado para a dispersão dos dados.",
+        status: "relevant",
+        defaultUsage: "Avaliação da estabilidade de desempenho entre diferentes rodadas de validação."
+      },
+      {
+        id: "4.3.4", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.3 Intervalos de Confiança",
+        topic: "Tamanho de amostra e margem de erro",
+        description: "Dimensionamento estatístico do número de amostras necessário para um erro máximo estipulado.",
+        status: "applied",
+        defaultUsage: "Validação de que as 10.000 amostras do teste garantem margem de erro inferior a 0.5% a 95% de confiança."
+      },
+      {
+        id: "4.4.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Hipóteses nula (H₀) e alternativa (H₁)",
+        description: "Estrutura formal de decisão estatística entre a hipótese padrão e o efeito a ser comprovado.",
+        status: "applied",
+        defaultUsage: "H0: Modelo A e Modelo B possuem mesma acurácia média vs H1: Modelo A supera estatisticamente o Modelo B."
+      },
+      {
+        id: "4.4.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Nível de significância (α) e p-valor",
+        description: "Probabilidade de rejeitar H0 quando ela é verdadeira e evidência empírica fornecida pela amostra.",
+        status: "applied",
+        defaultUsage: "Adoção do limiar α = 0.05 para comparação de significância entre os classificadores."
+      },
+      {
+        id: "4.4.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Região crítica e estatística de teste",
+        description: "Valores da estatística que levam à rejeição formal de H0.",
+        status: "relevant",
+        defaultUsage: "Critério de decisão formal em testes t e qui-quadrado de matrizes de contingência."
+      },
+      {
+        id: "4.4.4", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Erros Tipo I e Tipo II",
+        description: "Falso Positivo (rejeitar H0 verdadeira) e Falso Negativo (não rejeitar H0 falsa).",
+        status: "applied",
+        defaultUsage: "Mapeamento direto com Falso Positivo (FP) e Falso Negativo (FN) na Matriz de Confusão multiclasse."
+      },
+      {
+        id: "4.4.5", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Poder do teste (1 - β)",
+        description: "Capacidade do teste em detectar uma diferença real existente.",
+        status: "relevant",
+        defaultUsage: "Avaliação da sensibilidade estatística nos experimentos de comparação de modelos."
+      },
+      {
+        id: "4.4.6", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.4 Testes de Hipótese",
+        topic: "Testes unicaudais e bicaudais",
+        description: "Direcionamento da região crítica em uma ou ambas as caudas da distribuição.",
+        status: "relevant",
+        defaultUsage: "Definição de testes unicaudais quando a hipótese testa se a Rede Neural é estritamente superior ao SVM."
+      },
+      {
+        id: "4.5.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste Z (média, proporção)",
+        description: "Teste paramétrico para amostras grandes com variância conhecida.",
+        status: "applied",
+        defaultUsage: "Teste de diferença de duas proporções de acurácia entre modelos no conjunto de teste."
+      },
+      {
+        id: "4.5.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste t de uma amostra",
+        description: "Compara a média amostral contra um valor de referência constante.",
+        status: "relevant",
+        defaultUsage: "Teste se a acurácia média supera o benchmark mínimo de 95%."
+      },
+      {
+        id: "4.5.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste t para duas amostras independentes",
+        description: "Compara médias de duas populações independentes.",
+        status: "relevant",
+        defaultUsage: "Comparação de tempos de treino entre Random Forest e Gradient Boosting."
+      },
+      {
+        id: "4.5.4", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste t para amostras pareadas",
+        description: "Compara o desempenho de dois modelos avaliados nas mesmas instâncias de teste (amostras pareadas).",
+        status: "applied",
+        defaultUsage: "Comparação pareada de acerto/erro nas 10.000 imagens entre SVM e MLP (teste de McNemar / t-pareado)."
+      },
+      {
+        id: "4.5.5", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "ANOVA de um fator",
+        description: "Análise de variância para comparar médias de três ou mais grupos simultaneamente.",
+        status: "relevant",
+        defaultUsage: "Comparação da acurácia média entre os 12 algoritmos desenvolvidos no projeto."
+      },
+      {
+        id: "4.5.6", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "ANOVA de dois fatores",
+        description: "Avalia o efeito de dois fatores categóricos e sua interação.",
+        status: "relevant",
+        defaultUsage: "Avaliação do efeito combinado de tipo de modelo e normalização no desempenho."
+      },
+      {
+        id: "4.5.7", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste F para igualdade de variâncias",
+        description: "Verifica se dois grupos possuem a mesma dispersão estatística (homocedasticidade).",
+        status: "relevant",
+        defaultUsage: "Pressuposto estatístico para testes paramétricos de comparação de modelos."
+      },
+      {
+        id: "4.5.8", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste Qui-Quadrado de independência",
+        description: "Verifica se há associação estatisticamente significativa entre duas variáveis categóricas.",
+        status: "applied",
+        defaultUsage: "Verificação da independência entre classe real e classe prevista na Matriz de Confusão."
+      },
+      {
+        id: "4.5.9", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.5 Testes Paramétricos",
+        topic: "Teste Qui-Quadrado de aderência",
+        description: "Testa se a distribuição amostral segue uma distribuição teórica esperada (uniforme).",
+        status: "applied",
+        defaultUsage: "Teste de aderência comprovando o balanceamento uniforme dos 10 dígitos no dataset MNIST."
+      },
+      {
+        id: "4.6.1", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Mann-Whitney (Wilcoxon rank-sum)",
+        description: "Alternativa não-paramétrica ao teste t para amostras independentes baseada em postos.",
+        status: "relevant",
+        defaultUsage: "Comparação de distribuições de confiança não-normais entre modelos."
+      },
+      {
+        id: "4.6.2", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Wilcoxon para amostras pareadas",
+        description: "Teste não-paramétrico para dados pareados e distribuições assimétricas.",
+        status: "relevant",
+        defaultUsage: "Comparação de scores de certeza entre predições corretas e incorretas."
+      },
+      {
+        id: "4.6.3", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Kruskal-Wallis",
+        description: "Extensão não-paramétrica da ANOVA de um fator baseada em postos.",
+        status: "relevant",
+        defaultUsage: "Comparação de acurácias medianas de múltiplos modelos em múltiplos folds de validação."
+      },
+      {
+        id: "4.6.4", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Friedman",
+        description: "Teste não-paramétrico para medidas repetidas e múltiplos modelos nas mesmas bases.",
+        status: "relevant",
+        defaultUsage: "Padrão de excelência em benchmarks de Machine Learning para comparar N classificadores em múltiplos datasets."
+      },
+      {
+        id: "4.6.5", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Shapiro-Wilk (normalidade)",
+        description: "Verifica formalmente se uma amostra provém de uma distribuição normal.",
+        status: "applied",
+        defaultUsage: "Aplicação aos resíduos e intensidades de pixels para comprovar a não-normalidade dos dados brutos."
+      },
+      {
+        id: "4.6.6", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Teste de Kolmogorov-Smirnov",
+        description: "Compara a distribuição acumulada empírica contra uma distribuição teórica de referência.",
+        status: "relevant",
+        defaultUsage: "Teste de aderência da distribuição de probabilidades Softmax no teste OOD."
+      },
+      {
+        id: "4.6.7", section: "4. INFERÊNCIA ESTATÍSTICA", subsection: "4.6 Testes Não-Paramétricos",
+        topic: "Correlação de Spearman e Kendall",
+        description: "Métricas monotônicas não-lineares baseadas em postos.",
+        status: "relevant",
+        defaultUsage: "Avaliação da correlação monotônica entre certeza preditiva e acerto do modelo."
+      },
+
+      // 5. REGRESSÃO E CORRELAÇÃO
+      {
+        id: "5.1.1", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.1 Correlação",
+        topic: "Correlação de Pearson",
+        description: "Mede o grau de associação linear entre duas variáveis contínuas [-1.0 a +1.0].",
+        status: "applied",
+        defaultUsage: "Cálculo da correlação espacial entre pixels vizinhos da grade 28x28."
+      },
+      {
+        id: "5.1.2", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.1 Correlação",
+        topic: "Correlação de Spearman",
+        description: "Mede a associação monotônica não-linear baseada em ranks.",
+        status: "relevant",
+        defaultUsage: "Análise da relação de posto entre ordem de probabilidades do Bubble Sort e o dígito correto."
+      },
+      {
+        id: "5.1.3", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.1 Correlação",
+        topic: "Correlação de Kendall",
+        description: "Baseada em pares concordantes e discordantes, robusta para dados discretos.",
+        status: "relevant",
+        defaultUsage: "Medição de concordância entre os rankings Top-K de diferentes classificadores."
+      },
+      {
+        id: "5.1.4", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.1 Correlação",
+        topic: "Matriz de correlação",
+        description: "Tabela simétrica contendo todos os coeficientes de correlação bivariados.",
+        status: "applied",
+        defaultUsage: "Matriz de correlação entre as probabilidades de saída das 10 classes para diagnosticar confusão mútua."
+      },
+      {
+        id: "5.2.1", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.2 Regressão Linear Simples",
+        topic: "Método dos Mínimos Quadrados (OLS)",
+        description: "Minimização da soma dos quadrados dos resíduos para encontrar a melhor reta de ajuste.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/regressao_linear.py` para modelagem e baseline."
+      },
+      {
+        id: "5.2.2", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.2 Regressão Linear Simples",
+        topic: "Coeficientes β₀ e β₁",
+        description: "Intercepto e inclinação da reta linear.",
+        status: "applied",
+        defaultUsage: "Cálculo dos parâmetros de peso (w) e viés (b) aprendidos no ajuste linear."
+      },
+      {
+        id: "5.2.3", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.2 Regressão Linear Simples",
+        topic: "Interpretação dos coeficientes",
+        description: "Impacto marginal no valor predito por unidade de variação na variável explicativa.",
+        status: "applied",
+        defaultUsage: "Interpretação de sensibilidade de saída em relação à intensidade média de iluminação."
+      },
+      {
+        id: "5.2.4", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.2 Regressão Linear Simples",
+        topic: "R² e R² ajustado",
+        description: "Coeficiente de determinação: proporção da variância total explicada pelo modelo linear.",
+        status: "applied",
+        defaultUsage: "Métrica de avaliação do ajuste contínuo no modelo de regressão linear."
+      },
+      {
+        id: "5.2.5", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.2 Regressão Linear Simples",
+        topic: "Diagnóstico de resíduos",
+        description: "Verificação de normalidade, média zero e homocedasticidade dos erros.",
+        status: "applied",
+        defaultUsage: "Análise gráfica dos resíduos de predição do modelo linear."
+      },
+      {
+        id: "5.3.1", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.3 Regressão Linear Múltipla",
+        topic: "Equação matricial (β = (XᵀX)⁻¹Xᵀy)",
+        description: "Solução algébrica fechada para múltiplos regressores.",
+        status: "applied",
+        defaultUsage: "Implementação da solução normal analítica em NumPy para 784 variáveis preditoras."
+      },
+      {
+        id: "5.3.2", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.3 Regressão Linear Múltipla",
+        topic: "Multicolinearidade (VIF)",
+        description: "Correlação excessiva entre preditores que infla a variância dos coeficientes.",
+        status: "applied",
+        defaultUsage: "Pixels adjacentes em imagens são altamente correlacionados (multicolinearidade espacial)."
+      },
+      {
+        id: "5.3.3", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.3 Regressão Linear Múltipla",
+        topic: "Heterocedasticidade (Breusch-Pagan)",
+        description: "Variância não-constante dos resíduos ao longo das predições.",
+        status: "relevant",
+        defaultUsage: "Diagnóstico estatístico da variância de erro em modelos de regressão contínua."
+      },
+      {
+        id: "5.3.4", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.3 Regressão Linear Múltipla",
+        topic: "Autocorrelação (Durbin-Watson)",
+        description: "Correlação serial entre resíduos consecutivos.",
+        status: "relevant",
+        defaultUsage: "Relevante em dados ordenados espacialmente ou temporalmente."
+      },
+      {
+        id: "5.3.5", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.3 Regressão Linear Múltipla",
+        topic: "Seleção de variáveis (stepwise, AIC, BIC)",
+        description: "Critérios de penalização de complexidade para escolher subconjuntos ótimos de features.",
+        status: "relevant",
+        defaultUsage: "Seleção de pixels mais discriminativos para classificação rápida."
+      },
+      {
+        id: "5.4.1", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.4 Regressão Logística",
+        topic: "Função logística (sigmoid)",
+        description: "σ(z) = 1 / (1 + e^(-z)), mapeando a reta real para probabilidades no intervalo [0, 1].",
+        status: "applied",
+        defaultUsage: "Função de ativação para classificação binária ('é 5 ou não') e base da generalização Softmax."
+      },
+      {
+        id: "5.4.2", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.4 Regressão Logística",
+        topic: "Odds ratio e log-odds",
+        description: "Razão de chances e transformação logit ln(p / (1-p)) = W*X + b.",
+        status: "applied",
+        defaultUsage: "Interpretação dos logits de saída antes da aplicação da função Softmax."
+      },
+      {
+        id: "5.4.3", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.4 Regressão Logística",
+        topic: "Estimação por MLE",
+        description: "Ajuste de parâmetros via gradiente descendente na log-verossimilhança negativa.",
+        status: "applied",
+        defaultUsage: "Otimização de pesos da Regressão Logística Multiclasse com o otimizador L-BFGS."
+      },
+      {
+        id: "5.4.4", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.4 Regressão Logística",
+        topic: "Métricas de avaliação (acurácia, AUC-ROC)",
+        description: "Avaliação do poder de discriminação e calibração de probabilidades do modelo logístico.",
+        status: "applied",
+        defaultUsage: "Cálculo de acurácia global (92.6%) e matriz de confusão da Regressão Logística no MNIST."
+      },
+      {
+        id: "5.5.1", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Regressão Poisson (dados de contagem)",
+        description: "Modela variáveis dependentes com contagens não-negativas discretas.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável diretamente à classificação multiclasse do MNIST."
+      },
+      {
+        id: "5.5.2", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Regressão Ridge (L2)",
+        description: "Penalização quadrática ||W||² dos pesos para conter multicolinearidade e overfitting.",
+        status: "applied",
+        defaultUsage: "Regularização L2 (Weight Decay) aplicada aos pesos da Rede Neural MLP e SVM."
+      },
+      {
+        id: "5.5.3", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Regressão Lasso (L1)",
+        description: "Penalização por valor absoluto |W|, induzindo esparsidade e seleção automática de features.",
+        status: "applied",
+        defaultUsage: "Utilizado na seleção de pixels relevantes zerando coeficientes de pixels de borda sempre pretos."
+      },
+      {
+        id: "5.5.4", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Regressão ElasticNet",
+        description: "Combinação convexa balanceada entre penalidades L1 e L2.",
+        status: "relevant",
+        defaultUsage: "Alternativa equilibrada de regularização para alta dimensionalidade (784 features)."
+      },
+      {
+        id: "5.5.5", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Regressão Polinomial",
+        description: "Expansão de termos lineares em potências e produtos cruzados para capturar curvatura.",
+        status: "relevant",
+        defaultUsage: "Mapeamento polinomial de features equivalente ao kernel polinomial no SVM."
+      },
+      {
+        id: "5.5.6", section: "5. REGRESSÃO E CORRELAÇÃO", subsection: "5.5 Extensões de Regressão",
+        topic: "Splines e GAMs",
+        description: "Modelos Aditivos Generalizados e funções polinomiais por partes suaves.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável diretamente à estrutura de classificação direta de tensores de imagem."
+      },
+
+      // 6. PLANEJAMENTO DE EXPERIMENTOS (DOE)
+      {
+        id: "6.1.1", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.1 Princípios Básicos",
+        topic: "Aleatorização, repetição e controle",
+        description: "Princípios de Fisher para isolar variabilidade de fatores controlados e não-controlados.",
+        status: "applied",
+        defaultUsage: "Aleatorização no split estratificado e controle de sementes (random_state=42) para reprodutibilidade estrita."
+      },
+      {
+        id: "6.1.2", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.1 Princípios Básicos",
+        topic: "Variáveis de resposta, fatores e níveis",
+        description: "Estruturação de experimentos: Resposta = F1-Score; Fatores = Hiperparâmetros (C, n_estimators, lr).",
+        status: "applied",
+        defaultUsage: "Variação sistemática de pelo menos 2 hiperparâmetros por modelo conforme exigido no edital."
+      },
+      {
+        id: "6.1.3", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.1 Princípios Básicos",
+        topic: "Confundimento e bloqueio",
+        description: "Técnicas para eliminar variáveis de confusão (ex: vazamento entre treino e teste).",
+        status: "applied",
+        defaultUsage: "Bloqueio estrito de Data Leakage ajustando scalers apenas no split de treino."
+      },
+      {
+        id: "6.2.1", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.2 Delineamentos Experimentais",
+        topic: "Delineamento Completamente Casualizado (DCC)",
+        description: "Tratamentos atribuídos aleatoriamente às unidades experimentais homogêneas.",
+        status: "relevant",
+        defaultUsage: "Divisão aleatória das amostras de teste entre diferentes rodadas de validação."
+      },
+      {
+        id: "6.2.2", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.2 Delineamentos Experimentais",
+        topic: "Delineamento em Blocos Casualizados (DBC)",
+        description: "Controle de heterogeneidade por meio de agrupamento em blocos homogêneos.",
+        status: "applied",
+        defaultUsage: "Estratificação por classe (stratify=y): cada dígito 0 a 9 forma um bloco homogêneo no split."
+      },
+      {
+        id: "6.2.3", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.2 Delineamentos Experimentais",
+        topic: "Quadrado Latino",
+        description: "Delineamento com duplo bloqueio para controle de duas fontes de variabilidade.",
+        status: "not_applicable",
+        defaultUsage: "Não utilizado no fluxo padrão de Machine Learning supervisionado."
+      },
+      {
+        id: "6.3.1", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.3 Experimentos Fatoriais",
+        topic: "Fatorial 2ᵏ completo",
+        description: "Avaliação de k fatores em 2 níveis cada para medir efeitos principais e interações.",
+        status: "relevant",
+        defaultUsage: "Grade de hiperparâmetros (GridSearch) combinando níveis de C e Gamma no SVM."
+      },
+      {
+        id: "6.3.2", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.3 Experimentos Fatoriais",
+        topic: "Fatorial fracionado",
+        description: "Execução de uma fração das combinações fatoriais para triagem eficiente.",
+        status: "relevant",
+        defaultUsage: "Base para Random Search na otimização de hiperparâmetros de Deep Learning."
+      },
+      {
+        id: "6.3.3", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.3 Experimentos Fatoriais",
+        topic: "Interações entre fatores",
+        description: "O efeito de um hiperparâmetro depende do valor ajustado em outro hiperparâmetro.",
+        status: "applied",
+        defaultUsage: "Interação observada entre taxa de aprendizado e tamanho de lote no treinamento do MLP."
+      },
+      {
+        id: "6.4.1", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.4 Otimização e Superfície de Resposta",
+        topic: "Metodologia de superfície de resposta (RSM)",
+        description: "Modelagem matemática da superfície de resposta para localização do ponto ótimo.",
+        status: "relevant",
+        defaultUsage: "Mapeamento da superfície de perda da função de custo em relação aos pesos sinápticos."
+      },
+      {
+        id: "6.4.2", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.4 Otimização e Superfície de Resposta",
+        topic: "Delineamento Central Composto (CCD)",
+        description: "Delineamento experimental para ajuste de modelos quadráticos de segunda ordem.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao pipeline de redes neurais do projeto."
+      },
+      {
+        id: "6.4.3", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.4 Otimização e Superfície de Resposta",
+        topic: "Box-Behnken",
+        description: "Delineamento esférico econômico sem pontos nos vértices do cubo.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao projeto MNIST."
+      },
+      {
+        id: "6.5.1", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.5 Controle Estatístico de Qualidade",
+        topic: "Cartas de controle (X̄, R, S, p, c)",
+        description: "Gráficos com limites superior e inferior (LSC/LIC) para monitoramento de processos.",
+        status: "relevant",
+        defaultUsage: "Monitoramento contínuo de métricas de acurácia em produção para detecção de Concept Drift."
+      },
+      {
+        id: "6.5.2", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.5 Controle Estatístico de Qualidade",
+        topic: "Índices de capacidade (Cp, Cpk)",
+        description: "Razão entre a tolerância especificada do cliente e a variabilidade natural do processo (6σ).",
+        status: "not_applicable",
+        defaultUsage: "Específico de controle de processos industriais e manufatura."
+      },
+      {
+        id: "6.5.3", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.5 Controle Estatístico de Qualidade",
+        topic: "Análise de sistemas de medição (MSA/Gage R&R)",
+        description: "Avaliação de repetibilidade e reprodutibilidade de instrumentos de medição.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao contexto de inferência de visão computacional."
+      },
+      {
+        id: "6.5.4", section: "6. PLANEJAMENTO DE EXPERIMENTOS (DOE)", subsection: "6.5 Controle Estatístico de Qualidade",
+        topic: "Seis Sigma e DMAIC",
+        description: "Metodologia estruturada de melhoria de processos (Definir, Medir, Analisar, Melhorar, Controlar).",
+        status: "relevant",
+        defaultUsage: "Filosofia metodológica aplicada no ciclo iterativo de análise preditiva do projeto."
+      },
+
+      // 7. ESTATÍSTICA COMPUTACIONAL
+      {
+        id: "7.1.1", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.1 Geração de Números Aleatórios",
+        topic: "Geradores pseudoaleatórios (PRNGs)",
+        description: "Algoritmos determinísticos que produzem sequências com propriedades estatísticas de aleatoriedade.",
+        status: "applied",
+        defaultUsage: "Uso do Mersenne Twister (NumPy Random) para inicialização de pesos e embaralhamento de amostras."
+      },
+      {
+        id: "7.1.2", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.1 Geração de Números Aleatórios",
+        topic: "Semente (seed) e reprodutibilidade",
+        description: "Fixação do estado inicial do gerador pseudoaleatório para replicação idêntica de resultados.",
+        status: "applied",
+        defaultUsage: "Fixação rigorosa de `semente=42` (`random_state=42` e `tf.random.set_seed(42)`) em todo o código."
+      },
+      {
+        id: "7.1.3", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.1 Geração de Números Aleatórios",
+        topic: "Transformações inversas e aceitação-rejeição",
+        description: "Métodos para gerar variáveis aleatórias a partir de uniformes U(0, 1).",
+        status: "relevant",
+        defaultUsage: "Base teórica para a amostragem de distribuições gaussianas nos inicializadores de redes."
+      },
+      {
+        id: "7.2.1", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.2 Método de Monte Carlo",
+        topic: "Estimação por simulação",
+        description: "Aproximação de grandezas determinísticas ou integrais complexas via amostragem aleatória massiva.",
+        status: "applied",
+        defaultUsage: "Utilizado na inferência Monte Carlo Dropout para estimativa empírica de incerteza no teste OOD."
+      },
+      {
+        id: "7.2.2", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.2 Método de Monte Carlo",
+        topic: "Integração de Monte Carlo",
+        description: "Cálculo de integrais multidimensionais através da média amostral de funções avaliadas em pontos aleatórios.",
+        status: "relevant",
+        defaultUsage: "Fundamento do cálculo numérico de áreas em espaços multidimensionais R^784."
+      },
+      {
+        id: "7.2.3", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.2 Método de Monte Carlo",
+        topic: "Análise de risco e incerteza",
+        description: "Quantificação da probabilidade de falhas e eventos extremos em sistemas preditivos.",
+        status: "applied",
+        defaultUsage: "Avaliação do risco de erro com alta certeza (Falsa Certeza) em amostras fora de distribuição."
+      },
+      {
+        id: "7.3.1", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.3 Bootstrap e Reamostragem",
+        topic: "Bootstrap não-paramétrico",
+        description: "Reamostragem com reposição da base de treino para criar múltiplos estimadores independentes.",
+        status: "applied",
+        defaultUsage: "Núcleo do algoritmo Bagging na Random Forest: cada árvore é treinada em uma amostra bootstrap."
+      },
+      {
+        id: "7.3.2", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.3 Bootstrap e Reamostragem",
+        topic: "Bootstrap para IC e testes",
+        description: "Construção de intervalos de confiança empíricos via percentis de estimativas reamostradas.",
+        status: "applied",
+        defaultUsage: "Geração de intervalos de confiança para o F1-Score sem suposições paramétricas."
+      },
+      {
+        id: "7.3.3", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.3 Bootstrap e Reamostragem",
+        topic: "Jackknife",
+        description: "Reamostragem por omissão sistemática de uma amostra (Leave-One-Out) para estimar viés.",
+        status: "relevant",
+        defaultUsage: "Técnica clássica de estimação de viés em datasets moderados."
+      },
+      {
+        id: "7.3.4", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.3 Bootstrap e Reamostragem",
+        topic: "Permutation tests",
+        description: "Testes de hipótese exatos embaralhando os rótulos sob a hipótese nula de ausência de efeito.",
+        status: "relevant",
+        defaultUsage: "Validação de significância estatística de que o classificador aprendeu padrões reais e não ruído."
+      },
+      {
+        id: "7.4.1", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.4 Validação de Modelos",
+        topic: "Holdout (train/test split)",
+        description: "Particionamento dos dados em conjuntos disjuntos de Treino, Validação e Teste.",
+        status: "applied",
+        defaultUsage: "Divisão do MNIST em 70% Treino, 10% Validação e 20% Teste independente (Fase 2 do edital)."
+      },
+      {
+        id: "7.4.2", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.4 Validação de Modelos",
+        topic: "Validação cruzada k-fold",
+        description: "Partição em k blocos rotativos para avaliar robustez e variância do modelo.",
+        status: "applied",
+        defaultUsage: "Utilizado na validação cruzada dos hiperparâmetros dos modelos clássicos."
+      },
+      {
+        id: "7.4.3", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.4 Validação de Modelos",
+        topic: "Leave-one-out cross-validation (LOOCV)",
+        description: "Caso extremo de k-fold onde k = N amostras.",
+        status: "not_applicable",
+        defaultUsage: "Inviável computacionalmente para o MNIST devido ao volume de 70.000 amostras."
+      },
+      {
+        id: "7.4.4", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.4 Validação de Modelos",
+        topic: "Estratificação na amostragem",
+        description: "Preservação exata da proporção relativa de cada classe em todos os subconjuntos particionados.",
+        status: "applied",
+        defaultUsage: "Uso obrigatório de `stratify=y` em todas as divisões de treino, validação e teste."
+      },
+      {
+        id: "7.5.1", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.5 Otimização Numérica",
+        topic: "Gradiente descendente (batch, SGD, mini-batch)",
+        description: "Algoritmos iterativos de primeira ordem para convergência ao mínimo da função de custo.",
+        status: "applied",
+        defaultUsage: "Uso de Mini-batch SGD (batch_size=64) no treinamento das redes neurais e SGDClassifier como baseline."
+      },
+      {
+        id: "7.5.2", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.5 Otimização Numérica",
+        topic: "Momentum, RMSProp, Adam",
+        description: "Otimizadores adaptativos que combinam médias móveis exponenciais de gradientes e seus quadrados.",
+        status: "applied",
+        defaultUsage: "Compilação do MLP com o otimizador Adam (learning_rate=0.001, beta1=0.9, beta2=0.999)."
+      },
+      {
+        id: "7.5.3", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.5 Otimização Numérica",
+        topic: "Algoritmos de busca (grid search, random search)",
+        description: "Varredura no espaço discreto ou contínuo de hiperparâmetros.",
+        status: "applied",
+        defaultUsage: "Ajuste e calibração de hiperparâmetros (C, kernel, n_estimators, max_depth, lr)."
+      },
+      {
+        id: "7.5.4", section: "7. ESTATÍSTICA COMPUTACIONAL", subsection: "7.5 Otimização Numérica",
+        topic: "Otimização bayesiana de hiperparâmetros",
+        description: "Uso de Processos Gaussianos para guiar a busca em regiões mais promissoras da função objetivo.",
+        status: "relevant",
+        defaultUsage: "Metodologia avançada para sintonia fina de modelos complexos e Transformers."
+      },
+
+      // 8. ESTATÍSTICA MULTIVARIADA
+      {
+        id: "8.1.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.1 Análise de Componentes Principais (PCA)",
+        topic: "Covariância e correlação entre variáveis",
+        description: "Matriz 784x784 medindo a covariabilidade de intensidade entre todos os pares de pixels.",
+        status: "applied",
+        defaultUsage: "Cálculo da estrutura de covariância espacial dos dígitos manuscritos."
+      },
+      {
+        id: "8.1.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.1 Análise de Componentes Principais (PCA)",
+        topic: "Autovalores e autovetores da matriz de covariância",
+        description: "Eigendecomposição para encontrar eixos ortogonais de máxima dispersão estatística.",
+        status: "applied",
+        defaultUsage: "Projeção linear ótima dos dados do MNIST em componentes principais (Eigen-digits)."
+      },
+      {
+        id: "8.1.3", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.1 Análise de Componentes Principais (PCA)",
+        topic: "Variância explicada acumulada",
+        description: "Soma cumulativa dos autovalores normalizados para escolher o número de componentes retidos.",
+        status: "applied",
+        defaultUsage: "Gráfico de cotovelo demonstrando que ~50 a 100 componentes principais explicam mais de 90% da variância do MNIST."
+      },
+      {
+        id: "8.1.4", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.1 Análise de Componentes Principais (PCA)",
+        topic: "Biplot e interpretação dos componentes",
+        description: "Visualização conjunta de observações e projeções de variáveis em 2D.",
+        status: "relevant",
+        defaultUsage: "Visualização bidimensional da separabilidade das 10 classes de dígitos."
+      },
+      {
+        id: "8.2.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.2 Análise Fatorial",
+        topic: "Modelo fatorial exploratório",
+        description: "Modelagem de variáveis latentes não-observáveis que explicam correlações observadas.",
+        status: "relevant",
+        defaultUsage: "Interpretação dos traços essenciais dos dígitos (laços, retas, curvas) como fatores latentes."
+      },
+      {
+        id: "8.2.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.2 Análise Fatorial",
+        topic: "Rotação (Varimax, Promax)",
+        description: "Rotação ortogonal ou oblíqua de eixos fatoriais para facilitar a interpretabilidade.",
+        status: "relevant",
+        defaultUsage: "Otimização de interpretabilidade das cargas fatoriais nos pixels."
+      },
+      {
+        id: "8.2.3", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.2 Análise Fatorial",
+        topic: "Comunalidades e cargas fatoriais",
+        description: "Proporção de variância de cada pixel explicada pelos fatores latentes comuns.",
+        status: "relevant",
+        defaultUsage: "Identificação dos pixels centrais que concentram maior informação discriminativa."
+      },
+      {
+        id: "8.3.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.3 Análise de Agrupamentos (Clustering)",
+        topic: "K-means e K-medoids",
+        description: "Particionamento não-supervisionado em K grupos minimizando a variância intra-cluster (inércia).",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/agrupamento_kmeans.py` particionando os 784 pixels em K=10 centróides visuais."
+      },
+      {
+        id: "8.3.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.3 Análise de Agrupamentos (Clustering)",
+        topic: "Clustering hierárquico (dendrograma)",
+        description: "Agrupamento aglomerativo em árvore com base em matriz de distâncias.",
+        status: "relevant",
+        defaultUsage: "Construção de dendrograma mostrando agrupamento natural entre dígitos visualmente parecidos (ex: 4 e 9, 3 e 5)."
+      },
+      {
+        id: "8.3.3", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.3 Análise de Agrupamentos (Clustering)",
+        topic: "DBSCAN",
+        description: "Clusterização baseada em densidade capaz de encontrar formas não-esféricas e isolar ruído.",
+        status: "relevant",
+        defaultUsage: "Detecção não-supervisionada de imagens atípicas ou desenhos fora de padrão."
+      },
+      {
+        id: "8.3.4", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.3 Análise de Agrupamentos (Clustering)",
+        topic: "Métricas de validação (silhouette, Davies-Bouldin)",
+        description: "Avaliação quantitativa da coesão interna e separação dos clusters formados.",
+        status: "applied",
+        defaultUsage: "Cálculo do Silhouette Score para medir a qualidade dos 10 agrupamentos do K-Means."
+      },
+      {
+        id: "8.4.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.4 Análise Discriminante",
+        topic: "Linear Discriminant Analysis (LDA)",
+        description: "Projeção supervisionada que maximiza a dispersão entre classes e minimiza a dispersão intra-classe.",
+        status: "applied",
+        defaultUsage: "Redução linear supervisionada de 784 features para 9 componentes discriminantes."
+      },
+      {
+        id: "8.4.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.4 Análise Discriminante",
+        topic: "Quadratic Discriminant Analysis (QDA)",
+        description: "Análise discriminante com matrizes de covariância distintas por classe (fronteira quadrática).",
+        status: "relevant",
+        defaultUsage: "Classificação considerando que cada dígito manuscrito possui sua própria dispersão espacial."
+      },
+      {
+        id: "8.4.3", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.4 Análise Discriminante",
+        topic: "Distância de Mahalanobis",
+        description: "Distância ponderada pela covariância estatística das variáveis.",
+        status: "applied",
+        defaultUsage: "Detecção de amostras Out-of-Distribution (OOD) calculando a distância de Mahalanobis aos centróides das classes conhecidas."
+      },
+      {
+        id: "8.5.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.5 Análise de Correspondência",
+        topic: "Tabelas de contingência",
+        description: "Tabelas cruzadas de frequência entre duas variáveis categóricas.",
+        status: "applied",
+        defaultUsage: "Estrutura fundamental da Matriz de Confusão 10x10 entre rótulos reais e previstos."
+      },
+      {
+        id: "8.5.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.5 Análise de Correspondência",
+        topic: "Análise de correspondência simples e múltipla",
+        description: "Técnica de redução de dimensionalidade para tabelas de contingência.",
+        status: "relevant",
+        defaultUsage: "Mapeamento bidimensional da associação entre classes reais e previsões errôneas."
+      },
+      {
+        id: "8.6.1", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.6 Modelos de Equações Estruturais (SEM)",
+        topic: "Path analysis",
+        description: "Modelagem de relações causais lineares diretas e indiretas.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à tarefa de classificação de padrões em imagens."
+      },
+      {
+        id: "8.6.2", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.6 Modelos de Equações Estruturais (SEM)",
+        topic: "Modelos de mensuração e estrutural",
+        description: "Combina análise fatorial confirmatória com modelos de regressão estrutural.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao escopo de Machine Learning deste projeto."
+      },
+      {
+        id: "8.6.3", section: "8. ESTATÍSTICA MULTIVARIADA", subsection: "8.6 Modelos de Equações Estruturais (SEM)",
+        topic: "Confirmatory Factor Analysis (CFA)",
+        description: "Testa hipóteses a priori sobre a estrutura fatorial de um conjunto de variáveis.",
+        status: "not_applicable",
+        defaultUsage: "Específico de psicometria e ciências sociais quantitativas."
+      },
+
+      // 9. SÉRIES TEMPORAIS
+      {
+        id: "9.1.1", section: "9. SÉRIES TEMPORAIS", subsection: "9.1 Componentes de Séries Temporais",
+        topic: "Tendência, sazonalidade, ciclo e ruído",
+        description: "Decomposição de sequências temporais em padrões fundamentais.",
+        status: "relevant",
+        defaultUsage: "Análise da tendência de queda da perda de treino (loss) ao longo das épocas."
+      },
+      {
+        id: "9.1.2", section: "9. SÉRIES TEMPORAIS", subsection: "9.1 Componentes de Séries Temporais",
+        topic: "Decomposição aditiva e multiplicativa",
+        description: "Y(t) = T(t) + S(t) + R(t) ou Y(t) = T(t) * S(t) * R(t).",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à base de dados de dígitos estáticos."
+      },
+      {
+        id: "9.2.1", section: "9. SÉRIES TEMPORAIS", subsection: "9.2 Estacionariedade",
+        topic: "Processos estacionários e não-estacionários",
+        description: "Processos cuja média, variância e autocovariância são constantes ao longo do tempo.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável diretamente ao dataset MNIST."
+      },
+      {
+        id: "9.2.2", section: "9. SÉRIES TEMPORAIS", subsection: "9.2 Estacionariedade",
+        topic: "Teste de raiz unitária (ADF, KPSS)",
+        description: "Testes estatísticos para detectar presença de raiz unitária e não-estacionariedade.",
+        status: "not_applicable",
+        defaultUsage: "Específico de séries temporais econométricas."
+      },
+      {
+        id: "9.2.3", section: "9. SÉRIES TEMPORAIS", subsection: "9.2 Estacionariedade",
+        topic: "Diferenciação para estacionarização",
+        description: "Aplicação do operador de diferença ΔY(t) = Y(t) - Y(t-1).",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao processamento de imagens estáticas."
+      },
+      {
+        id: "9.3.1", section: "9. SÉRIES TEMPORAIS", subsection: "9.3 Modelos Clássicos",
+        topic: "Médias móveis (MA)",
+        description: "Suavização e modelagem baseada em combinações lineares de erros passados.",
+        status: "applied",
+        defaultUsage: "Cálculo de média móvel exponencial de gradientes no otimizador Adam e Momentum."
+      },
+      {
+        id: "9.3.2", section: "9. SÉRIES TEMPORAIS", subsection: "9.3 Modelos Clássicos",
+        topic: "Suavização exponencial (SES, Holt, Holt-Winters)",
+        description: "Ponderação decrescente exponencial para dados históricos.",
+        status: "relevant",
+        defaultUsage: "Algoritmo de atenuação exponencial de gradientes nas redes neurais."
+      },
+      {
+        id: "9.3.3", section: "9. SÉRIES TEMPORAIS", subsection: "9.3 Modelos Clássicos",
+        topic: "Modelos ARIMA (p,d,q)",
+        description: "Modelos autoregressivos integrados de médias móveis.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao reconhecimento de imagens."
+      },
+      {
+        id: "9.3.4", section: "9. SÉRIES TEMPORAIS", subsection: "9.3 Modelos Clássicos",
+        topic: "SARIMA para sazonalidade",
+        description: "Extensão do ARIMA com componentes sazonais sazonais multiplicativos.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável a este projeto."
+      },
+      {
+        id: "9.4.1", section: "9. SÉRIES TEMPORAIS", subsection: "9.4 Modelos Avançados",
+        topic: "GARCH (volatilidade)",
+        description: "Modelagem de heterocedasticidade condicional autorregressiva para variância variável.",
+        status: "not_applicable",
+        defaultUsage: "Específico de séries temporais financeiras e análise de risco de mercado."
+      },
+      {
+        id: "9.4.2", section: "9. SÉRIES TEMPORAIS", subsection: "9.4 Modelos Avançados",
+        topic: "VAR (vetorial autoregressivo)",
+        description: "Sistema linear multivariado para modelar relações dinâmicas entre séries simultâneas.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao MNIST."
+      },
+      {
+        id: "9.4.3", section: "9. SÉRIES TEMPORAIS", subsection: "9.4 Modelos Avançados",
+        topic: "Prophet (Facebook/Meta)",
+        description: "Modelo aditivo generalizado com tendência por partes e efeitos de feriados.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao escopo de visão computacional."
+      },
+      {
+        id: "9.4.4", section: "9. SÉRIES TEMPORAIS", subsection: "9.4 Modelos Avançados",
+        topic: "LSTM para séries temporais",
+        description: "Redes neurais recorrentes com células de memória para dependências sequenciais de longo prazo.",
+        status: "relevant",
+        defaultUsage: "Arquitetura neural alternativa para processamento de sequências temporais de traços de escrita."
+      },
+      {
+        id: "9.5.1", section: "9. SÉRIES TEMPORAIS", subsection: "9.5 Avaliação de Modelos de Previsão",
+        topic: "MAE, RMSE, MAPE",
+        description: "Métricas de erro em valores contínuos (Erro Médio Absoluto, Raiz do Erro Quadrático Médio).",
+        status: "applied",
+        defaultUsage: "Utilizado na avaliação do modelo de Regressão Linear no módulo `src/modelos/regressao_linear.py`."
+      },
+      {
+        id: "9.5.2", section: "9. SÉRIES TEMPORAIS", subsection: "9.5 Avaliação de Modelos de Previsão",
+        topic: "Critérios de informação (AIC, BIC)",
+        description: "Penalização matemática da verossimilhança pelo número de parâmetros ajustados.",
+        status: "relevant",
+        defaultUsage: "Seleção do número ótimo de clusters no K-Means e árvores na Random Forest."
+      },
+      {
+        id: "9.5.3", section: "9. SÉRIES TEMPORAIS", subsection: "9.5 Avaliação de Modelos de Previsão",
+        topic: "Backtesting e janelas deslizantes",
+        description: "Validação cruzada temporal respeitando a causalidade cronológica.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à base transversal (cross-sectional) do MNIST."
+      },
+
+      // 10. ESTATÍSTICA BAYESIANA
+      {
+        id: "10.1.1", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.1 Fundamentos Bayesianos",
+        topic: "Prior, likelihood e posterior",
+        description: "P(θ|X) ∝ P(X|θ) * P(θ), atualização contínua de crenças com dados empíricos.",
+        status: "applied",
+        defaultUsage: "Cálculo da probabilidade a posteriori de cada classe no classificador Naive Bayes."
+      },
+      {
+        id: "10.1.2", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.1 Fundamentos Bayesianos",
+        topic: "Regra de Bayes para inferência",
+        description: "Inversão probabilística formal para tomada de decisão em incerteza.",
+        status: "applied",
+        defaultUsage: "Fórmula central para atribuir a classe mais provável c* = argmax P(c) * ∏ P(x_i | c)."
+      },
+      {
+        id: "10.1.3", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.1 Fundamentos Bayesianos",
+        topic: "Priori conjugada",
+        description: "Família de distribuições a priori que resulta em uma distribuição a posteriori da mesma família.",
+        status: "relevant",
+        defaultUsage: "Propriedade utilizada em modelos bayesianos analíticos com distribuições gaussianas."
+      },
+      {
+        id: "10.1.4", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.1 Fundamentos Bayesianos",
+        topic: "Priori informativa vs. não-informativa (Jeffreys)",
+        description: "Definição de premissas iniciais neutras ou embasadas em conhecimento de domínio.",
+        status: "applied",
+        defaultUsage: "Uso de priori informativa baseada nas frequências relativas reais de dígitos no treino."
+      },
+      {
+        id: "10.2.1", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.2 Estimação Bayesiana",
+        topic: "Estimativa MAP (Maximum A Posteriori)",
+        description: "Moda da distribuição posterior, equivalendo à regularização L2 com priori gaussiana.",
+        status: "applied",
+        defaultUsage: "A estimativa dos pesos de redes neurais com regularização L2 (Weight Decay) é matematicamente equivalente à estimativa MAP."
+      },
+      {
+        id: "10.2.2", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.2 Estimação Bayesiana",
+        topic: "Estimativa por média posterior",
+        description: "Média ponderada da distribuição de parâmetros considerando incerteza.",
+        status: "relevant",
+        defaultUsage: "Predição Bayesiana por ensemble de pesos (Bayesian Model Averaging)."
+      },
+      {
+        id: "10.2.3", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.2 Estimação Bayesiana",
+        topic: "Intervalos de credibilidade (HDI)",
+        description: "Intervalo de maior densidade posterior contendo 95% da massa de probabilidade do parâmetro.",
+        status: "relevant",
+        defaultUsage: "Quantificação da incerteza dos parâmetros em modelos bayesianos."
+      },
+      {
+        id: "10.3.1", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.3 Métodos Computacionais Bayesianos",
+        topic: "Markov Chain Monte Carlo (MCMC)",
+        description: "Amostragem em cadeias ergódicas para simular distribuições a posteriori intratáveis.",
+        status: "relevant",
+        defaultUsage: "Método computacional para redes neurais bayesianas profundas."
+      },
+      {
+        id: "10.3.2", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.3 Métodos Computacionais Bayesianos",
+        topic: "Metropolis-Hastings",
+        description: "Algoritmo MCMC clássico com critério de aceitação/rejeição de propostas.",
+        status: "relevant",
+        defaultUsage: "Base para inferência em modelos probabilísticos não-lineares."
+      },
+      {
+        id: "10.3.3", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.3 Métodos Computacionais Bayesianos",
+        topic: "Gibbs Sampling",
+        description: "Amostragem MCMC condicionando sucessivamente em cada variável individual.",
+        status: "relevant",
+        defaultUsage: "Utilizado em Restricted Boltzmann Machines (RBM) aplicadas a imagens."
+      },
+      {
+        id: "10.3.4", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.3 Métodos Computacionais Bayesianos",
+        topic: "Hamiltonian Monte Carlo (HMC)",
+        description: "Amostragem MCMC com dinâmica hamiltoniana que explora eficientemente altas dimensões.",
+        status: "relevant",
+        defaultUsage: "Amostrador de alta eficiência para espaços de pesos de grande porte."
+      },
+      {
+        id: "10.3.5", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.3 Métodos Computacionais Bayesianos",
+        topic: "Variational Inference",
+        description: "Aproximação de distribuições complexas por uma família tratável otimizada via gradiente.",
+        status: "relevant",
+        defaultUsage: "Princípio fundamental dos Variational Autoencoders (VAE) em visão computacional."
+      },
+      {
+        id: "10.4.1", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.4 Modelos Bayesianos Aplicados",
+        topic: "Modelos hierárquicos (multinível)",
+        description: "Modelos com parâmetros estruturados em múltiplos níveis de agregação.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à estrutura de instâncias independentes do MNIST."
+      },
+      {
+        id: "10.4.2", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.4 Modelos Bayesianos Aplicados",
+        topic: "Regressão bayesiana",
+        description: "Regressão com distribuições de probabilidade completas atribuídas aos coeficientes.",
+        status: "relevant",
+        defaultUsage: "Alternativa probabilística para estimativa de incerteza em regressão."
+      },
+      {
+        id: "10.4.3", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.4 Modelos Bayesianos Aplicados",
+        topic: "Classificação naive Bayes",
+        description: "Classificador probabilístico baseado na regra de Bayes com hipótese de independência condicional dos pixels.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/naive_bayes.py` como benchmark probabilístico do projeto."
+      },
+      {
+        id: "10.4.4", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.4 Modelos Bayesianos Aplicados",
+        topic: "Modelos de mistura (Gaussian Mixture Models)",
+        description: "Combinação convexa de distribuições gaussianas com pesos latentes ajustados por EM.",
+        status: "relevant",
+        defaultUsage: "Extensão probabilística do K-Means para modelar classes de dígitos com variâncias elipsoidais."
+      },
+      {
+        id: "10.4.5", section: "10. ESTATÍSTICA BAYESIANA", subsection: "10.4 Modelos Bayesianos Aplicados",
+        topic: "Processos Gaussianos",
+        description: "Distribuições não-paramétricas sobre funções indexadas por um kernel de covariância.",
+        status: "relevant",
+        defaultUsage: "Utilizado na otimização bayesiana de hiperparâmetros de modelos de IA."
+      },
+
+      // 11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA
+      {
+        id: "11.1.1", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.1 Fundamentos",
+        topic: "Função de perda (loss function)",
+        description: "Medida quantitativa de discrepância entre o valor previsto e o rótulo verdadeiro.",
+        status: "applied",
+        defaultUsage: "Implementação da função de perda Sparse Categorical Cross-Entropy para otimização da rede neural."
+      },
+      {
+        id: "11.1.2", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.1 Fundamentos",
+        topic: "Risco empírico e risco esperado",
+        description: "Minimização do erro na base de treino (Risco Empírico) como aproximação do erro populacional real.",
+        status: "applied",
+        defaultUsage: "Princípio do Empirical Risk Minimization (ERM) norteando todo o treinamento supervisionado."
+      },
+      {
+        id: "11.1.3", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.1 Fundamentos",
+        topic: "Bias-variance tradeoff",
+        description: "Balanço fundamental entre o erro de simplificação do modelo (viés) e sensibilidade a variações de treino (variância).",
+        status: "applied",
+        defaultUsage: "Controle de profundidade (max_depth) em árvores e número de neurônios no MLP para evitar under/overfitting."
+      },
+      {
+        id: "11.1.4", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.1 Fundamentos",
+        topic: "Overfitting, underfitting e regularização",
+        description: "Técnicas para conter sobreajuste ao ruído de treino mantendo boa generalização em teste.",
+        status: "applied",
+        defaultUsage: "Uso de Dropout (0.2), Early Stopping e regularização L2 nos classificadores do projeto."
+      },
+      {
+        id: "11.1.5", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.1 Fundamentos",
+        topic: "Maldição da dimensionalidade",
+        description: "O volume do espaço cresce exponencialmente com o número de features (784 dimensões), tornando dados esparsos.",
+        status: "applied",
+        defaultUsage: "Análise do impacto da alta dimensionalidade (784 pixels) no cálculo de distâncias euclidianas no KNN e SVM."
+      },
+      {
+        id: "11.2.1", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.2 Métricas de Avaliação",
+        topic: "Classificação: acurácia, precisão, recall, F1-score",
+        description: "Quarteto fundamental de métricas para avaliação diagnóstica de classificadores.",
+        status: "applied",
+        defaultUsage: "Cálculo obrigatório das 4 métricas consolidadas em tabela comparativa (Fase 4 do edital)."
+      },
+      {
+        id: "11.2.2", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.2 Métricas de Avaliação",
+        topic: "Matriz de confusão",
+        description: "Tabela cruzada 10x10 que mapeia acertos diagonais e erros fora da diagonal entre os 10 dígitos.",
+        status: "applied",
+        defaultUsage: "Plotagem obrigatória de mapas de calor 10x10 com Seaborn para todos os modelos avaliados."
+      },
+      {
+        id: "11.2.3", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.2 Métricas de Avaliação",
+        topic: "Curva ROC e AUC",
+        description: "Taxa de Verdadeiro Positivo vs Falso Positivo ao variar o limiar de corte, e área sob a curva.",
+        status: "applied",
+        defaultUsage: "Cálculo da AUC-ROC One-vs-Rest para avaliação multiclasse das probabilidades Softmax."
+      },
+      {
+        id: "11.2.4", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.2 Métricas de Avaliação",
+        topic: "Classificação multiclasse (macro, micro, weighted)",
+        description: "Mecanismos de agregação de métricas em problemas com 3 ou mais classes.",
+        status: "applied",
+        defaultUsage: "Uso do método 'weighted' (médias ponderadas pelo suporte) conforme especificação do edital."
+      },
+      {
+        id: "11.2.5", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.2 Métricas de Avaliação",
+        topic: "Regressão: MAE, MSE, RMSE, R²",
+        description: "Métricas contínuas de erro quadrático e absoluto.",
+        status: "applied",
+        defaultUsage: "Avaliação quantitativa do módulo de regressão linear contínua."
+      },
+      {
+        id: "11.3.1", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.3 Modelos Discriminativos",
+        topic: "Regressão logística (como classificador)",
+        description: "Modelo linear generalizado com função de ligação logit/softmax.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/regressao_logistica.py` atingindo ~92.6% de acurácia."
+      },
+      {
+        id: "11.3.2", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.3 Modelos Discriminativos",
+        topic: "Máquinas de Vetores de Suporte (SVM)",
+        description: "Maximização de margem de separação geométrica com projeção em alta dimensão via Kernel Trick.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/maquina_vetores_suporte.py` com Kernel RBF atingindo ~97.8%."
+      },
+      {
+        id: "11.3.3", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.3 Modelos Discriminativos",
+        topic: "Árvores de Decisão e Random Forests",
+        description: "Divisão recursiva por ganho de informação (Gini/Entropia) e agregação por comitê de árvores descorrelacionadas.",
+        status: "applied",
+        defaultUsage: "Implementados em `src/modelos/arvore_decisao.py` e `src/modelos/floresta_aleatoria.py` (~96.8%)."
+      },
+      {
+        id: "11.3.4", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.3 Modelos Discriminativos",
+        topic: "Gradient Boosting (XGBoost, LightGBM)",
+        description: "Ensemble sequencial que treina novas árvores para ajustar os resíduos do gradiente dos estimadores anteriores.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/impulsionamento_gradiente.py` (~96.2%)."
+      },
+      {
+        id: "11.3.5", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.3 Modelos Discriminativos",
+        topic: "K-Nearest Neighbors (KNN)",
+        description: "Classificador preguiçoso (*lazy learning*) baseado no voto das k instâncias mais próximas no espaço métrico.",
+        status: "applied",
+        defaultUsage: "Implementado no módulo `src/modelos/k_vizinhos_proximos.py` com k=5 e pesos ponderados por distância."
+      },
+      {
+        id: "11.4.1", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Perceptron e função de ativação",
+        description: "Unidade básica de computação neural que calcula combinações lineares seguidas de uma ativação não-linear.",
+        status: "applied",
+        defaultUsage: "Implementado do zero em `src/modelos/perceptron_manual.py` com demonstração do limite da porta XOR."
+      },
+      {
+        id: "11.4.2", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Função de perda e backpropagation",
+        description: "Propagação reversa do erro via regra da cadeia para atualização ótima de todos os pesos da rede.",
+        status: "applied",
+        defaultUsage: "Núcleo de aprendizado do modelo MLP (`src/modelos/rede_neural_profunda.py`)."
+      },
+      {
+        id: "11.4.3", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Inicialização de pesos (Xavier, He)",
+        description: "Calibração da variância inicial dos pesos para evitar explosão ou desvanecimento de gradientes.",
+        status: "applied",
+        defaultUsage: "Uso de He Normal Initialization com ativações ReLU e Xavier com ativações Softmax."
+      },
+      {
+        id: "11.4.4", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Funções de ativação (ReLU, Sigmoid, Softmax, Tanh)",
+        description: "Transformações não-lineares essenciais para permitir o aprendizado de fronteiras de decisão complexas.",
+        status: "applied",
+        defaultUsage: "Uso de ReLU nas camadas ocultas (128 e 64 neurônios) e Softmax na camada de saída com 10 classes."
+      },
+      {
+        id: "11.4.5", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Normalização (Batch Norm, Layer Norm)",
+        description: "Padronização das ativações intermediárias para estabilização de gradientes durante o treinamento.",
+        status: "applied",
+        defaultUsage: "Uso de Layer Normalization na arquitetura Vision Transformer (ViT)."
+      },
+      {
+        id: "11.4.6", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Dropout como regularização",
+        description: "Desativação estocástica de neurônios durante o treino, simulando um ensemble de sub-redes.",
+        status: "applied",
+        defaultUsage: "Aplicação de Dropout(0.2) entre as camadas densas do MLP para conter sobreajuste."
+      },
+      {
+        id: "11.4.7", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.4 Redes Neurais (base estatística)",
+        topic: "Gradiente descendente e otimizadores",
+        description: "Regras dinâmicas de atualização dos pesos baseadas em gradientes estocásticos.",
+        status: "applied",
+        defaultUsage: "Uso de Adam (Adaptive Moment Estimation) com learning_rate=0.001."
+      },
+      {
+        id: "11.5.1", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.5 Aprendizado Não-Supervisionado",
+        topic: "Redução de dimensionalidade (PCA, t-SNE, UMAP)",
+        description: "Mapeamento não-linear de variedades para projeção e visualização de dados complexos em 2D/3D.",
+        status: "applied",
+        defaultUsage: "Visualização das representações latentes dos 10 dígitos através de projeções de baixa dimensão."
+      },
+      {
+        id: "11.5.2", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.5 Aprendizado Não-Supervisionado",
+        topic: "Autoencoders",
+        description: "Redes neurais com gargalo (bottleneck) que aprendem representações comprimidas dos dados.",
+        status: "relevant",
+        defaultUsage: "Compressão e desruidificação de imagens manuscritas antes da classificação."
+      },
+      {
+        id: "11.5.3", section: "11. APRENDIZADO DE MÁQUINA — BASE ESTATÍSTICA", subsection: "11.5 Aprendizado Não-Supervisionado",
+        topic: "Modelos generativos (VAE, GANs)",
+        description: "Modelos probabilísticos capazes de gerar novas amostras sintéticas de dígitos manuscritos realistas.",
+        status: "relevant",
+        defaultUsage: "Fundamentação teórica para geração de dados sintéticos para ampliação de dataset (Data Augmentation)."
+      },
+
+      // 12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)
+      {
+        id: "12.1.1", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.1 Fundamentos",
+        topic: "Função de sobrevivência S(t)",
+        description: "Probabilidade de uma unidade ou indivíduo sobreviver além de um tempo t: S(t) = P(T > t).",
+        status: "not_applicable",
+        defaultUsage: "Específico de modelagem de tempo até evento (Time-to-Event), não aplicável à classificação MNIST."
+      },
+      {
+        id: "12.1.2", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.1 Fundamentos",
+        topic: "Função de risco (hazard) h(t)",
+        description: "Taxa instantânea de ocorrência do evento no instante t, dado que sobreviveu até t.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao reconhecimento de padrões estáticos em matrizes de imagens."
+      },
+      {
+        id: "12.1.3", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.1 Fundamentos",
+        topic: "Censura (à direita, à esquerda, intervalar)",
+        description: "Ocorrência de observações incompletas onde o evento de interesse não foi observado até o término do estudo.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao dataset completamente rotulado e observado do MNIST."
+      },
+      {
+        id: "12.2.1", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.2 Estimação Não-Paramétrica",
+        topic: "Estimador de Kaplan-Meier",
+        description: "Curva de sobrevivência empírica não-paramétrica em degraus que acomoda dados censurados.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao escopo de Machine Learning deste projeto."
+      },
+      {
+        id: "12.2.2", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.2 Estimação Não-Paramétrica",
+        topic: "Teste de log-rank",
+        description: "Teste não-paramétrico para comparar duas ou mais curvas de sobrevivência estimadas.",
+        status: "not_applicable",
+        defaultUsage: "Específico de ensaios clínicos e análise de confiabilidade industrial."
+      },
+      {
+        id: "12.3.1", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.3 Modelos Paramétricos",
+        topic: "Distribuição Weibull (análise de falhas)",
+        description: "Distribuição com taxa de falhas crescente, decrescente ou constante (curva da banheira).",
+        status: "not_applicable",
+        defaultUsage: "Específico de engenharia de confiabilidade de hardware."
+      },
+      {
+        id: "12.3.2", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.3 Modelos Paramétricos",
+        topic: "Distribuição Exponencial",
+        description: "Modelo de taxa de risco constante ao longo do tempo (ausência de memória).",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao projeto MNIST."
+      },
+      {
+        id: "12.3.3", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.3 Modelos Paramétricos",
+        topic: "MTBF e MTTF",
+        description: "Tempo Médio Entre Falhas (Mean Time Between Failures) e Tempo Médio Até Falha.",
+        status: "not_applicable",
+        defaultUsage: "Métricas exclusivas de manutenção industrial e confiabilidade de componentes físicos."
+      },
+      {
+        id: "12.4.1", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.4 Modelos Semiparamétricos",
+        topic: "Modelo de Cox (riscos proporcionais)",
+        description: "Modelo semi-paramétrico que avalia o impacto de covariáveis sobre a taxa de risco basal h₀(t).",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável à tarefa de classificação supervisionada de dígitos."
+      },
+      {
+        id: "12.4.2", section: "12. ANÁLISE DE SOBREVIVÊNCIA (CONFIABILIDADE)", subsection: "12.4 Modelos Semiparamétricos",
+        topic: "Variáveis tempo-dependentes",
+        description: "Extensão do modelo de Cox para covariáveis cujos valores se alteram ao longo do tempo de acompanhamento.",
+        status: "not_applicable",
+        defaultUsage: "Não aplicável ao contexto deste projeto."
+      }
+    ];
+
+    // APPLICATION STATE
+    let filtroAtual = 'all';
+    let termoBusca = '';
+    let topicoSelecionadoId = null;
+
+    // LOCAL STORAGE KEY
+    const STORAGE_PREFIX = "treinarminist_usage_";
+    const STATUS_STORAGE_PREFIX = "treinarminist_status_";
+
+    // INIT FUNCTION
+    function inicializarApp() {
+      // Carregar status personalizados se existirem
+      TOPICOS_ANALISE_ESTATISTICA.forEach(t => {
+        const customStatus = localStorage.getItem(STATUS_STORAGE_PREFIX + t.id);
+        if (customStatus) {
+          t.status = customStatus;
+        }
+      });
+
+      renderizarArvore();
+      atualizarEstatisticas();
+      configurarEventos();
+
+      // Selecionar o primeiro tópico aplicado por padrão
+      const primeiroAplicado = TOPICOS_ANALISE_ESTATISTICA.find(t => t.status === 'applied') || TOPICOS_ANALISE_ESTATISTICA[0];
+      if (primeiroAplicado) {
+        selecionarTopico(primeiroAplicado.id);
+      }
+    }
+
+    // RENDER TREE
+    function renderizarArvore() {
+      const container = document.getElementById('sidebar-tree');
+      container.innerHTML = '';
+
+      // Agrupar tópicos por Seção e Subseção
+      const secoesMap = new Map();
+      TOPICOS_ANALISE_ESTATISTICA.forEach(item => {
+        if (!secoesMap.has(item.section)) {
+          secoesMap.set(item.section, new Map());
+        }
+        const subsecMap = secoesMap.get(item.section);
+        if (!subsecMap.has(item.subsection)) {
+          subsecMap.set(item.subsection, []);
+        }
+        subsecMap.get(item.subsection).push(item);
+      });
+
+      secoesMap.forEach((subsecoes, sectionTitle) => {
+        // Filtrar tópicos da seção
+        let totalNaSecao = 0;
+        let aplicadosNaSecao = 0;
+        let temItemVisivel = false;
+
+        const sectionCard = document.createElement('div');
+        sectionCard.className = 'section-card open';
+
+        const sectionHeader = document.createElement('div');
+        sectionHeader.className = 'section-header';
+        
+        const sectionContent = document.createElement('div');
+        sectionContent.className = 'section-content';
+
+        subsecoes.forEach((topicos, subsecTitle) => {
+          const subsecBlock = document.createElement('div');
+          subsecBlock.className = 'subsection-block';
+
+          const subsecHeader = document.createElement('div');
+          subsecHeader.className = 'subsection-title';
+          subsecHeader.textContent = subsecTitle;
+          subsecBlock.appendChild(subsecHeader);
+
+          let topicosVisiveisNaSubsec = 0;
+
+          topicos.forEach(topico => {
+            totalNaSecao++;
+            if (topico.status === 'applied') aplicadosNaSecao++;
+
+            // Verificar filtros
+            const atendeFiltro = (filtroAtual === 'all') || (topico.status === filtroAtual);
+            const atendeBusca = termoBusca === '' || 
+                                topico.topic.toLowerCase().includes(termoBusca) || 
+                                topico.description.toLowerCase().includes(termoBusca) ||
+                                topico.subsection.toLowerCase().includes(termoBusca);
+
+            if (atendeFiltro && atendeBusca) {
+              temItemVisivel = true;
+              topicosVisiveisNaSubsec++;
+
+              const itemEl = document.createElement('div');
+              itemEl.className = `topic-item ${topico.id === topicoSelecionadoId ? 'active' : ''}`;
+              itemEl.id = `tree-item-${topico.id}`;
+              itemEl.onclick = () => selecionarTopico(topico.id);
+
+              itemEl.innerHTML = `
+                <span>${topico.topic}</span>
+                <span class="status-dot ${topico.status}" title="${getStatusLabel(topico.status)}"></span>
+              `;
+              subsecBlock.appendChild(itemEl);
+            }
+          });
+
+          if (topicosVisiveisNaSubsec > 0) {
+            sectionContent.appendChild(subsecBlock);
+          }
+        });
+
+        sectionHeader.innerHTML = `
+          <div class="section-title">
+            <span class="chevron">▶</span>
+            <span>${sectionTitle}</span>
+          </div>
+          <span class="section-count-badge">${aplicadosNaSecao}/${totalNaSecao} aplicados</span>
+        `;
+
+        sectionHeader.onclick = () => {
+          sectionCard.classList.toggle('open');
+        };
+
+        sectionCard.appendChild(sectionHeader);
+        sectionCard.appendChild(sectionContent);
+
+        if (temItemVisivel) {
+          container.appendChild(sectionCard);
+        }
+      });
+    }
+
+    // SELECT TOPIC
+    function selecionarTopico(id) {
+      topicoSelecionadoId = id;
+      const topico = TOPICOS_ANALISE_ESTATISTICA.find(t => t.id === id);
+      if (!topico) return;
+
+      // Atualizar classe ativa na árvore
+      document.querySelectorAll('.topic-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`tree-item-${id}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Exibir cartão de detalhes
+      document.getElementById('empty-state').style.display = 'none';
+      const detailCard = document.getElementById('detail-card');
+      detailCard.style.display = 'block';
+
+      // Preencher campos
+      document.getElementById('detail-breadcrumb').textContent = `${topico.section} > ${topico.subsection}`;
+      document.getElementById('detail-title').textContent = topico.topic;
+      document.getElementById('detail-description').textContent = topico.description;
+
+      // Badge de status
+      const badge = document.getElementById('detail-badge');
+      badge.className = `status-badge ${topico.status}`;
+      badge.textContent = getStatusLabel(topico.status);
+
+      // Campo de texto de uso no TreinarMinist
+      const textarea = document.getElementById('usage-textarea');
+      const savedUsage = localStorage.getItem(STORAGE_PREFIX + topico.id);
+      textarea.value = savedUsage !== null ? savedUsage : (topico.defaultUsage || '');
+
+      // Configurar auto-save no textarea
+      textarea.oninput = () => {
+        localStorage.setItem(STORAGE_PREFIX + topico.id, textarea.value);
+        mostrarIndicadorSalvo();
+      };
+    }
+
+    // UPDATE TOPIC STATUS
+    function atualizarStatusAtual(novoStatus) {
+      if (!topicoSelecionadoId) return;
+      const topico = TOPICOS_ANALISE_ESTATISTICA.find(t => t.id === topicoSelecionadoId);
+      if (!topico) return;
+
+      topico.status = novoStatus;
+      localStorage.setItem(STATUS_STORAGE_PREFIX + topico.id, novoStatus);
+
+      // Re-renderizar componentes
+      selecionarTopico(topico.id);
+      renderizarArvore();
+      atualizarEstatisticas();
+      mostrarIndicadorSalvo();
+    }
+
+    // HELPER STATUS LABELS
+    function getStatusLabel(status) {
+      switch (status) {
+        case 'applied': return '✅ Aplicado no TreinarMinist';
+        case 'relevant': return '🔵 Relevante mas não aplicado';
+        case 'not_applicable': return '⚪ Não aplicável ao projeto';
+        default: return status;
+      }
+    }
+
+    // TOAST / SAVE INDICATOR
+    function mostrarIndicadorSalvo() {
+      const ind = document.getElementById('save-indicator');
+      ind.classList.add('show');
+      setTimeout(() => ind.classList.remove('show'), 2000);
+    }
+
+    // UPDATE STATS & PROGRESS BAR
+    function atualizarEstatisticas() {
+      const total = TOPICOS_ANALISE_ESTATISTICA.length;
+      const aplicados = TOPICOS_ANALISE_ESTATISTICA.filter(t => t.status === 'applied').length;
+      const relevantes = TOPICOS_ANALISE_ESTATISTICA.filter(t => t.status === 'relevant').length;
+      const naoAplicaveis = TOPICOS_ANALISE_ESTATISTICA.filter(t => t.status === 'not_applicable').length;
+
+      const percent = Math.round((aplicados / total) * 100);
+
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+      document.getElementById('progress-text').textContent = `${percent}%`;
+      document.getElementById('progress-counts').textContent = `${aplicados} de ${total} tópicos aplicados`;
+
+      document.getElementById('count-all').textContent = total;
+      document.getElementById('count-applied').textContent = aplicados;
+      document.getElementById('count-relevant').textContent = relevantes;
+      document.getElementById('count-na').textContent = naoAplicaveis;
+    }
+
+    // CONFIGURE EVENT LISTENERS
+    function configurarEventos() {
+      // Filtros
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filtroAtual = btn.getAttribute('data-filter');
+          renderizarArvore();
+        };
+      });
+
+      // Busca
+      const searchInput = document.getElementById('search-input');
+      searchInput.oninput = (e) => {
+        termoBusca = e.target.value.toLowerCase().trim();
+        renderizarArvore();
+      };
+    }
+
+    // EXECUTE ON LOAD
+    window.onload = inicializarApp;
+  </script>
+</body>
+</html>
