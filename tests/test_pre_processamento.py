@@ -16,3 +16,18 @@ def test_pre_processar_dados():
     assert np.min(X_treino_norm) >= -1e-7
     assert np.max(X_treino_norm) <= 1.0 + 1e-7
     # Não podemos afirmar os limites exatos para o teste pois novos dados podem extrapolar a amostra de treino
+
+def test_pre_processamento_entradas_invalidas():
+    import pytest
+    
+    X_vazio = np.array([])
+    y_vazio = np.array([])
+    
+    with pytest.raises(ValueError, match="nao podem estar vazios"):
+        pre_processar_dados(X_vazio, y_vazio)
+        
+    X_incompativel = np.random.rand(10, 5)
+    y_incompativel = np.random.randint(0, 10, 8) # Diferente tamanho
+    
+    with pytest.raises(ValueError, match="Incompatibilidade de tamanho"):
+        pre_processar_dados(X_incompativel, y_incompativel)
