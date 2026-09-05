@@ -12,8 +12,7 @@ def test_pre_processar_dados():
     assert len(X_treino_norm) == 80
     assert len(X_teste_norm) == 20
     
-    # Verifica normalização MinMax (valores entre 0 e 1)
-    assert np.min(X_treino_norm) >= 0.0
-    assert np.max(X_treino_norm) <= 1.0
-    assert np.min(X_teste_norm) >= 0.0
-    assert np.max(X_teste_norm) <= 1.0
+    # Verifica normalização MinMax no treino (valores entre 0 e 1, com tolerância para flutuação)
+    assert np.min(X_treino_norm) >= -1e-7
+    assert np.max(X_treino_norm) <= 1.0 + 1e-7
+    # Não podemos afirmar os limites exatos para o teste pois novos dados podem extrapolar a amostra de treino
