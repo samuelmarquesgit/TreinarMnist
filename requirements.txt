@@ -17,6 +17,11 @@ opencv-python-headless>=4.8.0
 # Visualização de Dados e Gráficos
 matplotlib>=3.7.0
 seaborn>=0.12.0
+plotly>=5.15.0
+
+# Interface Gráfica Frontend (Python Puro)
+streamlit>=1.28.0
+streamlit-drawable-canvas>=0.9.3
 
 # Banco de Dados Relacional (PostgreSQL)
 SQLAlchemy>=2.0.0
