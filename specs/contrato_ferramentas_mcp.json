@@ -1,0 +1,64 @@
+{
+  "nome_servidor": "servidor-mnist-ia",
+  "versao": "1.0.0",
+  "ferramentas": [
+    {
+      "nome": "treinar_modelo",
+      "descricao": "Treina um modelo específico no dataset MNIST e salva os artefatos",
+      "parametros": {
+        "tipo": "object",
+        "properties": {
+          "nome_modelo": {
+            "type": "string",
+            "enum": ["regressao_logistica", "floresta_aleatoria", "svm", "knn", "naive_bayes", "mlp", "vision_transformer", "todos"]
+          }
+        },
+        "required": ["nome_modelo"]
+      }
+    },
+    {
+      "nome": "consultar_metricas_benchmark",
+      "descricao": "Retorna o quadro comparativo consolidado de todos os modelos avaliados",
+      "parametros": {
+        "tipo": "object",
+        "properties": {}
+      }
+    },
+    {
+      "nome": "classificar_imagem_manuscrita",
+      "descricao": "Processa uma foto de dígito próprio e retorna a predição com ranking Top-K",
+      "parametros": {
+        "tipo": "object",
+        "properties": {
+          "caminho_imagem": { "type": "string" }
+        },
+        "required": ["caminho_imagem"]
+      }
+    },
+    {
+      "nome": "executar_teste_ood",
+      "descricao": "Executa o teste de estresse Out-of-Distribution e análise de falsa certeza",
+      "parametros": {
+        "tipo": "object",
+        "properties": {
+          "classes_mascaradas": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "default": [4, 7]
+          }
+        }
+      }
+    },
+    {
+      "nome": "consultar_assistente_rag",
+      "descricao": "Realiza perguntas em linguagem natural sobre as métricas e relatórios do projeto",
+      "parametros": {
+        "tipo": "object",
+        "properties": {
+          "pergunta": { "type": "string" }
+        },
+        "required": ["pergunta"]
+      }
+    }
+  ]
+}
