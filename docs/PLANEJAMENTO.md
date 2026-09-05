@@ -17,22 +17,22 @@ Para cumprir a diretriz de **"colocar o máximo possível do projeto em Python"*
 │                           Interface Reativa em Python Puro                                       │
 ├───────────────────┬───────────────────┬───────────────────┬───────────────────┬───────────────────┬──────────────────┤
 │ 📊 Aba 1: EDA     │ 📈 Aba 2: Estat.  │ 🏆 Aba 3: Modelos │ 🧪 Aba 4: OOD     │ ✍️ Aba 5: Canvas  │ 🗄️ Aba 6: Bancos │
-│ • Grade 2x5       │ • Brutos vs Tratam│ • 12 Modelos      │ • Mascaramento    │ • Desenho Mouse   │ • PostgreSQL     │
-│ • Balanceamento   │ • Medidas & Testes│ • Matrizes 10x10  │ • Falsa Certeza   │ • Upload Fotos    │ • MongoDB        │
-│ • Pixels 28x28    │ • Currículo SPA   │ • Tabela Métricas │ • Entropia Softmax│ • Bubble Sort TopK│ • Chatbot RAG    │
+│ • Grade 2x5       │ • Análise Estatíst│ • 12 Modelos      │ • Mascaramento    │ • Desenho Mouse   │ • PostgreSQL     │
+│ • Balanceamento   │ • Bruto vs Tratado│ • Matrizes 10x10  │ • Falsa Certeza   │ • Upload Fotos    │ • MongoDB        │
+│ • Pixels 28x28    │ • Testes & Portal │ • Tabela Métricas │ • Entropia Softmax│ • Bubble Sort TopK│ • Chatbot RAG    │
 └───────────────────┴───────────────────┴───────────────────┴───────────────────┴───────────────────┴──────────────────┘
                                                    │
                                                    ▼
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                  BACKEND & CAMADA DE SERVIÇOS                                    │
-│                                  `FachadaPipelineIA` (`src/`)                                    │
+│             `FachadaPipelineIA` & `CalculadorEstatistico` (`src/analise_estatistica.py`)         │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 💡 Por que Streamlit é a Escolha Ideal?
-1. **100% Python:** Permite importar diretamente as classes do projeto (`FachadaPipelineIA`, `visao_computacional`, `banco_dados`, `modelos`), eliminando a necessidade de duplicar lógicas ou criar endpoints REST adicionais.
+1. **100% Python:** Permite importar diretamente as classes do projeto (`FachadaPipelineIA`, `CalculadorEstatistico`, `visao_computacional`, `banco_dados`, `modelos`), eliminando a necessidade de duplicar lógicas ou criar endpoints REST adicionais.
 2. **Componente de Canvas Integrado (`streamlit-drawable-canvas`):** Permite desenhar dígitos com o mouse ou caneta diretamente na tela e fazer predição em tempo real com o modelo selecionado.
-3. **Reatividade Instantânea:** Ao alterar um hiperparâmetro ou selecionar um modelo na interface, as matrizes de confusão e métricas atualizam em tempo real.
+3. **Reatividade Instantânea:** Ao alterar um hiperparâmetro, conjunto de dados (Bruto vs Tratado) ou selecionar um modelo na interface, as análises estatísticas, matrizes de confusão e métricas atualizam em tempo real.
 4. **Visual Moderno:** Suporte completo a CSS customizado com tema Dark, cards com efeito Glassmorphism, gráficos interativos Plotly/Seaborn e tabelas dinâmicas com paginação.
 
 ---
@@ -43,17 +43,18 @@ Para cumprir a diretriz de **"colocar o máximo possível do projeto em Python"*
 TreinarMnist/
 ├── app.py                             # Ponto de entrada do Frontend Web (streamlit run app.py)
 ├── src/
+│   ├── analise_estatistica.py         # Motor de Cálculo Estatístico em Python (NumPy, SciPy, Pandas)
 │   ├── frontend/
 │   │   ├── __init__.py
 │   │   ├── estilos.py                 # Injeção de CSS Dark Mode e Glassmorphism
 │   │   ├── painel_eda.py              # Visualizador da Análise Exploratória e Amostras
-│   │   ├── painel_estatistica.py      # Explorador Estatístico Interativo (Bruto vs Tratado + Currículo SPA)
+│   │   ├── painel_analise_estatistica.py # Painel de Análise Estatística Interativa (Bruto vs Tratado + Menu Portal)
 │   │   ├── painel_benchmarks.py       # Tabela comparativa e Matrizes 10x10 interativas
 │   │   ├── painel_robustez_ood.py     # Experimentos de Class Masking e Falsa Certeza
 │   │   ├── painel_laboratorio_visao.py# Canvas interativo de desenho e upload de imagens reais
 │   │   ├── painel_bancos_dados.py     # Visualizador em tempo real do PostgreSQL e MongoDB
 │   │   ├── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
-│   │   └── curriculo_estatistica.html # Aplicação Web SPA interativa do Currículo de Estatística
+│   │   └── analise_estatistica.html   # Menu/Portal Interativo de Tópicos e Métricas de Estatística Aplicada
 ```
 
 ---

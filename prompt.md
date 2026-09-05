@@ -40,19 +40,21 @@ TreinarMnist/
 │   ├── carregador_dados.py            # Ingestão do MNIST e EDA
 │   ├── pre_processamento.py           # Normalização, Split estratificado e Leakage Guard
 │   ├── visao_computacional.py         # Pipeline de imagem (BBox, Resize 20x20, Center 28x28)
+│   ├── analise_estatistica.py         # Motor de Cálculo Estatístico em Python (NumPy, SciPy, Pandas)
 │   ├── avaliacao_metricas.py          # Matrizes 10x10 Heatmap, tabela comparativa e diagnóstico
 │   ├── robustez_ood.py                # Mascaramento de classes (4 e 7), teste OOD e Overconfidence
 │   ├── frontend/
 │   │   ├── __init__.py
 │   │   ├── estilos.py                 # Injeção de CSS Dark Mode e Glassmorphism
 │   │   ├── painel_eda.py              # Visualizador da Análise Exploratória e Amostras
-│   │   ├── painel_estatistica.py      # Explorador Estatístico Interativo (Bruto vs Tratado + Currículo SPA)
+│   │   ├── painel_analise_estatistica.py # Painel de Análise Estatística Interativa (Bruto vs Tratado + Menu Portal)
 │   │   ├── painel_benchmarks.py       # Tabela comparativa e Matrizes 10x10 interativas
 │   │   ├── painel_robustez_ood.py     # Experimentos de Class Masking e Falsa Certeza
 │   │   ├── painel_laboratorio_visao.py# Canvas interativo de desenho e upload de fotos
 │   │   ├── painel_bancos_dados.py     # Visualizador em tempo real do Postgres e Mongo
 │   │   ├── painel_assistente_rag.py   # Interface de Chatbot para perguntas semânticas
-│   │   └── curriculo_estatistica.html # SPA interativa do Currículo de Estatística (HTML/CSS/JS offline)
+│   │   ├── analise_estatistica.html   # Menu/Portal Interativo de Tópicos e Métricas de Estatística Aplicada
+│   │   └── curriculo_estatistica.html # Menu Histórico de Tópicos de Estatística
 │   ├── banco_dados/                   # Conexões e Repositórios SQL/NoSQL
 │   ├── modelos/                       # 12 algoritmos + ViT + Bubble Sort
 │   ├── rag/                           # Indexador ChromaDB e Assistente

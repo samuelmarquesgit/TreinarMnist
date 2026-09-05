@@ -81,30 +81,34 @@ EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
 
 ---
 
-### 🔹 Issue #18.1: Explorador Estatístico de Dados (Brutos vs Tratados) & Currículo Interativo
+### 🔹 Issue #18.1: Painel de Análise Estatística Interativa (Dados Brutos vs Tratados) & Portal de Métricas
 * **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Estatística Aplicada & Visualização
+* **Tipo:** Frontend / Estatística Computacional & Visualização
+* **Tecnologias:** Python (`numpy`, `scipy.stats`, `pandas`, `plotly`), Streamlit e HTML5/JS (`analise_estatistica.html`).
 * **Componentes:**
-  - **Seletor de Tipo de Dados:** Alternância dinâmica entre **Dados Brutos** (pixels [0, 255]) e **Dados Tratados** (normalizados MinMax [0, 1] ou padronizados Standard Scaler).
-  - **Filtro de Amostragem & Classes:** Opção de calcular estatísticas para o dataset global ou segmentado por classe/dígito (0 a 9).
-  - **Medidas Descritivas e de Posição (Python / NumPy / SciPy / Pandas):**
-    - Média, Mediana, Moda, Variância, Desvio Padrão, Intervalo Interquartílico (IQR), Mínimo, Máximo, Quartis (Q1, Q2, Q3), Coeficiente de Variação.
-    - Assimetria (*Skewness*) e Curtose (*Kurtosis*) com diagnóstico de formato de distribuição.
-  - **Testes de Hipótese e Normalidade:**
-    - Teste de Shapiro-Wilk e Kolmogorov-Smirnov sobre a distribuição de intensidades.
-    - Teste ANOVA de 1 Fator comparando a média de brilho entre as 10 classes de dígitos.
+  - **Módulo de Cálculo Estatístico em Python (`src/analise_estatistica.py`):**
+    - Funções puras em `pt-BR` para cálculo de medidas de tendência central, dispersão, assimetria, curtose, matrizes de covariância, testes de normalidade e ANOVA.
+  - **Seletor de Tipo de Dados:** Alternância dinâmica entre **Dados Brutos** (pixels inteiros [0, 255]) e **Dados Tratados** (normalizados MinMax [0, 1] ou Z-Score padronizado).
+  - **Filtro de Amostragem & Classes:** Opção de calcular estatísticas para o dataset global ou segmentado por classe/dígito (0 a 9) e por partição (Treino, Validação, Teste).
+  - **Medidas Descritivas e de Posição em Tempo Real:**
+    - Média ($\mu$), Mediana, Moda, Variância ($\sigma^2$), Desvio Padrão ($\sigma$), Intervalo Interquartílico (IQR), Mínimo, Máximo, Quartis (Q1, Q2, Q3), Coeficiente de Variação (CV).
+    - Assimetria (*Skewness*) e Curtose (*Kurtosis*) com diagnóstico automatizado do formato de distribuição.
+  - **Inferência Estatística e Testes de Hipótese:**
+    - Teste de Normalidade de Shapiro-Wilk e Kolmogorov-Smirnov sobre intensidades centrais vs bordas com exibição de p-valor e conclusão automática.
+    - Teste t de Student comparando pares de dígitos (ex: dígito 0 vs dígito 1, ou 4 vs 7).
+    - Teste ANOVA de 1 Fator comparando a variância de brilho médio entre as 10 classes de dígitos.
+    - Teste Qui-Quadrado de aderência/homogeneidade entre partições.
   - **Visualizações Gráficas Estatísticas Interativas (Plotly):**
-    - Histograma com Curva de Densidade KDE estimada.
-    - Boxplots múltiplos por classe com destaque para detecção de outliers.
-    - Gráfico Q-Q (Quantil-Quantil) para validação visual de normalidade.
+    - Histograma de frequência com sobreposição de Curva de Densidade KDE estimada.
+    - Boxplots múltiplos por classe com detecção visual de outliers.
+    - Gráfico Q-Q (Quantil-Quantil) para diagnóstico visual de normalidade.
     - Matriz de Correlação e Heatmap espacial de variância dos pixels $28 \times 28$.
-  - **Módulo do Currículo de Estatística Integrado (`curriculo_estatistica.html`):**
-    - Aplicação Web SPA interativa incorporada no Streamlit e acessível como standalone offline.
-    - Rastreamento dos 12 módulos de estatística com status (Aplicado / Relevante / Não Aplicável), barra de progresso em tempo real, filtros dinâmicos, busca e notas salvas no `localStorage`.
+  - **Menu Portal de Análise Estatística Integrado (`analise_estatistica.html`):**
+    - Servirá de menu interativo para o site onde ficarão os dados de estatística, organizando todos os tópicos de estatística aplicada ao projeto, com persistência de anotações no `localStorage` e filtros visuais.
 * **Critérios de Aceite:**
-  - [ ] Alternância instantânea entre dados brutos e tratados com recálculo estatístico.
-  - [ ] Todas as métricas e testes calculados com precisão matemática em Python.
-  - [ ] SPA do currículo de estatística totalmente funcional e responsivo.
+  - [ ] Alternância instantânea entre dados brutos e tratados com recálculo estatístico reativo em Python.
+  - [ ] Todos os testes de hipótese e medidas descritivas calculados com rigor matemático.
+  - [ ] Portal/menu de análise estatística perfeitamente funcional, responsivo e integrado ao dashboard.
 
 ---
 
