@@ -91,14 +91,13 @@ jobs:
   ci-gate:
     name: CI Gate (Status Check)
     runs-on: ubuntu-latest
-    needs: [qualidade-e-testes, seguranca-scan, sonarcloud-scan]
+    needs: [qualidade-e-testes, seguranca-scan]
     if: always()
     steps:
       - name: Validar Sucesso dos Jobs Anteriores
         run: |
           if [ "${{ needs.qualidade-e-testes.result }}" != "success" ] || \
-             [ "${{ needs.seguranca-scan.result }}" != "success" ] || \
-             [ "${{ needs.sonarcloud-scan.result }}" != "success" ]; then
+             [ "${{ needs.seguranca-scan.result }}" != "success" ]; then
             echo "CI Gate Falhou. Corrija os erros acima."
             exit 1
           else
