@@ -17,7 +17,7 @@ def test_criacao_modelo_invalido():
     with pytest.raises(ValueError, match="desconhecido"):
         FabricaModelos.criar_modelo('ModeloInexistenteRedeNeural')
 
-def test_treinamento_e_predicao(mocker):
+def test_treinamento_e_predicao():
     modelo = FabricaModelos.criar_modelo('RegressaoLogistica')
     
     X_treino = np.random.rand(10, 5)
