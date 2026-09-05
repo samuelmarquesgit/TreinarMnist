@@ -1,3 +1,4 @@
+import pytest
 from src.avaliacao_metricas import calcular_metricas
 
 def test_calcular_metricas():
@@ -14,3 +15,11 @@ def test_calcular_metricas():
     
     # Acurácia de 4 corretos em 5 = 0.8
     assert metricas['acuracia'] == 0.8
+
+def test_erro_tamanhos_diferentes():
+    with pytest.raises(ValueError, match="Incompatibilidade de comprimento"):
+        calcular_metricas([0, 1], [0, 1, 1])
+
+def test_erro_arrays_vazios():
+    with pytest.raises(ValueError, match="nao podem estar vazios"):
+        calcular_metricas([], [])
