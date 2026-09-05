@@ -1,0 +1,1189 @@
+WEBVTT
+
+1
+00:00:07.424 --> 00:00:11.636
+Olá, eu sou o Josias e seja muito bem-vindo a essa aula.
+
+2
+00:00:11.678 --> 00:00:14.305
+O objetivo aqui é simples e bem prático,
+
+3
+00:00:14.305 --> 00:00:18.184
+transformar a IA no seu ajudante no dia a dia como desenvolvedor.
+
+4
+00:00:18.476 --> 00:00:21.438
+Você vai ver como a IA pode assumir tarefas repetitivas,
+
+5
+00:00:21.688 --> 00:00:24.482
+cansativas, como explicar código,
+
+6
+00:00:24.649 --> 00:00:28.153
+refatorar funções confusas, escrever READMEs e
+
+7
+00:00:28.153 --> 00:00:32.407
+até gerar testes unitários para que você possa focar o que realmente
+
+8
+00:00:32.407 --> 00:00:36.578
+importa, que é a lógica de negócio e as decisões técnicas.
+
+9
+00:00:36.911 --> 00:00:40.832
+Ao longo dessa aula eu vou te mostrar tudo isso funcionando em tempo real
+
+10
+00:00:41.332 --> 00:00:41.833
+dentro do editor.
+
+11
+00:00:45.587 --> 00:00:48.631
+RubberDuck Debugging é
+aquela técnica clássica de
+
+12
+00:00:48.631 --> 00:00:52.844
+explicar o seu código pra um patinho de borracha, só pra organizar
+
+13
+00:00:52.844 --> 00:00:56.681
+o raciocínio. Muitas vezes o simples ato de explicar já
+
+14
+00:00:56.681 --> 00:01:00.643
+revela o problema na sua lógica. A IA entra aqui como uma versão
+
+15
+00:01:00.643 --> 00:01:04.814
+muito mais poderosa desse patinho. Em vez de só ouvir, ela entende o seu código,
+
+16
+00:01:04.814 --> 00:01:08.526
+ela faz perguntas que você não tinha pensado, ela aponta inconsistências,
+
+17
+00:01:08.860 --> 00:01:12.697
+ela sugere melhorias.
+Então vamos ver isso na prática.
+
+18
+00:01:16.534 --> 00:01:19.704
+Bom, se você nunca usou, esse é o Cursor. Ele é
+
+19
+00:01:19.704 --> 00:01:23.792
+um editor de código preparado para uso de IA.
+
+20
+00:01:23.792 --> 00:01:27.504
+Por enquanto, eu vou abrir aqui uma função chamada
+
+21
+00:01:27.504 --> 00:01:32.509
+LoginTest, que eu preparei. E essa função é
+
+22
+00:01:32.509 --> 00:01:36.179
+bastante complexa. Você pode ver que as
+
+23
+00:01:36.179 --> 00:01:39.724
+variáveis têm nomes fora do padrão.
+
+24
+00:01:39.891 --> 00:01:43.728
+É difícil de olhar para ela e entender o que está acontecendo.
+
+25
+00:01:44.187 --> 00:01:48.066
+E a gente não pode se enganar. Todo mundo já viu o código legado
+
+26
+00:01:48.066 --> 00:01:51.861
+dentro da sua empresa, em algum projeto open source que você pegou. Então,
+
+27
+00:01:51.861 --> 00:01:55.782
+isso aqui é comum no dia a dia de um desenvolvedor. Essa função
+
+28
+00:01:55.782 --> 00:02:00.662
+de login funciona, mas ela é difícil de entender, tem muita responsabilidade
+
+29
+00:02:00.662 --> 00:02:04.916
+misturada, está fazendo muita coisa e não é nada legível.
+
+30
+00:02:05.333 --> 00:02:09.087
+O primeiro passo, então, não é pedir refatoração, o primeiro passo é pedir
+
+31
+00:02:09.337 --> 00:02:13.216
+explicação. Por exemplo, vamos criar um prompt aqui dizendo,
+
+32
+00:02:13.383 --> 00:02:15.885
+explique o que essa função faz passo a passo.
+
+33
+00:02:17.387 --> 00:02:20.807
+você pode perguntar como se fosse para o desenvolvedor
+
+34
+00:02:20.807 --> 00:02:24.894
+que escreveu essa função. Então, aqui, o cursor já tem
+
+35
+00:02:25.228 --> 00:02:28.690
+um agente que é capaz de analisar esse código.
+
+36
+00:02:28.857 --> 00:02:32.318
+Você pode ver que ele lê o arquivo. E,
+
+37
+00:02:32.402 --> 00:02:35.446
+opa, eu esqueci de passar, na verdade, o arquivo. Aqui,
+
+38
+00:02:35.613 --> 00:02:39.742
+eu posso usar o símbolo de
+
+39
+00:02:39.742 --> 00:02:42.954
+arroba para vincular o arquivo à pergunta que eu estou fazendo.
+
+40
+00:02:43.621 --> 00:02:47.125
+Então, Eu fiz isso agora, vou enviar,
+
+41
+00:02:47.667 --> 00:02:51.379
+e aí ele começa a planejar os seus próximos movimentos.
+
+42
+00:02:52.380 --> 00:02:55.842
+Aqui ele vai te dando a explicação, lendo o arquivo para entender a função e
+
+43
+00:02:55.842 --> 00:02:59.429
+explicar passo a passo. Então ele começa a ler o arquivo de texto
+
+44
+00:02:59.429 --> 00:03:03.850
+inteiro e retorna com a explicação. Vamos dar uma olhada aqui.
+
+45
+00:03:05.310 --> 00:03:08.688
+a explicação passo a passo da função. Ele está me explicando
+
+46
+00:03:08.688 --> 00:03:12.609
+os parâmetros, que aqui são apenas três letras, A, B e
+
+47
+00:03:12.609 --> 00:03:15.862
+C. Ele está dizendo A é o usuário, B é a senha, o C é
+
+48
+00:03:15.862 --> 00:03:20.617
+opcional, aí depois a gente faz a normalização dos parâmetros,
+
+49
+00:03:20.909 --> 00:03:24.412
+passo dois é a base de dados de usuário, que a gente tem fixo aqui,
+
+50
+00:03:24.454 --> 00:03:28.499
+não está conectado a nenhum banco de dados, processamento das
+
+51
+00:03:28.499 --> 00:03:33.671
+flags, validação, processamento de senha, etc.
+
+52
+00:03:33.671 --> 00:03:36.466
+Então, ele tem aqui tudo
+
+53
+00:03:36.466 --> 00:03:40.178
+o que está acontecendo dentro dessa função. Isso vai ajudar tanto a
+
+54
+00:03:40.178 --> 00:03:44.474
+gente a entender o que a gente está buscando, quanto ele se preparar
+
+55
+00:03:44.474 --> 00:03:48.144
+para o próximo passo, que é a refatoração. Agora sim, com esse
+
+56
+00:03:48.144 --> 00:03:52.649
+entendimento do que a função está fazendo, eu posso pedir algo mais interessante.
+
+57
+00:03:52.649 --> 00:03:57.111
+Por exemplo, sugira melhorias
+
+58
+00:03:57.111 --> 00:03:59.405
+de organização
+
+59
+00:04:02.283 --> 00:04:06.663
+baseado em princípios de Clean Code.
+
+60
+00:04:11.125 --> 00:04:15.213
+E aí ele vai pegar um conhecimento que eu não passei para ele, que é Clean Code,
+
+61
+00:04:15.213 --> 00:04:17.924
+que já está na base de conhecimento dele,
+
+62
+00:04:18.216 --> 00:04:21.552
+e vai aplicar nessa função que ele acabou de conhecer.
+
+63
+00:04:21.886 --> 00:04:25.223
+Então, eu não estou pedindo só para ele refatorar isso.
+
+64
+00:04:25.765 --> 00:04:29.811
+eu estou dando instruções bem claras sobre que tipo de refatoração eu
+
+65
+00:04:29.811 --> 00:04:33.773
+estou buscando, os critérios, legibilidade, quais padrões utilizar,
+
+66
+00:04:33.773 --> 00:04:37.277
+responsabilidade única, que faz parte do Clean Code.
+
+67
+00:04:37.986 --> 00:04:41.656
+Então, a IA vai responder sugerindo separação de funções,
+
+68
+00:04:41.656 --> 00:04:46.536
+nomes mais claros, a redução de complexidade
+
+69
+00:04:46.536 --> 00:04:50.498
+da função como um todo. Então, aqui ele está criando um arquivo chamado
+
+70
+00:04:50.498 --> 00:04:54.794
+login-teste-refatorado. Um detalhe, aqui no cursor a gente
+
+71
+00:04:54.794 --> 00:04:57.755
+tem a opção “agente”,
+
+72
+00:04:57.755 --> 00:05:02.427
+a opção de “planejamento”, a opção de “debugging” e a opção de... Essa “ask”
+
+73
+00:05:02.427 --> 00:05:06.222
+é simplesmente um chat, você pode conversar e ele não vai fazer modificação
+
+74
+00:05:06.222 --> 00:05:10.143
+nenhuma nos arquivos. Eu estou no modo agente, então ele já tomou
+
+75
+00:05:10.143 --> 00:05:14.897
+a frente e já criou um outro arquivo chamado LoginTest refatorado.
+
+76
+00:05:15.189 --> 00:05:18.568
+Ele não mexeu no meu código, mas ele já
+
+77
+00:05:18.568 --> 00:05:22.196
+criou o arquivo sugerindo opções. Aqui a gente tem,
+
+78
+00:05:22.655 --> 00:05:25.533
+por exemplo, vamos dar uma analisada no retorno dele.
+
+79
+00:05:27.035 --> 00:05:30.580
+Ele colocou aqui, princípios de Clean Code aplicados. Então, aqui a
+
+80
+00:05:30.580 --> 00:05:33.750
+gente vê que ele já buscou na própria base de conhecimento dele o que é
+
+81
+00:05:33.750 --> 00:05:38.296
+o Clean Code, quais são os seus princípios, ele já gerou tokens pensando
+
+82
+00:05:38.296 --> 00:05:42.258
+nisso e aí ele começou a refatoração. Extraiu constantes,
+
+83
+00:05:42.342 --> 00:05:45.845
+por exemplo, as flags que a gente pode usar para login,
+
+84
+00:05:46.387 --> 00:05:49.640
+já pegou números mágicos que estavam dentro do código e colocou numa
+
+85
+00:05:49.640 --> 00:05:53.686
+constante, separou a base de testes de usuário,
+
+86
+00:05:54.520 --> 00:05:58.566
+funções utilitárias para normalizar strings, por exemplo,
+
+87
+00:05:59.233 --> 00:06:03.029
+outras funções extras para fazer o parse de login
+
+88
+00:06:03.821 --> 00:06:06.783
+e muitas coisas nesse sentido. Aí a gente
+
+89
+00:06:06.783 --> 00:06:10.912
+tem a parte de autenticação, onde ele vai processar a senha de fato,
+
+90
+00:06:10.912 --> 00:06:15.208
+vai ver se bate a senha que a gente está enviando na função com
+
+91
+00:06:15.208 --> 00:06:18.753
+a senha do usuário. E aí a gente tem a função
+
+92
+00:06:18.753 --> 00:06:23.174
+principal login, muito mais simples, com nomes
+
+93
+00:06:23.174 --> 00:06:27.678
+óbvios, com os comentários aqui chamando as funções corretas e
+
+94
+00:06:27.678 --> 00:06:32.141
+a gente tem aqui alguns testes, por exemplo, para ver se
+
+95
+00:06:32.141 --> 00:06:36.604
+essa função está funcionando. Além disso,
+
+96
+00:06:36.604 --> 00:06:40.149
+ele criou um outro documento explicando essa refatoração
+
+97
+00:06:40.149 --> 00:06:45.655
+Clean Code. Então, ele gastou bastante token
+
+98
+00:06:45.655 --> 00:06:49.659
+aqui, mas ele já fez toda uma explicação em detalhes de
+
+99
+00:06:49.659 --> 00:06:53.996
+tudo que ele fez e quais as melhorias que poderiam ser feitas nesse código.
+
+100
+00:06:57.583 --> 00:06:59.168
+Agora vamos dar mais um passo.
+
+101
+00:06:59.919 --> 00:07:02.588
+Imagine que esse código
+precisa ser migrado para outro
+
+102
+00:07:02.588 --> 00:07:06.843
+stack, ou você trouxe de um aplicativo em JavaScript e vai
+
+103
+00:07:06.843 --> 00:07:10.555
+colocar isso dentro de um aplicativo em Python e quer reutilizar a
+
+104
+00:07:10.555 --> 00:07:14.934
+sua lógica. Em vez de reescrever tudo do zero, você pode pedir,
+
+105
+00:07:14.934 --> 00:07:17.019
+converta essa lógica
+
+106
+00:07:18.646 --> 00:07:23.317
+para Python, por exemplo, mantendo o funcionamento
+
+107
+00:07:24.777 --> 00:07:25.820
+original
+
+108
+00:07:27.196 --> 00:07:27.864
+da função.
+
+109
+00:07:32.118 --> 00:07:36.205
+Como a IA conhece todas as linguagens, ela vai ser capaz de
+
+110
+00:07:36.205 --> 00:07:40.168
+te economizar um bom tempo migrando a lógica, olhando para um
+
+111
+00:07:40.168 --> 00:07:43.838
+arquivo, passando para outro. Isso, se você tiver conhecimento das
+
+112
+00:07:43.838 --> 00:07:48.134
+duas linguagens, você pode estar traduzindo isso de uma aplicação
+
+113
+00:07:48.134 --> 00:07:52.096
+em C++, em COBOL, em qualquer linguagem que você não domine
+
+114
+00:07:52.096 --> 00:07:56.184
+pessoalmente, mas você vai saber identificar se essa função está funcionando na
+
+115
+00:07:56.184 --> 00:07:59.937
+linguagem que você está acostumado a usar. Então, ela começou
+
+116
+00:08:00.813 --> 00:08:05.318
+a criar um arquivo chamado logintest.py
+
+117
+00:08:06.277 --> 00:08:09.614
+e a gente pode ver que a função
+
+118
+00:08:10.198 --> 00:08:13.242
+já está toda em Python, mantendo a mesma estrutura
+
+119
+00:08:13.242 --> 00:08:16.787
+aqui. Veja que eu falei da função original no meu prompt,
+
+120
+00:08:16.787 --> 00:08:20.833
+então ela pegou essa função confusa e complexa e traduziu
+
+121
+00:08:21.334 --> 00:08:23.794
+para Python, a gente não pegou a versão refatorada.
+
+122
+00:08:24.170 --> 00:08:27.256
+Esse tipo de uso economiza horas, especialmente em
+
+123
+00:08:27.256 --> 00:08:31.093
+migrações, provas de conceito ou aprendizado de uma nova linguagem.
+
+124
+00:08:34.514 --> 00:08:35.932
+Bom, agora vamos falar
+
+125
+00:08:36.432 --> 00:08:40.811
+de uma das partes que eu sei que você procrastina, que é a documentação.
+
+126
+00:08:41.771 --> 00:08:44.857
+READMEs, PRDs, descrições técnicas,
+
+127
+00:08:45.399 --> 00:08:49.362
+isso tudo é muito útil, mas costuma ficar para depois. O desenvolvedor
+
+128
+00:08:49.362 --> 00:08:52.865
+gosta de escrever o código e ter certeza que ele está funcionando.
+
+129
+00:08:53.324 --> 00:08:57.161
+Mas aqui a IA é extremamente eficiente. É nisso que modelos de
+
+130
+00:08:57.161 --> 00:09:01.958
+linguagem são bons. Então vamos começar pelo básico: um README.
+
+131
+00:09:02.375 --> 00:09:04.585
+Eu posso pedir algo como
+
+132
+00:09:06.003 --> 00:09:10.925
+gere um arquivo README para esse projeto.
+
+133
+00:09:13.302 --> 00:09:15.763
+E eu posso especificar quais sessões eu quero,
+
+134
+00:09:16.013 --> 00:09:19.433
+qual o formato que eu quero específico, mas nesse caso eu
+
+135
+00:09:19.433 --> 00:09:23.563
+vou deixar bem genérico. Como a IA, nos seus dados de treinamento,
+
+136
+00:09:23.563 --> 00:09:27.692
+teve acesso a muito código, a muitos READMEs de muitos projetos,
+
+137
+00:09:27.775 --> 00:09:32.363
+ela já tem uma boa ideia do que se parece com um README bem
+
+138
+00:09:32.363 --> 00:09:35.408
+estruturado. Então, esse app que eu tenho aqui,
+
+139
+00:09:35.992 --> 00:09:39.328
+ele é um app financeiro, de finanças pessoais,
+
+140
+00:09:39.870 --> 00:09:43.457
+Então, a gente vai ler esse projeto,
+
+141
+00:09:43.457 --> 00:09:46.877
+vai entender o que está acontecendo aqui. Você pode ver que ele está buscando as
+
+142
+00:09:46.877 --> 00:09:51.299
+rotas, está buscando documentos de arquitetura, está buscando as
+
+143
+00:09:51.299 --> 00:09:55.011
+dependências do arquivo package.json, está lendo
+
+144
+00:09:55.011 --> 00:09:59.098
+configuração de banco de dados, variáveis, tudo o que
+
+145
+00:09:59.098 --> 00:10:00.558
+conseguiu encontrar aqui.
+
+146
+00:10:01.726 --> 00:10:03.019
+E vai gerar o
+
+147
+00:10:03.019 --> 00:10:06.355
+nosso arquivo README com todas essas informações.
+
+148
+00:10:06.606 --> 00:10:11.277
+E eu até escrevi README incorretamente aqui, mas ele já entendeu de cara
+
+149
+00:10:11.277 --> 00:10:12.653
+o que eu estou querendo dizer.
+
+150
+00:10:16.365 --> 00:10:18.868
+Pronto, o arquivo foi gerado e
+
+151
+00:10:18.868 --> 00:10:23.205
+a gente pode abrir, vou colocar o preview em markdown, e a
+
+152
+00:10:23.205 --> 00:10:27.084
+gente pode ver que ele já tem todas as informações do projeto,
+
+153
+00:10:27.084 --> 00:10:31.589
+ele explica as funcionalidades de gestão financeira, análise e visualização,
+
+154
+00:10:31.797 --> 00:10:35.551
+segurança, mostra toda a stack, os pré-requisitos,
+
+155
+00:10:35.635 --> 00:10:40.056
+que é algo extremamente importante quando o outro desenvolvedor vai pegar esse projeto, e a
+
+156
+00:10:40.264 --> 00:10:43.768
+instalação, como você clona o projeto,
+
+157
+00:10:44.435 --> 00:10:47.480
+quais essas variáveis de ambiente que você tem que definir,
+
+158
+00:10:47.980 --> 00:10:51.359
+como usar, dá toda essa explicação já pronta. Ele conseguiu
+
+159
+00:10:51.359 --> 00:10:55.112
+ler todos os scripts que eu tenho para criar o banco de
+
+160
+00:10:55.112 --> 00:10:59.200
+dados, para rodar o servidor localmente, rodar a linter,
+
+161
+00:10:59.200 --> 00:11:02.828
+ele já tem tudo isso, mostra a estrutura do projeto,
+
+162
+00:11:02.828 --> 00:11:07.166
+as páginas, enfim, ele tem um resumo completo
+
+163
+00:11:07.416 --> 00:11:10.711
+de tudo o que já existe dentro desse projeto.
+
+164
+00:11:11.128 --> 00:11:14.674
+Em alguns segundos a IA cria uma base muito sólida.
+
+165
+00:11:14.840 --> 00:11:18.135
+Óbvio que ela não substitui a sua revisão, mas ela elimina
+
+166
+00:11:18.135 --> 00:11:22.264
+o trabalho de começar do zero, de você ter que fazer essa documentação
+
+167
+00:11:22.264 --> 00:11:26.811
+desde a primeira linha. Ela já tem essa informação, então ela consegue mastigar
+
+168
+00:11:26.811 --> 00:11:29.355
+isso e deixar tudo pronto para você.
+
+169
+00:11:29.355 --> 00:11:30.856
+Bom, o README é bem básico.
+
+170
+00:11:30.898 --> 00:11:34.527
+Agora a gente vai subir um pouco o nível. Imagina que você está iniciando um
+
+171
+00:11:34.527 --> 00:11:38.656
+produto ou uma API nova.
+Você pode pedir para a IA
+
+172
+00:11:38.656 --> 00:11:43.035
+a gerar um PRD, que é um Product Requirements Document.
+
+173
+00:11:43.452 --> 00:11:47.123
+Esse documento é bem comum para as stakeholders do projeto que
+
+174
+00:11:47.123 --> 00:11:51.377
+precisam saber quais são as funcionalidades que existem ali para a gente definir para onde
+
+175
+00:11:51.711 --> 00:11:54.588
+o produto está indo como um todo.
+
+176
+00:11:54.588 --> 00:12:00.177
+Vamos fazer um exemplo aqui. Eu vou pedir para ele criar um PRD para uma API de
+
+177
+00:12:00.177 --> 00:12:03.764
+controle financeiro pessoal com objetivos,
+
+178
+00:12:03.764 --> 00:12:07.393
+funcionalidades e restrições técnicas.
+
+179
+00:12:07.977 --> 00:12:11.105
+Então, vou escrever isso aqui no prompt e crie um
+
+180
+00:12:11.105 --> 00:12:15.443
+PRD para essa API. Nesse caso
+
+181
+00:12:15.443 --> 00:12:19.405
+aqui, a gente já tem o projeto, eu vou deixar ele usar o que ele
+
+182
+00:12:19.405 --> 00:12:23.909
+já conhece do projeto e vou pedir para ele criar um PRD para
+
+183
+00:12:23.909 --> 00:12:27.830
+essa API, contendo as funcionalidades
+
+184
+00:12:28.914 --> 00:12:31.000
+e possíveis
+
+185
+00:12:33.294 --> 00:12:36.589
+passos no projeto.
+
+186
+00:12:41.844 --> 00:12:44.972
+Ele novamente vai ser capaz de ler tudo
+
+187
+00:12:44.972 --> 00:12:48.893
+aquilo que está dentro do projeto, todos os arquivos, as páginas, as funcionalidades que a
+
+188
+00:12:48.893 --> 00:12:52.897
+gente já tem, inclusive o README que a gente já criou, e aí ele vai
+
+189
+00:12:53.147 --> 00:12:56.358
+tentar entender isso como produto e explicar
+
+190
+00:12:56.358 --> 00:12:57.151
+isso pra gente.
+
+191
+00:13:04.033 --> 00:13:07.745
+Bom, aqui ele acabou de gerar o documento do PRD que é bem
+
+192
+00:13:07.745 --> 00:13:11.499
+extenso, super completo, e ele traz
+
+193
+00:13:11.499 --> 00:13:15.294
+a visão geral, as funcionalidades atuais que o
+
+194
+00:13:15.294 --> 00:13:18.047
+projeto já tem, explicando tudo.
+
+195
+00:13:18.672 --> 00:13:20.007
+Ele tem também
+
+196
+00:13:20.925 --> 00:13:24.220
+no terceiro item aqui, os requisitos funcionais, quarto item,
+
+197
+00:13:24.220 --> 00:13:27.681
+os requisitos não funcionais,
+
+198
+00:13:27.681 --> 00:13:31.352
+que a gente já tem em todo o PRD. Então, basicamente, ele pegou
+
+199
+00:13:31.352 --> 00:13:36.148
+todo o conhecimento que ele tinha sobre o projeto e juntou com todo o conhecimento
+
+200
+00:13:36.357 --> 00:13:40.069
+que tinha sobre PRDs. E aí fez isso
+
+201
+00:13:40.069 --> 00:13:43.489
+de uma forma muito completa. Um ponto
+
+202
+00:13:43.489 --> 00:13:48.327
+que eu achei bem interessante é que ele sugeriu também os próximos passos como
+
+203
+00:13:48.327 --> 00:13:53.207
+a gente descreveu no prompt. Então, por exemplo, funcionalidades futuras,
+
+204
+00:13:53.958 --> 00:13:57.795
+melhorias de segurança e de performance, coisas que ele já identificou
+
+205
+00:13:58.087 --> 00:14:01.507
+que não estão muito bem implementadas aqui ou que a
+
+206
+00:14:01.507 --> 00:14:05.594
+gente não implementou de forma nenhuma, funcionalidades avançadas em
+
+207
+00:14:05.594 --> 00:14:09.306
+transações, já ofereceu aqui como sugestão
+
+208
+00:14:09.306 --> 00:14:12.935
+análise e relatórios para o usuário. Então,
+
+209
+00:14:13.519 --> 00:14:17.439
+tanto se você está preocupado com a parte técnica quanto se você está preocupado
+
+210
+00:14:17.439 --> 00:14:21.193
+com a parte de produto, você já tem muita informação aqui dentro
+
+211
+00:14:21.193 --> 00:14:26.115
+do seu próprio projeto comparando com uma base de dados gigantesca de
+
+212
+00:14:26.115 --> 00:14:30.244
+outros projetos. No fim, a gente tem um bloco de riscos
+
+213
+00:14:30.244 --> 00:14:34.331
+aqui e o que a gente poderia se preocupar e, inclusive,
+
+214
+00:14:34.331 --> 00:14:38.544
+uma conclusão de quando implementar cada uma dessas
+
+215
+00:14:38.544 --> 00:14:42.256
+soluções. E repare... que aqui,
+
+216
+00:14:42.464 --> 00:14:45.843
+além de criar o documento de PRD, ele já também atualizou
+
+217
+00:14:45.843 --> 00:14:50.764
+o próprio README incluindo esse documento dentro da documentação
+
+218
+00:14:50.764 --> 00:14:53.517
+e nos links interessantes do projeto.
+
+219
+00:14:53.934 --> 00:14:57.563
+Além disso, se você já tem algo mais técnico como o Swagger
+
+220
+00:14:57.563 --> 00:15:01.358
+ou OpenAPI implementado na sua API, você pode
+
+221
+00:15:01.358 --> 00:15:05.279
+pedir para ele gerar esse PRD a partir desse arquivo OpenAPI e
+
+222
+00:15:05.279 --> 00:15:09.533
+ele vai ser bastante preciso em manter esse contexto. Isso é
+
+223
+00:15:09.533 --> 00:15:13.662
+muito poderoso, porque isso melhora a comunicação com outras áreas de negócio,
+
+224
+00:15:13.829 --> 00:15:17.374
+mas ainda economiza horas de escrita manual.
+
+225
+00:15:17.583 --> 00:15:21.003
+A ideia aqui não é publicar essa documentação sem pensar,
+
+226
+00:15:21.170 --> 00:15:24.798
+ele gerou automaticamente e você manda pra frente. Não, é usar a IA como
+
+227
+00:15:24.798 --> 00:15:28.719
+rascunho inteligente e você, obviamente, entra como editor
+
+228
+00:15:28.719 --> 00:15:30.638
+e decisor final.
+
+229
+00:15:34.266 --> 00:15:37.728
+Agora vamos para mais uma parte crítica da qualidade de software,
+
+230
+00:15:37.853 --> 00:15:41.440
+que são os testes. Aqui a IA também pode acelerar muito o
+
+231
+00:15:41.440 --> 00:15:45.319
+seu trabalho, desde que você saiba pedir as coisas do
+
+232
+00:15:45.319 --> 00:15:49.281
+jeito certo. Então aqui, por exemplo, vamos usar essa função que
+
+233
+00:15:49.281 --> 00:15:54.078
+refatoramos antes. Em vez de pedir apenas gere testes, eu vou ser um
+
+234
+00:15:54.078 --> 00:15:57.831
+pouco mais específico. “Crie 10 testes unitários para a
+
+235
+00:15:57.831 --> 00:16:01.919
+função de login em loginTest, que é o arquivo que eu estou passando,
+
+236
+00:16:01.919 --> 00:16:04.713
+incluindo edgeCases e possíveis falhas.”
+
+237
+00:16:05.589 --> 00:16:08.926
+Eu estou fazendo isso nesse caso porque, como essa função é muito complexa,
+
+238
+00:16:09.301 --> 00:16:13.013
+ele pode gerar uma infinidade de testes, que talvez seria o
+
+239
+00:16:13.013 --> 00:16:17.393
+mais correto, mas aqui a gente não precisa gastar todo esse tempo,
+
+240
+00:16:17.393 --> 00:16:21.271
+criando testes para cobrir praticamente todas
+
+241
+00:16:21.522 --> 00:16:24.900
+as funções dentro desse bloco de
+
+242
+00:16:24.900 --> 00:16:29.655
+código. Então aqui eu pedi pra ele simplificar, criar apenas 10 testes unitários.
+
+243
+00:16:30.322 --> 00:16:33.325
+A IA costuma ser muito boa em identificar entradas nulas,
+
+244
+00:16:33.325 --> 00:16:37.496
+valores fora do padrão, cenários que passam despercebidos pra gente no
+
+245
+00:16:37.496 --> 00:16:41.291
+dia a dia. Repara que ela não só gera os testes, mas muitas vezes
+
+246
+00:16:41.291 --> 00:16:45.004
+revela comportamentos do código que você não tinha percebido.
+
+247
+00:16:45.462 --> 00:16:49.341
+Nunca assuma que o teste está correto só porque ele foi gerado automaticamente,
+
+248
+00:16:49.341 --> 00:16:52.970
+mas, com certeza, use isso como um acelerador real
+
+249
+00:16:52.970 --> 00:16:54.388
+de produtividade.
+
+250
+00:16:54.388 --> 00:16:56.890
+Remover essas partes chatas e repetitivas do
+
+251
+00:16:56.890 --> 00:17:00.060
+seu trabalho cria um ciclo muito mais saudável de desenvolvimento.
+
+252
+00:17:03.272 --> 00:17:06.692
+Bom, aqui o arquivo de teste foi gerado. Vamos dar uma olhada no
+
+253
+00:17:06.692 --> 00:17:10.779
+resultado. Ele copiou a função de
+
+254
+00:17:10.779 --> 00:17:14.158
+login original e aí fez o seguinte.
+
+255
+00:17:14.366 --> 00:17:17.703
+Ele criou, aqui a gente pode ver que ele foi até o teste número 10,
+
+256
+00:17:17.911 --> 00:17:21.540
+como eu pedi, ele incluiu login bem-sucedido,
+
+257
+00:17:21.623 --> 00:17:25.210
+o teste do caminho feliz, que a gente chama,
+
+258
+00:17:25.961 --> 00:17:29.882
+e então ele incluiu testes com o usuário inexistente, com senha incorreta,
+
+259
+00:17:30.132 --> 00:17:33.427
+vê se o modo estrito está funcionando corretamente,
+
+260
+00:17:33.594 --> 00:17:38.348
+o modo hash, o modo force, que são três modos, quatro modos, o modo object,
+
+261
+00:17:38.682 --> 00:17:41.977
+que existe nessa função complexa que a gente passou pra ele,
+
+262
+00:17:42.227 --> 00:17:45.689
+e incluiu também três add cases, por exemplo, se o nome
+
+263
+00:17:45.689 --> 00:17:48.650
+do usuário tá vazio ou tá nulo, se a senha tá vazia ou nula,
+
+264
+00:17:49.026 --> 00:17:52.696
+ou se o nome de usuário é muito longo, acima de
+
+265
+00:17:52.696 --> 00:17:56.617
+64 caracteres, por exemplo, e deve ser truncado.
+
+266
+00:17:56.909 --> 00:18:00.370
+Então, são casos que, possivelmente, você nem ia
+
+267
+00:18:00.370 --> 00:18:05.250
+pensar em implementar no seu código. Normalmente, a gente implementa o código mais
+
+268
+00:18:05.501 --> 00:18:08.337
+óbvio e alguns erros que a gente sabe que podem acontecer,
+
+269
+00:18:08.337 --> 00:18:12.382
+mas... Lembrando que eu limitei em 10 testes. Se eu deixasse ele
+
+270
+00:18:12.382 --> 00:18:17.012
+criar todos os testes possíveis, ia levar mais tempo, óbvio, mas ele ia cobrir uma
+
+271
+00:18:17.012 --> 00:18:20.390
+infinidade de casos de uso para esses testes.
+
+272
+00:18:20.599 --> 00:18:24.186
+Agora o seu trabalho é, obviamente, revisar isso para ver se
+
+273
+00:18:24.186 --> 00:18:27.856
+faz sentido e ver se os testes realmente se encaixam dentro daquilo que
+
+274
+00:18:27.856 --> 00:18:30.859
+as regras de negócio do projeto estão pedindo. Como você
+
+275
+00:18:31.401 --> 00:18:36.240
+Como você sabe, agora é sua vez. Abra um projeto seu, pode ser profissional,
+
+276
+00:18:36.532 --> 00:18:40.369
+pode ser um projeto pessoal, escolha a função mais complexa ou confusa
+
+277
+00:18:40.369 --> 00:18:44.289
+que você encontrar, aquela que todo mundo tem medo de mexer.
+
+278
+00:18:45.082 --> 00:18:48.794
+Então, peça para a IA explicar o que a função faz, isso ajuda ela
+
+279
+00:18:48.794 --> 00:18:52.840
+a entender o contexto como um todo, sugerir uma refaturação e,
+
+280
+00:18:52.840 --> 00:18:56.051
+finalmente, gerar um teste unitário para ela.
+
+281
+00:18:56.301 --> 00:18:59.763
+Depois, confira o resultado. Veja se a IA realmente trouxe um
+
+282
+00:18:59.805 --> 00:19:03.600
+padrão de projeto que você não conhecia, por exemplo, uma divisão
+
+283
+00:19:03.600 --> 00:19:08.147
+de responsabilidades mais clara, um teste para um cenário que você não tinha
+
+284
+00:19:08.147 --> 00:19:12.109
+pensado, por exemplo. Esse exercício sozinho já muda a
+
+285
+00:19:12.109 --> 00:19:16.697
+forma como você trabalha. É como se você tivesse um assistente do
+
+286
+00:19:16.697 --> 00:19:20.784
+seu lado. Você é o responsável, mas ele pode trazer muita coisa que
+
+287
+00:19:20.784 --> 00:19:23.036
+você não sabia ou não queria fazer.
+
+288
+00:19:23.036 --> 00:19:25.205
+Nessa aula você viu exemplos práticos
+
+289
+00:19:25.205 --> 00:19:29.418
+de como usar IA no dia a dia de desenvolvimento. Usamos a
+
+290
+00:19:29.418 --> 00:19:33.338
+IA para pensar soluções lá no início, refatorar código,
+
+291
+00:19:33.547 --> 00:19:37.676
+traduzir lógica entre linguagens, escrever documentação,
+
+292
+00:19:37.885 --> 00:19:41.638
+gerar testes unitários com mais cobertura e mais qualidade.
+
+293
+00:19:41.638 --> 00:19:45.976
+O ponto mais importante aqui não é a ferramenta, é você enxergar a
+
+294
+00:19:45.976 --> 00:19:50.856
+sua capacidade como desenvolvedor aumentando. Você continua sendo responsável
+
+295
+00:19:50.856 --> 00:19:55.527
+pelas decisões, mas a IA vai entrar como uma alavanca de produtividade
+
+296
+00:19:55.527 --> 00:19:56.987
+e de qualidade.

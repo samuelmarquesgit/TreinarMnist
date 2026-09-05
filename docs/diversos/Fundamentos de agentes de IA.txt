@@ -1,0 +1,549 @@
+WEBVTT
+
+1
+00:00:07.424 --> 00:00:11.636
+Olá, eu sou Josias Schneider e eu quero te
+dar as boas-vindas a essa aula.
+
+2
+00:00:12.303 --> 00:00:17.684
+Hoje nós vamos falar sobre um dos
+conceitos mais importantes da IA moderna
+
+3
+00:00:17.684 --> 00:00:22.063
+aplicada ao desenvolvimento de software,
+que são os agentes de IA.
+
+4
+00:00:22.772 --> 00:00:25.942
+Até agora, a maioria de nós usou IA como
+assistente.
+
+5
+00:00:26.026 --> 00:00:29.821
+A gente escreve um prompt, faz uma
+pergunta, recebe uma resposta.
+
+6
+00:00:30.989 --> 00:00:33.950
+Isso é bem útil, mas é só o começo.
+
+7
+00:00:34.242 --> 00:00:38.580
+O que está mudando agora é o papel da IA
+dentro dos sistemas.
+
+8
+00:00:38.663 --> 00:00:42.042
+Ela deixa de apenas
+responder e passa a agir,
+
+9
+00:00:42.042 --> 00:00:44.711
+tomar decisões e
+executar tarefas de verdade.
+
+10
+00:00:45.003 --> 00:00:49.758
+O objetivo dessa aula é bem claro,
+fazer você entender o que é um agente de
+
+11
+00:00:49.758 --> 00:00:54.429
+IA, o que não é, e quais são os
+componentes fundamentais que tornam um
+
+12
+00:00:54.429 --> 00:00:58.516
+agente algo diferente de um simples
+chatbot ou de automação.
+
+13
+00:00:59.059 --> 00:01:01.853
+Essa base é muito necessária para tudo que
+vem depois.
+
+14
+00:01:01.936 --> 00:01:03.938
+Vamos lá então?
+
+15
+00:01:06.941 --> 00:01:08.610
+Vamos começar pelo problema.
+
+16
+00:01:09.486 --> 00:01:12.572
+Modelos de linguagem
+são excelentes em gerar
+
+17
+00:01:12.572 --> 00:01:16.326
+texto, explicar código
+e responder perguntas.
+
+18
+00:01:16.451 --> 00:01:22.123
+Mas desenvolvimento de software não é só
+conversa, é decisão, é integração com
+
+19
+00:01:22.123 --> 00:01:25.877
+outros sistemas, execução e as
+consequências disso.
+
+20
+00:01:26.211 --> 00:01:30.381
+No mundo real, tarefas raramente são
+resolvidas em uma única pergunta,
+
+21
+00:01:30.590 --> 00:01:31.591
+em um único prompt.
+
+22
+00:01:31.925 --> 00:01:38.348
+Elas envolvem contexto, múltiplos passos,
+verificação de resultados e ajustes.
+
+23
+00:01:38.723 --> 00:01:42.268
+Por exemplo, revisar
+um pull request, manter a
+
+24
+00:01:42.268 --> 00:01:45.480
+documentação atualizada ou
+reagir a falhas em produção.
+
+25
+00:01:45.772 --> 00:01:49.025
+Esses problemas não são bem resolvidos com
+um prompt único.
+
+26
+00:01:49.234 --> 00:01:51.861
+Eles exigem algo
+que consiga observar o
+
+27
+00:01:51.861 --> 00:01:55.949
+sistema, decidir o que
+fazer e executar ações.
+
+28
+00:01:56.032 --> 00:02:00.120
+É exatamente aí que entram os agentes de
+inteligência artificial.
+
+29
+00:02:03.331 --> 00:02:08.086
+De forma objetiva podemos definir um
+agente de IA dessa forma.
+
+30
+00:02:08.294 --> 00:02:13.675
+O agente de IA é um sistema que
+percebe o ambiente, toma decisões
+
+31
+00:02:13.675 --> 00:02:17.971
+e executa ações de forma
+autônoma para atingir um objetivo.
+
+32
+00:02:18.346 --> 00:02:22.600
+Essa definição aparece com algumas
+variações nos materiais do Google,
+
+33
+00:02:22.725 --> 00:02:24.310
+da Microsoft e da AWS.
+
+34
+00:02:25.061 --> 00:02:29.315
+Repare que essa definição tem quatro
+palavras chave importantes:
+
+35
+00:02:30.358 --> 00:02:37.699
+Ambiente, decisão, ação e objetivo. Vamos entrar um
+pouco mais nesse assunto.
+
+36
+00:02:37.866 --> 00:02:42.453
+Um agente não existe só para responder
+perguntas, ele existe para atingir um
+
+37
+00:02:42.453 --> 00:02:46.457
+objetivo, mesmo que isso exija várias
+ações ao longo do tempo.
+
+38
+00:02:46.749 --> 00:02:51.296
+Essa é a principal mudança de mentalidade
+que a gente precisa fazer nesse ponto.
+
+39
+00:02:51.629 --> 00:02:55.633
+Aqui também tem muita confusão,
+então vamos ser bem explícitos.
+
+40
+00:02:55.633 --> 00:03:01.681
+Um agente de IA não é apenas um chatbot
+comum, não é um prompt longo e
+
+41
+00:03:01.681 --> 00:03:06.227
+sofisticado, não é um fluxo
+fixo com passos exatos de
+
+42
+00:03:06.227 --> 00:03:10.315
+automação, não é um script
+que chama uma API de IA apenas.
+
+43
+00:03:10.773 --> 00:03:13.401
+Se a IA só responde quando
+alguém pergunta, ela é o
+
+44
+00:03:13.401 --> 00:03:17.197
+que a gente chama de um
+assistente, como o chat GPT.
+
+45
+00:03:17.697 --> 00:03:21.159
+Se o fluxo de execução
+é totalmente pré-definido,
+
+46
+00:03:21.201 --> 00:03:24.787
+a gente chama isso de
+automação e não de agência.
+
+47
+00:03:25.079 --> 00:03:25.622
+
+48
+00:03:25.622 --> 00:03:27.582
+Agentes tomam decisões.
+
+49
+00:03:27.749 --> 00:03:32.503
+Eles escolhem o próximo passo com base no
+estado atual do sistema.
+
+50
+00:03:36.049 --> 00:03:39.677
+Todo agente de IA opera em um loop
+contínuo.
+
+51
+00:03:39.886 --> 00:03:43.056
+Esse loop pode ser descrito da seguinte
+forma.
+
+52
+00:03:43.681 --> 00:03:50.313
+Percepção, raciocínio, ação e reflexão e
+atualização do estado.
+
+53
+00:03:50.563 --> 00:03:52.482
+Então o ciclo se repete.
+
+54
+00:03:52.732 --> 00:03:54.108
+Vamos pensar um pouco nisso.
+
+55
+00:03:54.192 --> 00:03:56.527
+Primeiro o agente percebe o ambiente.
+
+56
+00:03:56.527 --> 00:03:59.489
+Isso pode ser um evento,
+pode ser um dado novo, um
+
+57
+00:03:59.530 --> 00:04:02.325
+arquivo que foi alterado,
+um pull request aberto.
+
+58
+00:04:02.867 --> 00:04:09.249
+Depois ele raciocina sobre esse estado
+usando um modelo de linguagem, uma LLM.
+
+59
+00:04:09.540 --> 00:04:14.045
+O modelo então avalia o contexto e decide
+o que deve ser feito agora.
+
+60
+00:04:14.963 --> 00:04:18.466
+Em seguida o agente
+de fato executa uma ação
+
+61
+00:04:18.466 --> 00:04:21.469
+real usando ferramentas
+à disposição dele.
+
+62
+00:04:21.719 --> 00:04:25.473
+Por exemplo, chamar uma API, escrever um
+comentário, rodar um script.
+
+63
+00:04:25.473 --> 00:04:29.352
+Essa ação altera o ambiente,
+então o agente observa
+
+64
+00:04:29.352 --> 00:04:32.772
+o novo estado e decide
+se deve continuar ou parar.
+
+65
+00:04:33.398 --> 00:04:37.986
+Esse loop é o que diferencia um agente de
+um prompt isolado.
+
+66
+00:04:41.030 --> 00:04:45.285
+Vamos detalhar agora os componentes
+fundamentais de um agente de IA.
+
+67
+00:04:45.493 --> 00:04:46.703
+Primeiro é o objetivo.
+
+68
+00:04:47.495 --> 00:04:51.541
+O agente não trabalha por pergunta,
+mas por intenção.
+
+69
+00:04:52.667 --> 00:04:55.837
+Exemplos de objetivos
+são garantir a qualidade do
+
+70
+00:04:55.837 --> 00:04:59.299
+código, manter um sistema
+estável, reduzir falhas.
+
+71
+00:04:59.382 --> 00:05:00.383
+Isso é um objetivo.
+
+72
+00:05:00.883 --> 00:05:02.885
+O segundo é o ambiente.
+
+73
+00:05:03.886 --> 00:05:07.432
+O agente sempre atua dentro
+de um ambiente concreto,
+
+74
+00:05:07.473 --> 00:05:10.893
+seja código, infraestrutura,
+APIs, pipelines.
+
+75
+00:05:11.936 --> 00:05:16.357
+Ele observa esse ambiente e é capaz de
+modificar o ambiente.
+
+76
+00:05:16.691 --> 00:05:20.528
+O terceiro é o raciocínio, que é feito
+sempre pelo modelo de linguagem.
+
+77
+00:05:20.820 --> 00:05:23.823
+A LLM não executa ações.
+
+78
+00:05:23.823 --> 00:05:31.497
+O que ela faz é decidir qual ação deve ser
+tomada com base no contexto e no objetivo.
+
+79
+00:05:31.831 --> 00:05:33.958
+O quarto item são ferramentas.
+
+80
+00:05:34.000 --> 00:05:38.588
+Ferramentas são o que permitem que o
+agente saia do mundo do texto.
+
+81
+00:05:38.880 --> 00:05:43.509
+Sem ferramentas o agente não tem impacto
+real nenhum no mundo.
+
+82
+00:05:43.718 --> 00:05:47.221
+E o quinto ponto é controle e limites.
+
+83
+00:05:47.263 --> 00:05:50.183
+Toda gente precisa de critérios claros de
+parada.
+
+84
+00:05:50.224 --> 00:05:53.478
+Precisa de limites para como ele pode
+agir
+
+85
+00:05:53.478 --> 00:05:54.520
+e regras de segurança.
+
+86
+00:05:55.229 --> 00:05:58.274
+Se qualquer um desses
+componentes estiver ausente,
+
+87
+00:05:58.274 --> 00:06:01.069
+você provavelmente não
+tem um agente completo.
+
+88
+00:06:04.280 --> 00:06:06.783
+Vou deixar isso mais concreto com um
+exemplo simples.
+
+89
+00:06:07.033 --> 00:06:10.953
+Imagine um agente que faz revisão de pull
+requests.
+
+90
+00:06:11.537 --> 00:06:14.874
+O objetivo dele é
+garantir a qualidade e
+
+91
+00:06:14.874 --> 00:06:18.336
+reduzir risco antes de
+fazer o merge no código.
+
+92
+00:06:18.669 --> 00:06:22.799
+O ambiente que ele trabalha é o
+repositório Git e o pull request aberto.
+
+93
+00:06:22.799 --> 00:06:29.514
+O agente percebe a abertura de um pull
+request, analisa o diff, consulta regras
+
+94
+00:06:29.514 --> 00:06:32.642
+do projeto e executa as ferramentas de
+análise.
+
+95
+00:06:32.809 --> 00:06:36.687
+Com base nisso, ele decide
+então se deve comentar,
+
+96
+00:06:36.687 --> 00:06:39.899
+sugerir mudanças ou
+bloquear de vez o pull request.
+
+97
+00:06:40.233 --> 00:06:43.820
+Quando o objetivo é atingido, o agente
+encerra a sua execução.
+
+98
+00:06:44.112 --> 00:06:45.113
+Ficou claro?
+
+99
+00:06:48.366 --> 00:06:53.037
+É importante reforçar a diferença entre
+agentes e automação tradicional.
+
+100
+00:06:53.037 --> 00:06:56.499
+A automação segue passos fixos.
+
+101
+00:06:56.582 --> 00:06:59.544
+Os agentes escolhem o próximo passo.
+
+102
+00:06:59.836 --> 00:07:02.088
+A automação é previsível.
+
+103
+00:07:02.213 --> 00:07:05.883
+Os agentes se adaptam, dependendo do
+contexto.
+
+104
+00:07:06.843 --> 00:07:11.431
+Isso torna agentes especialmente úteis em
+cenários onde o contexto muda,
+
+105
+00:07:11.722 --> 00:07:16.477
+onde existe ambiguidade, onde decisões
+precisam ser tomadas em tempo real.
+
+106
+00:07:16.727 --> 00:07:18.020
+Então vamos recapitular.
+
+107
+00:07:18.187 --> 00:07:21.858
+Os agentes de IA têm objetivos bem
+definidos.
+
+108
+00:07:21.858 --> 00:07:24.193
+Eles observam o ambiente.
+
+109
+00:07:24.610 --> 00:07:26.529
+Eles tomam decisões.
+
+110
+00:07:26.863 --> 00:07:30.199
+Eles executam ações através de
+ferramentas.
+
+111
+00:07:30.199 --> 00:07:31.868
+E eles operam em loop.
+
+112
+00:07:32.326 --> 00:07:36.289
+Eles não substituem o papel
+do desenvolvedor, mas sim
+
+113
+00:07:36.289 --> 00:07:40.293
+ampliam o que os sistemas
+de software conseguem fazer.
+
+114
+00:07:40.293 --> 00:07:43.754
+Se você entendeu essa aula até aqui,
+
+115
+00:07:43.754 --> 00:07:48.634
+você já está preparado para pensar em
+construir agentes, de fato, usando API’s.

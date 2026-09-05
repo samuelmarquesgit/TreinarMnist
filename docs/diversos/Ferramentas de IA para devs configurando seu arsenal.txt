@@ -1,0 +1,1487 @@
+WEBVTT
+
+1
+00:00:04.140 --> 00:00:05.640
+Olá, bem-vindo de volta.
+
+2
+00:00:05.680 --> 00:00:08.200
+Nos últimos encontros, a
+gente percorreu um caminho,
+
+3
+00:00:08.480 --> 00:00:11.420
+decidiu quando um problema
+realmente pede um agente,
+
+4
+00:00:11.670 --> 00:00:16.020
+escolheu com que ferramentas construir
+esse agente e viu como as capacidades do
+
+5
+00:00:16.120 --> 00:00:18.460
+mundo externo ficam disponíveis pra ele por
+
+6
+00:00:18.500 --> 00:00:20.620
+meio de contratos e de um protocolo comum,
+
+7
+00:00:21.060 --> 00:00:21.970
+o MCP.
+
+8
+00:00:22.020 --> 00:00:23.240
+Em todos esses vídeos, porém,
+
+9
+00:00:23.380 --> 00:00:26.040
+ficou algo sempre pra depois: o momento
+
+10
+00:00:26.580 --> 00:00:29.340
+em que o agente para de
+decidir e, de fato, executa.
+
+11
+00:00:29.860 --> 00:00:32.430
+E é esse momento que a
+gente vai olhar de perto hoje:
+
+12
+00:00:32.880 --> 00:00:35.880
+a anatomia de uma única
+chamada de ferramenta,
+
+13
+00:00:35.940 --> 00:00:39.240
+entender o que o modelo
+faz e o que ele não faz,
+
+14
+00:00:39.300 --> 00:00:42.760
+até o salto que marcou o último
+ano, quando a gente passou
+
+15
+00:00:43.180 --> 00:00:45.449
+a escrever o próprio código pra orquestrar
+
+16
+00:00:46.120 --> 00:00:48.800
+as ferramentas em um ambiente isolado.
+
+17
+00:00:49.120 --> 00:00:51.560
+E vamos chegar na fronteira principal,
+
+18
+00:00:51.620 --> 00:00:56.120
+aquela em que a ação executada
+é real, às vezes irreversível,
+
+19
+00:00:56.140 --> 00:00:57.350
+e o erro vai custar dinheiro,
+
+20
+00:00:57.420 --> 00:01:00.130
+vai custar dados ou até a
+reputação de uma empresa.
+
+21
+00:01:00.650 --> 00:01:04.940
+Então vamos começar com uma
+distinção simples e bem interessante.
+
+22
+00:01:04.980 --> 00:01:07.880
+O modelo decide e o seu código executa.
+
+23
+00:01:08.320 --> 00:01:12.770
+E o ponto de partida pra gente entender
+é a pergunta mais simples de todas:
+
+24
+00:01:12.800 --> 00:01:18.060
+o que exatamente acontece quando
+dizemos que o modelo usou uma ferramenta?
+
+25
+00:01:21.480 --> 00:01:23.800
+Então vou começar desfazendo uma confusão
+
+26
+00:01:23.860 --> 00:01:26.860
+comum por causa da
+linguagem que a gente usa.
+
+27
+00:01:26.890 --> 00:01:29.170
+Quando a gente diz que o
+modelo usou uma ferramenta,
+
+28
+00:01:29.240 --> 00:01:32.220
+parece que o modelo saiu por
+aí executando coisa sozinho,
+
+29
+00:01:32.660 --> 00:01:34.140
+mas não é isso que acontece.
+
+30
+00:01:34.400 --> 00:01:35.940
+O modelo não executa nada,
+
+31
+00:01:36.100 --> 00:01:38.160
+ele faz uma única coisa: ele pede.
+
+32
+00:01:38.660 --> 00:01:42.180
+Funciona como um loop e a
+gente vai olhar isso com calma.
+
+33
+00:01:42.600 --> 00:01:46.280
+Primeiro você entrega pro
+modelo um catálogo de ferramentas.
+
+34
+00:01:46.620 --> 00:01:49.280
+Cada ferramenta é uma descrição, um nome,
+
+35
+00:01:49.440 --> 00:01:51.760
+uma explicação do que ela faz e um esquema
+
+36
+00:01:52.200 --> 00:01:56.180
+dos argumentos que ela aceita de
+entrada e saída, geralmente em JSON.
+
+37
+00:01:56.680 --> 00:01:58.940
+Depois chega o pedido, de fato, do usuário.
+
+38
+00:01:59.360 --> 00:02:00.560
+O modelo lê o pedido,
+
+39
+00:02:00.850 --> 00:02:03.260
+olha o catálogo e decide se
+ele consegue responder
+
+40
+00:02:03.340 --> 00:02:06.340
+sozinho ou se ele precisa de uma
+dessas ferramentas.
+
+41
+00:02:06.400 --> 00:02:09.000
+Se ele precisa, ele não roda a ferramenta,
+
+42
+00:02:09.020 --> 00:02:13.020
+ele devolve um pedaço de
+texto estruturado dizendo:
+
+43
+00:02:13.130 --> 00:02:15.560
+"Chame a ferramenta
+tal com esses argumentos".
+
+44
+00:02:16.060 --> 00:02:19.080
+E terceiro, quem executa é o seu código.
+
+45
+00:02:19.440 --> 00:02:22.040
+O seu sistema recebe esse
+pedido, valida os argumentos,
+
+46
+00:02:22.200 --> 00:02:23.840
+roda a função de verdade,
+
+47
+00:02:23.900 --> 00:02:26.680
+consulta a API de
+verdade e pega o resultado.
+
+48
+00:02:27.160 --> 00:02:30.180
+Depois disso, quarto passo,
+esse resultado volta pro modelo,
+
+49
+00:02:30.700 --> 00:02:33.100
+que agora usa essa
+informação pra continuar o
+
+50
+00:02:33.140 --> 00:02:35.340
+raciocínio ou pedir a próxima ferramenta.
+
+51
+00:02:35.860 --> 00:02:37.080
+Vamos de novo, pensa nisso.
+
+52
+00:02:37.600 --> 00:02:39.260
+A LLM gera texto.
+
+53
+00:02:39.820 --> 00:02:44.320
+Ela entende o que você pediu e
+sabe que tem ferramentas à disposição.
+
+54
+00:02:44.360 --> 00:02:48.760
+Então ela gera texto pedindo que
+essa ferramenta seja executada.
+
+55
+00:02:48.840 --> 00:02:52.200
+Esse texto tem um formato bem
+específico, normalmente em JSON,
+
+56
+00:02:52.760 --> 00:02:57.020
+detalhando os parâmetros dessa
+chamada de acordo com a ferramenta,
+
+57
+00:02:57.060 --> 00:02:59.160
+com a descrição dela e com a sua explicação.
+
+58
+00:02:59.480 --> 00:03:01.800
+Então quem executa, de
+fato, essa ferramenta?
+
+59
+00:03:02.440 --> 00:03:04.720
+Bom, depende de onde está o seu agente.
+
+60
+00:03:05.240 --> 00:03:08.740
+Se eu estou usando o Cloud
+Code, por exemplo, no meu computador,
+
+61
+00:03:09.440 --> 00:03:13.020
+ele é quem executa, na minha
+própria máquina, essa chamada
+
+62
+00:03:13.520 --> 00:03:15.320
+pro meu banco de dados local, por exemplo.
+
+63
+00:03:15.820 --> 00:03:19.620
+A LLM Cloud nunca tem
+acesso ao meu banco de dados.
+
+64
+00:03:20.000 --> 00:03:22.960
+Já se é um agente que você está
+construindo em Python, por exemplo,
+
+65
+00:03:23.000 --> 00:03:23.910
+no LangGraph,
+
+66
+00:03:23.960 --> 00:03:29.460
+você vai ter um if em algum momento
+dizendo que se a ferramenta tal for chamada,
+
+67
+00:03:29.480 --> 00:03:33.220
+então execute esse trecho de
+código aqui que você mesmo escreveu.
+
+68
+00:03:33.260 --> 00:03:36.480
+Então a LLM nunca executa nada diretamente.
+
+69
+00:03:36.560 --> 00:03:38.700
+Ela é um modelo de linguagem.
+
+70
+00:03:38.720 --> 00:03:40.840
+Repara nessa divisão de trabalho.
+
+71
+00:03:40.850 --> 00:03:42.710
+O modelo decide o que fazer,
+
+72
+00:03:43.000 --> 00:03:45.520
+mas o seu código é que executa.
+
+73
+00:03:45.560 --> 00:03:49.060
+E essa separação entre a
+decisão e a execução
+
+74
+00:03:49.100 --> 00:03:51.600
+é a base de um agente que
+você consegue manter.
+
+75
+00:03:51.640 --> 00:03:55.640
+Lembra que quando a gente falou de
+construir agentes de verdade em produção,
+
+76
+00:03:55.650 --> 00:03:58.740
+a ideia era pensar em
+sistema e não em prompt?
+
+77
+00:03:59.320 --> 00:04:00.250
+É isso aqui.
+
+78
+00:04:00.300 --> 00:04:04.840
+A maioria das falhas de agente nasce de
+problemas justamente nesse encaixe.
+
+79
+00:04:04.880 --> 00:04:06.240
+O modelo entendeu a tarefa,
+
+80
+00:04:06.640 --> 00:04:08.080
+mas chamou a ferramenta errada,
+
+81
+00:04:08.500 --> 00:04:10.760
+ou passou um argumento mal formado,
+
+82
+00:04:10.770 --> 00:04:14.580
+ou recebeu de volta um erro que
+não foi tratado e aí seguiu adiante,
+
+83
+00:04:14.600 --> 00:04:17.769
+produzindo uma resposta que
+parece que está funcionando,
+
+84
+00:04:17.860 --> 00:04:20.959
+porque ele é bom em criar uma
+resposta bem coerente,
+
+85
+00:04:21.420 --> 00:04:24.160
+mas no fim ela está
+errada por baixo dos panos.
+
+86
+00:04:24.220 --> 00:04:27.480
+A camada de ferramentas é onde a maioria dos
+
+87
+00:04:27.540 --> 00:04:30.150
+incidentes de produção realmente acontecem,
+
+88
+00:04:30.200 --> 00:04:32.200
+não é na camada de raciocínio do modelo.
+
+89
+00:04:32.460 --> 00:04:34.900
+Então a qualidade de um agente não se mede
+
+90
+00:04:34.980 --> 00:04:37.600
+só pelo parágrafo final que ele produziu,
+
+91
+00:04:37.640 --> 00:04:41.790
+mas se mede pelo comportamento da
+cadeia inteira de chamadas.
+
+92
+00:04:42.340 --> 00:04:44.960
+Como então fazer o modelo
+pedir de forma correta,
+
+93
+00:04:45.080 --> 00:04:49.900
+pedir várias coisas ao
+mesmo tempo sem se atrapalhar?
+
+94
+00:04:52.060 --> 00:04:56.180
+Bom, se cada ferramenta é um pedido que o
+modelo faz, a primeira pergunta é:
+
+95
+00:04:56.520 --> 00:04:58.340
+precisa ser um pedido de cada vez?
+
+96
+00:04:58.740 --> 00:04:59.770
+Bom, nem sempre.
+
+97
+00:04:59.820 --> 00:05:02.860
+Atualmente, a maioria dos
+provedores já deixam o modelo
+
+98
+00:05:02.880 --> 00:05:05.660
+emitir várias chamadas numa mesma rodada.
+
+99
+00:05:06.220 --> 00:05:08.520
+É o que a gente costuma
+chamar de chamadas em paralelo.
+
+100
+00:05:09.100 --> 00:05:13.640
+Em vez de pedir uma transação,
+esperar, pedir a cotação, esperar,
+
+101
+00:05:14.120 --> 00:05:15.320
+pedir o saldo, esperar,
+
+102
+00:05:15.740 --> 00:05:20.080
+o modelo dispara os três de uma vez e
+você devolve os três resultados juntos.
+
+103
+00:05:20.400 --> 00:05:22.080
+O ganho mais óbvio é a latência.
+
+104
+00:05:22.160 --> 00:05:25.080
+Você condensa várias
+idas e vindas em uma só.
+
+105
+00:05:25.100 --> 00:05:29.020
+Mas tem um outro ganho que é talvez
+não tão óbvio, bem interessante.
+
+106
+00:05:29.080 --> 00:05:32.160
+Quando o modelo faz chamadas
+redundantes em paralelo,
+
+107
+00:05:32.640 --> 00:05:34.640
+com argumentos um pouco diferentes,
+
+108
+00:05:35.060 --> 00:05:38.080
+você pode verificar os resultados entre si.
+
+109
+00:05:38.200 --> 00:05:40.400
+Você pode pedir a mesma coisa várias vezes.
+
+110
+00:05:40.430 --> 00:05:43.940
+E se uma ferramenta devolve uma
+informação inconsistente numa chamada,
+
+111
+00:05:44.340 --> 00:05:46.910
+mas correta em outras, por exemplo, o modelo
+
+112
+00:05:47.440 --> 00:05:49.260
+tende a perceber que aquilo destoa um
+
+113
+00:05:49.280 --> 00:05:52.124
+pouco das outras e
+desconfia em vez de acreditar.
+
+114
+00:05:52.424 --> 00:05:55.124
+Então você ganha confiabilidade na
+resposta do modelo.
+
+115
+00:05:55.604 --> 00:05:57.754
+Um trabalho recente do começo de 2026,
+
+116
+00:05:58.304 --> 00:06:01.644
+mostrou que espalhar as
+chamadas dessa forma pode,
+
+117
+00:06:01.674 --> 00:06:03.854
+em algumas tarefas de
+pesquisa, por exemplo, chegar
+
+118
+00:06:04.324 --> 00:06:08.844
+a algo perto de quatro vezes mais
+rápido do que fazer tudo em sequência e ainda,
+
+119
+00:06:08.884 --> 00:06:11.404
+de quebra, filtrar os
+resultados não confiáveis.
+
+120
+00:06:11.444 --> 00:06:14.564
+Então são várias formas de
+usar essas ferramentas.
+
+121
+00:06:14.844 --> 00:06:18.224
+Só que nem toda ferramenta
+pode ser usada de forma paralela,
+
+122
+00:06:18.584 --> 00:06:20.964
+quando a ordem do fluxo importa,
+
+123
+00:06:21.424 --> 00:06:23.924
+ou quando as ferramentas
+compartilham algum efeito colateral,
+
+124
+00:06:24.484 --> 00:06:27.064
+ou uma escreve onde a
+outra vai precisar ler,
+
+125
+00:06:27.384 --> 00:06:31.584
+você desliga esse paralelismo e
+você volta pro sequencial.
+
+126
+00:06:31.764 --> 00:06:34.364
+Cada passo vai ficar inspecionável.
+
+127
+00:06:34.384 --> 00:06:38.034
+E aqui que entra a parte da
+disciplina do contrato das ferramentas.
+
+128
+00:06:38.614 --> 00:06:44.384
+O modelo escolhe mal quando o seu catálogo
+é basicamente uma gaveta bagunçada.
+
+129
+00:06:44.424 --> 00:06:50.724
+Se você expõe ferramentas como busca
+usuário, encontra customer, get user,
+
+130
+00:06:50.784 --> 00:06:52.304
+find account, busca perfil,
+
+131
+00:06:52.614 --> 00:06:55.583
+o modelo tem que adivinhar o que
+essa arquitetura quis dizer.
+
+132
+00:06:55.604 --> 00:06:59.064
+Então nomes ambíguos acabam com a
+inteligência de qualquer LLM.
+
+133
+00:06:59.484 --> 00:07:02.214
+Então use nomes claros e específicos,
+
+134
+00:07:02.724 --> 00:07:04.504
+uma ferramenta com um único propósito,
+
+135
+00:07:04.984 --> 00:07:07.844
+descrições que digam quando usar aquilo,
+
+136
+00:07:07.884 --> 00:07:11.284
+campos obrigatórios marcados de
+fato como obrigatórios e
+
+137
+00:07:11.304 --> 00:07:14.474
+valores enumerados quando o
+campo só aceita algumas opções,
+
+138
+00:07:14.544 --> 00:07:18.904
+tipo um status que só pode ser
+pendente, ativo ou cancelado.
+
+139
+00:07:18.924 --> 00:07:21.824
+E menos ferramentas, às
+vezes, é inclusive melhor.
+
+140
+00:07:21.864 --> 00:07:24.624
+Dar 50 ferramentas pro
+modelo acaba derrubando a
+
+141
+00:07:24.644 --> 00:07:28.164
+precisão de escolha dele de uma
+forma bastante previsível.
+
+142
+00:07:28.204 --> 00:07:32.464
+Se você tiver algumas apenas, mas
+bem desenhadas, você quase sempre ganha
+
+143
+00:07:32.884 --> 00:07:36.004
+de ter muitas ferramentas mal definidas.
+
+144
+00:07:36.424 --> 00:07:39.884
+E também trate o contrato da
+ferramenta como um produto,
+
+145
+00:07:39.944 --> 00:07:41.284
+não como um detalhe interno,
+
+146
+00:07:41.614 --> 00:07:43.784
+porque no dia em que o
+time de back-end, por exemplo,
+
+147
+00:07:43.824 --> 00:07:46.334
+renomear um campo internamente sem avisar,
+
+148
+00:07:46.444 --> 00:07:47.904
+nada vai explodir na hora,
+
+149
+00:07:48.424 --> 00:07:51.484
+mas o agente vai começar a
+falhar de um jeito estranho uns
+
+150
+00:07:51.504 --> 00:07:55.164
+dois dias depois e depois
+rastrear isso na memória,
+
+151
+00:07:55.204 --> 00:07:56.174
+é difícil.
+
+152
+00:07:56.224 --> 00:08:00.344
+Agora mesmo com um contrato
+impecável, existe um limite físico.
+
+153
+00:08:00.984 --> 00:08:05.684
+Cada chamada e cada resultado passa
+pelo modelo, gasta token, gasta tempo.
+
+154
+00:08:05.954 --> 00:08:07.554
+Quando a tarefa tem muitos passos,
+
+155
+00:08:07.804 --> 00:08:10.364
+isso vira inclusive uma
+questão de orçamento.
+
+156
+00:08:10.374 --> 00:08:11.874
+E foi resolvendo esse problema,
+
+157
+00:08:12.344 --> 00:08:13.494
+que apareceu no último ano,
+
+158
+00:08:13.544 --> 00:08:16.124
+a mudança mais interessante dessa história.
+
+159
+00:08:20.324 --> 00:08:23.074
+Vamos pensar num caso
+concreto, por exemplo, no Fintrack,
+
+160
+00:08:23.184 --> 00:08:25.024
+nosso app de finanças pessoais.
+
+161
+00:08:25.324 --> 00:08:28.164
+Você quer categorizar 200 transações no mês.
+
+162
+00:08:28.764 --> 00:08:33.384
+No modelo clássico de uso de ferramentas,
+isso vira basicamente uma dança.
+
+163
+00:08:33.434 --> 00:08:36.304
+O modelo pede a transação um,
+você devolve, ele pede a dois,
+
+164
+00:08:36.364 --> 00:08:37.964
+você devolve e assim por diante.
+
+165
+00:08:38.304 --> 00:08:40.764
+Cada transação vai entrar no contexto,
+
+166
+00:08:40.804 --> 00:08:43.164
+cada resultado sai de novo pelo modelo.
+
+167
+00:08:43.184 --> 00:08:46.424
+Tarefas maiores, esse vai e
+vem de dados chega a ser absurdo.
+
+168
+00:08:46.464 --> 00:08:47.784
+Então a mudança aqui é simples.
+
+169
+00:08:47.984 --> 00:08:50.044
+Em vez do agente chamar as
+ferramentas uma a uma,
+
+170
+00:08:50.644 --> 00:08:54.304
+ele escreve um pequeno programa que
+chama as ferramentas por
+
+171
+00:08:54.384 --> 00:08:58.964
+ele e esse programa roda em um
+ambiente de execução separado.
+
+172
+00:08:59.514 --> 00:09:00.274
+Pensa um pouquinho nisso,
+
+173
+00:09:00.324 --> 00:09:03.124
+isso muda um pouco a nossa
+forma de pensar as ferramentas.
+
+174
+00:09:03.164 --> 00:09:06.674
+O agente vira um
+programador que orquestra as
+
+175
+00:09:06.704 --> 00:09:09.344
+próprias ferramentas usando código.
+
+176
+00:09:09.384 --> 00:09:11.524
+E deixa eu explicar por que
+isso é tão eficiente.
+
+177
+00:09:11.964 --> 00:09:13.934
+Primeiro, as definições das ferramentas
+
+178
+00:09:14.424 --> 00:09:17.824
+não precisam mais morar todas
+dentro da janela de contexto.
+
+179
+00:09:17.884 --> 00:09:20.224
+Elas ficam do lado do ambiente de execução,
+
+180
+00:09:20.724 --> 00:09:23.724
+como arquivos que o agente
+abre só quando precisa.
+
+181
+00:09:23.804 --> 00:09:26.244
+Aquela ideia da revelação
+progressiva das skills.
+
+182
+00:09:26.664 --> 00:09:27.864
+Carrega só o que vai usar.
+
+183
+00:09:28.204 --> 00:09:32.244
+Segundo, os resultados intermediários
+ficam dentro do ambiente de execução.
+
+184
+00:09:32.784 --> 00:09:34.934
+Se o seu programa lê 2000 linhas,
+
+185
+00:09:35.404 --> 00:09:37.104
+filtra e devolve só o resumo,
+
+186
+00:09:37.364 --> 00:09:38.924
+é só o resumo que vai voltar pro modelo.
+
+187
+00:09:39.404 --> 00:09:42.184
+As 2000 linhas nunca entraram no contexto.
+
+188
+00:09:42.224 --> 00:09:44.684
+E aí vem o efeito,
+inclusive, de privacidade.
+
+189
+00:09:45.304 --> 00:09:49.144
+Dados sensíveis atravessam o seu
+fluxo sem nunca entrar no modelo,
+
+190
+00:09:49.204 --> 00:09:53.664
+porque só ele vê exatamente o que
+você resolveu registrar.
+
+191
+00:09:54.064 --> 00:09:57.644
+Um exemplo divulgado pela
+engenharia da Anthropic no fim de 2025,
+
+192
+00:09:58.224 --> 00:10:01.784
+um fluxo que movia
+dados de um drive pra um CRM,
+
+193
+00:10:02.284 --> 00:10:07.064
+caiu de cerca de 150.000 tokens pra
+cerca de 2000 usando essa técnica.
+
+194
+00:10:07.484 --> 00:10:09.884
+Isso é uma redução na casa de 98%.
+
+195
+00:10:09.984 --> 00:10:14.744
+O ganho aparece quando o catálogo é
+grande e os dados que trafegam são pesados.
+
+196
+00:10:14.764 --> 00:10:16.864
+Você não precisa usar isso o tempo todo.
+
+197
+00:10:17.224 --> 00:10:18.424
+E onde esse código roda?
+
+198
+00:10:18.544 --> 00:10:22.104
+Bom, aqui entra uma categoria
+nova, que cresceu bem rápido,
+
+199
+00:10:22.144 --> 00:10:24.224
+que são os sandboxes de execução.
+
+200
+00:10:24.824 --> 00:10:28.984
+São ambientes isolados, descartáveis, que
+sobem numa fração de segundo
+
+201
+00:10:29.464 --> 00:10:30.984
+pra rodar código gerado por IA,
+
+202
+00:10:31.384 --> 00:10:34.234
+sem deixar esse código perto da sua máquina,
+
+203
+00:10:34.644 --> 00:10:37.904
+das suas credenciais ou do
+seu banco de produção.
+
+204
+00:10:37.924 --> 00:10:43.204
+No momento, você pode ouvir
+muito de nomes como E2B, Modal,
+
+205
+00:10:43.484 --> 00:10:48.064
+Daytona e algumas outras opções que
+Cloudflare e Vercel, por exemplo,
+
+206
+00:10:48.084 --> 00:10:49.334
+passaram a oferecer.
+
+207
+00:10:49.364 --> 00:10:53.504
+A maioria usando isolamento no
+nível de micromáquina virtual,
+
+208
+00:10:53.684 --> 00:10:55.924
+com kernel separado do host.
+
+209
+00:10:56.044 --> 00:10:58.664
+A própria Anthropic
+expõe uma ferramenta de code
+
+210
+00:10:58.704 --> 00:11:02.344
+execution que roda Python e
+Bash num container isolado.
+
+211
+00:11:02.384 --> 00:11:04.184
+Os nomes das ferramentas vão mudar,
+
+212
+00:11:04.244 --> 00:11:06.294
+mas o padrão com certeza vai continuar.
+
+213
+00:11:06.764 --> 00:11:10.764
+Pouco depois de uma das
+primeiras versões de computer use
+
+214
+00:11:11.324 --> 00:11:15.104
+virar beta público, um pesquisador de
+segurança montou uma armadilha.
+
+215
+00:11:15.344 --> 00:11:16.664
+Ele criou uma página web comum,
+
+216
+00:11:16.884 --> 00:11:20.304
+uma instrução maliciosa
+escondida no meio do conteúdo.
+
+217
+00:11:20.314 --> 00:11:23.474
+Quando o agente navegou até
+essa página, uma tarefa normal,
+
+218
+00:11:24.024 --> 00:11:25.584
+ele leu a instrução escondida,
+
+219
+00:11:26.204 --> 00:11:29.084
+baixou um arquivo binário do
+servidor do pesquisador,
+
+220
+00:11:29.684 --> 00:11:32.304
+deu permissão de execução e rodou aquilo,
+
+221
+00:11:32.604 --> 00:11:35.944
+conectando a máquina a um
+servidor de comando e controle.
+
+222
+00:11:35.984 --> 00:11:39.144
+Tudo isso achando que só
+estava cumprindo a tarefa.
+
+223
+00:11:39.164 --> 00:11:43.144
+O nome que ficou pra esse
+experimento fala sobre zumbis.
+
+224
+00:11:43.544 --> 00:11:44.864
+E a lição aqui é séria.
+
+225
+00:11:44.924 --> 00:11:47.484
+Um agente que executa
+é um agente que pode ser
+
+226
+00:11:47.524 --> 00:11:49.564
+sequestrado pelo próprio
+conteúdo que ele lê.
+
+227
+00:11:50.014 --> 00:11:52.064
+Não é que o modelo não
+seja inteligente, e sim,
+
+228
+00:11:52.124 --> 00:11:56.303
+porque executar no mundo
+externo tem consequência.
+
+229
+00:11:56.384 --> 00:11:59.764
+E é exatamente por
+isso que o sandbox existe.
+
+230
+00:12:00.174 --> 00:12:02.754
+E é por isso que a dica de
+hoje é uma só: nunca rode
+
+231
+00:12:03.234 --> 00:12:06.174
+o que o seu agente
+escreve com as suas permissões.
+
+232
+00:12:06.594 --> 00:12:09.674
+Procure sempre rodar num
+ambiente descartável, isolado,
+
+233
+00:12:10.064 --> 00:12:13.834
+com acesso à rede fechado por
+padrão e aberto só onde precisa.
+
+234
+00:12:14.254 --> 00:12:16.054
+Se alguma coisa ruim acontecer,
+
+235
+00:12:16.454 --> 00:12:19.513
+você só perde aquilo que está no
+container e não em produção.
+
+236
+00:12:23.824 --> 00:12:27.794
+Até agora, quase tudo que a gente
+fez com o app Fintrack foi ler,
+
+237
+00:12:28.214 --> 00:12:30.304
+listar transação, categorizar, resumir.
+
+238
+00:12:30.624 --> 00:12:32.474
+Leitura é um ambiente seguro.
+
+239
+00:12:32.934 --> 00:12:35.694
+Se o agente ler errado,
+você corrige e segue.
+
+240
+00:12:36.094 --> 00:12:39.734
+O jogo muda um pouco de figura quando a
+gente começa a escrever informações,
+
+241
+00:12:39.834 --> 00:12:44.054
+Marcar uma transação como paga, criar um
+orçamento, disparar uma transferência,
+
+242
+00:12:44.164 --> 00:12:45.164
+apagar um registro.
+
+243
+00:12:45.214 --> 00:12:48.674
+Aí a ação tem efeito e
+muitas vezes irreversível.
+
+244
+00:12:49.114 --> 00:12:54.274
+O custo de errar deixa de ser um
+resumo que não deu muito certo e passa a ser
+
+245
+00:12:54.694 --> 00:12:56.514
+o dinheiro ou dados errados.
+
+246
+00:12:56.954 --> 00:13:00.714
+Vale a gente separar duas formas que o
+agente executa ações reais.
+
+247
+00:13:01.014 --> 00:13:02.064
+Uma é aquilo que a gente viu,
+
+248
+00:13:02.114 --> 00:13:04.634
+ferramenta estruturada e a chamada de API.
+
+249
+00:13:05.134 --> 00:13:07.394
+Quando existe uma interface para
+falar com o sistema,
+
+250
+00:13:07.494 --> 00:13:09.234
+esse é o caminho mais confiável.
+
+251
+00:13:09.634 --> 00:13:12.814
+A outra é chamada de computer use, o agente
+
+252
+00:13:13.234 --> 00:13:15.874
+que enxerga a tela em pixels mesmo e mexe no
+
+253
+00:13:15.914 --> 00:13:18.154
+mouse e no teclado como um humano faria.
+
+254
+00:13:18.634 --> 00:13:22.214
+Nesse momento, esse campo
+tem várias opções em jogo,
+
+255
+00:13:22.974 --> 00:13:26.804
+como a Anthropic, a OpenAI,
+Google e algumas outras,
+
+256
+00:13:27.054 --> 00:13:28.934
+todas rodando o mesmo laço.
+
+257
+00:13:28.974 --> 00:13:33.934
+Eles tiram print da tela, decidem a
+ação, executam, tiram outro print,
+
+258
+00:13:34.334 --> 00:13:36.254
+avaliam e repetem.
+
+259
+00:13:36.294 --> 00:13:39.804
+Isso é muito poderoso para
+tarefas repetitivas de navegador,
+
+260
+00:13:39.894 --> 00:13:41.094
+preencher formulários,
+
+261
+00:13:41.174 --> 00:13:45.274
+mas é frágil justamente na
+recuperação de erro em várias etapas.
+
+262
+00:13:45.514 --> 00:13:50.514
+Um erro no passo três pode gerar
+efeitos em cascata nos próximos 10 passos.
+
+263
+00:13:50.734 --> 00:13:53.694
+Então a regra aqui é quase uma hierarquia.
+
+264
+00:13:54.154 --> 00:13:55.354
+Se você tem uma API,
+
+265
+00:13:55.714 --> 00:14:01.334
+prefira a API e deixe o controle de
+tela para quando não sobrou interface.
+
+266
+00:14:01.354 --> 00:14:03.714
+Você pode usar API, MCP.
+
+267
+00:14:03.774 --> 00:14:06.574
+Se não tiver nenhuma dessas
+ferramentas disponíveis,
+
+268
+00:14:06.634 --> 00:14:09.313
+aí você dá acesso à tela do seu computador.
+
+269
+00:14:09.334 --> 00:14:11.254
+E independente da forma, entra a disciplina
+
+270
+00:14:11.754 --> 00:14:15.214
+que separa um agente operacional de um
+
+271
+00:14:15.254 --> 00:14:17.514
+acidente que pode
+acontecer a qualquer momento.
+
+272
+00:14:17.674 --> 00:14:19.594
+E o erro mais comum é o agente rodar
+
+273
+00:14:20.074 --> 00:14:25.074
+com as mesmas permissões amplas da
+conta que foi usada para criar esse agente,
+
+274
+00:14:25.194 --> 00:14:27.774
+mesmo precisando executar apenas uma função.
+
+275
+00:14:28.274 --> 00:14:31.394
+O antídoto hoje é o menor
+privilégio em cada ferramenta.
+
+276
+00:14:31.454 --> 00:14:35.194
+Cada ferramenta faz só a permissão
+daquilo que ela precisa fazer.
+
+277
+00:14:35.474 --> 00:14:37.714
+Separar leitura e escrita em credenciais,
+
+278
+00:14:37.814 --> 00:14:42.654
+confirmação humana para ações que
+envolvem alto risco, como escrita, remoção,
+
+279
+00:14:42.714 --> 00:14:47.894
+envio, gasto, todas elas passando por um
+agente humano antes de acontecer.
+
+280
+00:14:48.374 --> 00:14:50.094
+E para qualquer ação que mexe em dinheiro,
+
+281
+00:14:50.414 --> 00:14:54.994
+ter um limite em valor e um aprovador com o
+nome de uma pessoa é importante.
+
+282
+00:14:55.234 --> 00:14:56.694
+Mostrar a fonte,
+
+283
+00:14:56.754 --> 00:15:00.414
+o resultado esperado e o estrago
+possível se estiver errado.
+
+284
+00:15:00.854 --> 00:15:03.134
+Isso tem até um vocabulário se formando.
+
+285
+00:15:03.554 --> 00:15:08.554
+Fala-se em autonomia graduada,
+escalas que vão do agente que só assiste,
+
+286
+00:15:08.774 --> 00:15:11.054
+até o que age totalmente sozinho,
+
+287
+00:15:11.603 --> 00:15:14.634
+com o nível de governança
+subindo a cada degrau.
+
+288
+00:15:14.934 --> 00:15:18.914
+Um marco regulatório recente propõe
+justamente uma escala assim de cinco níveis.
+
+289
+00:15:19.054 --> 00:15:21.314
+E a ideia por trás é bem simples:
+
+290
+00:15:21.514 --> 00:15:24.204
+a intensidade da
+supervisão deve acompanhar o
+
+291
+00:15:24.274 --> 00:15:26.534
+tamanho do estrago que a ação pode causar.
+
+292
+00:15:26.614 --> 00:15:31.394
+Exigir aprovação humana para cada
+passo mata todo o ganho de ter um agente.
+
+293
+00:15:31.674 --> 00:15:35.394
+Só que não exigir nada é um
+risco que você não quer correr.
+
+294
+00:15:35.434 --> 00:15:38.394
+Então o ponto de equilíbrio
+é você calibrar isso de
+
+295
+00:15:38.414 --> 00:15:42.734
+acordo com a consequência ou
+impacto da ação do agente.
+
+296
+00:15:47.054 --> 00:15:49.574
+Agora é sua vez e eu quero dividir em três
+
+297
+00:15:49.594 --> 00:15:52.074
+passos pequenos para você fazer ainda hoje.
+
+298
+00:15:52.554 --> 00:15:55.094
+Primeiro, pega o Fintrack ou o
+seu próprio projeto
+
+299
+00:15:55.634 --> 00:15:59.944
+e define uma única ferramenta de
+leitura, um nome claro,
+
+300
+00:15:59.954 --> 00:16:01.584
+um esquema bem definido,
+
+301
+00:16:01.614 --> 00:16:03.844
+faça um pedido em
+linguagem natural e observe a
+
+302
+00:16:03.914 --> 00:16:06.994
+chamada estruturada
+aparecer antes da resposta.
+
+303
+00:16:07.054 --> 00:16:09.844
+Isso já vai ajudar você a entender o que o
+
+304
+00:16:09.894 --> 00:16:13.064
+modelo faz e onde a
+execução do código acontece.
+
+305
+00:16:13.524 --> 00:16:17.463
+Segundo, escolhe uma tarefa
+repetitiva, como categorizar alguma coisa,
+
+306
+00:16:17.554 --> 00:16:21.633
+consolidar um relatório, e tenta de
+duas formas: chamada a chamada
+
+307
+00:16:22.133 --> 00:16:24.314
+e depois dando ao agente um ambiente para
+
+308
+00:16:24.354 --> 00:16:27.014
+escrever código e orquestrar isso sozinho.
+
+309
+00:16:27.554 --> 00:16:29.954
+Compare o esforço, mesmo sem os números.
+
+310
+00:16:30.424 --> 00:16:31.544
+E o terceiro,
+
+311
+00:16:31.594 --> 00:16:36.654
+acrescente uma ação de escrita e
+coloque uma confirmação humana na frente dela.
+
+312
+00:16:37.014 --> 00:16:38.554
+Se pergunte, olhando para o seu projeto,
+
+313
+00:16:38.694 --> 00:16:41.894
+quais ações aí dentro você
+deixaria um agente fazer
+
+314
+00:16:42.054 --> 00:16:45.714
+totalmente sozinho e quais
+você exigiria um ok antes.
+
+315
+00:16:46.134 --> 00:16:47.734
+Essa lista é, na prática,
+
+316
+00:16:47.754 --> 00:16:49.914
+o desenho de segurança do seu agente.
+
+317
+00:16:50.394 --> 00:16:51.564
+Então é isso.
+
+318
+00:16:51.614 --> 00:16:56.794
+Hoje a gente saiu da ideia de quais
+ferramentas a gente tem para como exatamente
+
+319
+00:16:57.254 --> 00:16:58.554
+ele executa isso.
+
+320
+00:16:58.614 --> 00:17:02.274
+A gente entendeu a anatomia de uma
+chamada, as chamadas em paralelo,
+
+321
+00:17:02.754 --> 00:17:05.134
+o salto de deixar o agente escrever
+
+322
+00:17:05.174 --> 00:17:12.314
+código para orquestrar tudo numa própria
+sandbox e a fronteira das ações reais,
+
+323
+00:17:12.454 --> 00:17:15.394
+como o menor privilégio e aprovação humana.
+
+324
+00:17:15.974 --> 00:17:19.044
+Agora você tem um agente que
+não só decide, mas executa,
+
+325
+00:17:19.474 --> 00:17:22.434
+e executa tendo restrições reais.
+
+326
+00:17:23.054 --> 00:17:24.254
+Te vejo na próxima.

@@ -1,0 +1,1246 @@
+WEBVTT
+
+1
+00:00:07.549 --> 00:00:12.095
+Nessa aula, nós vamos mudar a camada
+em que a gente está trabalhando.
+
+2
+00:00:12.095 --> 00:00:14.848
+Aqui, o foco vai deixar de ser orquestrar sistemas
+
+3
+00:00:14.848 --> 00:00:19.144
+e passa a ser construir agentes como software.
+
+4
+00:00:19.144 --> 00:00:21.438
+Deixamos de falar sobre automação visual
+
+5
+00:00:21.438 --> 00:00:25.066
+e passamos a tratar agora
+sobre engenharia de agentes.
+
+6
+00:00:28.737 --> 00:00:33.116
+Quando alguém começa a construir
+agentes, normalmente começa com prompts.
+
+7
+00:00:33.116 --> 00:00:37.912
+Isso funciona bem no início, mas
+rapidamente começam a aparecer problemas.
+
+8
+00:00:37.912 --> 00:00:42.625
+Prompts muito grandes, o contexto
+vai ficando difícil de controlar,
+
+9
+00:00:42.625 --> 00:00:45.045
+decisões que ninguém sabe exatamente onde
+
+10
+00:00:45.045 --> 00:00:48.548
+são tomadas, ferramentas que são mal definidas.
+
+11
+00:00:48.548 --> 00:00:51.634
+Enfim, o comportamento do agente começa a variar
+
+12
+00:00:51.634 --> 00:00:55.764
+demais e fica difícil para
+a gente entender o porquê.
+
+13
+00:00:55.764 --> 00:01:01.603
+Esse é o ponto em que fica claro que
+o prompt não escala como arquitetura.
+
+14
+00:01:01.603 --> 00:01:06.399
+Se a gente precisa manter estado
+e aprender com novas informações,
+
+15
+00:01:06.399 --> 00:01:12.280
+ou se a gente precisa repetir etapas,
+ou tomar decisões condicionais,
+
+16
+00:01:12.280 --> 00:01:15.241
+usar ferramentas de alguma forma que seja segura,
+
+17
+00:01:15.241 --> 00:01:18.161
+então a gente precisa de algo mais estruturado.
+
+18
+00:01:21.915 --> 00:01:24.292
+O primeiro conceito importante dessa aula, então,
+
+19
+00:01:24.292 --> 00:01:28.588
+é o MCP, que quer dizer Model Context Protocol.
+
+20
+00:01:29.255 --> 00:01:32.926
+O MCP é uma especificação
+que define como um modelo
+
+21
+00:01:32.926 --> 00:01:36.679
+de linguagem recebe contexto
+e utiliza ferramentas.
+
+22
+00:01:37.013 --> 00:01:39.641
+A ideia central do MCP é bem simples:
+
+23
+00:01:39.641 --> 00:01:43.853
+parar de tratar tudo como
+texto solto em um prompt.
+
+24
+00:01:43.853 --> 00:01:47.774
+Em vez disso, o contexto do
+modelo passa a ser estruturado.
+
+25
+00:01:47.774 --> 00:01:52.112
+Você vai ter instruções
+claras, dados ficam explícitos,
+
+26
+00:01:52.112 --> 00:01:56.950
+as ferramentas são descritas formalmente
+com permissões bem definidas.
+
+27
+00:01:56.950 --> 00:02:02.455
+Isso cria basicamente um contrato entre
+o sistema e o modelo de linguagem.
+
+28
+00:02:02.455 --> 00:02:06.209
+É importante a gente entender
+o escopo correto do MCP.
+
+29
+00:02:06.209 --> 00:02:09.170
+O MCP não é um agente, não é um framework,
+
+30
+00:02:09.170 --> 00:02:11.798
+não é um orquestrador como o N8N.
+
+31
+00:02:11.798 --> 00:02:16.261
+Não é ele quem define o
+fluxo, ele não armazena estado
+
+32
+00:02:16.261 --> 00:02:19.514
+e ele não decide quando o modelo é chamado.
+
+33
+00:02:19.514 --> 00:02:22.308
+Nada disso é trabalho do MCP.
+
+34
+00:02:22.308 --> 00:02:27.188
+O MCP é um protocolo que
+tenta resolver uma questão:
+
+35
+00:02:27.188 --> 00:02:31.025
+o que o modelo pode ver e
+o que o modelo pode fazer.
+
+36
+00:02:31.025 --> 00:02:35.572
+Todo o resto continua sendo
+responsabilidade do código da aplicação.
+
+37
+00:02:35.572 --> 00:02:40.410
+Pensa no protocolo HTTP para a
+web, ele não faz nada por si só.
+
+38
+00:02:40.410 --> 00:02:42.954
+Ele só define como os componentes,
+
+39
+00:02:42.954 --> 00:02:46.207
+como cliente e servidor,
+se comunicam via Internet.
+
+40
+00:02:46.207 --> 00:02:48.459
+Essa é a função do protocolo.
+
+41
+00:02:48.459 --> 00:02:54.007
+Do ponto de vista de engenharia, o MCP traz
+muitos benefícios concretos para a gente.
+
+42
+00:02:54.007 --> 00:02:56.676
+Ferramentas deixam de ser descrições vagas em
+
+43
+00:02:56.676 --> 00:03:00.096
+um prompt e passam a ser interfaces formais.
+
+44
+00:03:00.096 --> 00:03:02.265
+As permissões ficam explícitas.
+
+45
+00:03:02.265 --> 00:03:07.145
+O acoplamento entre a aplicação
+e o modelo de linguagem diminui.
+
+46
+00:03:07.145 --> 00:03:12.317
+Isso facilita muito a auditoria, a
+segurança e até a troca de modelos.
+
+47
+00:03:12.317 --> 00:03:15.987
+O MCP, por si só, não deixa
+o agente mais inteligente.
+
+48
+00:03:15.987 --> 00:03:19.240
+Ele deixa o sistema como um todo mais controlável.
+
+49
+00:03:19.532 --> 00:03:23.786
+Então, vamos dar uma olhada na
+documentação oficial do MCP,
+
+50
+00:03:23.786 --> 00:03:29.584
+que fica no site que você está
+vendo aqui, modelcontextprotocol.io.
+
+51
+00:03:29.584 --> 00:03:31.211
+Essa é a documentação oficial.
+
+52
+00:03:31.211 --> 00:03:37.383
+O MCP foi um protocolo sugerido e criado
+pela Anthropic, que é a criadora do
+
+53
+00:03:37.383 --> 00:03:41.346
+modelo Claude, do Claude Code e várias
+outras ferramentas que existem hoje.
+
+54
+00:03:41.346 --> 00:03:44.891
+Uma das grandes aí no mercado
+de inteligência artificial.
+
+55
+00:03:44.891 --> 00:03:50.230
+Ela sugeriu esse modelo e outras
+empresas grandes começaram a adotar.
+
+56
+00:03:50.230 --> 00:03:54.859
+Então, hoje você vai ver servidores MCP para
+
+57
+00:03:54.859 --> 00:03:58.196
+praticamente qualquer grande
+tecnologia que você encontra hoje.
+
+58
+00:03:58.655 --> 00:04:02.617
+Então, a documentação deles é muito completa.
+
+59
+00:04:02.617 --> 00:04:08.581
+A gente pode ver aqui no gráfico, por
+exemplo, que o MCP, como protocolo,
+
+60
+00:04:08.581 --> 00:04:14.629
+vai servir de interface para conectar
+interfaces de chat, por exemplo,
+
+61
+00:04:14.629 --> 00:04:19.759
+IDEs e editores de código, outras
+aplicações de inteligência artificial,
+
+62
+00:04:19.759 --> 00:04:25.848
+dados e sistemas de arquivos como
+Postgres, SQLite ou o próprio Google Drive,
+
+63
+00:04:25.848 --> 00:04:29.519
+ferramentas de desenvolvimento
+como Git, Sentry e outras,
+
+64
+00:04:29.519 --> 00:04:37.193
+e ferramentas de produtividade como
+Slack, Google Maps e várias outras.
+
+65
+00:04:37.485 --> 00:04:44.450
+Então, você tem esse fluxo bidirecional
+entre um host e um servidor,
+
+66
+00:04:44.450 --> 00:04:51.165
+onde você busca informações e você entrega
+informações através desse protocolo MCP.
+
+67
+00:04:51.165 --> 00:04:56.379
+Então, vamos dar uma olhada
+no que é possível fazer.
+
+68
+00:04:56.379 --> 00:05:00.425
+Por exemplo, aqui eles definem
+o que o MCP possibilita:
+
+69
+00:05:01.092 --> 00:05:04.554
+agentes acessarem, por exemplo, o Google Calendar
+
+70
+00:05:04.554 --> 00:05:08.599
+e o Notion, agindo como um
+assistente de IA personalizado.
+
+71
+00:05:08.599 --> 00:05:13.146
+Se ele tem acesso ao seu calendário e a
+toda a sua documentação que está no Notion,
+
+72
+00:05:13.146 --> 00:05:18.026
+você pode permitir, por exemplo, o
+Claude Code gerando um aplicativo inteiro
+
+73
+00:05:18.026 --> 00:05:21.571
+usando o design do Figma, porque
+eles conseguem se conectar
+
+74
+00:05:21.571 --> 00:05:26.492
+através de uma LLM e entender
+cada um o projeto do outro.
+
+75
+00:05:26.492 --> 00:05:32.582
+Você pode criar imagens 3D ou designs
+3D em ferramentas como Blender,
+
+76
+00:05:32.582 --> 00:05:36.502
+por exemplo, e imprimir usando uma impressora 3D.
+
+77
+00:05:36.502 --> 00:05:40.840
+Você pode usar tudo isso
+através de uma ferramenta de IA
+
+78
+00:05:40.840 --> 00:05:46.179
+que usa essa conexão MCP para
+entender o que ela tem direito.
+
+79
+00:05:46.512 --> 00:05:50.224
+Aqui na documentação do
+MCP, você vai aprender como
+
+80
+00:05:50.224 --> 00:05:53.436
+construir servidores MCP
+e como construir clientes.
+
+81
+00:05:53.436 --> 00:05:55.855
+Mas, nesse momento, eu
+estou mais interessado nessa
+
+82
+00:05:55.855 --> 00:05:58.691
+seção de arquitetura, que a
+gente pode dar uma olhada.
+
+83
+00:05:59.359 --> 00:06:03.029
+Todos os conceitos do MCP vão estar aqui.
+
+84
+00:06:03.029 --> 00:06:09.243
+E um conceito que é importante
+entender são os participantes.
+
+85
+00:06:09.243 --> 00:06:12.205
+Então, você tem basicamente três participantes:
+
+86
+00:06:12.205 --> 00:06:15.041
+um host, um client e um server.
+
+87
+00:06:15.750 --> 00:06:19.295
+O host vai ser uma aplicação
+que usa inteligência artificial,
+
+88
+00:06:19.295 --> 00:06:23.800
+que coordena e gerencia clientes de MCP.
+
+89
+00:06:23.800 --> 00:06:28.179
+Então, você pode ver na imagem
+aqui a gente tem esse host,
+
+90
+00:06:28.179 --> 00:06:33.601
+com o fundo amarelo e vários
+clientes gerenciados pelo host.
+
+91
+00:06:34.102 --> 00:06:40.149
+Esses clientes são conectados a servidores
+MCP, como a gente tem aqui em baixo.
+
+92
+00:06:40.149 --> 00:06:44.737
+Cada um deles tem uma
+conexão dedicada ao servidor.
+
+93
+00:06:44.737 --> 00:06:52.036
+Você pode pensar, por exemplo, nesse host
+como o VS Code, o seu editor de código.
+
+94
+00:06:52.036 --> 00:06:57.250
+O VS Code tem, ele é um host MCP.
+
+95
+00:06:57.250 --> 00:06:59.585
+E você pode tentar conectar
+ele a vários servidores.
+
+96
+00:06:59.585 --> 00:07:05.174
+Por exemplo, a gente pode ter um servidor MCP
+
+97
+00:07:05.174 --> 00:07:08.719
+na frente do banco de dados Postgres, por exemplo.
+
+98
+00:07:08.719 --> 00:07:14.642
+E aí, o seu editor de código, através
+de uma LLM, pode fazer essa conexão
+
+99
+00:07:14.642 --> 00:07:19.772
+ao Postgres, onde ele vai mandar
+prompts diretamente ao banco de dados.
+
+100
+00:07:19.772 --> 00:07:23.860
+Ele pode criar registros no banco
+de dados, ele pode fazer querys,
+
+101
+00:07:23.860 --> 00:07:28.364
+realizar buscas, ele pode acessar
+informações do banco de dados
+
+102
+00:07:28.364 --> 00:07:32.910
+e alterar essas informações em
+linguagem natural, usando prompt.
+
+103
+00:07:32.910 --> 00:07:37.039
+Então, em vez de pedir para sua LLM
+escrever uma query para você buscar
+
+104
+00:07:37.039 --> 00:07:40.751
+uma informação do banco de dados,
+você apenas descreve o que você quer
+
+105
+00:07:40.751 --> 00:07:45.756
+e ela vai acessar o servidor que
+está lá na frente do Postgres.
+
+106
+00:07:45.756 --> 00:07:50.344
+O servidor vai dizer: "Olha, eu tenho
+essa, essa e essa funcionalidade para
+
+107
+00:07:50.344 --> 00:07:55.683
+acessar o banco de dados, para alterar
+registros, para criar novas entidades."
+
+108
+00:07:55.683 --> 00:08:01.522
+E aí a LLM vai ser capaz de dizer: "Bom,
+então eu vou querer acessar esse registro,
+
+109
+00:08:01.522 --> 00:08:05.359
+eu vou querer criar uma tabela
+nova no banco de dados."
+
+110
+00:08:05.359 --> 00:08:10.156
+O servidor vai explicar como fazer,
+e elas vão basicamente conversando
+
+111
+00:08:10.156 --> 00:08:14.452
+através desse contrato bem
+definido que a gente chama de MCP.
+
+112
+00:08:14.452 --> 00:08:17.288
+E ali ela vai, de fato, realizar a ação.
+
+113
+00:08:17.288 --> 00:08:23.544
+Então, para ficar claro: o
+MCP não faz nada por si só.
+
+114
+00:08:23.544 --> 00:08:26.797
+E sim, ele é o protocolo que permite essa conexão.
+
+115
+00:08:26.797 --> 00:08:31.093
+Você precisa criar um servidor,
+ou usar um servidor externo,
+
+116
+00:08:31.093 --> 00:08:36.182
+e você precisa ter um cliente que é
+capaz de se conectar a esse servidor.
+
+117
+00:08:36.182 --> 00:08:38.893
+Então, você pode realizar
+essa comunicação e aí sim,
+
+118
+00:08:38.893 --> 00:08:42.230
+usar as ferramentas que esses
+servidores disponibilizam.
+
+119
+00:08:42.522 --> 00:08:45.608
+Aqui você tem exemplos de servidores, por exemplo,
+
+120
+00:08:45.608 --> 00:08:49.529
+um servidor MCP para acessar
+o seu sistema de arquivos.
+
+121
+00:08:49.529 --> 00:08:50.655
+Então, facilita muito.
+
+122
+00:08:50.655 --> 00:08:54.617
+Você está usando o Cursor e você quer
+ter acesso ao sistema de arquivos,
+
+123
+00:08:54.617 --> 00:08:58.329
+não só do seu projeto, mas do
+seu computador, por exemplo.
+
+124
+00:08:58.329 --> 00:09:00.957
+Você pode usar um servidor MCP.
+
+125
+00:09:02.291 --> 00:09:04.126
+Você pode conectar a um banco de dados,
+
+126
+00:09:04.126 --> 00:09:06.921
+como eu mencionei o Postgres agora a pouco.
+
+127
+00:09:06.921 --> 00:09:11.801
+Você pode usar ferramentas remotas,
+como o Sentry, que é uma ferramenta
+
+128
+00:09:11.801 --> 00:09:16.556
+de monitoramento e observabilidade,
+onde você, por exemplo,
+
+129
+00:09:16.556 --> 00:09:20.810
+conecta um aplicativo Node,
+ou qualquer outra linguagem,
+
+130
+00:09:20.810 --> 00:09:26.649
+você vai conectar ele ao Sentry e lá cada
+erro do seu sistema vai ser logado lá.
+
+131
+00:09:26.649 --> 00:09:29.986
+Então, por exemplo, você quer, via prompt,
+
+132
+00:09:29.986 --> 00:09:32.280
+saber o que está acontecendo nos seus logs.
+
+133
+00:09:32.280 --> 00:09:36.242
+Em vez de logar nessa ferramenta ou
+conectar via uma API bem estrita,
+
+134
+00:09:36.242 --> 00:09:41.455
+você usa o servidor MCP que a Sentry
+disponibiliza e você tem acesso a
+
+135
+00:09:41.455 --> 00:09:46.168
+tudo aquilo que está acontecendo de
+informação e pode agir de acordo com isso.
+
+136
+00:09:46.377 --> 00:09:49.922
+Então, a documentação do MCP é bem completa.
+
+137
+00:09:49.922 --> 00:09:53.676
+Você pode vir aqui, por
+exemplo, em "especificação"
+
+138
+00:09:53.676 --> 00:09:58.931
+e entrar na seção de "arquitetura",
+que fica aqui em baixo.
+
+139
+00:09:58.931 --> 00:10:04.228
+Você vai ter todo o entendimento dos
+componentes principais que formam,
+
+140
+00:10:04.228 --> 00:10:08.357
+como a gente mencionou, aqui um
+host que gerencia os clientes.
+
+141
+00:10:08.357 --> 00:10:12.570
+Esses clientes se conectam a
+servidores que podem estar na
+
+142
+00:10:12.570 --> 00:10:16.324
+sua máquina local, podem estar
+na internet de forma remota.
+
+143
+00:10:16.324 --> 00:10:19.368
+Você pode se conectar, por
+exemplo, a servidor de arquivos
+
+144
+00:10:19.368 --> 00:10:24.248
+ou do Git local, do seu banco
+de dados, ou a APIs externas.
+
+145
+00:10:24.248 --> 00:10:28.711
+Existem muitas ferramentas que
+já implementam esses servidores.
+
+146
+00:10:28.711 --> 00:10:35.259
+Você pode entender também como que funciona
+esse fluxo básico de conexão entre eles,
+
+147
+00:10:35.259 --> 00:10:39.847
+caso você queira criar o seu próprio
+servidor MCP para algum serviço local.
+
+148
+00:10:40.389 --> 00:10:44.935
+Por exemplo, um aplicativo que
+você está desenvolvendo e você
+
+149
+00:10:44.935 --> 00:10:50.941
+costumava disponibilizar uma API,
+uma interface acessada via HTTP.
+
+150
+00:10:50.941 --> 00:10:55.905
+Agora você também pode criar um servidor
+MCP para o seu próprio aplicativo,
+
+151
+00:10:55.905 --> 00:11:00.451
+para que outras aplicações
+consigam acessar via prompt,
+
+152
+00:11:00.451 --> 00:11:04.455
+que outras aplicações tenham um
+cliente e busquem essa conexão.
+
+153
+00:11:04.455 --> 00:11:09.043
+Você pode mostrar no seu servidor
+quais ferramentas você disponibiliza,
+
+154
+00:11:09.043 --> 00:11:12.797
+quais são os tipos de acessos e
+permissões que você tem no seu serviço.
+
+155
+00:11:16.550 --> 00:11:20.596
+Bom, se o MCP organiza o
+contexto da sua aplicação,
+
+156
+00:11:20.596 --> 00:11:24.809
+o LangGraph organiza o fluxo do agente no tempo.
+
+157
+00:11:25.267 --> 00:11:29.271
+O LangGraph é uma biblioteca que
+faz parte do ecossistema LangChain,
+
+158
+00:11:29.271 --> 00:11:31.732
+que é um ecossistema super conhecido.
+
+159
+00:11:31.732 --> 00:11:34.360
+Ele está disponível em Python e TypeScript.
+
+160
+00:11:34.360 --> 00:11:37.571
+Então, a gente está falando
+de escrever código mesmo.
+
+161
+00:11:37.571 --> 00:11:40.658
+Essa biblioteca permite construir agentes como
+
+162
+00:11:40.658 --> 00:11:44.829
+grafos de execução, em vez de scripts lineares.
+
+163
+00:11:44.829 --> 00:11:48.791
+Essa mudança é fundamental quando
+o agente precisa repetir passos,
+
+164
+00:11:48.791 --> 00:11:54.797
+quando ele precisa tomar decisões condicionais
+ou manter estado ao longo do tempo.
+
+165
+00:11:54.797 --> 00:11:57.675
+Aqui, o agente começa a se parecer com um sistema
+
+166
+00:11:57.675 --> 00:12:00.010
+de verdade, já com uma certa complexidade.
+
+167
+00:12:03.556 --> 00:12:05.933
+Vamos falar sobre alguns conceitos importantes
+
+168
+00:12:05.933 --> 00:12:09.395
+no LangGraph antes de olhar a documentação.
+
+169
+00:12:09.395 --> 00:12:14.233
+Os "nodes" representam unidades
+de execução, como chamadas ao
+
+170
+00:12:14.233 --> 00:12:19.029
+modelo de linguagem, como funções
+ou ferramentas. Esses são os nodes.
+
+171
+00:12:19.029 --> 00:12:24.702
+Aí, você tem "edges", que definem
+como o fluxo segue entre os nodes.
+
+172
+00:12:24.702 --> 00:12:28.789
+E, finalmente, você tem o "state",
+que é um objeto explícito que
+
+173
+00:12:28.789 --> 00:12:33.502
+acompanha o agente e pode ser
+lido e modificado a cada etapa.
+
+174
+00:12:33.502 --> 00:12:37.173
+Esse estado não fica escondido
+no prompt, como você faria se
+
+175
+00:12:37.173 --> 00:12:39.842
+estivesse trabalhando apenas
+com engenharia de contexto,
+
+176
+00:12:39.842 --> 00:12:44.054
+mas ele faz parte da arquitetura desde o início.
+
+177
+00:12:44.054 --> 00:12:50.060
+Esse modelo permite, então, loops mais
+controlados, permite ramificações,
+
+178
+00:12:50.060 --> 00:12:54.648
+retomar a execução de onde você parou
+depois de finalizar algum outro evento.
+
+179
+00:12:54.648 --> 00:12:56.609
+Enfim, ele te dá muita flexibilidade.
+
+180
+00:13:00.237 --> 00:13:05.326
+E aqui eu quero evitar uma pequena confusão
+que pode acontecer com a aula anterior.
+
+181
+00:13:05.326 --> 00:13:10.164
+Ferramentas como o n8n resolvem
+a orquestração externa.
+
+182
+00:13:10.164 --> 00:13:15.669
+Por exemplo, eventos, integrações,
+automação entre sistemas.
+
+183
+00:13:15.669 --> 00:13:21.091
+Já o LangGraph resolve mais a decisão
+interna, que é como o agente pensa,
+
+184
+00:13:21.091 --> 00:13:27.181
+como ele evolui ao longo do tempo,
+como o estado interno da sua aplicação muda.
+
+185
+00:13:27.181 --> 00:13:32.228
+Além disso, o N8N é bastante visual,
+ele tem muitas integrações pré-prontas,
+
+186
+00:13:32.228 --> 00:13:35.773
+enquanto o LangChain é uma
+biblioteca de código, de fato,
+
+187
+00:13:35.773 --> 00:13:39.735
+que te permite customizar todo
+o fluxo interno do agente.
+
+188
+00:13:40.069 --> 00:13:43.781
+Bom, então este aqui é o site do LangGraph.
+
+189
+00:13:43.781 --> 00:13:48.077
+Você pode ver que ele está dentro do
+LangChain, que é a sua biblioteca principal.
+
+190
+00:13:48.702 --> 00:13:52.498
+Fica em langchain.com/langgraph.
+
+191
+00:13:53.374 --> 00:14:00.631
+E o que ele oferece é justamente esse
+equilíbrio entre controle e agência.
+
+192
+00:14:01.257 --> 00:14:03.968
+Por ser uma biblioteca de código, ele vai te dar
+
+193
+00:14:03.968 --> 00:14:07.638
+muita flexibilidade em tudo o que você pode fazer.
+
+194
+00:14:07.638 --> 00:14:13.018
+Então, aqui a gente está pensando em
+tarefas mais complexas com um agente.
+
+195
+00:14:13.018 --> 00:14:17.898
+Ele é, obviamente, usado por empresas
+gigantes do setor de tecnologia.
+
+196
+00:14:17.898 --> 00:14:23.737
+Aqui a gente pode ver, por exemplo,
+GitLab, Cisco, Klarna, o próprio Elastic.
+
+197
+00:14:23.737 --> 00:14:27.658
+São empresas gigantes que já usam isso para fazer
+
+198
+00:14:27.658 --> 00:14:30.828
+as suas automações, para criar os seus agentes.
+
+199
+00:14:31.287 --> 00:14:36.584
+Então, um ponto importante que eles
+destacam aqui é o "Human in the Loop",
+
+200
+00:14:36.667 --> 00:14:40.754
+em que&nbsp;você pode, no meio de um fluxo,
+
+201
+00:14:40.754 --> 00:14:44.466
+no meio do caminho, você pede
+uma interação do usuário.
+
+202
+00:14:44.466 --> 00:14:51.599
+Então, você pode permitir esse controle
+do agente através de inputs do usuário.
+
+203
+00:14:51.599 --> 00:14:56.604
+A gente tem aqui workflows de
+agentes totalmente customizáveis.
+
+204
+00:14:56.604 --> 00:14:59.940
+Então, você pode trabalhar
+com multiagentes também.
+
+205
+00:14:59.940 --> 00:15:02.526
+Ele é uma ferramenta bastante flexível.
+
+206
+00:15:02.526 --> 00:15:08.449
+Você pode persistir o contexto quando
+você trabalha com interações mais longas.
+
+207
+00:15:08.449 --> 00:15:12.620
+Então, você precisa manter um histórico
+da conversa, você precisa criar talvez
+
+208
+00:15:12.620 --> 00:15:18.667
+um perfil para o usuário de forma
+específica, você pode persistir sessões.
+
+209
+00:15:18.667 --> 00:15:21.295
+Então, o usuário terminou de usar o seu software,
+
+210
+00:15:21.295 --> 00:15:24.506
+mas ele vai voltar no dia seguinte
+e continuar de onde ele parou.
+
+211
+00:15:24.506 --> 00:15:29.845
+Você pode persistir tudo isso,
+mantendo essa memória de longo prazo.
+
+212
+00:15:30.387 --> 00:15:32.473
+A gente pode ver que ele tem
+uma ferramenta bem completa.
+
+213
+00:15:32.473 --> 00:15:34.725
+Ele tem muita documentação.
+
+214
+00:15:34.725 --> 00:15:39.438
+Existem cursos internos aqui que
+a gente pode ver, por exemplo,
+
+215
+00:15:39.438 --> 00:15:43.067
+"Introdução ao LangGraph", a
+gente tem um curso em vídeo criado
+
+216
+00:15:43.067 --> 00:15:49.782
+por eles mesmos e toda a
+documentação disponível aqui.
+
+217
+00:15:49.782 --> 00:15:57.539
+Então, essa é a biblioteca
+específica para a criação de agentes,
+
+218
+00:15:57.539 --> 00:16:01.043
+um controle bem de baixo
+nível mesmo, que a LangChain
+
+219
+00:16:01.043 --> 00:16:04.880
+fornece para a gente através
+dessa biblioteca LangGraph.
+
+220
+00:16:04.880 --> 00:16:08.509
+Vamos dar uma olhadinha
+rápida na documentação aqui.
+
+221
+00:16:08.509 --> 00:16:14.056
+Você tem a biblioteca LangGraph
+em Python ou em TypeScript.
+
+222
+00:16:14.056 --> 00:16:18.352
+Então, a gente pode dar uma
+olhada no que ela vai oferecer.
+
+223
+00:16:18.352 --> 00:16:23.565
+É uma biblioteca bem simples
+de instalar e de criar aqui
+
+224
+00:16:23.565 --> 00:16:28.028
+uma interação inicial, onde
+vai fazer um mock da LLM.
+
+225
+00:16:28.028 --> 00:16:29.780
+Você não precisa necessariamente conectar
+
+226
+00:16:29.780 --> 00:16:34.451
+com ela e aí você cria um grafo de estado.
+
+227
+00:16:34.451 --> 00:16:38.372
+Então, você vai adicionar
+um nó que seria a sua LLM.
+
+228
+00:16:38.372 --> 00:16:42.835
+Você vai adicionar os edges, que
+são as conexões entre esses nodes,
+
+229
+00:16:42.835 --> 00:16:47.381
+que ele vai do início até a
+LLM e depois da LLM até o fim.
+
+230
+00:16:47.381 --> 00:16:49.466
+Então, é extremamente simples.
+
+231
+00:16:49.466 --> 00:16:51.427
+E aí, faz a compilação.
+
+232
+00:16:51.427 --> 00:16:56.265
+Depois, você vai invocar isso
+mandando uma mensagem de usuário.
+
+233
+00:16:56.265 --> 00:17:02.062
+E aí, quando você enviar um "oi",
+por exemplo, a IA vai responder,
+
+234
+00:17:02.062 --> 00:17:07.067
+um "hello world" clássico
+dentro do mundo de software.
+
+235
+00:17:07.067 --> 00:17:12.906
+Aqui você pode entender tudo o que
+ele faz, como você pode conectar,
+
+236
+00:17:12.906 --> 00:17:16.493
+como você faz para rodar
+isso em um servidor local,
+
+237
+00:17:16.493 --> 00:17:20.956
+como você coloca as aplicações em produção.
+
+238
+00:17:20.956 --> 00:17:24.835
+E, finalmente, você pode entrar nas APIs de fato
+
+239
+00:17:24.835 --> 00:17:28.922
+para entender como que tudo isso funciona.
+
+240
+00:17:28.922 --> 00:17:33.635
+Um exemplo é aqui na API do
+grafo, que tem os três elementos
+
+241
+00:17:33.635 --> 00:17:38.057
+principais que a gente já discutiu:
+o state, os nodes e os edges.
+
+242
+00:17:38.057 --> 00:17:41.977
+Você pode entender como
+cada um deles vai funcionar.
+
+243
+00:17:42.478 --> 00:17:47.316
+Por exemplo, o state aqui sendo o
+objeto que vai acompanhar o seu agente
+
+244
+00:17:47.316 --> 00:17:51.945
+durante todo o tempo, em que você pode
+buscar informações da memória dele,
+
+245
+00:17:51.945 --> 00:17:56.700
+você pode alterar, adicionar mais
+informações para que o agente mantenha
+
+246
+00:17:56.700 --> 00:18:02.748
+o contexto em mente durante toda a
+interação, durante todo o fluxo do processo.
+
+247
+00:18:02.748 --> 00:18:06.335
+Então, é uma ferramenta muito importante
+
+248
+00:18:06.335 --> 00:18:08.587
+para o ecossistema de criação de agentes.
+
+249
+00:18:08.587 --> 00:18:13.884
+E tem toda a documentação aqui para você
+começar a criar os seus próprios agentes.
+
+250
+00:18:17.513 --> 00:18:19.932
+Voltando para o MCP, para não restar dúvida:
+
+251
+00:18:20.474 --> 00:18:26.105
+MCP e LangGraph resolvem problemas
+diferentes, mas complementares.
+
+252
+00:18:26.396 --> 00:18:29.274
+O MCP define quais ferramentas o modelo pode usar
+
+253
+00:18:29.274 --> 00:18:33.654
+e como o contexto chega até
+ele, através desse protocolo.
+
+254
+00:18:33.654 --> 00:18:36.365
+O LangGraph define quando o modelo é chamado,
+
+255
+00:18:36.365 --> 00:18:39.201
+em que ordem, com base em qual estado.
+
+256
+00:18:39.201 --> 00:18:41.745
+Ele permite a construção do agente.
+
+257
+00:18:41.745 --> 00:18:48.043
+Um organiza o contrato, e o outro organiza
+o tempo, o fluxo através do tempo.
+
+258
+00:18:48.043 --> 00:18:52.047
+Juntos, eles permitem agentes mais
+previsíveis, mais fáceis de manter
+
+259
+00:18:52.047 --> 00:18:56.760
+e com uma flexibilidade enorme
+naquilo que você pode construir.
+
+260
+00:18:56.760 --> 00:19:02.683
+Muito bem! Nessa aula, tratamos de muitos
+conceitos, como o MCP e o LangGraph.
+
+261
+00:19:02.683 --> 00:19:08.689
+Nós entendemos como os agentes funcionam
+internamente usando essas bibliotecas.
+
+262
+00:19:08.689 --> 00:19:11.066
+Agentes não são prompts longos, não precisam
+
+263
+00:19:11.066 --> 00:19:15.487
+ser fluxos visuais completos, como eram no N8N.
+
+264
+00:19:15.487 --> 00:19:20.951
+Mas devem ser sistemas com estado,
+fluxo e contratos bem definidos.
+
+265
+00:19:20.951 --> 00:19:26.999
+MCP e LangGraph são respostas de arquitetura
+a esse problema dos agentes de IA.

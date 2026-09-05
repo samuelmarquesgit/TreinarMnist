@@ -1,0 +1,556 @@
+WEBVTT
+
+1
+00:00:07.382 --> 00:00:08.925
+Olá, eu sou Josias Schneider.
+
+2
+00:00:09.134 --> 00:00:11.302
+Seja muito bem-vindo a esta aula.
+
+3
+00:00:11.761 --> 00:00:13.054
+Você provavelmente
+
+4
+00:00:13.054 --> 00:00:15.557
+vai usar IA todos os
+dias na sua carreira.
+
+5
+00:00:15.640 --> 00:00:19.978
+A pergunta final não é o que a
+IA consegue fazer, e sim como
+
+6
+00:00:19.978 --> 00:00:24.357
+que eu uso isso sem criar um
+risco invisível no meu sistema.
+
+7
+00:00:28.153 --> 00:00:32.574
+Durante muito tempo, a IA no
+desenvolvimento foi tratada como algo
+
+8
+00:00:32.574 --> 00:00:38.329
+experimental, opcional, periférico, como
+talvez você mesmo tenha feito até aqui.
+
+9
+00:00:38.538 --> 00:00:41.166
+Mas como você já sabe, isso não é mais
+verdade.
+
+10
+00:00:41.166 --> 00:00:45.962
+Hoje a IA participa ativamente do ciclo de
+vida do software.
+
+11
+00:00:46.129 --> 00:00:51.092
+Ela faz a escrita do código, faz a
+revisão, cria testes, cria a pipeline,
+
+12
+00:00:51.551 --> 00:00:53.803
+observa toda a operação.
+
+13
+00:00:54.054 --> 00:00:58.516
+Então quando uma tecnologia entra nesse
+nível do processo, ela deixa de ser uma
+
+14
+00:00:58.516 --> 00:01:03.605
+curiosidade técnica e passa a ser parte do
+sistema completo de produção.
+
+15
+00:01:03.980 --> 00:01:07.108
+E quando algo faz parte
+do sistema de produção, ele
+
+16
+00:01:07.108 --> 00:01:10.862
+precisa também de regras, de
+limites e de responsabilidade.
+
+17
+00:01:13.907 --> 00:01:18.578
+Isso aqui a essa altura já virou um mantra
+nesse curso, mas eu vou repetir.
+
+18
+00:01:18.661 --> 00:01:23.374
+O uso de IA não transfere a
+responsabilidade técnica.
+
+19
+00:01:23.833 --> 00:01:26.586
+Código gerado por
+IA continua sendo a
+
+20
+00:01:26.586 --> 00:01:30.507
+responsabilidade de quem
+aprova o merge desse código.
+
+21
+00:01:30.715 --> 00:01:35.845
+Decisões sugeridas por IA continuam sendo
+responsabilidade de quem aceita a decisão.
+
+22
+00:01:36.096 --> 00:01:37.972
+Isso não é opinião minha.
+
+23
+00:01:38.181 --> 00:01:42.477
+Isso é consenso entre referências
+técnicas, como o NIST
+
+24
+00:01:42.477 --> 00:01:46.898
+por exemplo, que é o Instituto Nacional de
+Padrões e Tecnologias dos Estados Unidos,
+
+25
+00:01:47.065 --> 00:01:51.611
+que é usado como uma referência global, e
+também outros organismos de padronização.
+
+26
+00:01:51.694 --> 00:01:55.532
+A IA pode acelerar, pode
+sugerir, pode resumir,
+
+27
+00:01:55.532 --> 00:01:58.535
+mas ela nunca vai
+assumir a consequência.
+
+28
+00:01:58.701 --> 00:02:03.957
+E essa distinção é base para qualquer uso
+profissional de IA.
+
+29
+00:02:03.998 --> 00:02:07.293
+Em qualquer empresa você vai precisar
+dessa responsabilidade.
+
+30
+00:02:08.086 --> 00:02:12.590
+Curiosamente, os maiores riscos do uso de
+IA não vêm de erros do próprio modelo,
+
+31
+00:02:12.799 --> 00:02:15.009
+mas vêm de falhas do processo.
+
+32
+00:02:15.510 --> 00:02:19.347
+O uso informal, decisões
+que não são registradas,
+
+33
+00:02:19.347 --> 00:02:22.475
+dependência de uma única
+pessoa na empresa que sabe usar IA.
+
+34
+00:02:22.851 --> 00:02:28.940
+Então o problema não é a IA errar,
+o problema é o time não conseguir explicar
+
+35
+00:02:28.940 --> 00:02:32.402
+depois porque algo foi feito daquela
+forma.
+
+36
+00:02:36.656 --> 00:02:39.617
+Governança começa exatamente aí.
+
+37
+00:02:39.617 --> 00:02:42.745
+Garantir que as decisões
+importantes sejam
+
+38
+00:02:42.745 --> 00:02:46.875
+compreensíveis no futuro
+para quem olhar para elas.
+
+39
+00:02:47.250 --> 00:02:50.044
+Times maduros não tentam usar IA em tudo.
+
+40
+00:02:50.336 --> 00:02:55.508
+Eles definem claramente onde ela ajuda e
+onde ela não deve atuar sozinha.
+
+41
+00:02:55.592 --> 00:02:58.011
+Por exemplo, a IA pode sugerir código?
+
+42
+00:02:58.386 --> 00:02:59.429
+Já vimos que sim.
+
+43
+00:02:59.888 --> 00:03:01.181
+Ela pode revisar padrões?
+
+44
+00:03:01.389 --> 00:03:02.015
+Com certeza.
+
+45
+00:03:02.390 --> 00:03:05.435
+Ela pode aprovar um deploy crítico
+sozinha?
+
+46
+00:03:05.560 --> 00:03:06.561
+Claro que não.
+
+47
+00:03:06.644 --> 00:03:08.688
+Ela pode decidir o rollback
+automaticamente?
+
+48
+00:03:09.189 --> 00:03:10.648
+sem contexto humano?
+
+49
+00:03:10.773 --> 00:03:11.774
+Normalmente não.
+
+50
+00:03:12.025 --> 00:03:14.903
+E por que esses limites funcionam então?
+
+51
+00:03:15.028 --> 00:03:18.489
+Porque eles reduzem muito a ambiguidade.
+
+52
+00:03:18.781 --> 00:03:22.952
+A IA passa a operar
+como apoio à decisão e não
+
+53
+00:03:22.952 --> 00:03:26.998
+como autoridade implícita
+dentro do seu processo.
+
+54
+00:03:27.040 --> 00:03:30.627
+A palavra governança, eu sei, costuma
+gerar bastante resistência.
+
+55
+00:03:30.668 --> 00:03:34.923
+Mas aqui eu não estou falando de
+governança no sentido de burocracia.
+
+56
+00:03:35.215 --> 00:03:39.010
+Ela significa basicamente a sua engenharia
+de risco.
+
+57
+00:03:39.010 --> 00:03:45.350
+Você governar o uso de IA é basicamente
+garantir que existam responsáveis claros,
+
+58
+00:03:45.350 --> 00:03:50.313
+que as decisões possam ser revisadas no
+futuro e que erros possam ser analisados.
+
+59
+00:03:50.396 --> 00:03:52.649
+Isso protege o time, não limita.
+
+60
+00:03:52.732 --> 00:03:55.485
+Sem a governança, você não desaparece com
+o risco.
+
+61
+00:03:55.485 --> 00:03:59.322
+Ele só se torna invisível e muito mais
+difícil de ser localizado.
+
+62
+00:04:02.367 --> 00:04:07.121
+Um outro conceito aparece em todas as
+referências sérias sobre o assunto,
+
+63
+00:04:07.205 --> 00:04:08.998
+que é a rastreabilidade.
+
+64
+00:04:08.998 --> 00:04:13.544
+Isso não é sobre registrar tudo
+o que acontece apenas, mas
+
+65
+00:04:13.544 --> 00:04:17.340
+sobre conseguir responder
+perguntas importantes depois.
+
+66
+00:04:17.882 --> 00:04:20.385
+Por que esse teste foi priorizado?
+
+67
+00:04:20.677 --> 00:04:24.764
+Por que esse deploy foi mais conservador
+em vez do que a gente faz normalmente?
+
+68
+00:04:25.139 --> 00:04:28.101
+Por que essa falha foi tratada como não
+crítica?
+
+69
+00:04:28.268 --> 00:04:31.396
+Mesmo quando a IA
+influencia essas decisões, essas
+
+70
+00:04:31.396 --> 00:04:35.733
+perguntas precisam continuar
+aptas a serem respondidas.
+
+71
+00:04:35.733 --> 00:04:39.404
+Então a rastreabilidade é a maturidade
+técnica.
+
+72
+00:04:39.779 --> 00:04:43.533
+E maturidade não tem nada a ver com a
+stack que você usa.
+
+73
+00:04:43.616 --> 00:04:47.495
+Não é sobre qual modelo que você está
+usando em produção, nem sobre qual
+
+74
+00:04:47.495 --> 00:04:51.666
+ferramenta você assina, ou ainda se ela é
+paga ou se ela é open source.
+
+75
+00:04:51.916 --> 00:04:53.001
+Não tem nada a ver com isso.
+
+76
+00:04:53.167 --> 00:04:57.046
+A maturidade vai aparecer em sinais bem
+óbvios dentro da sua empresa.
+
+77
+00:04:57.505 --> 00:05:00.174
+O uso consistente de IA, por exemplo.
+
+78
+00:05:00.383 --> 00:05:04.429
+Ou a revisão humana clara com critérios
+bem explícitos.
+
+79
+00:05:04.429 --> 00:05:08.641
+Uma dependência menor de indivíduos
+específicos dentro da organização.
+
+80
+00:05:08.641 --> 00:05:14.731
+O time todo conhecendo as regras e as
+restrições que você define na sua empresa.
+
+81
+00:05:15.231 --> 00:05:20.445
+Enfim, organizações passam por estágios
+previsíveis ao adotar IA.
+
+82
+00:05:20.570 --> 00:05:24.115
+E pular etapas costuma gerar muitos
+problemas.
+
+83
+00:05:24.615 --> 00:05:27.285
+Então se pergunte,
+estamos usando IA aqui de
+
+84
+00:05:27.285 --> 00:05:31.080
+forma consistente e
+principalmente explicável?
+
+85
+00:05:34.334 --> 00:05:40.465
+Em todas as disciplinas que nós vimos,
+QA, testes, CI/CD, observabilidade,
+
+86
+00:05:40.631 --> 00:05:42.800
+aparece sempre o mesmo princípio.
+
+87
+00:05:43.468 --> 00:05:46.054
+A decisão final é humana.
+
+88
+00:05:46.095 --> 00:05:49.766
+O conceito human in
+the loop é extremamente
+
+89
+00:05:49.766 --> 00:05:52.685
+importante em softwares
+com inteligência artificial.
+
+90
+00:05:52.894 --> 00:05:56.022
+Significa que sempre
+existe um ponto claro onde
+
+91
+00:05:56.022 --> 00:05:59.650
+alguém vai entender,
+validar e responder a ele.
+
+92
+00:05:59.859 --> 00:06:02.737
+Delegar tudo para IA não é maturidade.
+
+93
+00:06:02.737 --> 00:06:03.946
+Não é avanço.
+
+94
+00:06:04.072 --> 00:06:07.408
+É você simplesmente abdicar da sua
+responsabilidade.
+
+95
+00:06:07.492 --> 00:06:12.538
+Tendo IA integrada ao processo,
+o papel do desenvolvedor muda um pouco.
+
+96
+00:06:12.789 --> 00:06:19.879
+O desenvolvedor deixa de ser apenas o
+executor e passa a ser o orquestrador de
+
+97
+00:06:19.879 --> 00:06:24.509
+várias micro decisões assistidas por IA
+durante o seu dia.
+
+98
+00:06:24.717 --> 00:06:29.847
+Isso exige muito senso crítico,
+a capacidade de questionar as sugestões da
+
+99
+00:06:29.847 --> 00:06:32.725
+IA e o entendimento dos limites da
+tecnologia.
+
+100
+00:06:32.725 --> 00:06:35.269
+A tecnologia da inteligência
+artificial e o quanto a
+
+101
+00:06:35.269 --> 00:06:38.981
+sua empresa está disposta
+a avançar nessa tecnologia.
+
+102
+00:06:39.315 --> 00:06:43.111
+Para finalizar esse assunto, eu vou
+reforçar uma ideia bem simples.
+
+103
+00:06:43.403 --> 00:06:49.117
+A IA não substitui também os princípios
+clássicos da engenharia de software.
+
+104
+00:06:49.492 --> 00:06:54.831
+Mas ela definitivamente cria alguma tensão
+sobre eles.
+
+105
+00:06:55.039 --> 00:07:00.545
+O versionamento, a revisão, os testes,
+a observabilidade e a responsabilidade
+
+106
+00:07:00.545 --> 00:07:04.048
+continuam sendo fundamentais como sempre
+foram.
+
+107
+00:07:04.132 --> 00:07:08.010
+A diferença é que agora
+nós lidamos com sistemas que
+
+108
+00:07:08.010 --> 00:07:11.973
+são parcialmente não
+determinísticos, não são exatos.
+
+109
+00:07:12.265 --> 00:07:14.725
+A resposta a isso você já deu.
+
+110
+00:07:14.851 --> 00:07:15.977
+A capacitação.
+
+111
+00:07:16.227 --> 00:07:19.230
+Se você sair desse curso sabendo usar IA,
+ótimo.
+
+112
+00:07:19.272 --> 00:07:24.735
+Mas se você sair sabendo onde ela ajuda,
+onde ela atrapalha e onde a decisão
+
+113
+00:07:24.735 --> 00:07:28.156
+continua sendo sua, então o meu objetivo
+foi cumprido.
+
+114
+00:07:28.156 --> 00:07:30.992
+A partir daqui, você é o agente.
+
+115
+00:07:31.033 --> 00:07:34.787
+Continue aprendendo, continue
+praticando e crie aquilo que
+
+116
+00:07:34.787 --> 00:07:38.040
+você gostaria de ver sendo
+feito com inteligência artificial.
+
+117
+00:07:38.458 --> 00:07:40.293
+Muito obrigado e até a próxima.

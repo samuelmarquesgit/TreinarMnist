@@ -1,0 +1,984 @@
+WEBVTT
+
+1
+00:00:07.549 --> 00:00:12.302
+Olá, eu sou Josias Schneider e seja
+muito bem-vindo a essa aula.
+
+2
+00:00:12.095 --> 00:00:13.763
+Nessa aula, o objetivo é
+
+3
+00:00:14.264 --> 00:00:16.808
+bem simples, é mostrar tudo isso funcionando.
+
+4
+00:00:16.808 --> 00:00:20.103
+Executando ações reais, usando
+uma plataforma de automação
+
+5
+00:00:20.603 --> 00:00:23.565
+baseada em eventos que você já conhece, o n8n.
+
+6
+00:00:24.024 --> 00:00:27.777
+A ideia não é mostrar complexidade
+e sim ter clareza
+
+7
+00:00:28.278 --> 00:00:32.365
+de como todos os componentes funcionam. Você vai ver como uma mensagem
+
+8
+00:00:32.866 --> 00:00:36.202
+do usuário vira uma intenção, como essa intenção é interpretada,
+
+9
+00:00:36.703 --> 00:00:40.498
+como o sistema executa uma ação concreta em um serviço externo,
+
+10
+00:00:40.498 --> 00:00:43.960
+nesse caso, o Google Calendar. Vamos lá?
+Então esse aqui é o dashboard do n8n.
+
+11
+00:00:50.341 --> 00:00:53.553
+Para acessar o n8n você cria uma conta e já
+
+12
+00:00:54.054 --> 00:00:58.308
+ganha acesso a essas ferramentas. Você já tem opções de
+
+13
+00:00:58.808 --> 00:01:02.437
+fluxos iniciais que você pode simplesmente copiar e colar
+
+14
+00:01:02.937 --> 00:01:07.442
+ou você pode criar o seu próprio do zero. Aqui
+
+15
+00:01:07.942 --> 00:01:11.821
+a gente tem a interface, você pode facilmente dar zoom
+
+16
+00:01:12.322 --> 00:01:15.909
+aqui para ver todos os elementos na sua tela, esses fluxos podem
+
+17
+00:01:16.409 --> 00:01:20.163
+se tornar muito mais complexos do que isso aqui, mas lembrando que esse
+
+18
+00:01:20.663 --> 00:01:24.125
+é um vídeo onde a gente vai entender o fluxo como um
+todo.
+
+19
+00:01:24.626 --> 00:01:28.338
+todo. Então você pode ver aqui no centro, aqui desse
+
+20
+00:01:28.838 --> 00:01:32.717
+fluxo a gente tem um agente de IA, ele está conectado
+
+21
+00:01:33.218 --> 00:01:36.137
+a um modelo de chat, nesse caso o chat GPT,
+
+22
+00:01:36.638 --> 00:01:40.350
+está conectado a uma memória e tem as
+
+23
+00:01:40.850 --> 00:01:44.437
+suas tools, as suas ferramentas aqui, que são três itens
+
+24
+00:01:44.938 --> 00:01:48.817
+conectados ao Google Calendar. E aí a gente tem o nosso trigger,
+
+25
+00:01:49.109 --> 00:01:52.612
+o gatilho inicial, onde uma mensagem de chat
+
+26
+00:01:53.113 --> 00:01:56.241
+é recebida. Esse aqui então é o início de tudo.
+
+27
+00:01:56.991 --> 00:02:00.161
+Vou mostrar isso na prática e depois a gente vai vendo cada elemento.
+
+28
+00:02:00.912 --> 00:02:04.749
+Quando eu clico aqui em Open Chat, ele vai abrir essa janela aqui
+embaixo
+
+29
+00:02:05.250 --> 00:02:09.045
+embaixo, onde eu posso fazer perguntas e começar a interagir
+
+30
+00:02:09.546 --> 00:02:13.508
+com o meu agente. Como esse agente está conectado à
+
+31
+00:02:14.008 --> 00:02:17.262
+minha lista de eventos do meu calendário, eu vou fazer o seguinte,
+
+32
+00:02:17.470 --> 00:02:21.349
+eu vou digitar aqui e perguntar para ele quais
+
+33
+00:02:21.850 --> 00:02:26.146
+são os eventos que
+
+34
+00:02:26.646 --> 00:02:30.066
+tenho para hoje. Eu vou enviar
+
+35
+00:02:30.567 --> 00:02:34.237
+esse chat, você pode ver quais os elementos que estão em
+
+36
+00:02:34.737 --> 00:02:38.032
+funcionamento aqui, você vê através das cores, e a gente pode ver que
+
+37
+00:02:38.533 --> 00:02:41.494
+ele acessou o chat GPT como modelo de linguagem, buscou na memória,
+
+38
+00:02:41.953 --> 00:02:45.623
+e acessou a API do Google Calendar nessa função de
+
+39
+00:02:46.124 --> 00:02:49.752
+listar eventos. A resposta que ele me deu, você não tem eventos
+
+40
+00:02:50.253 --> 00:02:54.382
+agendados para hoje. Se quiser, posso ajudar a agendar algum
+
+41
+00:02:54.883 --> 00:02:57.093
+compromisso. Vamos dar uma olhada nisso aqui.
+
+42
+00:02:59.053 --> 00:03:02.974
+Aqui a gente tem então esse trigger. Eu vou clicar
+
+43
+00:03:03.474 --> 00:03:06.144
+duas vezes aqui para abrir e a gente vai ver que ele é bem simples.
+
+44
+00:03:06.352 --> 00:03:10.315
+Ele tem essa ação de enviar mensagem e o input
+
+45
+00:03:10.815 --> 00:03:14.485
+do chat é a mensagem que eu enviei. Depois a gente tem o
+
+46
+00:03:14.986 --> 00:03:19.240
+agente de fato. O agente ele
+
+47
+00:03:19.741 --> 00:03:23.745
+tem a mensagem, o prompt dele é basicamente a mensagem do
+
+48
+00:03:24.245 --> 00:03:27.624
+usuário que vem daquele input, daquele outro elemento,
+
+49
+00:03:28.374 --> 00:03:32.879
+e aí a gente tem uma mensagem, um prompt básico
+
+50
+00:03:33.379 --> 00:03:36.132
+já definido. Aqui a gente incluiu, por exemplo,
+
+51
+00:03:37.258 --> 00:03:41.387
+a data de hoje, a hora atual, a data de amanhã e daqui
+
+52
+00:03:41.888 --> 00:03:45.808
+a uma semana. Por que que isso é interessante? A gente não quer usar os
+
+53
+00:03:46.309 --> 00:03:50.521
+dados que o modelo de linguagem tem, por exemplo, o dia em que...
+
+54
+00:03:51.022 --> 00:03:54.943
+a data de corte do modelo de linguagem, porque a gente,
+
+55
+00:03:55.610 --> 00:03:58.821
+como já aprendeu, não confia na LLM, as informações dela
+
+56
+00:03:59.322 --> 00:04:03.451
+não são 100% confiáveis sempre, então aqui a gente usa as
+
+57
+00:04:03.952 --> 00:04:07.247
+próprias ferramentas disponíveis aqui para definir qual é a data
+
+58
+00:04:07.747 --> 00:04:11.501
+de hoje, qual é a hora atual, a gente já define o
+
+59
+00:04:12.001 --> 00:04:15.880
+horário específico aqui do Brasil, UTC-3, formato dessa
+
+60
+00:04:16.381 --> 00:04:19.968
+hora, mostra o dia de amanhã e daqui a uma semana, dados para
+
+61
+00:04:20.468 --> 00:04:24.138
+a LLM conseguir se localizar de forma correta.
+
+62
+00:04:24.639 --> 00:04:28.309
+Aí a gente tem um prompt extremamente básico aqui, só como exemplo,
+
+63
+00:04:28.434 --> 00:04:32.397
+dizendo você é um agente de agendamento de reuniões que
+
+64
+00:04:32.897 --> 00:04:35.984
+segue o dia de hoje e a hora atual. E depois disso,
+
+65
+00:04:36.192 --> 00:04:39.612
+a gente tem o input que vem lá do chat,
+
+66
+00:04:39.904 --> 00:04:43.825
+a mensagem que o usuário enviou. Então a gente pode ver aqui todas
+
+67
+00:04:44.325 --> 00:04:48.162
+as variáveis que são criadas no processo e o prompt
+
+68
+00:04:48.663 --> 00:04:51.958
+final. Esse é o prompt que o agente vai enviar para
+
+69
+00:04:52.458 --> 00:04:55.545
+LLM, então a gente pode ver a data de hoje de
+
+70
+00:04:56.045 --> 00:04:59.924
+gravação desse vídeo, 20 de janeiro, a gente tem a hora atual e
+
+71
+00:05:00.425 --> 00:05:03.761
+a gente tem o prompt que o usuário enviou via chat, quais são
+
+72
+00:05:04.262 --> 00:05:07.515
+os eventos que eu tenho para hoje. Então ele já faz essa interpolação aqui,
+
+73
+00:05:08.349 --> 00:05:12.103
+envia isso para o
+
+74
+00:05:12.603 --> 00:05:16.024
+modelo. Esse modelo aqui eu
+
+75
+00:05:16.524 --> 00:05:20.236
+tô usando o GPT 4.1 Mini, que é um modelo um pouco
+
+76
+00:05:20.737 --> 00:05:23.531
+menor e mais rápido do que os modelos principais.
+
+77
+00:05:24.699 --> 00:05:28.911
+e a gente pode ver que existe
+
+78
+00:05:29.412 --> 00:05:32.040
+a contagem de tokens, por exemplo, os tokens do prompt,
+
+79
+00:05:32.290 --> 00:05:36.377
+tokens totais de entrada e de saída, aqui a gente pode fazer a conexão
+
+80
+00:05:36.878 --> 00:05:40.256
+com a conta da OpenAI, nesse caso eu estou usando créditos
+
+81
+00:05:40.757 --> 00:05:44.510
+gratuitos do n8n, e todas as informações
+
+82
+00:05:45.011 --> 00:05:48.681
+que são enviadas para a LLM, de entrada e de saída.
+
+83
+00:05:49.474 --> 00:05:53.436
+A gente pode ver que ele consulta também a memória, então um dos principais
+
+84
+00:05:53.936 --> 00:05:58.024
+elementos do agente, e aqui ele grava um ID
+
+85
+00:05:58.524 --> 00:06:03.237
+de sessão para identificar o usuário, ele tem o
+
+86
+00:06:03.696 --> 00:06:07.283
+número de interações que o modelo já recebeu, por exemplo, ele sabe
+
+87
+00:06:07.784 --> 00:06:10.453
+que essa é a minha quinta interação com esse modelo,
+
+88
+00:06:10.870 --> 00:06:14.957
+que eu já fiz outras perguntas antes enquanto estava testando isso aqui tudo.
+
+89
+00:06:15.833 --> 00:06:18.711
+E aí ele mostra, por exemplo, o input de memória,
+
+90
+00:06:19.587 --> 00:06:25.093
+o prompt que foi recebido e a resposta também
+
+91
+00:06:25.593 --> 00:06:29.013
+já foi armazenada na memória depois de tudo isso. E aí
+
+92
+00:06:29.514 --> 00:06:33.726
+finalmente a gente tem a API listar eventos que é uma integração
+
+93
+00:06:34.227 --> 00:06:38.481
+que o n8n já disponibiliza no meio daquelas 1300 integrações
+
+94
+00:06:38.981 --> 00:06:42.318
+que ele tem. Ela é conectada com a minha conta do Google Calendar.
+
+95
+00:06:43.027 --> 00:06:46.447
+Eu defini qual é o calendário que eu vou usar, então eu criei
+
+96
+00:06:46.948 --> 00:06:50.785
+um calendário específico para esse teste. A gente
+
+97
+00:06:51.285 --> 00:06:55.581
+tem aqui o horário, o tempo
+
+98
+00:06:56.082 --> 00:07:00.044
+que a gente quer definir para cada pesquisa.
+
+99
+00:07:00.211 --> 00:07:04.507
+Por exemplo, se eu disser liste para mim os eventos, ele vai buscar a
+
+100
+00:07:05.007 --> 00:07:07.760
+data de hoje, ou o horário de agora,
+
+101
+00:07:08.386 --> 00:07:12.265
+mais uma semana. Então ele vai pegar entre agora e a próxima
+
+102
+00:07:12.765 --> 00:07:16.185
+semana, por padrão. Da mesma forma, a gente tem outras
+
+103
+00:07:16.686 --> 00:07:20.940
+ferramentas aqui, como, por exemplo, criar evento. Criar evento
+
+104
+00:07:21.441 --> 00:07:24.527
+também está conectado à mesma conta do Google, ao mesmo
+
+105
+00:07:25.027 --> 00:07:28.781
+calendário, e ele tem algumas particularidades. Por exemplo,
+
+106
+00:07:29.449 --> 00:07:32.535
+a data de início e fim, quando ele for criar um evento,
+
+107
+00:07:32.785 --> 00:07:36.164
+eu botei aqui para ser definido automaticamente pelo modelo.
+
+108
+00:07:36.747 --> 00:07:39.834
+Então eu posso enviar uma mensagem pedindo para criar
+
+109
+00:07:40.334 --> 00:07:43.838
+um agendamento entre duas e três da tarde, e o
+
+110
+00:07:44.338 --> 00:07:48.259
+modelo vai passar essas informações para essa ferramenta.
+
+111
+00:07:48.843 --> 00:07:51.971
+Da mesma forma, a descrição e o summary, que seria
+
+112
+00:07:52.472 --> 00:07:55.641
+o título do nosso evento. E aí, a gente tem
+
+113
+00:07:56.142 --> 00:07:59.896
+também a opção de atualizar o evento com a mesma estrutura,
+
+114
+00:08:00.021 --> 00:08:02.356
+né? A descrição e o summary são definidas pelo model,
+
+115
+00:08:03.274 --> 00:08:06.777
+assim como o ID do evento. Então vamos ver
+
+116
+00:08:07.278 --> 00:08:10.948
+como isso funciona na prática. Eu vou abrir aqui
+
+117
+00:08:11.449 --> 00:08:15.244
+o meu calendário e
+
+118
+00:08:15.745 --> 00:08:18.998
+a gente pode ver que ele está vazio no dia de hoje. Eu vou pedir
+
+119
+00:08:19.499 --> 00:08:23.836
+para ele o seguinte, crie uma reunião
+
+120
+00:08:24.337 --> 00:08:28.758
+chamada entrevista
+
+121
+00:08:29.258 --> 00:08:33.679
+com o CTO hoje
+
+122
+00:08:34.180 --> 00:08:36.807
+às 14 horas.
+
+123
+00:08:37.600 --> 00:08:41.270
+Vou mandar só isso e vamos ver o que ele faz
+
+124
+00:08:41.771 --> 00:08:45.566
+por padrão. Você pode ver que ele já habilitou aqui o agente,
+
+125
+00:08:46.317 --> 00:08:50.154
+conversou com o chat GPT duas vezes, e chamou essa função de
+
+126
+00:08:50.655 --> 00:08:53.199
+criar o evento depois de buscar informações na memória.
+
+127
+00:08:53.783 --> 00:08:57.245
+E aí ele diz o seguinte, a reunião e entrevista com o CTO foi agendada
+
+128
+00:08:57.745 --> 00:09:00.581
+para hoje às 14 horas, se precisar de mais alguma coisa é só avisar.
+
+129
+00:09:01.165 --> 00:09:05.461
+Vamos dar uma olhada aqui na agenda, eu vou atualizar e
+
+130
+00:09:05.962 --> 00:09:08.548
+ver se ele, de fato, fez o que ele prometeu fazer.
+
+131
+00:09:10.216 --> 00:09:13.678
+E, de fato, temos uma nova reunião aqui agendada,
+
+132
+00:09:13.761 --> 00:09:17.014
+entrevista com o CTO, das duas às três da tarde, e ele,
+
+133
+00:09:17.139 --> 00:09:20.726
+inclusive, adicionou uma descrição chamada reunião para entrevista
+
+134
+00:09:21.227 --> 00:09:24.480
+com o CTO. Eu não dei essa instrução explícita, mas ele inferiu
+
+135
+00:09:24.981 --> 00:09:28.734
+pelo contexto que uma descrição seria interessante. Por padrão,
+
+136
+00:09:28.776 --> 00:09:33.030
+ele definiu esse evento
+
+137
+00:09:33.531 --> 00:09:36.033
+como uma hora. Vamos tentar algo diferente.
+
+138
+00:09:38.119 --> 00:09:42.081
+Adicione um evento de 15
+
+139
+00:09:42.582 --> 00:09:48.212
+minutos às 16h15
+
+140
+00:09:48.963 --> 00:09:53.050
+para lavar
+
+141
+00:09:53.551 --> 00:09:56.637
+o carro. eu vou enviar
+
+142
+00:09:57.138 --> 00:10:01.017
+isso, e aqui você pode ver isso acontecendo em tempo real,
+
+143
+00:10:01.392 --> 00:10:05.396
+né? Então, como a gente já mencionou, o n8n, ele te dá
+
+144
+00:10:05.896 --> 00:10:09.859
+uma certa observabilidade, você pode entender o que está acontecendo, quais são
+
+145
+00:10:10.359 --> 00:10:13.821
+os passos, o fluxo que esse agente está seguindo. Ele diz que adicionou
+
+146
+00:10:14.322 --> 00:10:17.908
+o evento, eu pedi um evento de 15 minutos, e passei o horário inicial,
+
+147
+00:10:18.117 --> 00:10:21.495
+então ele deveria agendar das 4h15
+
+148
+00:10:21.996 --> 00:10:25.708
+às 4h30. a gente atualiza aqui e
+
+149
+00:10:26.208 --> 00:10:29.670
+vê se ele fez o que ele deveria e de fato tá aqui o
+
+150
+00:10:30.171 --> 00:10:33.841
+evento 4 e 15 às 4 e meia. Então a gente pode ver isso acontecendo
+
+151
+00:10:34.342 --> 00:10:38.471
+na prática. Vou pedir mais uma que é liste
+
+152
+00:10:38.971 --> 00:10:42.308
+todos os eventos de hoje, novamente.
+
+153
+00:10:42.767 --> 00:10:46.312
+Quando eu fiz isso lá no início ele disse você não tem eventos
+
+154
+00:10:46.812 --> 00:10:50.066
+agendados para hoje e agora eu espero
+
+155
+00:10:50.524 --> 00:10:54.278
+que ele retorne pelo menos dois eventos. E aqui está
+
+156
+00:10:54.779 --> 00:10:58.658
+o retorno dele. Primeiro entrevista com o CTO, das duas às três da tarde,
+
+157
+00:10:59.116 --> 00:11:02.578
+link para os detalhes do evento e lavar o carro, horário,
+
+158
+00:11:02.703 --> 00:11:06.666
+descrição e link também. Então a gente pode ver que ele consegue
+
+159
+00:11:07.166 --> 00:11:12.046
+fazer todo esse fluxo, ele deixa
+
+160
+00:11:12.546 --> 00:11:16.258
+a gente olhar o que está acontecendo em cada item desse
+
+161
+00:11:16.759 --> 00:11:20.388
+agente. Vamos pegar aqui essa
+
+162
+00:11:20.888 --> 00:11:24.892
+função e ver o que ele está retornando.
+
+163
+00:11:24.975 --> 00:11:28.437
+Por exemplo, a primeira chamada do chat GPT aqui é quando
+
+164
+00:11:28.938 --> 00:11:32.733
+a gente pede o prompt para ele. Então a gente diz o seguinte, liste todos
+
+165
+00:11:33.234 --> 00:11:37.071
+os eventos de hoje. Detalhe que ele já somou no prompt a
+
+166
+00:11:37.571 --> 00:11:41.283
+conversa como um todo. Então ele já tem aqui, o humano pediu
+
+167
+00:11:41.784 --> 00:11:44.495
+quais são os eventos que tem pra hoje e a IA respondeu, você não tem
+
+168
+00:11:44.995 --> 00:11:48.416
+eventos agendados. Depois eu pedi, crie uma reunião e assim
+
+169
+00:11:48.916 --> 00:11:52.753
+por diante. Então ele já tem todo o contexto da conversa. Por último
+
+170
+00:11:53.254 --> 00:11:57.216
+ele diz, liste todos os eventos de hoje e aí a
+
+171
+00:11:57.717 --> 00:12:01.804
+LLM vai retornar dizendo, ó, eu preciso chamar essa API
+
+172
+00:12:02.304 --> 00:12:06.225
+de listar eventos, assim como ele chamou de criação antes. Então
+
+173
+00:12:06.726 --> 00:12:10.146
+a gente tem aqui listar eventos, a ferramenta vai ter
+
+174
+00:12:10.646 --> 00:12:15.109
+a resposta, a gente pode visualizar a resposta em
+
+175
+00:12:15.609 --> 00:12:19.113
+diferentes formatos, como esse, ou até em JSON.
+
+176
+00:12:19.947 --> 00:12:23.367
+Vamos dar uma olhada no JSON aqui, a gente tem a resposta, tem um array,
+
+177
+00:12:24.368 --> 00:12:27.663
+e cada item vai ter todas as
+
+178
+00:12:28.164 --> 00:12:32.042
+informações aqui. Isso aqui vem diretamente do Google
+
+179
+00:12:32.543 --> 00:12:36.338
+Calendar, da API do Google, então os dados são o que o Google criou,
+
+180
+00:12:36.672 --> 00:12:39.341
+por exemplo, o ID da reunião, isso é uma informação que eu não tenho,
+
+181
+00:12:39.467 --> 00:12:42.595
+mas que a API está retornando, data de início,
+
+182
+00:12:42.678 --> 00:12:45.639
+data de fim, quem é o criador, organizador,
+
+183
+00:12:46.223 --> 00:12:49.935
+o nome do calendário, a descrição da reunião,
+
+184
+00:12:50.269 --> 00:12:52.897
+a gente tem todas as informações necessárias aqui.
+
+185
+00:12:53.606 --> 00:12:56.817
+para mostrar os eventos do nosso
+
+186
+00:12:57.318 --> 00:13:01.030
+calendário. Uma vez que a API retorna isso, a gente retorna
+
+187
+00:13:01.530 --> 00:13:04.950
+isso também para o Chat GPT, e agora ele tem as seguintes
+
+188
+00:13:05.451 --> 00:13:08.579
+informações. O humano disse, liste todos os eventos de hoje,
+
+189
+00:13:09.079 --> 00:13:12.666
+a IA respondeu, ferramenta, e aí passou
+
+190
+00:13:13.167 --> 00:13:16.545
+esse array com dois itens, mostrando que
+
+191
+00:13:17.046 --> 00:13:20.800
+ela recebeu o retorno de uma ferramenta, que é esses dados. Então,
+
+192
+00:13:20.925 --> 00:13:24.720
+automaticamente, a LLM vai interpretar isso como, bom, eu vou formatar
+
+193
+00:13:25.221 --> 00:13:28.516
+esses dados e vou mostrar para o usuário o que ele está perguntando,
+
+194
+00:13:28.599 --> 00:13:32.186
+vou responder a pergunta dele com o retorno da ferramenta. E aí
+
+195
+00:13:32.686 --> 00:13:37.107
+ele simplesmente me retorna em texto, né, criando a
+
+196
+00:13:37.566 --> 00:13:40.778
+estrutura bonitinha como a gente tá vendo aqui. E aí, finalmente,
+
+197
+00:13:41.320 --> 00:13:45.324
+ele chega novamente na memória e vai adicionar
+
+198
+00:13:45.825 --> 00:13:49.161
+toda essa conversa à memória pra gente manter isso em mente
+
+199
+00:13:49.662 --> 00:13:51.539
+pra próxima interação.
+
+200
+00:13:52.540 --> 00:13:56.168
+Então esse é um fluxo bem básico que a gente tem aqui,
+
+201
+00:13:56.377 --> 00:14:00.297
+mas que já ajuda a entender como que funciona essa
+
+202
+00:14:00.798 --> 00:14:04.635
+conexão. Você tem vários outros itens,
+
+203
+00:14:04.760 --> 00:14:08.180
+isso aqui é apenas o básico. Você pode ver todas as execuções
+
+204
+00:14:08.681 --> 00:14:12.434
+que aconteceram aqui, você pode ver o
+
+205
+00:14:12.935 --> 00:14:16.146
+que deu certo, o que deu errado, você pode criar outros triggers,
+
+206
+00:14:16.689 --> 00:14:20.442
+você pode adicionar outros eventos. Para adicionar uma integração,
+
+207
+00:14:20.818 --> 00:14:23.279
+a gente pode botar, por exemplo, aqui uma ferramenta,
+
+208
+00:14:24.029 --> 00:14:27.533
+clicar para criar mais uma, e você vai ter acesso aqui à infinidade
+
+209
+00:14:28.033 --> 00:14:31.328
+de integrações disponíveis,
+
+210
+00:14:31.829 --> 00:14:35.541
+né? Como, por exemplo, essas do
+
+211
+00:14:36.041 --> 00:14:39.253
+Google Calendar que eu criei, você pode conectar, por exemplo,
+
+212
+00:14:39.378 --> 00:14:43.716
+com o Zoom para criar reuniões, você pode conectar com
+
+213
+00:14:44.216 --> 00:14:47.553
+Slack, todos aqueles que a gente viu, e também com
+
+214
+00:14:48.053 --> 00:14:51.849
+ferramentas com cliente de MCP,
+
+215
+00:14:51.932 --> 00:14:56.145
+você pode criar um cliente MCP aqui e conectar
+
+216
+00:14:56.645 --> 00:15:00.357
+com algum servidor que você tenha rodando local ou algum servidor externo,
+
+217
+00:15:00.399 --> 00:15:02.443
+que também pode ser feito com o LangChain.
+
+218
+00:15:02.443 --> 00:15:05.821
+Então é uma ferramenta bem completa e aqui
+
+219
+00:15:06.322 --> 00:15:10.242
+tem o seu primeiro fluxo para teste. Então esse fluxo
+
+220
+00:15:10.743 --> 00:15:14.872
+que você acabou de ver é simples, intencionalmente. Ele não tenta ser
+
+221
+00:15:15.372 --> 00:15:18.626
+um agente genérico, não tenta ter autonomia total.
+
+222
+00:15:19.543 --> 00:15:22.796
+E não tente esconder o que está acontecendo por trás.
+
+223
+00:15:23.297 --> 00:15:26.884
+Existe um evento claro, que é a mensagem do chat, uma decisão
+
+224
+00:15:27.343 --> 00:15:31.138
+controlada do que fazer e ações bem definidas em um sistema
+
+225
+00:15:31.639 --> 00:15:33.933
+externo, nesse caso o Google Calendar.
+
+226
+00:15:33.933 --> 00:15:35.893
+A IA não precisa ficar
+
+227
+00:15:35.893 --> 00:15:40.272
+apenas no chat ou no seu editor de código, ela pode fazer parte de processos
+
+228
+00:15:40.773 --> 00:15:42.316
+de software reais.
+
+229
+00:15:42.316 --> 00:15:44.026
+A automação cuida do
+
+230
+00:15:44.026 --> 00:15:47.947
+fluxo como um todo, a IA interpreta a intenção
+
+231
+00:15:48.447 --> 00:15:51.951
+do usuário e o sistema
+decide o que pode ou o que não pode
+
+232
+00:15:52.451 --> 00:15:56.163
+ser feito. Esse tipo de abordagem definitivamente não elimina a
+
+233
+00:15:56.664 --> 00:16:00.167
+complexidade, mas torna a complexidade bem explícita, que é
+
+234
+00:16:00.668 --> 00:16:03.253
+importante para sistemas que precisam ser mantidos,
+
+235
+00:16:03.587 --> 00:16:07.216
+auditados, evoluídos. A partir daqui, a sua
+
+236
+00:16:07.716 --> 00:16:11.720
+base em agentes está formada. Os próximos passos vão
+
+237
+00:16:12.221 --> 00:16:15.766
+envolver escalar esse tipo de solução, adicionar observabilidade,
+
+238
+00:16:16.225 --> 00:16:19.478
+governança, lidar com cenários mais complexos...
+
+239
+00:16:19.812 --> 00:16:23.524
+Mas o princípio central continua o mesmo: a IA como
+
+240
+00:16:24.024 --> 00:16:27.569
+parte integrante de softwares. E se você
+
+241
+00:16:28.070 --> 00:16:31.323
+quer saber a minha opinião, a IA não vai embora. Então,
+
+242
+00:16:31.490 --> 00:16:35.202
+quanto antes você aprender a lidar com ela, melhor posicionado você vai estar
+
+243
+00:16:35.703 --> 00:16:39.373
+no mercado de trabalho de tecnologia e nesse mundo que
+
+244
+00:16:39.873 --> 00:16:42.668
+ainda está tentando aprender a utilizar inteligência artificial.

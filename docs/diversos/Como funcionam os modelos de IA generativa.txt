@@ -1,0 +1,672 @@
+WEBVTT
+
+1
+00:00:07.424 --> 00:00:11.136
+Olá, eu sou o Josias e
+seja bem-vindo à nossa aula.
+
+2
+00:00:11.219 --> 00:00:14.514
+Se você já usou alguma ferramenta de IA para escrever código,
+
+3
+00:00:14.931 --> 00:00:18.309
+explicar um erro, gerar um teste ou até para refatorar uma função,
+
+4
+00:00:19.019 --> 00:00:22.188
+provavelmente já teve aquela sensação estranha.
+
+5
+00:00:22.939 --> 00:00:27.819
+Tá, isso é impressionante, mas o que realmente está acontecendo aqui?
+
+6
+00:00:28.361 --> 00:00:31.239
+E é exatamente isso que
+a gente vai fazer hoje. Nessa aula,
+
+7
+00:00:31.322 --> 00:00:34.784
+a ideia é abrir a caixa preta da IA generativa,
+
+8
+00:00:35.160 --> 00:00:39.372
+mas de um jeito bem pragmático, sem muita matemática, sem discussão acadêmica
+
+9
+00:00:39.873 --> 00:00:42.959
+e, claro, conectando com o
+seu dia a dia como desenvolvedor.
+
+10
+00:00:43.001 --> 00:00:47.547
+Então, você vai entender o que são LLMs,
+por que a IA não lê palavras,
+
+11
+00:00:47.839 --> 00:00:50.759
+mas tokens, o que são transformers,
+
+12
+00:00:51.092 --> 00:00:54.137
+o que é a janela de contexto e por que ela é importante, e como
+
+13
+00:00:54.137 --> 00:00:58.600
+parâmetros, como temperatura,
+mudam o comportamento da IA.
+
+14
+00:00:58.600 --> 00:01:02.437
+Entender isso muda a forma como
+você usa essas ferramentas.
+
+15
+00:01:02.979 --> 00:01:06.816
+E mais importante, muda o que você
+espera delas como resultado.
+
+16
+00:01:10.070 --> 00:01:11.946
+Quando a gente fala em LLM,
+
+17
+00:01:12.238 --> 00:01:14.949
+estamos falando de Large Language Models,
+
+18
+00:01:15.158 --> 00:01:17.535
+ou modelos de linguagem
+de grande escala.
+
+19
+00:01:17.994 --> 00:01:19.537
+E já vamos tirar uma coisa do caminho
+
+20
+00:01:19.537 --> 00:01:23.416
+logo de cara.
+Uma LLM não entende linguagem
+
+21
+00:01:23.917 --> 00:01:26.961
+como um humano entende.
+Ela não sabe o que é código,
+
+22
+00:01:27.337 --> 00:01:30.256
+não compreende significado,
+não tem consciência,
+
+23
+00:01:30.673 --> 00:01:34.135
+raciocínio real, nada disso.
+Mas ela simula
+
+24
+00:01:34.636 --> 00:01:38.431
+tudo isso muito bem.
+Para falar a verdade, tem muita coisa que
+
+25
+00:01:38.431 --> 00:01:42.685
+ela faz que nem os seus
+criadores entendem como ela consegue.
+
+26
+00:01:42.685 --> 00:01:46.940
+Eles chamam isso de habilidades emergentes, aquilo que os modelos aprenderam
+
+27
+00:01:47.440 --> 00:01:50.527
+sem terem sido ensinados. Escrever código
+
+28
+00:01:50.527 --> 00:01:52.821
+funcional é uma dessas habilidades.
+
+29
+00:01:52.821 --> 00:01:58.284
+Tá, o que ela faz então? Uma LLM é, essencialmente, um modelo estatístico
+
+30
+00:01:58.785 --> 00:02:02.497
+treinado para prever o próximo token, dado o
+
+31
+00:02:02.497 --> 00:02:06.876
+contexto anterior. Ou seja, dado tudo
+que veio antes, qual é o
+
+32
+00:02:06.876 --> 00:02:11.005
+próximo pedaço mais provável?
+De forma extremamente resumida,
+
+33
+00:02:11.005 --> 00:02:14.759
+é isso, não tem mágica.
+Então, quando você pede,
+
+34
+00:02:14.759 --> 00:02:18.346
+cria uma função em JavaScript
+para validar um CPF. O modelo
+
+35
+00:02:18.346 --> 00:02:21.891
+não pensa, ah, o CPF é um
+documento brasileiro, Não,
+
+36
+00:02:21.891 --> 00:02:26.229
+ele calcula, token por token,
+qual é a sequência mais provável
+
+37
+00:02:26.229 --> 00:02:30.024
+que costuma aparecer depois de textos parecidos com esse pedido que você fez,
+
+38
+00:02:30.441 --> 00:02:33.486
+baseado em tudo que ele viu durante o treinamento.
+
+39
+00:02:33.528 --> 00:02:38.032
+E aqui entra um ponto que é
+essencial que você entenda. A IA
+
+40
+00:02:38.032 --> 00:02:43.663
+também não gera respostas.
+Ela gera continuação de texto.
+
+41
+00:02:43.663 --> 00:02:47.667
+A ideia de pergunta e resposta
+é uma convenção da interface
+
+42
+00:02:47.667 --> 00:02:52.046
+e não do modelo.
+Por trás do Chat GPT existe o GPT,
+
+43
+00:02:52.046 --> 00:02:52.755
+que é o modelo.
+
+44
+00:02:53.715 --> 00:02:55.925
+O modelo é treinado em fases.
+
+45
+00:02:55.925 --> 00:02:59.637
+No pré-treinamento, ele recebe
+textos brutos da internet
+
+46
+00:02:59.929 --> 00:03:03.850
+e aprende a prever o
+próximo token com base em tudo o que ele viu.
+
+47
+00:03:04.809 --> 00:03:07.312
+Depois, no fine tuning supervisionado,
+
+48
+00:03:07.770 --> 00:03:11.524
+ele recebe milhares de pares de perguntas e respostas
+
+49
+00:03:11.816 --> 00:03:15.153
+para aprender a seguir instruções.
+Ele vê que sempre que o usuário
+
+50
+00:03:15.153 --> 00:03:19.365
+faz uma pergunta, o assistente responde de forma cooperativa. Então,
+
+51
+00:03:19.365 --> 00:03:22.827
+ele recebe pares, pergunta e a resposta do assistente.
+
+52
+00:03:22.911 --> 00:03:26.581
+Pergunta do usuário, resposta do assistente.
+E ele aprende que
+
+53
+00:03:26.581 --> 00:03:30.960
+esse é um padrão que ele deve seguir.
+Por último, ele é treinado
+
+54
+00:03:31.127 --> 00:03:34.464
+para se comportar,
+não ser agressivo, seguir normas,
+
+55
+00:03:34.672 --> 00:03:38.551
+evitar inventar certas coisas.
+Em resumo, ele entende
+
+56
+00:03:38.551 --> 00:03:42.722
+que quando o usuário faz uma pergunta,
+ele deve simular um assistente
+
+57
+00:03:42.722 --> 00:03:46.517
+dando uma boa resposta. É isso que ele faz,
+
+58
+00:03:46.893 --> 00:03:47.352
+em resumo.
+
+59
+00:03:51.022 --> 00:03:52.565
+Um erro muito comum é
+
+60
+00:03:52.565 --> 00:03:55.818
+pensar que a IA lê palavras
+ou frases completas.
+
+61
+00:03:57.278 --> 00:04:00.073
+ela não lê, ela lê tokens.
+
+62
+00:04:00.782 --> 00:04:04.369
+Tokens são pedaços de texto que podem ser uma palavra inteira,
+
+63
+00:04:04.702 --> 00:04:08.706
+podem ser partes de uma palavra, podem ser um caractere especial, um espaço
+
+64
+00:04:09.207 --> 00:04:12.335
+ou até um pedaço de código. Por exemplo,
+
+65
+00:04:12.710 --> 00:04:16.714
+a palavra "function" pode ser um
+token só, mas o nome "list
+
+66
+00:04:16.714 --> 00:04:20.510
+users products" pode virar
+vários tokens, mesmo sendo uma
+
+67
+00:04:20.510 --> 00:04:24.138
+única variável. Nomes longos,
+padrões inconsistentes
+
+68
+00:04:24.138 --> 00:04:28.643
+e mistura de idiomas tendem
+a explodir o número de tokens.
+
+69
+00:04:28.893 --> 00:04:32.563
+Isso importa por dois motivos muito práticos.
+O primeiro é
+
+70
+00:04:32.563 --> 00:04:36.651
+custo. Você paga por token em qualquer plataforma de IA. E o segundo é
+
+71
+00:04:36.651 --> 00:04:41.030
+o limite de processamento.
+Tokens ocupam espaço na janela de contexto
+
+72
+00:04:41.531 --> 00:04:42.824
+que a gente vai ver daqui a pouquinho.
+
+73
+00:04:46.661 --> 00:04:50.498
+Existe uma forma bem simples de visualizar isso. Você pode usar ferramentas
+
+74
+00:04:50.999 --> 00:04:54.919
+como o Tokenizer da OpenAI
+para ver exatamente como um
+
+75
+00:04:54.919 --> 00:04:57.880
+texto ou um trecho de código é quebrado em tokens.
+
+76
+00:04:57.880 --> 00:04:58.881
+Quando você cola um
+
+77
+00:04:58.881 --> 00:05:03.052
+código ali, dá para perceber claramente como o modelo transforma tudo em
+
+78
+00:05:03.052 --> 00:05:06.681
+uma sequência de números para servir de input para o modelo.
+
+79
+00:05:07.098 --> 00:05:10.768
+Uma vez que o modelo gera os números de saída, o resultado é decodificado
+
+80
+00:05:10.768 --> 00:05:13.062
+novamente para a linguagem escrita.
+
+81
+00:05:16.524 --> 00:05:20.778
+Como a IA entende o contexto? A palavra é transformers.
+
+82
+00:05:21.321 --> 00:05:24.824
+Antes da arquitetura de transformers,
+modelos de linguagem liam texto
+
+83
+00:05:25.325 --> 00:05:28.411
+de forma sequencial, quase como se estivessem lendo palavra por palavra,
+
+84
+00:05:28.953 --> 00:05:32.248
+sem uma visão global. Mas os transformers
+
+85
+00:05:32.749 --> 00:05:36.919
+mudaram isso. Eles permitem que
+o modelo processe tokens em
+
+86
+00:05:36.919 --> 00:05:40.590
+paralelo e capture a conexão entre eles.
+
+87
+00:05:41.215 --> 00:05:44.927
+Essas conexões têm um peso atribuído
+a elas de acordo com
+
+88
+00:05:44.927 --> 00:05:49.557
+a sua relevância. Imagina um gráfico 3D, na verdade é multidimensional,
+
+89
+00:05:50.058 --> 00:05:54.437
+onde cada ponto é um token
+e as conexões entre eles
+
+90
+00:05:54.437 --> 00:05:58.191
+são mais fortes ou mais fracas,
+dependendo do contexto.
+
+91
+00:05:58.733 --> 00:06:02.236
+Em código isso é fundamental.
+O modelo consegue relacionar
+
+92
+00:06:02.236 --> 00:06:06.407
+uma função definida lá em cima
+com uma chamada que aparece dezenas
+
+93
+00:06:06.407 --> 00:06:10.328
+de linhas depois. Tudo isso dentro da
+
+94
+00:06:10.328 --> 00:06:11.245
+janela de contexto.
+
+95
+00:06:14.916 --> 00:06:19.003
+A janela de contexto é basicamente a memória ativa da LLM.
+
+96
+00:06:19.087 --> 00:06:22.423
+Uma analogia boa aqui é pensar nela como a
+
+97
+00:06:22.423 --> 00:06:26.636
+memória RAM de um computador.
+Tudo que está dentro da janela,
+
+98
+00:06:26.886 --> 00:06:30.390
+as instruções que você passa, código, o histórico anterior da
+
+99
+00:06:30.390 --> 00:06:34.352
+conversa, documentação que você tem disponível, exemplos que você
+
+100
+00:06:34.352 --> 00:06:38.231
+encontrou, tudo isso pode ser
+usado para prever o próximo
+
+101
+00:06:38.231 --> 00:06:42.110
+token. E tudo que fica fora,
+simplesmente não existe
+
+102
+00:06:42.110 --> 00:06:45.238
+para o modelo. Aí que
+começam as alucinações.
+
+103
+00:06:45.863 --> 00:06:49.951
+E aqui tem um erro comum:
+“Muito contexto é sempre melhor”
+
+104
+00:06:50.326 --> 00:06:53.037
+Nem sempre. Contexto demais diminui
+
+105
+00:06:53.037 --> 00:06:56.916
+foco, fazendo a LLM se perder, aumenta o
+
+106
+00:06:56.916 --> 00:07:01.003
+custo por token e pode piorar a resposta.
+
+107
+00:07:01.295 --> 00:07:04.424
+Contexto bom não é necessariamente contexto grande, é sim
+
+108
+00:07:04.424 --> 00:07:08.678
+um contexto relevante. E esse ponto vai ser central na próxima aula
+
+109
+00:07:08.678 --> 00:07:11.431
+quando a gente falar de engenharia de contexto.
+
+110
+00:07:14.934 --> 00:07:18.020
+Bom, o último conceito de hoje é o de temperatura.
+
+111
+00:07:18.396 --> 00:07:22.150
+Quando você trabalha com assistentes
+ou APIs de LLMs,
+
+112
+00:07:22.150 --> 00:07:25.319
+você pode se deparar com
+o parâmetro da temperatura.
+
+113
+00:07:25.945 --> 00:07:29.866
+Temperatura não altera o que o
+modelo sabe, ela altera como
+
+114
+00:07:29.866 --> 00:07:33.411
+calcular as probabilidades
+do próximo token.
+
+115
+00:07:33.411 --> 00:07:38.332
+Como no exemplo aqui, a temperatura mais baixa vai gerar respostas mais conservadoras,
+
+116
+00:07:38.458 --> 00:07:42.587
+mais determinísticas
+e temperaturas mais altas vão
+
+117
+00:07:42.587 --> 00:07:46.299
+gerar respostas mais criativas, mais aleatórias.
+
+118
+00:07:46.799 --> 00:07:50.303
+Para código você prefere sempre algo mais conservador.
+
+119
+00:07:50.511 --> 00:07:53.806
+E a temperatura mais alta
+é ideal para gerar escritas,
+
+120
+00:07:53.973 --> 00:07:57.768
+escrita criativa ou gerar ideias.
+Então você pode jogar
+
+121
+00:07:57.768 --> 00:08:02.273
+esse... parâmetro da temperatura de acordo com
+
+122
+00:08:02.273 --> 00:08:04.442
+o que você está buscando da sua LLM.
+
+123
+00:08:04.442 --> 00:08:06.194
+Se você colocar: I like...
+
+124
+00:08:06.194 --> 00:08:09.697
+a probabilidade desses outros
+
+125
+00:08:09.697 --> 00:08:13.326
+tokens em verde de serem
+escolhidos é muito mais alta,
+
+126
+00:08:13.409 --> 00:08:17.079
+porque isso é muito mais comum no texto do que, por exemplo, a palavra frogs.
+
+127
+00:08:17.580 --> 00:08:21.459
+Mas quando você aumenta a temperatura,
+você vai expandindo esse
+
+128
+00:08:21.459 --> 00:08:25.421
+raio de busca e aí palavras
+que não seriam tão óbvias
+
+129
+00:08:25.421 --> 00:08:29.675
+começam a aparecer como o próximo token.
+Como eu expliquei anteriormente,
+
+130
+00:08:29.759 --> 00:08:33.554
+isso é muito bom para a escrita criativa, você tem mais criatividade
+
+131
+00:08:33.554 --> 00:08:37.725
+da LLM. Mas para código, você vai querer sempre manter isso o
+
+132
+00:08:37.725 --> 00:08:40.645
+mais óbvio e consistente possível.
+
+133
+00:08:41.270 --> 00:08:45.525
+Agora é sua vez.
+Acesse um playground de IA como o
+
+134
+00:08:45.525 --> 00:08:49.987
+da OpenAI ou da Anthropic, por exemplo.
+Crie um assistente e
+
+135
+00:08:49.987 --> 00:08:54.242
+defina a temperatura. Aí faça o seguinte, pegue um código simples e
+
+136
+00:08:54.242 --> 00:08:57.119
+gere três versões mudando a temperatura. Por exemplo,
+
+137
+00:08:57.119 --> 00:09:00.748
+0.2 para uma temperatura conservadora,
+
+138
+00:09:00.748 --> 00:09:04.293
+0.7, que é o padrão utilizado em muitas ferramentas,
+
+139
+00:09:04.293 --> 00:09:07.547
+e 1.8, que seria algo caótico.
+
+140
+00:09:07.547 --> 00:09:11.509
+Observe como a lógica se perde ou se refina
+
+141
+00:09:11.509 --> 00:09:12.218
+nesse processo.
+
+142
+00:09:12.218 --> 00:09:15.596
+Modelos de IA generativa
+são complexos por dentro,
+
+143
+00:09:15.930 --> 00:09:19.183
+mas o conceito central é simples.
+Eles preveem o
+
+144
+00:09:19.183 --> 00:09:23.312
+próximo token com base no
+que você deu de contexto a eles.
+
+145
+00:09:23.312 --> 00:09:27.441
+Tem memória limitada e
+comportamento ajustável.
+
+146
+00:09:27.942 --> 00:09:31.737
+Para um desenvolvedor, entender
+isso já é mais do que o suficiente para usar
+
+147
+00:09:31.737 --> 00:09:35.741
+melhor as suas ferramentas,
+evitar frustrações quando ele não faz
+
+148
+00:09:35.741 --> 00:09:39.912
+o que você quer, e escrever prompts mais inteligentes.
+
+149
+00:09:40.246 --> 00:09:43.874
+Além disso, você vai extrair muito mais valor da
+
+150
+00:09:43.874 --> 00:09:46.335
+IA entendendo como ela funciona.

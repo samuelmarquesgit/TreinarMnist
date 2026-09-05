@@ -1,0 +1,722 @@
+WEBVTT
+
+1
+00:00:07.424 --> 00:00:08.383
+Hoje, então, a gente
+
+2
+00:00:08.383 --> 00:00:11.636
+vai aprender a
+instruir a inteligência artificial.
+
+3
+00:00:11.928 --> 00:00:15.807
+Você vai entender a diferença
+entre um prompt comum e
+
+4
+00:00:15.807 --> 00:00:20.603
+engenharia de contexto,
+como estruturar comandos profissionais
+
+5
+00:00:20.603 --> 00:00:25.191
+e, principalmente, como reduzir as
+alucinações e as respostas genéricas.
+
+6
+00:00:28.570 --> 00:00:31.990
+Então, vamos começar pelo básico,
+engenharia de prompt.
+
+7
+00:00:31.990 --> 00:00:34.200
+Engenharia de prompt não é sobre
+
+8
+00:00:34.200 --> 00:00:40.248
+escrever texto bonito ou fazer pedido educado, escrever por favor e obrigado para o ChatGPT.
+
+9
+00:00:40.248 --> 00:00:45.211
+Engenharia de prompt é fazer
+o design de instruções para IA.
+
+10
+00:00:45.211 --> 00:00:46.588
+É sobre estruturar um
+
+11
+00:00:46.588 --> 00:00:51.051
+comando de forma que o
+modelo entenda o que fazer, saiba como
+
+12
+00:00:51.051 --> 00:00:54.387
+fazer e conheça os limites
+do que ele pode fazer.
+
+13
+00:00:55.346 --> 00:00:59.184
+Um prompt profissional
+normalmente tem três pilares bem claros.
+
+14
+00:01:00.351 --> 00:01:03.813
+Primeiro, são as instruções.
+É o papel da IA
+
+15
+00:01:04.105 --> 00:01:06.483
+Por exemplo, você é um
+engenheiro de software sênior
+
+16
+00:01:06.983 --> 00:01:10.695
+especialista em autenticação.
+Você pode começar um prompt dessa forma.
+
+17
+00:01:11.196 --> 00:01:15.283
+Você está definindo um personagem para ela.
+Isso reduz
+
+18
+00:01:15.658 --> 00:01:18.745
+ambiguidade. Você não está pedindo qualquer resposta. Você está pedindo
+
+19
+00:01:18.745 --> 00:01:22.665
+resposta a partir de um papel específico.
+Por exemplo,
+
+20
+00:01:22.665 --> 00:01:25.919
+se você perguntar sobre Júlio César para um professor de história
+
+21
+00:01:26.419 --> 00:01:30.256
+do ensino fundamental, ele vai usar uma linguagem totalmente diferente
+
+22
+00:01:30.256 --> 00:01:34.135
+de um PHD em história romana.
+Então, dependendo do que você quer,
+
+23
+00:01:34.219 --> 00:01:37.514
+você atribui um papel à inteligência artificial.
+
+24
+00:01:38.098 --> 00:01:41.684
+Dois, o objetivo,
+o que você quer no final.
+
+25
+00:01:42.143 --> 00:01:46.439
+Exemplo, gere uma função
+de login em Node que retorne
+
+26
+00:01:46.439 --> 00:01:50.819
+um JSON padronizado.
+Aqui você define o resultado esperado
+
+27
+00:01:50.819 --> 00:01:54.656
+e não o processo.
+E terceiro, as regras, o que não
+
+28
+00:01:54.656 --> 00:01:59.077
+pode acontecer. Por exemplo,
+não usar bibliotecas externas,
+
+29
+00:01:59.077 --> 00:02:02.789
+não inventar endpoints, não assumir
+o banco de dados que não
+
+30
+00:02:02.789 --> 00:02:06.918
+foi informado, E esse tipo de
+coisa é essencial para reduzir
+
+31
+00:02:06.918 --> 00:02:11.214
+a alucinação. Agora, até aqui
+estamos falando só de prompt.
+
+32
+00:02:11.840 --> 00:02:15.301
+Mas no mundo real isso não é suficiente.
+Aqui entra o conceito
+
+33
+00:02:15.301 --> 00:02:17.303
+mais importante dessa aula.
+
+34
+00:02:20.974 --> 00:02:23.852
+Engenharia de contexto pode
+ser definida como:
+
+35
+00:02:23.852 --> 00:02:28.565
+prompt + memória + dados.
+Ou seja, o prompt diz o
+
+36
+00:02:28.565 --> 00:02:32.527
+que fazer, mas o contexto
+vai dizer com base em que.
+
+37
+00:02:33.111 --> 00:02:36.990
+Você já tentou criar um sistema com o IA
+e ela se confundiu completamente
+
+38
+00:02:36.990 --> 00:02:41.661
+com a sua própria arquitetura?
+Isso acontece porque o modelo não
+
+39
+00:02:41.661 --> 00:02:45.999
+conhece o seu projeto. Ele não sabe quais bibliotecas você está usando, como a
+
+40
+00:02:45.999 --> 00:02:49.794
+sua API funciona,
+quais decisões de arquitetura você já
+
+41
+00:02:49.794 --> 00:02:53.798
+tomou anteriormente no processo.
+E aí ele preenche os buracos com...
+
+42
+00:02:54.257 --> 00:02:55.091
+estatística,
+
+43
+00:02:55.091 --> 00:02:57.260
+fazendo o melhor que ele pode. E é aqui
+
+44
+00:02:57.260 --> 00:02:59.846
+que entra o Notebook LM.
+
+45
+00:03:00.221 --> 00:03:01.723
+Bom, esse aqui é o Notebook LM,
+
+46
+00:03:02.056 --> 00:03:05.435
+ele é uma ferramenta do Google,
+que hoje em dia ela é
+
+47
+00:03:05.435 --> 00:03:08.354
+gratuita,
+notebooklm.google.com
+
+48
+00:03:08.938 --> 00:03:12.483
+E nela você pode
+adicionar arquivos, adicionar fontes
+
+49
+00:03:12.483 --> 00:03:14.277
+e conversar com a inteligência artificial
+
+50
+00:03:14.277 --> 00:03:17.989
+para que ela analise os seus dados,
+como a gente vai ver agora.
+
+51
+00:03:18.573 --> 00:03:22.202
+Então, por exemplo, eu vou
+fazer upload aqui de dois
+
+52
+00:03:22.202 --> 00:03:26.915
+arquivos, esse é a arquitetura,
+e um arquivo de
+
+53
+00:03:26.915 --> 00:03:31.044
+PRD, por exemplo,
+de um projeto fictício de software.
+
+54
+00:03:31.502 --> 00:03:34.714
+Eu adiciono esses arquivos,
+o Notebook LM já vai entender
+
+55
+00:03:34.714 --> 00:03:38.509
+de qual projeto eu estou falando,
+ele disse aqui fluxo de arquitetura
+
+56
+00:03:38.509 --> 00:03:41.638
+e monitoramento de APIs.
+
+57
+00:03:41.638 --> 00:03:46.351
+Aqui eu posso...
+conversar com o Gemini,
+
+58
+00:03:46.351 --> 00:03:49.354
+que é o modelo que está por trás do Notebook LM,
+
+59
+00:03:49.646 --> 00:03:53.316
+fazendo perguntas sobre os arquivos que eu mandei, sobre a arquitetura
+
+60
+00:03:53.316 --> 00:03:57.153
+do meu projeto, sobre todas as
+tecnologias que estão em uso,
+
+61
+00:03:57.153 --> 00:04:00.740
+e ele vai permitir também
+coisas muito interessantes
+
+62
+00:04:00.740 --> 00:04:04.577
+como, por exemplo, fazer um
+resumo em áudio de tudo
+
+63
+00:04:04.577 --> 00:04:08.498
+o que você adicionou ali,
+criar mapas mentais,
+
+64
+00:04:09.582 --> 00:04:13.378
+criar testes, por exemplo, se você
+está estudando alguma ferramenta e você
+
+65
+00:04:13.378 --> 00:04:18.299
+adiciona arquivos dessa ferramenta, você pode pedir para ele gerar um quiz para você,
+
+66
+00:04:18.299 --> 00:04:21.386
+para definir se você conseguiu
+aprender ou não o conteúdo,
+
+67
+00:04:21.844 --> 00:04:24.555
+ele pode gerar infográficos,
+apresentações de slides.
+
+68
+00:04:25.014 --> 00:04:28.935
+Então, ela é uma ferramenta
+muito completa, mas o
+
+69
+00:04:28.935 --> 00:04:31.062
+foco principal aqui é o seguinte,
+
+70
+00:04:31.062 --> 00:04:34.065
+você vai estar conversando com
+um modelo de inteligência artificial
+
+71
+00:04:34.691 --> 00:04:37.360
+e ele vai ter contexto de todo o
+
+72
+00:04:37.360 --> 00:04:40.947
+seu projeto ou de tudo aquilo
+que você adicionar de informação.
+
+73
+00:04:40.947 --> 00:04:44.617
+Então, por exemplo, antes de um projeto de software, antes de você ter código,
+
+74
+00:04:44.784 --> 00:04:48.371
+você pode ter documentação,
+você pode ter documentos
+
+75
+00:04:48.371 --> 00:04:53.084
+de requisitos, você pode
+ter exigências de vários
+
+76
+00:04:53.084 --> 00:04:57.964
+stakeholders do projeto, você pode jogar tudo isso aqui dentro e começar com
+
+77
+00:04:57.964 --> 00:05:01.968
+a ajuda da IA, discutir a implementação disso, discutir quais os
+
+78
+00:05:01.968 --> 00:05:06.180
+primeiros passos a seguir,
+implementação de segurança, falhas,
+
+79
+00:05:06.347 --> 00:05:10.226
+possíveis caminhos a serem tomados.
+Então, é uma ferramenta excepcional,
+
+80
+00:05:10.226 --> 00:05:13.938
+muita gente usa isso para estudo ou para
+
+81
+00:05:13.938 --> 00:05:17.775
+desenvolvimento de software e
+vários outros casos de uso que
+
+82
+00:05:17.775 --> 00:05:19.277
+essa ferramenta permite.
+
+83
+00:05:19.569 --> 00:05:21.696
+Por exemplo, aqui eu posso
+fazer perguntas como,
+
+84
+00:05:22.322 --> 00:05:26.117
+quais tecnologias esse projeto usa?
+
+85
+00:05:27.577 --> 00:05:30.997
+e aí o Gemini vai revisar
+todo o conteúdo que está
+
+86
+00:05:30.997 --> 00:05:34.959
+nesses arquivos e vai me dar
+uma resposta. Ao mesmo tempo
+
+87
+00:05:34.959 --> 00:05:38.796
+enquanto ele está fazendo isso, eu vou mostrar que aqui eu cliquei no botão mapa
+
+88
+00:05:38.796 --> 00:05:43.259
+mental para que ele pegasse as minhas fontes e transformasse no mapa mental.
+
+89
+00:05:44.093 --> 00:05:47.680
+onde a gente pode ver,
+por exemplo, ele deu o nome
+
+90
+00:05:47.680 --> 00:05:52.060
+para esse app, FinTrack,
+e ele adicionou aqui a visão geral,
+
+91
+00:05:52.060 --> 00:05:55.396
+ele colocou os objetivos,
+tudo de acordo com os documentos,
+
+92
+00:05:55.521 --> 00:05:59.150
+a stack tecnológica, então a gente vê aqui front-end usando o
+
+93
+00:05:59.150 --> 00:06:03.279
+React com TypeScript e assim
+por diante. É dessa forma
+
+94
+00:06:03.279 --> 00:06:07.116
+que ele funciona.
+Da mesma forma aqui, a resposta
+
+95
+00:06:07.116 --> 00:06:11.287
+que eu recebi, com base nos documentos fornecidos, foi que
+
+96
+00:06:11.287 --> 00:06:14.707
+FrontEnd vai usar
+JavaScript, TypeScript, Vite,
+
+97
+00:06:14.832 --> 00:06:19.087
+React, tudo conforme os documentos.
+E quando você clica
+
+98
+00:06:19.087 --> 00:06:23.591
+aqui na referência, na citação, você vai direto para o documento mostrando
+
+99
+00:06:23.591 --> 00:06:25.760
+de onde ele tirou essa informação.
+
+100
+00:06:25.760 --> 00:06:28.054
+E lembrando, é sempre extremamente importante
+
+101
+00:06:28.554 --> 00:06:32.141
+que você verifique todas as
+informações que a LLM gera para
+
+102
+00:06:32.141 --> 00:06:36.270
+você. Até tem uma mensagem aqui embaixo dizendo que o notebook LLM pode gerar
+
+103
+00:06:36.270 --> 00:06:40.691
+respostas incorretas e
+isso é da natureza dos modelos
+
+104
+00:06:40.691 --> 00:06:41.943
+de linguagem hoje.
+
+105
+00:06:41.943 --> 00:06:44.862
+Então o Notebook LM permite
+que você suba essa
+
+106
+00:06:44.862 --> 00:06:49.117
+documentação técnica inteira,
+você pode usar readmes, diagramas,
+
+107
+00:06:49.367 --> 00:06:52.453
+especificações, decisões de arquitetura,
+
+108
+00:06:52.662 --> 00:06:56.249
+e a IA vai passar a responder
+somente com base nesses
+
+109
+00:06:56.249 --> 00:07:00.503
+documentos. Ela não imagina a
+arquitetura do seu projeto, ela consulta
+
+110
+00:07:00.503 --> 00:07:04.966
+exatamente o que você forneceu.
+Isso facilita demais. E
+
+111
+00:07:04.966 --> 00:07:08.261
+a IA deixa de ser um gerador genérico
+e passa a ser um assistente com
+
+112
+00:07:08.261 --> 00:07:12.723
+o contexto certo. Aí você
+está fazendo engenharia de contexto.
+
+113
+00:07:16.310 --> 00:07:19.272
+Agora vamos falar de
+alguns padrões clássicos e
+
+114
+00:07:19.272 --> 00:07:21.482
+muitas vezes mal utilizados.
+
+115
+00:07:21.482 --> 00:07:23.526
+O primeiro padrão de prompting é
+
+116
+00:07:23.526 --> 00:07:27.447
+o Chain of Thought. A ideia aqui é
+bem simples, você inclusive já deve ter
+
+117
+00:07:27.447 --> 00:07:31.492
+visto isso. Você manda um prompt,
+por exemplo: “antes de entregar o
+
+118
+00:07:31.492 --> 00:07:35.288
+código final, pense passo a passo”.
+Isso força
+
+119
+00:07:35.288 --> 00:07:40.543
+o modelo a organizar o raciocínio e evitar respostas precipitadas.
+
+120
+00:07:40.543 --> 00:07:44.046
+Lembra, o modelo não pensa internamente,
+ele pensa quando
+
+121
+00:07:44.046 --> 00:07:49.510
+gera tokens. Quanto mais tokens ele tiver para fazer as conexões necessárias,
+
+122
+00:07:49.510 --> 00:07:52.013
+mais chance da resposta ser eficiente.
+
+123
+00:07:52.013 --> 00:07:54.265
+O segundo padrão é o React.
+
+124
+00:07:54.557 --> 00:07:56.893
+Aqui o modelo executa uma ação,
+
+125
+00:07:57.143 --> 00:08:00.480
+observa o resultado e decide o próximo passo.
+
+126
+00:08:00.855 --> 00:08:05.276
+Você pode instruir algo como:
+“se o resultado da validação falhar,
+
+127
+00:08:05.401 --> 00:08:09.447
+revise a lógica antes de continuar”.
+Então isso simula um
+
+128
+00:08:09.447 --> 00:08:13.367
+loop de decisão, que é muito útil
+para tarefas complexas e é
+
+129
+00:08:13.367 --> 00:08:15.369
+a base para os agentes hoje.
+
+130
+00:08:15.369 --> 00:08:18.164
+O terceiro padrão é o
+Few-shot Prompting.
+
+131
+00:08:18.164 --> 00:08:21.125
+Esse é um dos mais
+poderosos e mais utilizados.
+
+132
+00:08:21.417 --> 00:08:25.087
+Em vez de explicar o que você quer,
+você mostra exemplos,
+
+133
+00:08:25.087 --> 00:08:28.299
+como um exemplo de input,
+um exemplo de output correto,
+
+134
+00:08:28.591 --> 00:08:32.178
+exemplo de input inválido,
+exemplo de output de
+
+135
+00:08:32.178 --> 00:08:36.682
+erro, você passa tudo isso,
+a IA aprende o padrão em vez
+
+136
+00:08:36.682 --> 00:08:41.354
+de só a descrição. Isso reduz
+drasticamente a inconsistência
+
+137
+00:08:41.354 --> 00:08:44.565
+e as respostas muito criativas
+que às vezes ela nos dá.
+
+138
+00:08:44.815 --> 00:08:49.820
+E o quarto padrão é a análise crítica.
+Você pode e deve instruir a IA a
+
+139
+00:08:49.820 --> 00:08:54.450
+revisar o próprio código, a procurar falhas lógicas e identificar riscos
+
+140
+00:08:54.450 --> 00:08:58.412
+de segurança.
+Por exemplo: “revise o código gerado
+
+141
+00:08:58.412 --> 00:09:01.582
+e aponte possíveis vulnerabilidades”.
+
+142
+00:09:01.832 --> 00:09:06.837
+A IA não é infalível, mas ela é muito boa em revisar padrões, inclusive o padrão
+
+143
+00:09:06.837 --> 00:09:08.965
+que ela mesma acabou de gerar para você.
+
+144
+00:09:08.965 --> 00:09:10.841
+Bom, agora é sua vez.
+
+145
+00:09:11.175 --> 00:09:13.970
+Pegue um prompt simples,
+como, por exemplo:
+
+146
+00:09:14.554 --> 00:09:18.683
+“crie uma função de login que
+retorna um JSON" e aplique
+
+147
+00:09:18.849 --> 00:09:22.812
+padrões como o Few-shot Prompting.
+Passe dois exemplos claros de
+
+148
+00:09:22.812 --> 00:09:27.275
+input e output esperado, e
+você vai perceber algo bem interessante.
+
+149
+00:09:27.400 --> 00:09:31.279
+O modelo vai parar de inventar formato
+e vai começar a replicar
+
+150
+00:09:31.529 --> 00:09:32.488
+o seu padrão.
+
+151
+00:09:32.488 --> 00:09:35.366
+Hoje você aprendeu
+duas coisas fundamentais.
+
+152
+00:09:35.366 --> 00:09:39.453
+Engenharia de prompt, que é como estruturar instruções claras,
+
+153
+00:09:39.704 --> 00:09:43.708
+e engenharia de contexto,
+que é como garantir que a IA responda
+
+154
+00:09:43.708 --> 00:09:47.920
+com base na sua realidade.
+Isso é a base de tudo o
+
+155
+00:09:47.920 --> 00:09:49.338
+que vem depois.

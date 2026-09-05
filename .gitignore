@@ -1,0 +1,68 @@
+# Ambientes Virtuais e Interpretador
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribuição e Empacotamento
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testes e Cobertura
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Variáveis de Ambiente e Segredos
+.env
+!.env.exemplo
+
+# Dados volumosos e Cache local
+data/raw/*.joblib
+data/raw/*.npy
+data/raw/*.pkl
+data/processed/chroma_db/
+
+# Modelos treinados binários pesados
+models/saved_models/*.joblib
+models/saved_models/*.keras
+models/saved_models/*.h5
+
+# Volumes Docker locais (se mapeados fora do contêiner)
+postgres_data/
+mongo_data/

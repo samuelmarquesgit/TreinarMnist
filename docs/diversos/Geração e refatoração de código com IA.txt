@@ -1,0 +1,834 @@
+WEBVTT
+
+1
+00:00:07.549 --> 00:00:10.385
+Nessa aula a gente
+entra na tarefa central do
+
+2
+00:00:10.385 --> 00:00:13.763
+desenvolvimento, escrever
+e melhorar código com IA.
+
+3
+00:00:14.139 --> 00:00:19.394
+Você vai ver como usar IA para criar novas
+funcionalidades do zero e também como
+
+4
+00:00:19.394 --> 00:00:23.606
+transformar aquele código
+legado que todo time tem medo de
+
+5
+00:00:23.690 --> 00:00:27.569
+mexer em algo mais limpo,
+mais legível e mais sustentável.
+
+6
+00:00:27.736 --> 00:00:30.739
+Lembra, programar com IA não é vibecoding.
+
+7
+00:00:30.947 --> 00:00:34.284
+É saber guiar a ferramenta para produzir
+código de alta qualidade.
+
+8
+00:00:37.495 --> 00:00:40.707
+Vamos começar então pela geração de código
+assistida.
+
+9
+00:00:41.249 --> 00:00:44.252
+Aqui nós estamos usando o cursor
+novamente.
+
+10
+00:00:44.586 --> 00:00:48.089
+Isso significa que a IA já
+tem acesso ao repositório, já
+
+11
+00:00:48.214 --> 00:00:52.844
+enxerga arquivos, padrões,
+imports, nomes, estrutura.
+
+12
+00:00:52.927 --> 00:00:55.972
+Então vamos dar um exemplo de instrução.
+
+13
+00:00:56.598 --> 00:01:02.854
+Eu pedi aqui pra ela, eu já tenho um
+esquema que tem usuários, tem transações,
+
+14
+00:01:02.896 --> 00:01:06.524
+tem categorias no app financeiro... E aí
+eu estou pedindo o seguinte: crie uma
+
+15
+00:01:06.524 --> 00:01:10.195
+entidade profile, no esquema,
+vinculado à user.
+
+16
+00:01:10.195 --> 00:01:13.531
+O profile vai ter a URL da foto e uma bio.
+
+17
+00:01:14.115 --> 00:01:19.245
+Reparem que eu não tô dando nenhuma
+instrução sobre qual ferramentos usar,
+
+18
+00:01:19.287 --> 00:01:22.665
+qual biblioteca eu estou usando, qual é o
+padrão do meu banco de dados.
+
+19
+00:01:22.665 --> 00:01:26.669
+Pelo contrário, o Cursor vai já, explorar
+
+20
+00:01:26.961 --> 00:01:29.172
+todos os arquivos que eu já tenho, vai
+
+21
+00:01:29.172 --> 00:01:33.134
+entender qual é o contexto e
+vai manter o mesmo padrão.
+
+22
+00:01:33.426 --> 00:01:40.266
+Então a gente pode ver aqui que ele usou o
+Drizzle como ORM, ele usou o mesmo esquema
+
+23
+00:01:40.266 --> 00:01:44.562
+de pg table que usa o PostGre aqui para
+criar esta tabela de Profiles.
+
+24
+00:01:44.813 --> 00:01:51.778
+Vai criar o ID do usuário, que eu falei
+que tinha que ser vinculado ao usuário.
+
+25
+00:01:51.820 --> 00:01:56.783
+Já vai criar a URL de foto e a bio,
+como eu passei nas instruções.
+
+26
+00:01:56.950 --> 00:02:00.537
+Então ele vai usar
+exatamente os mesmos padrões
+
+27
+00:02:00.537 --> 00:02:03.581
+que eu estou usando
+aqui nos outros arquivos.
+
+28
+00:02:03.915 --> 00:02:08.962
+Então isso facilita muito para criar novas
+funcionalidades, porque eu não preciso...
+
+29
+00:02:08.962 --> 00:02:12.674
+Se eu fosse usar, por exemplo,
+o ChatGPT que não tem nenhum contexto no
+
+30
+00:02:12.674 --> 00:02:14.759
+meu projeto e pedisse
+para ele criar, ele iria criar
+
+31
+00:02:14.801 --> 00:02:17.929
+com o seu próprio padrão,
+com suas próprias bibliotecas.
+
+32
+00:02:18.096 --> 00:02:21.307
+E aqui dentro do editor eu posso criar
+
+33
+00:02:21.307 --> 00:02:25.854
+features com uma velocidade muito maior,
+porque ele já tem todo o contexto que eu
+
+34
+00:02:25.854 --> 00:02:28.815
+preciso para criar uma nova
+funcionalidade.
+
+35
+00:02:32.152 --> 00:02:36.573
+Aqui você pode também pegar um algoritmo
+complexo escrito em uma linguagem que você
+
+36
+00:02:36.573 --> 00:02:40.869
+não Domina, em C++, em
+Java, em COBOL ou alguma outra
+
+37
+00:02:40.869 --> 00:02:43.997
+linguagem, e pedir para ir a
+traduzir para a sua stack atual.
+
+38
+00:02:44.205 --> 00:02:46.291
+Ela vai fazer este trabalho muito bem
+feito.
+
+39
+00:02:46.708 --> 00:02:50.420
+Ou pedir para atualizar
+para uma versão diferente
+
+40
+00:02:50.420 --> 00:02:53.298
+da linguagem ou do framework
+que você está usando.
+
+41
+00:02:53.548 --> 00:02:56.593
+Ela também consegue fazer
+isso porque ela tem acesso
+
+42
+00:02:56.593 --> 00:02:59.804
+a toda a documentação que
+está disponível na Internet.
+
+43
+00:03:00.096 --> 00:03:04.392
+Então a IA consegue preservar a lógica e
+adaptar a implementação.
+
+44
+00:03:04.601 --> 00:03:07.812
+Isso é ótimo quando
+você trabalha com sistemas
+
+45
+00:03:07.812 --> 00:03:10.773
+legados ou com migrações
+de uma tecnologia para outra.
+
+46
+00:03:13.985 --> 00:03:17.363
+Agora vem uma das partes que eu mais
+gosto, que é a refatoração.
+
+47
+00:03:17.822 --> 00:03:20.283
+Então eu vou mostrar aqui
+um código que tem uma
+
+48
+00:03:20.283 --> 00:03:23.953
+certa complexidade,
+funções longas, nomes ruins...
+
+49
+00:03:25.205 --> 00:03:31.169
+Eu vou encontrar ele aqui e ele se chama
+conversor de moeda.
+
+50
+00:03:31.294 --> 00:03:37.050
+Eu tenho uma função aqui que vai converter
+um tipo de moeda em outro.
+
+51
+00:03:37.383 --> 00:03:41.221
+Você pode ver que olhando isso aqui é bem
+difícil entender o que está acontecendo.
+
+52
+00:03:42.347 --> 00:03:48.436
+Essa função está bem confusa, os nomes de
+variáveis A, B e C não me dizem nada.
+
+53
+00:03:48.645 --> 00:03:50.980
+É muito difícil entender essa lógica.
+
+54
+00:03:51.189 --> 00:03:53.233
+Então eu vou começar uma nova conversa
+aqui.
+
+55
+00:03:55.193 --> 00:04:00.114
+E eu vou pedir no modo Ask do cursor,
+eu vou pedir o seguinte.
+
+56
+00:04:00.365 --> 00:04:07.455
+Explique essa função e o que ela faz.
+
+57
+00:04:10.583 --> 00:04:11.668
+Isso é bem simples.
+
+58
+00:04:11.918 --> 00:04:14.295
+E aí eu vou mandar isso no modo Ask.
+
+59
+00:04:14.462 --> 00:04:17.131
+Eu vou marcar o arquivo
+aqui para ter certeza que
+
+60
+00:04:17.131 --> 00:04:19.550
+ele vai saber qual a
+função que eu estou falando.
+
+61
+00:04:19.968 --> 00:04:22.345
+Aí eu pergunto, ele vai
+ler o arquivo para entender
+
+62
+00:04:22.345 --> 00:04:25.473
+a função e já me entrega
+a resposta rapidamente.
+
+63
+00:04:26.557 --> 00:04:29.811
+Então aqui ele me explicou
+que essa função convert,
+
+64
+00:04:29.811 --> 00:04:33.648
+ela converte um valor entre moedas,
+dólares, euros e reais.
+
+65
+00:04:33.940 --> 00:04:36.150
+Aí me explicou o que é cada parâmetro.
+
+66
+00:04:36.317 --> 00:04:40.947
+O que a função retorna, que é o valor
+convertido ou nulo, se houver erro.
+
+67
+00:04:41.489 --> 00:04:44.409
+As taxas de câmbio aqui estão definidas,
+
+68
+00:04:44.450 --> 00:04:48.288
+não está buscando de nenhuma API externa,
+mas estão todas aqui.
+
+69
+00:04:48.413 --> 00:04:51.541
+Por exemplo, dólar para real está R$5,20.
+
+70
+00:04:51.791 --> 00:04:53.918
+E esse valor é fixo.
+
+71
+00:04:54.544 --> 00:04:58.381
+E aí a gente tem a formatação
+de moeda mesmo, que vai colocar,
+
+72
+00:04:58.464 --> 00:05:01.050
+por exemplo, o símbolo do
+dólar na frente e tudo mais.
+
+73
+00:05:01.217 --> 00:05:04.887
+Que é o que ele faz aqui no fim dessa
+função.
+
+74
+00:05:05.221 --> 00:05:07.098
+Então ele vai explicar tudo isso.
+
+75
+00:05:08.266 --> 00:05:11.227
+Caso seja uma função que você não faz
+ideia do que está acontecendo,
+
+76
+00:05:11.311 --> 00:05:15.023
+você já vai ter uma visão muito clara,
+consegue extrair informação daqui.
+
+77
+00:05:16.691 --> 00:05:21.654
+Agora uma segunda etapa é eu pedir para
+ele fazer uma refatoração.
+
+78
+00:05:21.654 --> 00:05:27.410
+Eu vou usar o modo plan para que ele não
+faça ainda, ele não altere o arquivo de
+
+79
+00:05:27.410 --> 00:05:31.539
+forma nenhuma, mas ele vai definir um
+plano para refatorar.
+
+80
+00:05:31.664 --> 00:05:35.668
+Então eu vou escrever um prompt
+basicamente o seguinte.
+
+81
+00:05:36.085 --> 00:05:52.018
+Quero refatorar essa função, simplificando
+e utilizando princípios de clean code
+
+82
+00:05:53.144 --> 00:05:54.187
+e solid.
+
+83
+00:05:54.479 --> 00:05:56.731
+Só para aumentar um pouco a dificuldade
+dele.
+
+84
+00:05:57.065 --> 00:06:03.946
+Eu quero que ele busque o que são esses
+princípios, como seria implementado nessa
+
+85
+00:06:03.946 --> 00:06:07.950
+função, e ele consiga planejar quais são
+os próximos passos.
+
+86
+00:06:07.950 --> 00:06:10.995
+Vamos ver como que ele vai fazer esse
+trabalho.
+
+87
+00:06:11.287 --> 00:06:16.751
+Aqui ele está buscando todos os arquivos
+dentro do meu projeto.
+
+88
+00:06:17.001 --> 00:06:19.045
+Está lendo essa função aqui.
+
+89
+00:06:19.545 --> 00:06:21.631
+Lembra que a gente ainda não fez nenhuma
+refaturação.
+
+90
+00:06:21.672 --> 00:06:24.675
+A gente só pediu para explicar a função.
+
+91
+00:06:25.176 --> 00:06:29.639
+E aí ele está criando um arquivo com um
+plano detalhado.
+
+92
+00:06:29.931 --> 00:06:37.397
+Pode ver que o nome do arquivo é
+refatorar, o nome da função e um ID.plan.markdown.
+
+93
+00:06:37.772 --> 00:06:43.444
+E aí ele vai começar a criar todo um
+plano, especificando quais arquivos
+
+94
+00:06:43.444 --> 00:06:47.990
+modificar, qual é a estrutura que a gente
+quer chegar, quais vão ser os benefícios
+
+95
+00:06:47.990 --> 00:06:51.869
+dessa função, e vai
+finalmente criar uma lista
+
+96
+00:06:51.869 --> 00:06:56.249
+de tarefas de tudo o
+que precisa ser feita.
+
+97
+00:06:56.249 --> 00:07:03.297
+Isso aqui é sensacional, porque você está
+num projeto legado, você sabe que não pode
+
+98
+00:07:03.297 --> 00:07:06.968
+simplesmente começar a mexer em qualquer
+arquivo por medo de quebrar o trabalho de
+
+99
+00:07:07.009 --> 00:07:09.470
+uma outra pessoa, de mexer em algo que
+você não entende.
+
+100
+00:07:09.804 --> 00:07:12.014
+Então você pediu para ele explicar a
+função.
+
+101
+00:07:12.223 --> 00:07:13.850
+E agora você está pedindo.
+
+102
+00:07:14.100 --> 00:07:19.230
+Ok, se você fosse implementar essa função,
+o que precisaria ser feito?
+
+103
+00:07:19.439 --> 00:07:22.817
+Então ele começa a mostrar quais os
+problemas que foram identificados,
+
+104
+00:07:22.984 --> 00:07:29.699
+toda a estrutura da refatoração e a
+estrutura final proposta.
+
+105
+00:07:29.907 --> 00:07:33.035
+Te ajuda inclusive mostrando os
+benefícios.
+
+106
+00:07:33.119 --> 00:07:36.664
+Então esse documento aqui, claro,
+com a sua revisão, você vai olhar com
+
+107
+00:07:36.664 --> 00:07:39.375
+calma, ver se faz sentido
+dentro de tudo aquilo,
+
+108
+00:07:39.375 --> 00:07:41.836
+mas você pode até
+compartilhar com a sua equipe.
+
+109
+00:07:41.919 --> 00:07:46.549
+Você pode mostrar se isso faz
+sentido para um líder
+
+110
+00:07:46.549 --> 00:07:49.927
+técnico ou para outra pessoa
+que conhece esse código também.
+
+111
+00:07:50.052 --> 00:07:55.683
+E você pode usar isso como uma
+documentação até para qualquer stakeholder
+
+112
+00:07:55.683 --> 00:08:01.022
+do seu projeto, como por exemplo,
+as equipes que são responsáveis por tomar
+
+113
+00:08:01.022 --> 00:08:05.193
+a decisão de começar um projeto de
+refatoração, por exemplo.
+
+114
+00:08:05.193 --> 00:08:07.987
+Então você já começa com
+documentação, mostrando tudo
+
+115
+00:08:07.987 --> 00:08:11.782
+aquilo que é necessário para
+fazer de fato essa refatoração.
+
+116
+00:08:12.909 --> 00:08:19.290
+Aqui a última etapa é...eu simplesmente
+cliquei no botão build e pedi para ele...
+
+117
+00:08:19.790 --> 00:08:22.877
+eu dei a luz verde para
+ele, dizendo "ó, então
+
+118
+00:08:22.877 --> 00:08:25.671
+agora você pode
+implementar essa refatoração".
+
+119
+00:08:25.838 --> 00:08:30.218
+Ele vai automaticamente aqui para o modo
+Agente, onde ele tem acesso aos arquivos,
+
+120
+00:08:30.218 --> 00:08:34.805
+ele pode fazer... pode editar
+arquivos, pode mexer no código de fato.
+
+121
+00:08:35.056 --> 00:08:37.475
+E aí ele vai seguir o próprio plano.
+
+122
+00:08:37.642 --> 00:08:41.729
+E você pode acompanhar
+isso sendo feito, com quais
+
+123
+00:08:41.729 --> 00:08:45.066
+itens que ele está
+trabalhando, o que ele já Fez.
+
+124
+00:08:45.107 --> 00:08:49.445
+Ele vai te dando um feedback de cada etapa
+dessa função.
+
+125
+00:08:53.157 --> 00:08:58.079
+Então a gente vai ver aqui, qual foi o
+resultado desse trabalho.
+
+126
+00:08:58.371 --> 00:09:00.373
+A gente pode ver que ele mexeu
+aqui no mesmo arquivo, porque
+
+127
+00:09:00.373 --> 00:09:03.167
+ele está no modo Agente, então
+ele tem permissão de edição.
+
+128
+00:09:03.584 --> 00:09:06.420
+E aí ele começou já definindo
+tipos aqui, por exemplo,
+
+129
+00:09:06.420 --> 00:09:11.759
+quais são as moedas que
+são aceitas por essa função.
+
+130
+00:09:12.134 --> 00:09:14.887
+Já separou os símbolos que estavam lá no
+meio do código.
+
+131
+00:09:14.887 --> 00:09:20.017
+Já separou aqui a taxa de conversão de
+moeda para moeda.
+
+132
+00:09:20.101 --> 00:09:21.227
+Já fez tudo isso.
+
+133
+00:09:21.352 --> 00:09:27.858
+E começou... deixa eu marcar aqui,
+keep file, para ter acesso ao arquivo novo.
+
+134
+00:09:29.068 --> 00:09:29.735
+Isso.
+
+135
+00:09:29.944 --> 00:09:35.032
+E aí ele já começou a criar funções
+separadas para cada etapa do processo.
+
+136
+00:09:35.575 --> 00:09:38.703
+Separou a lógica de formatação da função.
+
+137
+00:09:39.370 --> 00:09:41.080
+Separou a parte de localização.
+
+138
+00:09:42.623 --> 00:09:50.631
+E, finalmente, a função de conversão,
+que agora simplesmente chama essas funções
+
+139
+00:09:50.631 --> 00:09:54.802
+internas, retorna um erro, e
+valida ainda se o número é um
+
+140
+00:09:54.885 --> 00:09:58.973
+número real, finito, ou se a
+gente teve algum tipo de erro.
+
+141
+00:09:59.098 --> 00:10:04.937
+Então ele já faz até essa parte de
+manipulação de erros.
+
+142
+00:10:05.187 --> 00:10:08.149
+A gente pode ver aqui, eu não vou entrar
+em detalhes em relação ao código,
+
+143
+00:10:08.232 --> 00:10:14.155
+mas a gente pode ver que ele fez a
+refatoração exatamente de acordo com o plano.
+
+144
+00:10:14.322 --> 00:10:18.909
+Ele explicou tudo o que ele ia fazer,
+ele realizou aquilo, e ainda te deu toda a
+
+145
+00:10:18.909 --> 00:10:23.247
+explicação para você colocar isso,
+por exemplo, num pull request,
+
+146
+00:10:23.497 --> 00:10:27.835
+para você explicar isso em
+alguma reunião sobre qual foi
+
+147
+00:10:27.835 --> 00:10:31.464
+o resultado dessa refatoração,
+quais foram os benefícios.
+
+148
+00:10:31.922 --> 00:10:37.219
+Então tem algo bem
+interessante aqui, que a IA
+
+149
+00:10:37.219 --> 00:10:40.181
+normalmente vai sugerir
+nomes mais semânticos.
+
+150
+00:10:40.473 --> 00:10:41.432
+Ela vai...
+
+151
+00:10:41.432 --> 00:10:44.852
+extrair o significado
+daquela sua função, ela vai
+
+152
+00:10:44.852 --> 00:10:48.105
+conseguir manter toda
+a intenção dessa função.
+
+153
+00:10:48.356 --> 00:10:54.612
+E algo muito interessante é que você não
+apenas manda ela escrever código ou
+
+154
+00:10:54.612 --> 00:11:00.409
+refatorar algo que você não vai mexer,
+mas ela vai ensinar você sobre técnicas de
+
+155
+00:11:00.409 --> 00:11:05.706
+projeto, sobre padrões diferentes que você
+não conhecia, e você vai se desenvolvendo
+
+156
+00:11:05.706 --> 00:11:10.628
+como desenvolvedor na sua própria
+profissão, no seu próprio trabalho,
+
+157
+00:11:10.628 --> 00:11:16.926
+você vai aprendendo a entender padrões
+diferentes, ela vai ensinando você como
+
+158
+00:11:16.926 --> 00:11:22.098
+fazer uma refatoração, como quebrar isso,
+e o resultado é que você se torna um
+
+159
+00:11:22.139 --> 00:11:26.435
+desenvolvedor melhor através do uso da
+inteligência artificial no seu projeto.
+
+160
+00:11:27.103 --> 00:11:29.397
+Agora, novamente, é a sua vez.
+
+161
+00:11:29.689 --> 00:11:34.819
+Vá até um repositório, escolha aquela
+função que todo mundo evita mexer.
+
+162
+00:11:35.277 --> 00:11:38.614
+Então você vai pedir para a IA,
+primeiro, explicar a lógica do código para
+
+163
+00:11:38.614 --> 00:11:44.787
+que você entenda, apontar três problemas
+de legibilidade ou de design, e,
+
+164
+00:11:44.870 --> 00:11:48.416
+finalmente, refatorar mantendo o
+comportamento.
+
+165
+00:11:48.666 --> 00:11:51.335
+Você pode comparar o antes e o depois.
+
+166
+00:11:51.544 --> 00:11:58.008
+você não precisa que ela faça tudo de uma
+vez só, você não precisa mandar um prompt
+
+167
+00:11:58.008 --> 00:12:00.553
+e esperar o resultado pronto já para
+mandar para a produção.
+
+168
+00:12:00.761 --> 00:12:03.889
+Você pode avaliar tudo o que ela está
+fazendo e aprender com isso.
+
+169
+00:12:04.682 --> 00:12:07.101
+Normalmente, o
+resultado vai te surpreender
+
+170
+00:12:07.101 --> 00:12:09.812
+e ainda vai te ensinar
+coisas nesse processo.
+
+171
+00:12:10.020 --> 00:12:14.108
+Muito bem, hoje você viu como a IA pode
+acelerar a criação do código e,
+
+172
+00:12:14.108 --> 00:12:18.863
+principalmente, como ela pode ajudar a
+limpar e melhorar sistemas reais.

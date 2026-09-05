@@ -1,0 +1,444 @@
+WEBVTT
+
+1
+00:00:07.382 --> 00:00:09.759
+Olá, seja bem-vindo à nossa aula.
+
+2
+00:00:09.759 --> 00:00:14.264
+Hoje nós vamos entender como a IA está transformando a engenharia de software,
+
+3
+00:00:14.264 --> 00:00:17.600
+de uma tarefa puramente manual,
+quase artesanal, em um
+
+4
+00:00:17.600 --> 00:00:21.021
+processo acelerado,
+automatizado e, por que não,
+
+5
+00:00:21.021 --> 00:00:21.980
+até mais divertido.
+
+6
+00:00:25.275 --> 00:00:29.320
+Se você já tem experiência como DEV,
+vai lembrar dos editores de código antigos.
+
+7
+00:00:29.320 --> 00:00:32.782
+Praticamente um editor de texto com cores.
+
+8
+00:00:32.782 --> 00:00:36.619
+Erros de digitação e de sintaxe
+eram os mais comuns e perdíamos
+
+9
+00:00:36.619 --> 00:00:40.498
+horas resolvendo problemas que não tinham a ver com o software que a gente queria,
+
+10
+00:00:40.498 --> 00:00:44.252
+de fato, construir.
+Esquecer um ponto e vírgula podia gerar
+
+11
+00:00:44.419 --> 00:00:48.381
+horas de dor de cabeça.
+Então surgiram as IDEs,
+
+12
+00:00:48.673 --> 00:00:52.552
+ambientes que entendem o tipo de projeto
+e a linguagem que
+
+13
+00:00:52.552 --> 00:00:55.764
+a gente usa,
+fazem a compilação, debugging,
+
+14
+00:00:55.764 --> 00:00:59.100
+ajudam a estruturar o projeto,
+até conseguem mover funções,
+
+15
+00:00:59.267 --> 00:01:01.227
+refatorar um pouco de código.
+
+16
+00:01:01.478 --> 00:01:06.357
+Bom, evoluímos.
+Hoje a IA permeia cada software que
+
+17
+00:01:06.357 --> 00:01:08.526
+utilizamos, inclusive os
+editores e as IDEs.
+
+18
+00:01:09.110 --> 00:01:14.115
+Aí entra o que a gente chama de plataformas AI-first. São IDEs pensadas totalmente
+
+19
+00:01:14.616 --> 00:01:18.036
+para a programação assistida por IA.
+Ela gera código via prompt,
+
+20
+00:01:18.453 --> 00:01:21.956
+escreve testes e
+documentação sozinha, entende todo
+
+21
+00:01:21.956 --> 00:01:25.794
+o seu código antes de sugerir
+alguma melhoria. Na realidade,
+
+22
+00:01:26.336 --> 00:01:29.631
+subimos um nível de abstração.
+Antes perdíamos
+
+23
+00:01:29.631 --> 00:01:33.802
+horas com problemas sintáticos.
+Hoje a IA resolve sintaxe e
+
+24
+00:01:33.802 --> 00:01:36.471
+nós focamos na arquitetura do projeto.
+
+25
+00:01:36.846 --> 00:01:41.226
+Além disso, ela aperfeiçoou
+o conceito do rubber duck,
+
+26
+00:01:41.601 --> 00:01:44.604
+que vem do livro “O Programador Pragmático”.
+
+27
+00:01:45.230 --> 00:01:47.941
+O pato de borracha é uma
+técnica de debugging,
+
+28
+00:01:48.358 --> 00:01:52.237
+que está nesse livro, onde o programador explica o seu raciocínio,
+
+29
+00:01:52.654 --> 00:01:56.157
+passo a passo, para um objeto,
+buscando encontrar falhas no
+
+30
+00:01:56.658 --> 00:01:59.953
+seu raciocínio. Agora,
+o Rubber Duck deixou de ser
+
+31
+00:02:00.453 --> 00:02:04.207
+um objeto inanimado, mas tem o conhecimento
+de toda a internet para te ajudar
+
+32
+00:02:04.707 --> 00:02:08.670
+com sugestões, com referências, ou até mesmo reescrever o seu código
+
+33
+00:02:09.170 --> 00:02:09.671
+corrigido.
+
+34
+00:02:13.174 --> 00:02:16.678
+Você sabia que até os experts em inteligência artificial
+
+35
+00:02:16.678 --> 00:02:20.098
+estão se sentindo atrasados
+em relação a tudo que a IA pode oferecer?
+
+36
+00:02:20.557 --> 00:02:24.894
+Por exemplo, aqui a gente tem esse tweet do Andrej Karpathy
+
+37
+00:02:24.894 --> 00:02:27.814
+do fim de 2025.
+Andrei Karpathy,
+
+38
+00:02:27.897 --> 00:02:31.651
+se você não conhece, ele é um dos cofundadores
+da OpenAI, a empresa que
+
+39
+00:02:32.152 --> 00:02:36.030
+criou o ChatGPT. Ele também foi diretor de inteligência artificial da
+
+40
+00:02:36.030 --> 00:02:39.993
+Tesla, então é uma referência na área, tem um currículo impressionante.
+
+41
+00:02:40.451 --> 00:02:46.040
+E olha só o que ele disse:
+”Nunca me senti tão para trás como programador.”
+
+42
+00:02:46.040 --> 00:02:48.376
+E aí ele começa a falar
+como a profissão tem
+
+43
+00:02:48.877 --> 00:02:52.255
+mudado ao longo desses últimos anos.
+“Tenho a sensação
+
+44
+00:02:52.255 --> 00:02:56.718
+de que eu poderia ser dez vezes mais poderoso se simplesmente conseguisse
+
+45
+00:02:56.718 --> 00:03:00.430
+encadear corretamente o que ficou disponível ao longo do último ano.”
+
+46
+00:03:00.763 --> 00:03:04.517
+Não é nem dos últimos anos,
+é só o que saiu no último ano.
+
+47
+00:03:05.143 --> 00:03:09.063
+E aí ele começa a falar sobre
+essa nova camada de abstração
+
+48
+00:03:09.063 --> 00:03:12.817
+que existe para dominar,
+mencionando agentes,
+
+49
+00:03:12.817 --> 00:03:16.571
+prompts, contextos, memória,
+ferramentas, workflows.
+
+50
+00:03:16.988 --> 00:03:20.366
+Muito disso a gente vai
+ver durante esse curso.
+
+51
+00:03:20.950 --> 00:03:24.370
+E aí ele fala sobre a necessidade
+de construir um modelo
+
+52
+00:03:24.370 --> 00:03:28.541
+mental para juntar
+todos esses novos itens
+
+53
+00:03:28.541 --> 00:03:32.170
+no nosso arsenal de
+engenharia de software clássica.
+
+54
+00:03:32.712 --> 00:03:37.300
+E ele termina dizendo: “claramente alguma ferramenta alienígena poderosa
+
+55
+00:03:37.300 --> 00:03:41.512
+foi distribuída, só que ela vem sem manual e todo mundo tem que descobrir o
+
+56
+00:03:41.512 --> 00:03:42.847
+que fazer com ela.”
+
+57
+00:03:42.847 --> 00:03:47.393
+E a última frase diz,
+“arregace as mangas para não ficar para trás.”
+
+58
+00:03:47.393 --> 00:03:49.979
+Então, parabéns que
+se você está assistindo
+
+59
+00:03:49.979 --> 00:03:54.317
+a esse curso, você já deu esse primeiro passo, que até os experts da indústria
+
+60
+00:03:54.317 --> 00:03:58.363
+estão preocupados com a velocidade que a inteligência artificial tem avançado
+
+61
+00:03:58.863 --> 00:03:59.989
+no desenvolvimento de software.
+
+62
+00:04:03.201 --> 00:04:04.535
+Outra mudança extremamente
+
+63
+00:04:04.535 --> 00:04:08.665
+importante é que, tradicionalmente, o software sempre teve uma abordagem
+
+64
+00:04:08.665 --> 00:04:12.835
+determinística. Isso quer dizer que
+ele recebia uma entrada e
+
+65
+00:04:12.835 --> 00:04:17.006
+fornecia uma saída pré-determinada.
+Assim a gente espera,
+
+66
+00:04:17.048 --> 00:04:20.426
+pelo menos. Isso nos dava um
+ambiente controlado e qualquer
+
+67
+00:04:20.426 --> 00:04:22.428
+coisa fora disso
+era considerado um bug.
+
+68
+00:04:23.179 --> 00:04:28.351
+A IA é fundamentalmente probabilística.
+Você trabalha tentando maximizar as
+
+69
+00:04:28.351 --> 00:04:33.147
+chances dela gerar aquilo que você deseja,
+mas você não consegue garantir
+
+70
+00:04:33.147 --> 00:04:36.943
+com 100% de certeza que ela
+vai fazer o que você pediu.
+
+71
+00:04:36.943 --> 00:04:37.860
+Ninguém consegue.
+
+72
+00:04:38.361 --> 00:04:40.571
+Isso ainda vai exigir muitas
+
+73
+00:04:40.571 --> 00:04:45.785
+mudanças, tanto nos sistemas que
+construímos quanto no papel do desenvolvedor.
+
+74
+00:04:45.785 --> 00:04:49.163
+A ideia do desenvolvedor
+como um orquestrador de IAs
+
+75
+00:04:49.664 --> 00:04:54.168
+vem ganhando muita atração.
+Em vez de se preocupar linha a linha
+
+76
+00:04:54.168 --> 00:04:58.339
+com o código, escrevendo tudo na mão, o foco passa a ser em definir
+
+77
+00:04:58.339 --> 00:05:02.051
+objetivos claros e guiar a inteligência artificial a trilhar o
+
+78
+00:05:02.051 --> 00:05:06.514
+caminho necessário para chegar até lá.
+É claro, o código ainda
+
+79
+00:05:06.514 --> 00:05:11.185
+é essencial, pelo menos até a próxima abstração surgir, mas o desenvolvedor
+
+80
+00:05:11.185 --> 00:05:15.982
+ainda é responsável por todo o processo
+e tudo o que é produzido
+
+81
+00:05:15.982 --> 00:05:19.819
+pela IA. Mas a capacidade
+de orientar, integrar e
+
+82
+00:05:19.819 --> 00:05:25.074
+supervisionar múltiplas IAs tem se tornado o caminho mais óbvio para o desenvolvedor moderno.
+
+83
+00:05:25.700 --> 00:05:27.035
+Agora é sua vez.
+
+84
+00:05:27.285 --> 00:05:29.537
+Você não vai ficar
+só assistindo esse curso.
+
+85
+00:05:29.537 --> 00:05:32.415
+Então, se você nunca fez isso,
+vá até uma ferramenta
+
+86
+00:05:32.415 --> 00:05:36.544
+de IA, pode ser o Chat GPT,
+e peça para ela explicar um trecho de
+
+87
+00:05:36.544 --> 00:05:40.673
+código legado que você considera difícil.
+Ou pergunte a ela
+
+88
+00:05:40.673 --> 00:05:44.594
+como ela resolveria um problema
+real que você tem. Ela pode
+
+89
+00:05:44.594 --> 00:05:48.431
+te ajudar a pensar e a criar muito melhor
+que o pato de borracha
+
+90
+00:05:48.931 --> 00:05:51.642
+que tá há décadas ouvindo programadores reclamando.
+
+91
+00:05:51.642 --> 00:05:55.980
+Teste e veja por si mesmo o que
+a IA pode fazer junto com você.
+
+92
+00:05:56.064 --> 00:05:59.692
+Hoje nós vimos que a IA não vai
+substituir o DEV, mas pode dar
+
+93
+00:05:59.692 --> 00:06:04.447
+ferramentas pra aumentar a sua produtividade
+e mudar a sua forma de trabalhar.
+
+94
+00:06:04.947 --> 00:06:07.909
+Em resumo, vimos uma mudança enorme no desenvolvimento
+
+95
+00:06:07.909 --> 00:06:12.080
+do software, mudamos o foco da sintaxe para a estratégia
+
+96
+00:06:12.580 --> 00:06:14.582
+e fizemos nosso primeiro teste prático.

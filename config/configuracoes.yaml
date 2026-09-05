@@ -1,0 +1,119 @@
+# ==============================================================================
+# CONFIGURAÇÕES GERAIS DO PROJETO MNIST
+# ==============================================================================
+projeto:
+  nome: "Plataforma MNIST Análise Preditiva e Robustez"
+  versao: "1.0.0"
+  autor: "Samuel Marques"
+  semente_aleatoria: 42
+
+# ==============================================================================
+# CAMINHOS RELATIVOS DO SISTEMA
+# ==============================================================================
+caminhos:
+  dados_brutos: "data/raw"
+  dados_processados: "data/processed"
+  digitos_customizados: "data/custom_digits"
+  modelos_salvos: "models/saved_models"
+  relatorios_figuras: "reports/figures"
+  resumo_metricas_csv: "reports/resumo_metricas.csv"
+  base_vetorial_chroma: "data/processed/chroma_db"
+
+# ==============================================================================
+# PARÂMETROS DE INGESTÃO E PRÉ-PROCESSAMENTO
+# ==============================================================================
+pre_processamento:
+  proporcao_teste: 0.20
+  proporcao_validacao: 0.10
+  estratificar: true
+  normalizacao: "minmax" # [0.0, 1.0] dividindo por 255.0
+  dimensao_imagem: [28, 28]
+  total_caracteristicas: 784
+
+# ==============================================================================
+# HIPERPARÂMETROS DOS MODELOS DE APRENDIZADO
+# ==============================================================================
+modelos:
+  regressao_linear:
+    taxa_aprendizado: 0.01
+    epocas: 200
+
+  regressao_logistica:
+    regularizacao_c: 1.0
+    max_iteracoes: 500
+    otimizador: "lbfgs"
+    multi_classe: "multinomial"
+
+  arvore_decisao:
+    criterio: "gini"
+    profundidade_maxima: 20
+    amostras_minimas_divisao: 2
+
+  floresta_aleatoria:
+    numero_estimadores: 100
+    profundidade_maxima: 20
+    amostras_minimas_divisao: 2
+    n_jobs: -1
+
+  impulsionamento_gradiente:
+    taxa_aprendizado: 0.1
+    numero_estimadores: 100
+    profundidade_maxima: 5
+
+  agrupamento_kmeans:
+    numero_clusters: 10
+    inicializacao: "k-means++"
+    n_init: 10
+
+  maquina_vetores_suporte:
+    parametro_c: 10.0
+    kernel: "rbf"
+    gama: "scale"
+
+  k_vizinhos_proximos:
+    numero_vizinhos: 5
+    pesos: "distance"
+    metrica: "euclidean"
+
+  naive_bayes:
+    suavizacao_var: 1e-9
+
+  perceptron_manual:
+    taxa_aprendizado: 0.01
+    epocas: 100
+
+  rede_neural_profunda:
+    camadas_ocultas: [128, 64]
+    taxa_dropout: 0.2
+    funcao_ativacao_oculta: "relu"
+    funcao_ativacao_saida: "softmax"
+    otimizador: "adam"
+    taxa_aprendizado: 0.001
+    epocas: 15
+    tamanho_lote: 64
+    paciencia_early_stopping: 3
+
+  vision_transformer:
+    tamanho_patch: 7
+    dimensao_projecao: 64
+    numero_cabecas_atencao: 4
+    camadas_transformer: 2
+    dimensao_mlp: 128
+    epocas: 10
+    tamanho_lote: 64
+
+# ==============================================================================
+# CONFIGURAÇÕES DO EXPERIMENTO DE ROBUSTEZ OOD (OUT-OF-DISTRIBUTION)
+# ==============================================================================
+robustez_ood:
+  classes_mascaradas: [4, 7]
+  limiar_falsa_certeza: 0.85
+
+# ==============================================================================
+# PIPELINE DE VISÃO COMPUTACIONAL PARA IMAGENS REAIS
+# ==============================================================================
+visao_computacional:
+  dimensao_alvo: [28, 28]
+  dimensao_redimensionamento_proporcional: [20, 20]
+  inverter_cores_se_fundo_claro: true
+  limiar_binarizacao_fundo: 128

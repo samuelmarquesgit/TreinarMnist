@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # BANCO DE DADOS RELACIONAL: PostgreSQL 15
+  # ============================================================================
+  postgres_banco:
+    image: postgres:15-alpine
+    container_name: mnist_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mnist_database}
+      POSTGRES_USER: ${POSTGRES_USER:-mnist_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mnist_secret_123}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_dados:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mnist_user} -d ${POSTGRES_DB:-mnist_database}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # BANCO DE DADOS NÃO-RELACIONAL: MongoDB 6.0
+  # ============================================================================
+  mongo_banco:
+    image: mongo:6.0
+    container_name: mnist_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-mongo_admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-mongo_secret_123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-mnist_nosql}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo_dados:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_dados:
+    name: mnist_postgres_dados
+  mongo_dados:
+    name: mnist_mongo_dados
