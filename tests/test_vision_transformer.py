@@ -12,14 +12,14 @@ def test_vit_inicializacao():
 def test_vit_prever_sem_treinar_levanta_excecao():
     modelo = ModeloViT()
     X = np.zeros((5, 28 * 28))
-    with pytest.raises(Exception, match="Modelo ViT ainda não foi treinado"):
+    with pytest.raises(Exception, match=r"Modelo não foi treinado"):
         modelo.prever(X)
 
 
 def test_vit_prever_probabilidades_sem_treinar_levanta_excecao():
     modelo = ModeloViT()
     X = np.zeros((5, 28 * 28))
-    with pytest.raises(Exception, match="Modelo ViT ainda não foi treinado"):
+    with pytest.raises(Exception, match=r"Modelo não foi treinado"):
         modelo.prever_probabilidades(X)
 
 
@@ -31,13 +31,13 @@ def test_vit_treinar_e_prever():
     y_treino = np.array([0, 1, 2, 3])
 
     # Captura os pesos iniciais da última camada (MLP) antes do treino
-    peso_inicial = modelo.model.mlp_head[1].weight.clone().detach().cpu().numpy()
+    peso_inicial = modelo.model.mlp_head[0].weight.clone().detach().cpu().numpy()
 
     modelo.treinar(X_treino, y_treino)
     assert modelo._treinado is True
 
     # Verifica se os pesos mudaram (prova de fluxo de gradiente / ausência de vanishing gradients)
-    peso_final = modelo.model.mlp_head[1].weight.clone().detach().cpu().numpy()
+    peso_final = modelo.model.mlp_head[0].weight.clone().detach().cpu().numpy()
     assert not np.allclose(peso_inicial, peso_final), "Pesos não foram atualizados (Backprop falhou)!"
 
     X_teste = np.random.rand(2, 28 * 28).astype(np.float32)
