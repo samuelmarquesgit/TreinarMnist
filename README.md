@@ -91,7 +91,7 @@ flowchart TD
 * **MongoDB (Docker - Porta 27017):**
   - Armazena documentos flexíveis NoSQL: **Matrizes de Confusão completas $10 \times 10$ em JSON**, **Predições e Probabilidades de todas as amostras**, **Relatórios de Teste OOD** e **Imagens em Base64**.
 * **ChromaDB (Local):**
-  - Banco vetorial para indexação de relatórios técnicos e consultas em linguagem natural via **RAG**.
+  - Banco vetorial para indexação de relatórios técnicos e consultas em linguagem natural via **RAG semântico real** (impulsionado por `sentence-transformers/all-MiniLM-L6-v2`).
 * **Tolerância a Falhas:** Caso o Docker esteja inativo, os repositórios ativam automaticamente o modo *fallback local* salvando os dados em arquivos `.csv` e `.json` em `reports/`.
 
 ---
