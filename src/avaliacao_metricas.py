@@ -1,13 +1,15 @@
 import numpy as np
-from typing import Dict, Any, Union, List
+from typing import Union, List
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+
+
+from src.schemas import Metricas
 
 
 def calcular_metricas(y_verdadeiro: Union[List[int],
                                           np.ndarray],
                       y_previsto: Union[List[int],
-                      np.ndarray]) -> Dict[str,
-                                           Any]:
+                      np.ndarray]) -> Metricas:
     """
     Calcula métricas de classificação padrão para validação de modelos preditivos.
 
@@ -16,12 +18,7 @@ def calcular_metricas(y_verdadeiro: Union[List[int],
         y_previsto (Union[List[int], np.ndarray]): Rótulos previstos pelo modelo.
 
     Returns:
-        Dict[str, Any]: Um dicionário com as métricas:
-            - acuracia (float)
-            - precisao (float, macro average)
-            - recall (float, macro average)
-            - f1 (float, macro average)
-            - matriz_confusao (List[List[int]])
+        Metricas: Objeto Pydantic com as métricas de acuracia, precisao, recall, f1 e matriz de confusao.
 
     Raises:
         ValueError: Se os arrays tiverem comprimentos diferentes ou estiverem vazios.
@@ -34,29 +31,30 @@ def calcular_metricas(y_verdadeiro: Union[List[int],
             f"Incompatibilidade de comprimento: y_verdadeiro tem "
             f"{len(y_verdadeiro)} e y_previsto tem {len(y_previsto)}.")
 
-    return {
-        'acuracia': float(
+    return Metricas(
+        acuracia=float(
             accuracy_score(
                 y_verdadeiro,
                 y_previsto)),
-        'precisao': float(
+        precisao=float(
             precision_score(
                 y_verdadeiro,
                 y_previsto,
                 average='macro',
                 zero_division=0)),
-        'recall': float(
+        recall=float(
             recall_score(
                 y_verdadeiro,
                 y_previsto,
                 average='macro',
                 zero_division=0)),
-        'f1': float(
+        f1=float(
             f1_score(
                 y_verdadeiro,
                 y_previsto,
                 average='macro',
                 zero_division=0)),
-        'matriz_confusao': confusion_matrix(
+        matriz_confusao=confusion_matrix(
             y_verdadeiro,
-            y_previsto).tolist()}
+            y_previsto).tolist()
+    )

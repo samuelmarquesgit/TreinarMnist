@@ -9,6 +9,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
 
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.config import config_modelos
 
 # Configuração de log
 logging.basicConfig(
@@ -58,14 +59,19 @@ class FabricaModelos:
     """
 
     _REGISTRO_MODELOS = {
-        'RegressaoLogistica': lambda: LogisticRegression(max_iter=500, random_state=42),
-        'ArvoreDecisao': lambda: DecisionTreeClassifier(random_state=42),
-        'FlorestaAleatoria': lambda: RandomForestClassifier(n_estimators=50, random_state=42),
-        'ImpulsionamentoGradiente': lambda: GradientBoostingClassifier(n_estimators=50, random_state=42),
-        'SVM': lambda: SVC(kernel='rbf', random_state=42, probability=True),
-        'KNN': lambda: KNeighborsClassifier(n_neighbors=5),
-        'NaiveBayes': lambda: GaussianNB(),
-        'PerceptronMulticamadas': lambda: MLPClassifier(hidden_layer_sizes=(100,), max_iter=300, random_state=42)
+        'RegressaoLogistica': lambda: LogisticRegression(**config_modelos.regressao_logistica.model_dump()),
+        'ArvoreDecisao': lambda: DecisionTreeClassifier(**config_modelos.arvore_decisao.model_dump()),
+        'FlorestaAleatoria': lambda: RandomForestClassifier(**config_modelos.floresta_aleatoria.model_dump()),
+        'ImpulsionamentoGradiente': lambda: GradientBoostingClassifier(
+            **config_modelos.impulsionamento_gradiente.model_dump()),
+        'SVM': lambda: SVC(**config_modelos.svm.model_dump()),
+        'KNN': lambda: KNeighborsClassifier(**config_modelos.knn.model_dump()),
+        'NaiveBayes': lambda: GaussianNB(**config_modelos.naive_bayes.model_dump()),
+        'PerceptronMulticamadas': lambda: MLPClassifier(
+            hidden_layer_sizes=tuple(config_modelos.perceptron_multicamadas.hidden_layer_sizes),
+            max_iter=config_modelos.perceptron_multicamadas.max_iter,
+            random_state=config_modelos.perceptron_multicamadas.random_state
+        )
     }
 
     @staticmethod
@@ -85,7 +91,11 @@ class FabricaModelos:
         if nome_modelo == 'VisionTransformer':
             from src.modelos.vision_transformer import ModeloViT
             logger.info(f"Fabrica instanciando novo modelo: {nome_modelo}")
-            return ModeloViT(nome_log=nome_modelo)
+            return ModeloViT(
+                nome_log=nome_modelo,
+                epocas=config_modelos.vision_transformer.epocas,
+                batch_size=config_modelos.vision_transformer.batch_size
+            )
 
         construtor = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
 

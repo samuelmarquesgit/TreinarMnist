@@ -1,6 +1,5 @@
 """Indexador ChromaDB — ingere documentos do projeto em banco vetorial local."""
 
-import os
 import logging
 from typing import List, Dict, Any
 
@@ -38,7 +37,8 @@ _DOCUMENTOS: List[Dict[str, Any]] = [
             "K-Nearest Neighbors, Árvore de Decisão, Random Forest, Gradient Boosting, "
             "Support Vector Machine (SVC), MLP (Rede Neural Multicamada), Naive Bayes Gaussiano, "
             "Bagging, AdaBoost, Extra Trees e Ridge. "
-            "Todos implementam a interface ModeloAbstratoIA com os métodos treinar(), prever() e prever_probabilidades(). "
+            "Todos implementam a interface ModeloAbstratoIA com os métodos "
+            "treinar(), prever() e prever_probabilidades(). "
             "O padrão Fábrica (FabricaModelos) instancia qualquer algoritmo por nome de string."
         ),
         "fonte": "src/modelos/",
@@ -89,7 +89,8 @@ _DOCUMENTOS: List[Dict[str, Any]] = [
             "a uma classe mesmo ao receber uma amostra fora da distribuição de treino. "
             "É detectada pelo ValidadorFalsaCerteza através de dois critérios simultâneos: "
             "confiança máxima ≥ limiar (padrão 0.85) E entropia de Shannon < limiar (padrão 0.3). "
-            "Entropia baixa com alta confiança indica distribuição de probabilidade concentrada — sinal claro de overconfidence. "
+            "Entropia baixa com alta confiança indica distribuição de probabilidade "
+            "concentrada — sinal claro de overconfidence. "
             "O alerta dispara independentemente de a classe prevista ser conhecida ou desconhecida."
         ),
         "fonte": "guardrails/validador_falsa_certeza.py",
@@ -162,7 +163,8 @@ _DOCUMENTOS: List[Dict[str, Any]] = [
         "id": "benchmark",
         "conteudo": (
             "O benchmark compara todos os 12 algoritmos em uma única execução. "
-            "Métricas coletadas: acurácia, precisão, recall, F1-Score, tempo de treino (segundos) e throughput (amostras/s). "
+            "Métricas coletadas: acurácia, precisão, recall, F1-Score, "
+            "tempo de treino (segundos) e throughput (amostras/s). "
             "Os resultados são salvos em JSON na pasta artifacts/benchmarks/ com timestamp. "
             "O painel de benchmarks exibe tabela comparativa e matrizes de confusão 10×10 interativas. "
             "O AgenteAnalistaMetricas identifica o modelo campeão com melhor equilíbrio F1 e custo computacional."

@@ -61,7 +61,7 @@ def test_instancia_identica_levanta_valueerror():
     treino = np.array([[1, 2], [3, 4]])
     teste = np.array([[5, 6], [1, 2]])  # O [1, 2] vazou para o teste
 
-    with pytest.raises(ValueError, match="Alerta de Data Leakage detectado"):
+    with pytest.raises(ValueError, match="Data Leakage detectado"):
         ValidadorVazamentoDados.validar_divisao(treino, teste)
 
 

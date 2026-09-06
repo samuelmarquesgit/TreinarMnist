@@ -1,19 +1,40 @@
-import chromadb
-from chromadb.utils import embedding_functions
+"""SuporteRAG — motor de busca semântica via ChromaDB com fallback de embedding."""
+
+import logging
 from typing import List
+
+import chromadb
+
+logger = logging.getLogger(__name__)
+
+# ── Função de embedding com fallback gracioso ──────────────────────────────
+try:
+    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+    _ef_padrao = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+    _SENTENCE_TRANSFORMERS_OK = True
+except (ImportError, ValueError):
+    # Fallback: embedding padrão do ChromaDB (onnxruntime — sem dependência extra)
+    from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+    _ef_padrao = DefaultEmbeddingFunction()
+    _SENTENCE_TRANSFORMERS_OK = False
+    logger.warning(
+        "sentence_transformers não instalado — usando DefaultEmbeddingFunction do ChromaDB."
+    )
 
 
 class SuporteRAG:
-    """
-    Motor de Busca Baseado em Retencao (RAG) para suporte tecnico sobre MNIST.
+    """Motor de Busca Baseado em Retenção (RAG) para suporte técnico sobre MNIST.
+
     Utiliza ChromaDB para indexar e buscar respostas para perguntas comuns.
+    Funciona com sentence-transformers (melhor qualidade) ou com o embedding
+    padrão do ChromaDB como fallback automático.
     """
 
-    def __init__(self, em_memoria: bool = True, diretorio_banco: str = "./reports/rag_db"):
-        self._ef = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2"
-        )
-
+    def __init__(
+        self,
+        em_memoria: bool = True,
+        diretorio_banco: str = "./reports/rag_db",
+    ) -> None:
         if em_memoria:
             self.cliente = chromadb.Client()
         else:
@@ -21,43 +42,41 @@ class SuporteRAG:
 
         self.colecao = self.cliente.get_or_create_collection(
             name="suporte_mnist",
-            embedding_function=self._ef
+            embedding_function=_ef_padrao,
         )
         self._inicializar_base_conhecimento()
 
     def _inicializar_base_conhecimento(self) -> None:
-        """Popula o banco vetorial com conhecimentos basicos de MNIST e IA se estiver vazio."""
-        if self.colecao.count() == 0:
-            documentos = [
-                "MNIST e um dataset classico de visao computacional contendo digitos manuscritos de 0 a 9.",
-                "O tamanho padrao das imagens do MNIST e de 28x28 pixels em tons de cinza.",
-                "Para melhorar a acuracia, e recomendavel normalizar"
-                " as imagens dividindo os pixels por 255.",
-                "Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
-                " para o MNIST, superando Random Forests.",
-                "Falsa certeza ocorre quando o modelo preenche probabilidades"
-                " altas para imagens fora da distribuicao (OOD).",
-            ]
-            metadados = [
-                {"topico": "dataset", "nivel": "basico"},
-                {"topico": "dataset", "nivel": "basico"},
-                {"topico": "pre-processamento", "nivel": "intermediario"},
-                {"topico": "modelos", "nivel": "avancado"},
-                {"topico": "seguranca_ia", "nivel": "avancado"}
-            ]
-            ids = [f"doc_{i}" for i in range(len(documentos))]
-            self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
+        """Popula o banco vetorial com conhecimento básico se estiver vazio."""
+        if self.colecao.count() > 0:
+            return
+
+        documentos = [
+            "MNIST é um dataset clássico de visão computacional com dígitos manuscritos de 0 a 9.",
+            "O tamanho padrão das imagens do MNIST é 28×28 pixels em tons de cinza.",
+            "Normalizar as imagens dividindo os pixels por 255 melhora a convergência dos modelos.",
+            "Modelos como MLP e ViT são ideais para o MNIST, superando Random Forests em acurácia.",
+            "Falsa certeza ocorre quando o modelo emite alta probabilidade para imagens OOD.",
+        ]
+        metadados = [
+            {"topico": "dataset", "nivel": "basico"},
+            {"topico": "dataset", "nivel": "basico"},
+            {"topico": "pre-processamento", "nivel": "intermediario"},
+            {"topico": "modelos", "nivel": "avancado"},
+            {"topico": "seguranca_ia", "nivel": "avancado"},
+        ]
+        ids = [f"doc_{i}" for i in range(len(documentos))]
+        self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
 
     def consultar(self, pergunta: str, n_resultados: int = 1) -> List[str]:
-        """
-        Consulta o banco vetorial e retorna os trechos mais relevantes para a pergunta.
+        """Consulta o banco vetorial e retorna os trechos mais relevantes.
 
         Args:
-            pergunta (str): Texto da pergunta do usuario.
-            n_resultados (int): Numero de documentos a retornar.
+            pergunta: Texto da pergunta do usuário.
+            n_resultados: Número de documentos a retornar.
 
         Returns:
-            List[str]: Lista com os documentos mais proximos semanticamente.
+            Lista com os documentos semanticamente mais próximos.
 
         Raises:
             ValueError: Se a pergunta estiver vazia.
@@ -67,7 +86,6 @@ class SuporteRAG:
 
         resultados = self.colecao.query(
             query_texts=[pergunta],
-            n_results=n_resultados
+            n_results=n_resultados,
         )
-        docs_encontrados = resultados.get("documents", [[]])[0]
-        return docs_encontrados
+        return resultados.get("documents", [[]])[0]

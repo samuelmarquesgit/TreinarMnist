@@ -7,15 +7,35 @@ from src.frontend.estilos import aplicar_estilos, titulo_secao, badge
 
 # ── Estado da sessão ───────────────────────────────────────────────────────
 
+import json
+import os
+
+
 def _inicializar_estado() -> None:
     if "historico_chat" not in st.session_state:
-        st.session_state.historico_chat = []
+        caminho_hist = 'reports/historico_chat.json'
+        historico_inicial = []
+        if os.path.exists(caminho_hist):
+            try:
+                with open(caminho_hist, 'r', encoding='utf-8') as f:
+                    historico_inicial = json.load(f)
+            except Exception:
+                pass
+        st.session_state.historico_chat = historico_inicial
+
     if "rag_pronto" not in st.session_state:
         st.session_state.rag_pronto = False
         st.session_state.assistente = None
 
 
+def _salvar_historico() -> None:
+    os.makedirs('reports', exist_ok=True)
+    with open('reports/historico_chat.json', 'w', encoding='utf-8') as f:
+        json.dump(st.session_state.historico_chat, f, indent=4, ensure_ascii=False)
+
+
 # ── Tentativa de carregar o RAG (gracioso se não estiver implementado) ─────
+
 
 def _carregar_assistente():
     """Tenta importar e instanciar o AssistenteRAG. Retorna None se indisponível."""
@@ -195,6 +215,7 @@ def _processar_pergunta(pergunta: str) -> None:
             resposta = _resposta_fallback(pergunta)
             fontes = []
     st.session_state.historico_chat.append({"papel": "assistente", "conteudo": resposta, "fontes": fontes})
+    _salvar_historico()
     st.rerun()
 
 

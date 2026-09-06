@@ -20,7 +20,7 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from numpy.typing import NDArray
@@ -31,6 +31,7 @@ from src.modelos.base_modelo import ModeloAbstratoIA
 from src.modelos.fabrica_modelos import FabricaModelos
 from src.pre_processamento import pre_processar_dados
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
+from src.analise_estatistica import CalculadorEstatistico
 
 # MLflow é opcional — não deve impedir a inicialização do módulo
 try:
@@ -391,8 +392,6 @@ class FachadaPipelineIA:
         Raises:
             ValueError: Se os dados não tiverem sido inicializados.
         """
-        from src.analise_estatistica import CalculadorEstatistico  # noqa: PLC0415
-
         self._garantir_dados()
         dados = self.X_treino if tipo == "treino" else self.X_teste
         calc = CalculadorEstatistico()
