@@ -1,13 +1,13 @@
 """Indexador ChromaDB — ingere documentos do projeto em banco vetorial local."""
 
 import logging
-from typing import List, Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 # ── Base de conhecimento estática do projeto ───────────────────────────────
 
-_DOCUMENTOS: List[Dict[str, Any]] = [
+_DOCUMENTOS: list[dict[str, Any]] = [
     {
         "id": "mnist_dataset",
         "conteudo": (
@@ -225,7 +225,7 @@ class IndexadorChromaDB:
                 "ChromaDB não instalado. Execute: pip install chromadb"
             ) from exc
 
-    def indexar(self, documentos: List[Dict[str, Any]] | None = None) -> int:
+    def indexar(self, documentos: list[dict[str, Any]] | None = None) -> int:
         """Indexa documentos na coleção ChromaDB.
 
         Args:
@@ -257,7 +257,7 @@ class IndexadorChromaDB:
 
         return len(docs)
 
-    def buscar(self, consulta: str, n_resultados: int = 3) -> List[Dict[str, Any]]:
+    def buscar(self, consulta: str, n_resultados: int = 3) -> list[dict[str, Any]]:
         """Recupera os documentos mais relevantes para a consulta.
 
         Args:

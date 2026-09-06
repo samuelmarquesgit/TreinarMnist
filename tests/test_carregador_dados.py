@@ -1,6 +1,8 @@
-import pytest
-import numpy as np
 from unittest.mock import patch
+
+import numpy as np
+import pytest
+
 from src.carregador_dados import carregar_dados_mnist
 
 

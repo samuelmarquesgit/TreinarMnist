@@ -1,10 +1,11 @@
-import os
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
-from datetime import datetime, timezone
-from contextlib import contextmanager
-from typing import Generator
 import logging
+import os
+from collections.abc import Generator
+from contextlib import contextmanager
+from datetime import datetime, timezone
+
+from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
@@ -19,6 +20,10 @@ class Experimento(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     modelo = Column(String, nullable=False)
     acuracia = Column(Float)
+    precisao = Column(Float, nullable=True)
+    recall = Column(Float, nullable=True)
+    f1 = Column(Float, nullable=True)
+    hiperparametros = Column(String, nullable=True)
     tempo_treino = Column(Float)
 
     # datetime.utcnow() esta deprecado. Usamos timezone-aware nativo.
@@ -61,7 +66,7 @@ class ConexaoPostgres:
             sessao.commit()
         except Exception as e:
             sessao.rollback()
-            logger.error(f"Erro em transacao de banco de dados: {str(e)}")
+            logger.error(f"Erro em transacao de banco de dados: {e!s}")
             raise
         finally:
             sessao.close()

@@ -1,5 +1,7 @@
 from unittest.mock import patch
+
 import numpy as np
+
 from src.pre_processamento import pre_processar_dados
 
 

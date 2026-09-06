@@ -34,6 +34,11 @@ pymongo>=4.5.0
 chromadb>=0.4.0
 sentence-transformers>=2.2.2
 
+# Novos Desejáveis (timm e Pydantic)
+timm>=1.0.0
+pydantic>=2.5.0
+pydantic-settings>=2.2.0
+
 # Protocolo MCP (Model Context Protocol) & Utilidades
 mcp>=1.0.0
 pydantic>=2.0.0

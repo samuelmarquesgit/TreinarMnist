@@ -148,7 +148,7 @@ def renderizar(fachada) -> None:
             probs_ood: np.ndarray | None = None
             fonte = "simulação"
             try:
-                from src.robustez_ood import executar_experimento_ood  # noqa: PLC0415
+                from src.robustez_ood import executar_experimento_ood
                 probs_ood = executar_experimento_ood(
                     fachada,
                     classes_mascaradas=classes_mascaradas,

@@ -1,15 +1,18 @@
-import numpy as np
-from typing import Union, List
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
+import numpy as np
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
 from src.schemas import Metricas
 
 
-def calcular_metricas(y_verdadeiro: Union[List[int],
-                                          np.ndarray],
-                      y_previsto: Union[List[int],
-                      np.ndarray]) -> Metricas:
+def calcular_metricas(y_verdadeiro: list[int] | np.ndarray,
+                      y_previsto: list[int] | np.ndarray) -> Metricas:
     """
     Calcula métricas de classificação padrão para validação de modelos preditivos.
 

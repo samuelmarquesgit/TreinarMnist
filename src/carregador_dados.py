@@ -9,7 +9,6 @@ Nota de logging:
 import logging
 import os
 import urllib.error
-from typing import Tuple
 
 import joblib
 import numpy as np
@@ -18,7 +17,7 @@ from sklearn.datasets import fetch_openml
 logger = logging.getLogger(__name__)
 
 
-def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
+def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     """Realiza o download do dataset MNIST com suporte a cache local.
 
     Evita downloads redundantes da internet em execuções repetidas e

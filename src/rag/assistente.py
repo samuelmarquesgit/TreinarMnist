@@ -1,9 +1,9 @@
 """Assistente RAG — Recuperação Aumentada para perguntas sobre o projeto MNIST."""
 
 import logging
-from typing import Dict, Any, List
+from typing import Any
 
-from src.rag.indexador import IndexadorChromaDB, _DOCUMENTOS
+from src.rag.indexador import _DOCUMENTOS, IndexadorChromaDB
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class AssistenteRAG:
     # ── Inicialização ──────────────────────────────────────────────────────
 
     def indexar_documentos(
-        self, documentos: List[Dict[str, Any]] | None = None
+        self, documentos: list[dict[str, Any]] | None = None
     ) -> int:
         """Indexa os documentos do projeto no ChromaDB.
 
@@ -46,7 +46,7 @@ class AssistenteRAG:
 
     # ── Interface principal ────────────────────────────────────────────────
 
-    def perguntar(self, pergunta: str) -> Dict[str, Any]:
+    def perguntar(self, pergunta: str) -> dict[str, Any]:
         """Processa uma pergunta e retorna resposta contextualizada com fontes.
 
         Args:
@@ -82,7 +82,7 @@ class AssistenteRAG:
     # ── Síntese de resposta ────────────────────────────────────────────────
 
     def _sintetizar_resposta(
-        self, pergunta: str, chunks: List[Dict[str, Any]]
+        self, pergunta: str, chunks: list[dict[str, Any]]
     ) -> str:
         """Sintetiza resposta concatenando os chunks mais relevantes.
 
@@ -97,7 +97,7 @@ class AssistenteRAG:
         Returns:
             Texto de resposta formatado.
         """
-        partes: List[str] = []
+        partes: list[str] = []
 
         for i, chunk in enumerate(chunks):
             if i == 0:
@@ -120,7 +120,7 @@ class AssistenteRAG:
 
     # ── Utilitários ────────────────────────────────────────────────────────
 
-    def estatisticas(self) -> Dict[str, Any]:
+    def estatisticas(self) -> dict[str, Any]:
         """Retorna estatísticas da base de conhecimento indexada."""
         return {
             "total_documentos": self._indexador.total_documentos(),

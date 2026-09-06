@@ -9,7 +9,7 @@ Nota de logging:
 import json
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 try:
     from pymongo import MongoClient
@@ -41,8 +41,8 @@ class ConexaoMongoDB:
         >>> lista = conn.listar_colecao(limite=10)
     """
 
-    def __init__(self, uri: Optional[str] = None) -> None:
-        self.uri: Optional[str] = uri or os.getenv('MONGO_URI', None)
+    def __init__(self, uri: str | None = None) -> None:
+        self.uri: str | None = uri or os.getenv('MONGO_URI', None)
         self.usar_local: bool = not bool(self.uri)
 
         if not self.usar_local:
@@ -65,7 +65,7 @@ class ConexaoMongoDB:
 
     # ── Escrita ───────────────────────────────────────────────────────────────
 
-    def salvar_artefato(self, nome: str, dados: Dict[str, Any]) -> None:
+    def salvar_artefato(self, nome: str, dados: dict[str, Any]) -> None:
         """Persiste os dados em coleção remota ou arquivo JSON local.
 
         Args:
@@ -87,7 +87,7 @@ class ConexaoMongoDB:
 
     # ── Leitura ───────────────────────────────────────────────────────────────
 
-    def buscar_artefato(self, nome: str) -> Optional[Dict[str, Any]]:
+    def buscar_artefato(self, nome: str) -> dict[str, Any] | None:
         """Recupera um artefato pelo nome.
 
         Busca no MongoDB remoto ou no arquivo JSON local, dependendo do modo
@@ -132,8 +132,8 @@ class ConexaoMongoDB:
     def listar_colecao(
         self,
         limite: int = 50,
-        filtro: Optional[Dict[str, Any]] = None,
-    ) -> List[Dict[str, Any]]:
+        filtro: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
         """Lista documentos da coleção (MongoDB) ou arquivos JSON locais.
 
         Args:
@@ -144,7 +144,7 @@ class ConexaoMongoDB:
             Lista de dicionários com campos ``nome`` e ``dados`` de cada
             artefato encontrado. Retorna lista vazia em caso de erro.
         """
-        resultados: List[Dict[str, Any]] = []
+        resultados: list[dict[str, Any]] = []
 
         if self.usar_local:
             pasta = 'reports'
