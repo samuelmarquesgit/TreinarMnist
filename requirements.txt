@@ -8,7 +8,7 @@ scikit-learn>=1.3.0
 joblib>=1.3.0
 
 # Deep Learning e Redes Neurais
-tensorflow>=2.13.0; sys_platform != 'darwin' or platform_machine != 'arm64'
+# tensorflow>=2.13.0; sys_platform != 'darwin' or platform_machine != 'arm64'
 
 # Visão Computacional e Processamento de Imagens
 Pillow>=10.0.0

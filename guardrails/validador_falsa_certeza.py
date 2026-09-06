@@ -7,7 +7,8 @@ import numpy as np
 class ValidadorFalsaCerteza:
     """Validador de incerteza para inferências preditivas."""
 
-    def __init__(self, limiar_alerta_certeza: float = 0.85, limiar_entropia_baixa: float = 0.3):
+    def __init__(self, limiar_alerta_certeza: float = 0.85,
+                 limiar_entropia_baixa: float = 0.3):
         self.limiar_alerta_certeza = limiar_alerta_certeza
         self.limiar_entropia_baixa = limiar_entropia_baixa
 
@@ -42,8 +43,8 @@ class ValidadorFalsaCerteza:
         entropia = self.calcular_entropia_shannon(probabilidades)
 
         alerta_overconfidence = (
-            confianca_maxima >= self.limiar_alerta_certeza and
-            classe_prevista not in classes_conhecidas
+            confianca_maxima >= self.limiar_alerta_certeza
+            and entropia < self.limiar_entropia_baixa
         )
 
         return {
@@ -51,5 +52,5 @@ class ValidadorFalsaCerteza:
             "confianca": confianca_maxima,
             "entropia": entropia,
             "alerta_overconfidence": alerta_overconfidence,
-            "confiavel": not alerta_overconfidence and (confianca_maxima >= 0.5)
-        }
+            "confiavel": not alerta_overconfidence and (
+                confianca_maxima >= 0.5)}

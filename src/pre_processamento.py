@@ -3,7 +3,13 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
-def pre_processar_dados(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, MinMaxScaler]:
+
+def pre_processar_dados(X: np.ndarray,
+                        y: np.ndarray) -> Tuple[np.ndarray,
+                                                np.ndarray,
+                                                np.ndarray,
+                                                np.ndarray,
+                                                MinMaxScaler]:
     """
     Realiza a divisão estratificada dos dados e normalização MinMax.
 
@@ -24,7 +30,7 @@ def pre_processar_dados(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.nd
     """
     if X.size == 0 or y.size == 0:
         raise ValueError("Os arrays de entrada X e y nao podem estar vazios.")
-    
+
     if len(X) != len(y):
         raise ValueError(f"Incompatibilidade de tamanho: X tem {len(X)} amostras e y tem {len(y)} amostras.")
 
@@ -32,13 +38,15 @@ def pre_processar_dados(X: np.ndarray, y: np.ndarray) -> Tuple[np.ndarray, np.nd
     X_treino, X_teste, y_treino, y_teste = train_test_split(
         X, y, test_size=0.2, stratify=y, random_state=42
     )
-    
+
     # 2. Normalização Min-Max [0, 1]
     scaler = MinMaxScaler()
     X_treino_norm = scaler.fit_transform(X_treino)
-    X_teste_norm = scaler.transform(X_teste)  # Evita Data Leakage (Vazamento de dados)
-    
-    # Validação de Vazamento de Dados (Assertiva simples de integridade com tolerancia float)
-    assert np.min(X_treino_norm) >= -1e-7 and np.max(X_treino_norm) <= 1.0 + 1e-7, "Falha na normalizacao MinMax no Treino"
-    
+    # Evita Data Leakage (Vazamento de dados)
+    X_teste_norm = scaler.transform(X_teste)
+
+    # Validação de Vazamento de Dados (Verificação de integridade com tolerancia float)
+    if not (np.min(X_treino_norm) >= -1e-7 and np.max(X_treino_norm) <= 1.0 + 1e-7):
+        raise ValueError("Falha na normalizacao MinMax no Treino")
+
     return X_treino_norm, X_teste_norm, y_treino, y_teste, scaler
