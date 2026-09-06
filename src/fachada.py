@@ -205,7 +205,8 @@ class FachadaPipelineIA:
             y_probabilidades = modelo.prever_probabilidades(self.X_teste) # type: ignore[arg-type]
         except Exception:
             y_probabilidades = None
-        return calcular_metricas(self.y_teste, y_previsto, y_probabilidades)  # type: ignore[arg-type]
+        res = calcular_metricas(self.y_teste, y_previsto, y_probabilidades)
+        return dict(res)  # type: ignore[return-value]
 
     def prever_probabilidades(
         self,
@@ -228,7 +229,8 @@ class FachadaPipelineIA:
             raise ModeloNaoTreinadoError(
                 f"Modelo '{nome_modelo}' não foi treinado."
             )
-        return self.modelos[nome_modelo].prever_probabilidades(X_entrada)
+        res = self.modelos[nome_modelo].prever_probabilidades(X_entrada)
+        return res  # type: ignore[no-any-return]
 
     # ── Experimento MLflow ────────────────────────────────────────────────────
 

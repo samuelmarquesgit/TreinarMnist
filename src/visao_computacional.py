@@ -29,7 +29,7 @@ def processar_imagem_usuario(imagem_array: np.ndarray) -> np.ndarray:
     # Valores próximos a 255 viram 0 (fundo), valores próximos a 0 viram 255 (traço)
     # Dica: Se o fundo já for preto, essa inversão não deve ocorrer, mas o padrão do Canvas
     # normalmente é fundo branco. Vamos usar a média para garantir.
-    if np.mean(gray) > 127:
+    if gray.mean() > 127:
         gray = 255 - gray
 
     # 2. Encontrar BBox

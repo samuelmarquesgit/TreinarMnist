@@ -47,7 +47,7 @@ class ConexaoMongoDB:
 
         if not self.usar_local:
             try:
-                self.client = MongoClient(
+                self.client: Any = MongoClient(
                     self.uri, serverSelectionTimeoutMS=5000
                 )
                 self.db = self.client['treinarmnist']
@@ -109,11 +109,11 @@ class ConexaoMongoDB:
                 return None
             try:
                 with open(caminho_arquivo, 'r', encoding='utf-8') as f:
-                    dados = json.load(f)
+                    dados: dict[str, Any] = json.load(f)
                 logger.info(
                     "Artefato '%s' carregado do JSON local.", nome
                 )
-                return dados  # type: ignore[return-value]
+                return dados
             except (json.JSONDecodeError, OSError) as e:
                 logger.error(
                     "Erro ao ler artefato local '%s': %s", caminho_arquivo, e
@@ -127,7 +127,8 @@ class ConexaoMongoDB:
                 )
                 return None
             logger.info("Artefato '%s' recuperado do MongoDB.", nome)
-            return documento.get('dados')  # type: ignore[return-value]
+            doc: dict[str, Any] | None = documento.get('dados')
+            return doc
 
     def listar_colecao(
         self,
