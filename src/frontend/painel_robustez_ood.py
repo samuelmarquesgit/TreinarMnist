@@ -84,10 +84,11 @@ def _avaliar_lote(
         res = validador.avaliar_predicao(p, classes_conhecidas)
 
         # ── Extração compatível: NamedTuple novo ou dict legado ──────────────
-        if hasattr(res, "alerta_falsa_certeza"):
+        alerta_novo = getattr(res, "alerta_falsa_certeza", None)
+        if alerta_novo is not None:
             # Interface nova: ResultadoValidacao(NamedTuple)
-            alerta = res.alerta_falsa_certeza
-            confianca = float(res.confianca_maxima)
+            alerta = alerta_novo
+            confianca = float(getattr(res, "confianca_maxima", 0.0))
         else:
             # Interface legada: dict
             alerta = res.get("alerta_overconfidence", False)  # type: ignore[union-attr]
@@ -177,8 +178,8 @@ def renderizar(fachada) -> None:
             }
 
     res = st.session_state.resultado_ood
-    df_ood: pd.DataFrame = res["df_ood"]
-    df_ind: pd.DataFrame = res["df_ind"]
+    df_ood = res["df_ood"]
+    df_ind = res["df_ind"]
     probs_ood = res["probs_ood"]
     fonte = res.get("fonte", "simulação")
 

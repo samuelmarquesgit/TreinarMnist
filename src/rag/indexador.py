@@ -206,8 +206,8 @@ class IndexadorChromaDB:
 
     def __init__(self, caminho_db: str = "./chroma_db") -> None:
         self.caminho_db = caminho_db
-        self._cliente = None
-        self._colecao = None
+        self._cliente: Any = None
+        self._colecao: Any = None
         self._inicializar()
 
     def _inicializar(self) -> None:
