@@ -1,3 +1,5 @@
+import mlflow
+import time
 from typing import Any, Dict
 import numpy as np
 from src.carregador_dados import carregar_dados_mnist
@@ -19,11 +21,43 @@ class FachadaPipelineIA:
         self.y_teste: np.ndarray | None = None
         self.modelos: Dict[str, ModeloAbstratoIA] = {}
         self.scaler: Any = None
+        mlflow.set_experiment("Treinamento_MNIST")
 
     def inicializar_dados(self) -> None:
         self.X, self.y = carregar_dados_mnist()
         self.X_treino, self.X_teste, self.y_treino, self.y_teste, self.scaler = pre_processar_dados(
             self.X, self.y)
+
+    def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+        """Treina, avalia e registra o ciclo completo de vida no MLflow."""
+        if self.X_treino is None or self.y_treino is None:
+            self.inicializar_dados()
+
+        with mlflow.start_run(run_name=f"Exp_{nome_modelo}"):
+            # 1. Treinamento
+            inicio = time.time()
+            modelo = self.treinar_modelo(nome_modelo)
+            tempo_treino = time.time() - inicio
+
+            # 2. Avaliação
+            metricas = self.avaliar_modelo(nome_modelo)
+            metricas["tempo_treino_segundos"] = tempo_treino
+
+            # 3. Log no MLflow
+            mlflow.log_param("modelo", nome_modelo)
+            mlflow.log_param("dataset", "mnist_784")
+            mlflow.log_metrics({
+                "accuracy": metricas["accuracy"],
+                "precision": metricas["precision_macro"],
+                "recall": metricas["recall_macro"],
+                "f1_score": metricas["f1_macro"],
+                "tempo_treino": tempo_treino
+            })
+            
+            # Log do modelo genérico usando pickling do mlflow, ou pyfunc, mas por simplicidade:
+            # (Apenas sinalizando que o modelo foi gerado, tracking profundo exigiria flavors específicos)
+            
+            return metricas
 
     def treinar_modelo(self, nome_modelo: str) -> ModeloAbstratoIA:
         if self.X_treino is None or self.y_treino is None:
