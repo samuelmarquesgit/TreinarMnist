@@ -11,7 +11,6 @@ from sklearn.linear_model import LogisticRegression
 
 from src.modelos.fabrica_modelos import ModeloSklearn
 
-
 # ── Constantes de configuração ────────────────────────────────────────────────
 
 _N_AMOSTRAS_TREINO: int = 200

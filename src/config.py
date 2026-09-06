@@ -1,7 +1,6 @@
-from typing import List
+from pathlib import Path
 
 import yaml
-from pathlib import Path
 from pydantic import BaseModel
 
 
@@ -39,7 +38,7 @@ class NaiveBayesConfig(BaseModel):
 
 
 class PerceptronMulticamadasConfig(BaseModel):
-    hidden_layer_sizes: List[int] = [100]
+    hidden_layer_sizes: list[int] = [100]
     max_iter: int = 300
     random_state: int = 42
 

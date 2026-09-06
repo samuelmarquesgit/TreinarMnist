@@ -10,7 +10,7 @@ Nota de logging:
 from __future__ import annotations
 
 import logging
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from src.schemas import RelatorioOOD
@@ -24,7 +24,7 @@ from src.modelos.base_modelo import ModeloAbstratoIA
 logger = logging.getLogger(__name__)
 
 # Classes padrão ocultadas conforme especificação do projeto
-_CLASSES_OOD_PADRAO: List[int] = [4, 7]
+_CLASSES_OOD_PADRAO: list[int] = [4, 7]
 
 
 def _entropia_shannon(prob: NDArray[np.float64]) -> float:
@@ -61,14 +61,14 @@ class AnalisadorRobustezOOD:
 
     def __init__(self, limiar_alerta: float = 0.85) -> None:
         self.validador = ValidadorFalsaCerteza(limiar_alerta_certeza=limiar_alerta)
-        self.classes_mascaradas: List[int] = []
+        self.classes_mascaradas: list[int] = []
 
     def preparar_dados_id(
         self,
         X: NDArray[np.float32],
         y: NDArray[np.int32],
-        classes_ocultas: Optional[List[int]] = None,
-    ) -> Tuple[NDArray[np.float32], NDArray[np.int32]]:
+        classes_ocultas: list[int] | None = None,
+    ) -> tuple[NDArray[np.float32], NDArray[np.int32]]:
         """Remove as classes especificadas criando um conjunto In-Distribution (ID).
 
         Args:
@@ -99,7 +99,7 @@ class AnalisadorRobustezOOD:
         self,
         X: NDArray[np.float32],
         y: NDArray[np.int32],
-    ) -> Tuple[NDArray[np.float32], NDArray[np.int32]]:
+    ) -> tuple[NDArray[np.float32], NDArray[np.int32]]:
         """Isola exclusivamente as classes ocultadas para teste de estresse.
 
         Args:
@@ -131,7 +131,7 @@ class AnalisadorRobustezOOD:
         modelo: ModeloAbstratoIA,
         X_ood: NDArray[np.float32],
         y_ood_real: NDArray[np.int32],
-    ) -> "RelatorioOOD":
+    ) -> RelatorioOOD:
         """Submete o modelo às instâncias OOD e mensura a taxa de Falsa Certeza.
 
         Compatível com a nova interface ``ResultadoValidacao`` (NamedTuple) do
@@ -206,7 +206,7 @@ class AnalisadorRobustezOOD:
 
 def executar_experimento_ood(
     fachada: Any,
-    classes_mascaradas: Optional[List[int]] = None,
+    classes_mascaradas: list[int] | None = None,
     n_amostras: int = 200,
 ) -> NDArray[np.float64]:
     """Executa experimento OOD real usando a ``FachadaPipelineIA``.
@@ -256,8 +256,8 @@ def executar_experimento_ood(
             "[OOD] Nenhum modelo treinado encontrado. "
             "Treinando RegressaoLogistica nos dados ID..."
         )
-        from src.modelos.fabrica_modelos import FabricaModelos  # noqa: PLC0415
-        from src.pre_processamento import pre_processar_dados  # noqa: PLC0415
+        from src.modelos.fabrica_modelos import FabricaModelos
+        from src.pre_processamento import pre_processar_dados
 
         X_id_tr, _, y_id_tr, _, scaler = pre_processar_dados(X_id, y_id)
         modelo = FabricaModelos.criar_modelo("RegressaoLogistica")

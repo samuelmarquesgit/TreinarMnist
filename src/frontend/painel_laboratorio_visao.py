@@ -3,7 +3,7 @@
 import numpy as np
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.graph_objects as go
@@ -38,7 +38,7 @@ def ordenar_probabilidades_por_bolha(probs: list[tuple]) -> list[tuple]:
     arr = list(probs)
     n = len(arr)
     for i in range(n):
-        for j in range(0, n - i - 1):
+        for j in range(n - i - 1):
             if arr[j][1] < arr[j + 1][1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
     return arr
@@ -167,9 +167,10 @@ def _renderizar_modo_upload():
     if not arquivo or not PIL_OK:
         return None
     try:
-        from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
-        import tempfile
         import os
+        import tempfile
+
+        from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
         tmp_path = None
         try:
             with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(arquivo.name)[1]) as tmp:

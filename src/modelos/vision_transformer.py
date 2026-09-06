@@ -12,12 +12,11 @@ logger = logging.getLogger(__name__)
 
 # ── Importações opcionais (PyTorch + timm) ─────────────────────────────────
 try:
+    import timm
     import torch
-    import torch.nn as nn
     import torch.nn.functional as F
-    import torch.optim as optim
+    from torch import nn, optim
     from torch.utils.data import DataLoader, TensorDataset
-    import timm  # noqa: F401  (checagem de disponibilidade)
     _TORCH_OK = True
 except ImportError:
     _TORCH_OK = False

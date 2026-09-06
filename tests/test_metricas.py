@@ -1,4 +1,5 @@
 import pytest
+
 from src.avaliacao_metricas import calcular_metricas
 
 
@@ -8,14 +9,14 @@ def test_calcular_metricas():
 
     metricas = calcular_metricas(y_verdadeiro, y_previsto)
 
-    assert 'acuracia' in metricas
-    assert 'precisao' in metricas
-    assert 'recall' in metricas
-    assert 'f1' in metricas
-    assert 'matriz_confusao' in metricas
+    assert hasattr(metricas, 'acuracia')
+    assert hasattr(metricas, 'precisao')
+    assert hasattr(metricas, 'recall')
+    assert hasattr(metricas, 'f1')
+    assert hasattr(metricas, 'matriz_confusao')
 
     # Acurácia de 4 corretos em 5 = 0.8
-    assert metricas['acuracia'] == 0.8
+    assert metricas.acuracia == 0.8
 
 
 def test_erro_tamanhos_diferentes():
@@ -34,12 +35,12 @@ def test_metricas_multiclasse_10():
     y_previsto = list(range(10))
 
     metricas = calcular_metricas(y_verdadeiro, y_previsto)
-    matriz = metricas['matriz_confusao']
+    matriz = metricas.matriz_confusao
 
     assert len(matriz) == 10
     assert len(matriz[0]) == 10
 
-    assert metricas['acuracia'] == 1.0
+    assert metricas.acuracia == 1.0
 
 
 def test_acuracia_falha_total():
@@ -47,4 +48,4 @@ def test_acuracia_falha_total():
     y_previsto = [1, 2, 0]
 
     metricas = calcular_metricas(y_verdadeiro, y_previsto)
-    assert metricas['acuracia'] == 0.0
+    assert metricas.acuracia == 0.0

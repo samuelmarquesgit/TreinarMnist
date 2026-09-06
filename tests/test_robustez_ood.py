@@ -1,7 +1,8 @@
-import pytest
 import numpy as np
-from src.robustez_ood import AnalisadorRobustezOOD
+import pytest
+
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.robustez_ood import AnalisadorRobustezOOD
 
 # Mock do modelo simulando super confianca errada
 

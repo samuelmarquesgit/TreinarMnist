@@ -1,7 +1,6 @@
 """SuporteRAG — motor de busca semântica via ChromaDB com fallback de embedding."""
 
 import logging
-from typing import List
 
 import chromadb
 
@@ -68,7 +67,7 @@ class SuporteRAG:
         ids = [f"doc_{i}" for i in range(len(documentos))]
         self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
 
-    def consultar(self, pergunta: str, n_resultados: int = 1) -> List[str]:
+    def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
         """Consulta o banco vetorial e retorna os trechos mais relevantes.
 
         Args:

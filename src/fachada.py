@@ -20,18 +20,18 @@ import logging
 import os
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
+from src.analise_estatistica import CalculadorEstatistico
 from src.avaliacao_metricas import calcular_metricas
 from src.carregador_dados import carregar_dados_mnist
 from src.modelos.base_modelo import ModeloAbstratoIA
 from src.modelos.fabrica_modelos import FabricaModelos
 from src.pre_processamento import pre_processar_dados
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
-from src.analise_estatistica import CalculadorEstatistico
 
 # MLflow é opcional — não deve impedir a inicialização do módulo
 try:
@@ -68,8 +68,8 @@ class ResultadoBenchmark:
         self,
         modelo_id: str,
         status: str,
-        metricas: Optional[Dict[str, Any]] = None,
-        erro: Optional[str] = None,
+        metricas: dict[str, Any] | None = None,
+        erro: str | None = None,
         latencia_ms: float = 0.0,
         throughput: float = 0.0,
     ) -> None:
@@ -80,7 +80,7 @@ class ResultadoBenchmark:
         self.latencia_ms = latencia_ms
         self.throughput = throughput
 
-    def para_dict(self) -> Dict[str, Any]:
+    def para_dict(self) -> dict[str, Any]:
         """Serializa o resultado para dicionário JSON-compatível."""
         return {
             "modelo_id": self.modelo_id,
@@ -121,13 +121,13 @@ class FachadaPipelineIA:
     """
 
     def __init__(self) -> None:
-        self.X: Optional[NDArray[np.float32]] = None
-        self.y: Optional[NDArray[np.int32]] = None
-        self.X_treino: Optional[NDArray[np.float32]] = None
-        self.X_teste: Optional[NDArray[np.float32]] = None
-        self.y_treino: Optional[NDArray[np.int32]] = None
-        self.y_teste: Optional[NDArray[np.int32]] = None
-        self.modelos: Dict[str, ModeloAbstratoIA] = {}
+        self.X: NDArray[np.float32] | None = None
+        self.y: NDArray[np.int32] | None = None
+        self.X_treino: NDArray[np.float32] | None = None
+        self.X_teste: NDArray[np.float32] | None = None
+        self.y_treino: NDArray[np.int32] | None = None
+        self.y_teste: NDArray[np.int32] | None = None
+        self.modelos: dict[str, ModeloAbstratoIA] = {}
         self.scaler: Any = None
 
         if _MLFLOW_OK:
@@ -181,7 +181,7 @@ class FachadaPipelineIA:
         logger.info("Modelo '%s' treinado com sucesso.", nome_modelo)
         return modelo
 
-    def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
+    def avaliar_modelo(self, nome_modelo: str) -> dict[str, Any]:
         """Avalia o modelo treinado sobre o conjunto de teste.
 
         Args:
@@ -228,7 +228,7 @@ class FachadaPipelineIA:
 
     # ── Experimento MLflow ────────────────────────────────────────────────────
 
-    def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+    def executar_experimento(self, nome_modelo: str) -> dict[str, Any]:
         """Treina, avalia e registra o ciclo completo no MLflow (opcional).
 
         As chaves de métricas no MLflow espelham exatamente as chaves pt-BR
@@ -277,9 +277,9 @@ class FachadaPipelineIA:
 
     def executar_benchmark(
         self,
-        modelos_ids: Optional[List[str]] = None,
+        modelos_ids: list[str] | None = None,
         dir_saida: str = _DIR_BENCHMARKS,
-    ) -> Dict[str, ResultadoBenchmark]:
+    ) -> dict[str, ResultadoBenchmark]:
         """Executa benchmark comparativo sobre uma lista de modelos.
 
         Para cada modelo: treina (se necessário), avalia métricas, mede
@@ -296,7 +296,7 @@ class FachadaPipelineIA:
         """
         self._garantir_dados()
         ids = modelos_ids or FabricaModelos.listar_disponiveis()
-        resultados: Dict[str, ResultadoBenchmark] = {}
+        resultados: dict[str, ResultadoBenchmark] = {}
         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
 
         logger.info("[Benchmark] Iniciando para %d modelo(s).", len(ids))
@@ -344,7 +344,7 @@ class FachadaPipelineIA:
 
     def _persistir_benchmark(
         self,
-        resultados: Dict[str, ResultadoBenchmark],
+        resultados: dict[str, ResultadoBenchmark],
         ts_inicio: str,
         dir_saida: str,
     ) -> None:
@@ -376,11 +376,11 @@ class FachadaPipelineIA:
 
     # ── Utilitários ───────────────────────────────────────────────────────────
 
-    def listar_modelos_treinados(self) -> List[str]:
+    def listar_modelos_treinados(self) -> list[str]:
         """Retorna os nomes dos modelos já treinados nesta sessão."""
         return list(self.modelos.keys())
 
-    def obter_estatisticas_dados(self, tipo: str = "treino") -> Dict[str, float]:
+    def obter_estatisticas_dados(self, tipo: str = "treino") -> dict[str, float]:
         """Calcula estatísticas descritivas da partição solicitada.
 
         Args:

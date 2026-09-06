@@ -1,5 +1,5 @@
 """Subsistema RAG — Recuperação Aumentada por Geração com ChromaDB."""
-from src.rag.indexador import IndexadorChromaDB
 from src.rag.assistente import AssistenteRAG
+from src.rag.indexador import IndexadorChromaDB
 
-__all__ = ["IndexadorChromaDB", "AssistenteRAG"]
+__all__ = ["AssistenteRAG", "IndexadorChromaDB"]

@@ -11,7 +11,7 @@ Nota de logging:
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ class OrquestradorMNISTAgente:
         >>> print(resultado["status"])  # "SUCESSO", "PARCIAL" ou "FALHA"
     """
 
-    def __init__(self, configuracoes: Optional[Dict[str, Any]] = None) -> None:
-        self.configuracoes: Dict[str, Any] = configuracoes or {}
-        self.estado_execucao: Dict[str, Any] = {
+    def __init__(self, configuracoes: dict[str, Any] | None = None) -> None:
+        self.configuracoes: dict[str, Any] = configuracoes or {}
+        self.estado_execucao: dict[str, Any] = {
             "eda_concluido": False,
             "dados_preparados": False,
             "modelos_treinados": [],
@@ -45,7 +45,7 @@ class OrquestradorMNISTAgente:
 
     # ── Pipeline completo ─────────────────────────────────────────────────────
 
-    def executar_plano_completo(self) -> Dict[str, Any]:
+    def executar_plano_completo(self) -> dict[str, Any]:
         """Executa a sequência ponta a ponta do pipeline MNIST.
 
         Fases executadas em ordem:
@@ -66,11 +66,11 @@ class OrquestradorMNISTAgente:
                   com as métricas de cada modelo avaliado com sucesso.
         """
         # Importações lazy para evitar dependência circular no nível de módulo
-        from src.fachada import FachadaPipelineIA  # noqa: PLC0415
-        from src.modelos.fabrica_modelos import FabricaModelos  # noqa: PLC0415
+        from src.fachada import FachadaPipelineIA
+        from src.modelos.fabrica_modelos import FabricaModelos
 
-        erros: List[str] = []
-        metricas: Dict[str, Any] = {}
+        erros: list[str] = []
+        metricas: dict[str, Any] = {}
         fachada = FachadaPipelineIA()
 
         # Fase 1: Dados e EDA — falha aqui encerra o pipeline
@@ -78,7 +78,7 @@ class OrquestradorMNISTAgente:
             return self._montar_resultado(erros, metricas, "FALHA")
 
         # Fase 2: Treinamento
-        modelos_selecionados: List[str] = self.configuracoes.get(
+        modelos_selecionados: list[str] = self.configuracoes.get(
             "modelos_selecionados", FabricaModelos.listar_disponiveis()
         )
         self._fase2_treino(fachada, modelos_selecionados, erros)
@@ -102,7 +102,7 @@ class OrquestradorMNISTAgente:
 
     # ── Fases privadas ────────────────────────────────────────────────────────
 
-    def _fase1_dados(self, fachada: Any, erros: List[str]) -> bool:
+    def _fase1_dados(self, fachada: Any, erros: list[str]) -> bool:
         """Fase 1: Inicialização dos dados e EDA. Retorna False em caso de falha."""
         logger.info("[Orquestrador] Fase 1 — Inicialização de dados e EDA.")
         try:
@@ -117,7 +117,7 @@ class OrquestradorMNISTAgente:
             logger.error("[Orquestrador] %s", msg)
             return False
 
-    def _fase2_treino(self, fachada: Any, modelos: List[str], erros: List[str]) -> None:
+    def _fase2_treino(self, fachada: Any, modelos: list[str], erros: list[str]) -> None:
         """Fase 2: Treinamento dos modelos selecionados."""
         logger.info("[Orquestrador] Fase 2 — Treinando %d modelo(s).", len(modelos))
         for nome_modelo in modelos:
@@ -130,7 +130,7 @@ class OrquestradorMNISTAgente:
                 erros.append(msg)
                 logger.warning("[Orquestrador] %s", msg)
 
-    def _fase3_avaliacao(self, fachada: Any, metricas: Dict[str, Any], erros: List[str]) -> None:
+    def _fase3_avaliacao(self, fachada: Any, metricas: dict[str, Any], erros: list[str]) -> None:
         """Fase 3: Avaliação individual de cada modelo treinado."""
         logger.info("[Orquestrador] Fase 3 — Avaliando modelos treinados.")
         for nome_modelo in list(self.estado_execucao["modelos_treinados"]):
@@ -149,7 +149,7 @@ class OrquestradorMNISTAgente:
         if metricas:
             self.estado_execucao["avaliacao_concluida"] = True
 
-    def _fase4_benchmark(self, fachada: Any, metricas: Dict[str, Any], erros: List[str]) -> None:
+    def _fase4_benchmark(self, fachada: Any, metricas: dict[str, Any], erros: list[str]) -> None:
         """Fase 4: Benchmark comparativo entre os modelos avaliados."""
         logger.info("[Orquestrador] Fase 4 — Benchmark comparativo.")
         modelos_avaliados = list(metricas.keys())
@@ -171,10 +171,10 @@ class OrquestradorMNISTAgente:
 
     def _montar_resultado(
         self,
-        erros: List[str],
-        metricas: Dict[str, Any],
+        erros: list[str],
+        metricas: dict[str, Any],
         status: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Monta o dicionário de retorno padronizado.
 
         Args:

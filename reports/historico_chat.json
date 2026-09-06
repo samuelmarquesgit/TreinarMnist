@@ -1,0 +1,22 @@
+[
+    {
+        "papel": "usuario",
+        "conteudo": "Quantas imagens tem o MNIST?"
+    },
+    {
+        "papel": "assistente",
+        "conteudo": "70.000 imagens",
+        "fontes": [
+            "mnist.md"
+        ]
+    },
+    {
+        "papel": "usuario",
+        "conteudo": "Descreva o pipeline de visão computacional para imagens reais."
+    },
+    {
+        "papel": "assistente",
+        "conteudo": "💡 (Modo offline — RAG não inicializado)\n\nO pipeline de visão converte a imagem para grayscale, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",
+        "fontes": []
+    }
+]

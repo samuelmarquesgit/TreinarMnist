@@ -1,5 +1,5 @@
+
 from pydantic import BaseModel, Field
-from typing import List
 
 
 class Metricas(BaseModel):
@@ -7,7 +7,7 @@ class Metricas(BaseModel):
     precisao: float = Field(..., description="Precisão macro média do modelo (0 a 1)")
     recall: float = Field(..., description="Recall macro médio do modelo (0 a 1)")
     f1: float = Field(..., description="F1-Score macro médio do modelo (0 a 1)")
-    matriz_confusao: List[List[int]] = Field(..., description="Matriz de confusão")
+    matriz_confusao: list[list[int]] = Field(..., description="Matriz de confusão")
 
 
 class RelatorioOOD(BaseModel):
@@ -19,4 +19,4 @@ class RelatorioOOD(BaseModel):
         ..., description="Proporção de falsas certezas em relação ao total de amostras OOD"
     )
     entropia_media: float = Field(..., description="Entropia de Shannon média nas inferências OOD")
-    classes_ood: List[int] = Field(..., description="Lista de classes consideradas OOD neste relatório")
+    classes_ood: list[int] = Field(..., description="Lista de classes consideradas OOD neste relatório")
