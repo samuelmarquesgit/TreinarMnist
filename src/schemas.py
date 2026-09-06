@@ -8,6 +8,8 @@ class Metricas(BaseModel):
     recall: float = Field(..., description="Recall macro médio do modelo (0 a 1)")
     f1: float = Field(..., description="F1-Score macro médio do modelo (0 a 1)")
     matriz_confusao: list[list[int]] = Field(..., description="Matriz de confusão")
+    roc_auc: float | None = Field(None, description="ROC-AUC Score (One-vs-Rest)")
+    brier_score: float | None = Field(None, description="Brier Score de Calibração (0 a 1)")
 
 
 class RelatorioOOD(BaseModel):

@@ -27,7 +27,7 @@ def test_preparar_dados_id_isola_ood():
     X = np.array([[1], [2], [3], [4], [5]])
     y = np.array([2, 4, 1, 7, 9])  # Instancias das classes 4 e 7
 
-    X_id, y_id = analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
+    _X_id, y_id = analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
 
     # 4 e 7 saem fora, restam os y: [2, 1, 9] correspondentes ao X: [[1], [3],
     # [5]]
@@ -48,7 +48,7 @@ def test_isolar_dados_ood():
     y = np.array([2, 4, 1, 7, 9])
 
     analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
-    X_ood, y_ood = analisador.isolar_dados_ood(X, y)
+    _X_ood, y_ood = analisador.isolar_dados_ood(X, y)
 
     assert len(y_ood) == 2
     assert set(y_ood) == {4, 7}

@@ -1,7 +1,6 @@
 """Testes do frontend Streamlit — streamlit e plotly completamente mockados."""
 
 import sys
-import os
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -96,43 +95,61 @@ for _mod in list(sys.modules):
 
 # ── Importações dos módulos frontend (agora com streamlit mockado) ─────────
 
-from src.frontend.estilos import (  # noqa: E402
-    kpi_tile, badge, aplicar_estilos, card, titulo_secao,
+from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+from src.frontend.estilos import (
+    aplicar_estilos,
+    badge,
+    card,
+    kpi_tile,
+    titulo_secao,
 )
-from src.frontend.painel_robustez_ood import (  # noqa: E402
-    _simular_softmax,
-    _simular_softmax_in_dist,
-    _entropia_shannon,
-    _avaliar_lote,
-    renderizar as renderizar_ood,
-)
-from src.frontend.painel_laboratorio_visao import (  # noqa: E402
-    ordenar_probabilidades_por_bolha,
-    _pipeline_visual,
-    _renderizar_pipeline_e_inferencia,
-    renderizar as renderizar_lab,
-)
-from src.frontend.painel_benchmarks import (  # noqa: E402
-    _formatar_tabela, _renderizar_kpis, _renderizar_graficos,
-    _renderizar_matriz_confusao, _executar_benchmark,
-    renderizar as renderizar_bench,
-)
-from src.frontend.painel_assistente_rag import (  # noqa: E402
-    _resposta_fallback,
-    renderizar as renderizar_rag,
-)
-from src.frontend.painel_analise_estatistica import (  # noqa: E402
+from src.frontend.painel_analise_estatistica import (
     _diagnostico_assimetria,
+)
+from src.frontend.painel_analise_estatistica import (
     renderizar as renderizar_analise,
 )
-from src.frontend.painel_eda import renderizar as renderizar_eda  # noqa: E402
-from src.frontend.painel_bancos_dados import (  # noqa: E402
-    _obter_experimentos_postgres,
+from src.frontend.painel_assistente_rag import (
+    _resposta_fallback,
+)
+from src.frontend.painel_assistente_rag import (
+    renderizar as renderizar_rag,
+)
+from src.frontend.painel_bancos_dados import (
     _obter_artefatos_mongodb,
+    _obter_experimentos_postgres,
+)
+from src.frontend.painel_bancos_dados import (
     renderizar as renderizar_bancos,
 )
-from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: E402
-
+from src.frontend.painel_benchmarks import (
+    _executar_benchmark,
+    _formatar_tabela,
+    _renderizar_graficos,
+    _renderizar_kpis,
+    _renderizar_matriz_confusao,
+)
+from src.frontend.painel_benchmarks import (
+    renderizar as renderizar_bench,
+)
+from src.frontend.painel_eda import renderizar as renderizar_eda
+from src.frontend.painel_laboratorio_visao import (
+    _pipeline_visual,
+    _renderizar_pipeline_e_inferencia,
+    ordenar_probabilidades_por_bolha,
+)
+from src.frontend.painel_laboratorio_visao import (
+    renderizar as renderizar_lab,
+)
+from src.frontend.painel_robustez_ood import (
+    _avaliar_lote,
+    _entropia_shannon,
+    _simular_softmax,
+    _simular_softmax_in_dist,
+)
+from src.frontend.painel_robustez_ood import (
+    renderizar as renderizar_ood,
+)
 
 # ── helpers de fachada ─────────────────────────────────────────────────────
 
@@ -316,7 +333,7 @@ def test_ordenar_por_bolha_preserva_todos_elementos():
     probs = [(i, float(i) / 10) for i in range(10)]
     ordenado = ordenar_probabilidades_por_bolha(probs)
     assert len(ordenado) == 10
-    assert set(c for c, _ in ordenado) == set(range(10))
+    assert {c for c, _ in ordenado} == set(range(10))
 
 
 def test_pipeline_visual_retorna_quatro_arrays():
@@ -327,7 +344,7 @@ def test_pipeline_visual_retorna_quatro_arrays():
 
 def test_pipeline_visual_imagem_rgb():
     img = (np.random.rand(28, 28, 3) * 255).astype(np.uint8)
-    gray, invertida, bbox, canvas = _pipeline_visual(img)
+    _gray, _invertida, _bbox, canvas = _pipeline_visual(img)
     assert canvas.shape == (28, 28)
 
 
@@ -927,8 +944,9 @@ def test_renderizar_bancos_com_postgres_nao_vazio():
 
 def test_renderizar_bancos_postgres_nao_vazio_sem_plotly():
     """renderizar bancos com plotly ausente nao deve levantar excecao."""
-    import pandas as pd
     import sys
+
+    import pandas as pd
 
     df_fake = pd.DataFrame([{
         "ID": i, "Modelo": f"M{i}",
@@ -1073,6 +1091,7 @@ def test_renderizar_bancos_mongodb_matriz_malformada():
 def test_obter_experimentos_postgres_com_registros():
     """_obter_experimentos_postgres com registros deve retornar DataFrame populado — linha 26."""
     from datetime import datetime
+
     from src.frontend.painel_bancos_dados import _obter_experimentos_postgres
 
     registro = MagicMock()
@@ -1092,7 +1111,6 @@ def test_obter_experimentos_postgres_com_registros():
 
         resultado = _obter_experimentos_postgres()
 
-    import pandas as pd
     assert not resultado.empty
     assert resultado.iloc[0]["Modelo"] == "SVM"
     assert "Acurácia" in resultado.columns
@@ -1107,7 +1125,7 @@ def test_pipeline_visual_sem_contornos_usa_invertida():
     """_pipeline_visual com imagem sem contornos deve usar invertida como bbox_crop — linha 119."""
     # Imagem all-white → apos inversao fica all-black → findNonZero retorna None
     img_branca = np.ones((28, 28, 3), dtype=np.uint8) * 255
-    gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_branca)
+    _gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_branca)
     # bbox_crop deve ser igual a invertida (o else: bbox_crop = invertida)
     assert np.array_equal(bbox_crop, invertida)
     assert canvas_28.shape == (28, 28)
@@ -1191,7 +1209,6 @@ def test_renderizar_lab_com_imagem_upload():
 
 def test_renderizar_graficos_barras_com_plotly():
     """_renderizar_graficos com tipo Barras deve chamar st.plotly_chart usando go.Figure (linhas 86-90)."""
-    import src.frontend.painel_benchmarks as pb
     _mock_st.radio.return_value = "Barras — Acurácia vs Tempo"
     _mock_st.reset_mock()
     df = _formatar_tabela(_tres_modelos())
@@ -1212,25 +1229,24 @@ def test_renderizar_matriz_normalizada_com_toggle():
 
 def test_renderizar_modo_canvas_import_error():
     """_renderizar_modo_canvas deve chamar st.error quando streamlit_drawable_canvas não está instalado (linhas 152-153)."""
-    from src.frontend.painel_laboratorio_visao import _renderizar_modo_canvas
     import sys
-    # The module is mocked as MagicMock at test file level — remove it so the real import fails
-    canvas_mod = sys.modules.pop("streamlit_drawable_canvas", None)
-    _mock_st.reset_mock()
-    try:
+
+    from src.frontend.painel_laboratorio_visao import _renderizar_modo_canvas
+    # Força o ImportError definindo o módulo como None
+    with patch.dict(sys.modules, {"streamlit_drawable_canvas": None}):
+        _mock_st.reset_mock()
         resultado = _renderizar_modo_canvas()
         _mock_st.error.assert_called()
         assert resultado is None
-    finally:
-        if canvas_mod is not None:
-            sys.modules["streamlit_drawable_canvas"] = canvas_mod
 
 
 def test_renderizar_modo_upload_com_arquivo():
     """_renderizar_modo_upload com arquivo válido deve retornar img_array (linhas 169-189)."""
     import io
     from unittest.mock import MagicMock, patch
+
     from PIL import Image as PILImage
+
     from src.frontend.painel_laboratorio_visao import _renderizar_modo_upload
 
     # Create a real tiny PNG in memory
@@ -1263,7 +1279,9 @@ def test_renderizar_modo_upload_validador_levanta_erro():
     """_renderizar_modo_upload com validador lançando Exception deve chamar st.error e retornar None."""
     import io
     from unittest.mock import MagicMock, patch
+
     from PIL import Image as PILImage
+
     from src.frontend.painel_laboratorio_visao import _renderizar_modo_upload
 
     buf = io.BytesIO()
@@ -1295,7 +1313,6 @@ def test_renderizar_modo_upload_validador_levanta_erro():
 
 def test_renderizar_eda_projecao_pca():
     """renderizar_eda com btn_projetar=True deve executar PCA e chamar plotly_chart (linhas 179-214)."""
-    import src.frontend.painel_eda as peda
 
     # Fachada com dados multi-classe para projeção funcionar
     f = MagicMock()
@@ -1378,7 +1395,7 @@ def test_renderizar_eda_sem_plotly_cobre_else_branches():
 def test_renderizar_eda_projecao_tsne():
     """renderizar_eda com radio=t-SNE deve executar TSNE (linha 191)."""
     from unittest.mock import patch as upatch
-    import src.frontend.painel_eda as peda
+
 
     f = MagicMock()
     f.dados_inicializados.return_value = True

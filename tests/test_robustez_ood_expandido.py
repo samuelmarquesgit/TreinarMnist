@@ -7,7 +7,6 @@ import pytest
 
 from src.robustez_ood import _entropia_shannon, executar_experimento_ood
 
-
 # ── _entropia_shannon ──────────────────────────────────────────────────────
 
 
@@ -173,7 +172,6 @@ def test_executar_experimento_ood_classes_padrao_sao_4_e_7():
 # ── AnalisadorOOD — linhas descobertas ────────────────────────────────────────
 
 
-from unittest.mock import MagicMock, patch
 
 from src.robustez_ood import AnalisadorRobustezOOD as AnalisadorOOD
 

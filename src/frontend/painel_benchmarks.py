@@ -13,10 +13,10 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 def _formatar_tabela(resultados: dict) -> pd.DataFrame:
@@ -28,6 +28,8 @@ def _formatar_tabela(resultados: dict) -> pd.DataFrame:
             "Precisão": round(m.get("precisao", 0), 4),
             "Recall": round(m.get("recall", 0), 4),
             "F1-Score": round(m.get("f1", 0), 4),
+            "ROC-AUC": round(m.get("roc_auc", 0), 4) if m.get("roc_auc") is not None else 0.0,
+            "Brier Score": round(m.get("brier_score", 0), 4) if m.get("brier_score") is not None else 0.0,
             "Tempo (s)": round(m.get("tempo_treino", 0), 2),
         })
     df = pd.DataFrame(linhas).sort_values(
@@ -53,6 +55,7 @@ def _executar_benchmark(fachada, modelos_sel: list, resultados: dict) -> None:
         except Exception as e:
             resultados[nome] = {
                 "acuracia": 0, "precisao": 0, "recall": 0, "f1": 0,
+                "roc_auc": None, "brier_score": None,
                 "tempo_treino": 0, "erro": str(e),
                 "matriz_confusao": [[0] * 10 for _ in range(10)],
             }
@@ -83,7 +86,7 @@ def _renderizar_graficos(df_ord) -> None:
         fig = go.Figure()
         fig.add_trace(go.Bar(name="Acurácia", x=df_ord["Modelo"], y=df_ord["Acurácia"], marker_color="#58a6ff"))
         fig.add_trace(go.Bar(name="F1-Score", x=df_ord["Modelo"], y=df_ord["F1-Score"], marker_color="#3fb950"))
-        fig.update_layout(**_TEMA, barmode="group", height=350, margin=dict(t=10, b=80), xaxis_tickangle=-30)
+        fig.update_layout(**_TEMA, barmode="group", height=350, margin={"t": 10, "b": 80}, xaxis_tickangle=-30)
         st.plotly_chart(fig, use_container_width=True)
     else:
         categorias = ["Acurácia", "Precisão", "Recall", "F1-Score"]
@@ -93,7 +96,7 @@ def _renderizar_graficos(df_ord) -> None:
             fig.add_trace(go.Scatterpolar(
                 r=vals, theta=categorias + [categorias[0]],
                 fill="toself", name=row["Modelo"]))
-        fig.update_layout(**_TEMA, height=420, margin=dict(t=20, b=20))
+        fig.update_layout(**_TEMA, height=420, margin={"t": 20, "b": 20})
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -119,10 +122,10 @@ def _renderizar_matriz_confusao(resultados: dict) -> None:
         fmt_label = ""
     fig_cm = px.imshow(
         mat_plot, text_auto=True, color_continuous_scale="Blues",
-        labels=dict(x="Previsto", y="Real", color=f"Contagem{fmt_label}"),
+        labels={"x": "Previsto", "y": "Real", "color": f"Contagem{fmt_label}"},
         x=[str(i) for i in range(10)], y=[str(i) for i in range(10)],
     )
-    fig_cm.update_layout(**_TEMA, height=500, margin=dict(t=10, b=10))
+    fig_cm.update_layout(**_TEMA, height=500, margin={"t": 10, "b": 10})
     st.plotly_chart(fig_cm, use_container_width=True)
     erros_por_classe = mat_np.sum(axis=1) - np.diag(mat_np)
     classe_pior = int(np.argmax(erros_por_classe))
@@ -176,8 +179,8 @@ def renderizar(fachada) -> None:
     titulo_secao("Tabela Comparativa")
     col_ord, _ = st.columns([2, 4])
     with col_ord:
-        coluna_ord = st.selectbox("Ordenar por", ["Acurácia", "F1-Score", "Precisão", "Recall", "Tempo (s)"])
-    df_ord = df.sort_values(coluna_ord, ascending=(coluna_ord == "Tempo (s)")).reset_index(drop=True)
+        coluna_ord = st.selectbox("Ordenar por", ["Acurácia", "F1-Score", "ROC-AUC", "Brier Score", "Tempo (s)"])
+    df_ord = df.sort_values(coluna_ord, ascending=(coluna_ord == "Tempo (s)" or coluna_ord == "Brier Score")).reset_index(drop=True)
     st.dataframe(
         df_ord.style.background_gradient(subset=["Acurácia", "F1-Score"], cmap="Blues"),
         use_container_width=True, hide_index=True,

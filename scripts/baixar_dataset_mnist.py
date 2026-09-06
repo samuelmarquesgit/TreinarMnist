@@ -1,6 +1,7 @@
 """Script utilitário para download e cache prévio do dataset MNIST (mnist_784)."""
 
 import os
+
 import joblib
 from sklearn.datasets import fetch_openml
 

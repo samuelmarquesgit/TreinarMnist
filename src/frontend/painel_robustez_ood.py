@@ -16,11 +16,11 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark",
-)
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark",
+}
 
 
 # ── Helpers de simulação ────────────────────────────────────────────────────
@@ -238,7 +238,7 @@ def renderizar(fachada) -> None:
         **_TEMA, barmode="overlay", height=350,
         xaxis_title="Confiança Máxima (Softmax)",
         yaxis_title="Nº de Amostras",
-        margin=dict(t=10, b=40),
+        margin={"t": 10, "b": 40},
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -258,7 +258,7 @@ def renderizar(fachada) -> None:
         **_TEMA, barmode="overlay", height=320,
         xaxis_title="Entropia de Shannon",
         yaxis_title="Nº de Amostras",
-        margin=dict(t=10, b=40),
+        margin={"t": 10, "b": 40},
     )
     st.plotly_chart(fig_e, use_container_width=True)
 
@@ -279,12 +279,12 @@ def renderizar(fachada) -> None:
     fig_map.update_traces(textposition="outside")
     fig_map.update_layout(
         **_TEMA, coloraxis_showscale=False, height=320,
-        margin=dict(t=10, b=40),
-        xaxis=dict(
-            tickmode="array",
-            tickvals=list(range(10)),
-            ticktext=[str(i) for i in range(10)],
-        ),
+        margin={"t": 10, "b": 40},
+        xaxis={
+            "tickmode": "array",
+            "tickvals": list(range(10)),
+            "ticktext": [str(i) for i in range(10)],
+        },
     )
     st.plotly_chart(fig_map, use_container_width=True)
 

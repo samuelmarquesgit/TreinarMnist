@@ -17,10 +17,10 @@ try:
 except ImportError:
     PIL_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 # ── Bubble Sort (usado para ranking Top-K) ─────────────────────────────────
 
@@ -49,7 +49,7 @@ def _inferir_com_modelo(fachada, vetor: np.ndarray) -> list[tuple] | None:
     Tenta obter probabilidades do modelo treinado.
     Retorna lista de (classe, prob) ou None se nenhum modelo estiver treinado.
     """
-    for nome, modelo in fachada.modelos.items():
+    for modelo in fachada.modelos.values():
         try:
             modelo_sklearn = modelo.modelo
             if hasattr(modelo_sklearn, "predict_proba"):
@@ -84,8 +84,8 @@ def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
             textposition="outside",
         ))
         fig.update_layout(
-            **_TEMA, height=320, margin=dict(t=10, b=10, l=80),
-            xaxis_title="Probabilidade (%)", yaxis=dict(autorange="reversed"),
+            **_TEMA, height=320, margin={"t": 10, "b": 10, "l": 80},
+            xaxis_title="Probabilidade (%)", yaxis={"autorange": "reversed"},
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
@@ -146,6 +146,7 @@ def _renderizar_modo_canvas():
                 height=280, width=280,
                 drawing_mode="freedraw",
                 key="canvas_digito",
+                return_image_data=True,
             )
         if resultado_canvas.image_data is not None:
             return resultado_canvas.image_data[:, :, :3].astype(np.uint8)
@@ -194,7 +195,7 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
     st.divider()
     titulo_secao("Pipeline de Transformação (4 Etapas)")
     try:
-        gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
+        _gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
         col1, col2, col3, col4 = st.columns(4)
         col1.image(img_array, caption="① Original", width=110, clamp=True)
         col2.image(invertida, caption="② Grayscale/Invertida", width=110, clamp=True)

@@ -1,5 +1,5 @@
 # Manipulação e Computação Científica
-numpy>=1.24.0,<2.0.0
+numpy>=1.24.0
 pandas>=2.0.0
 scipy>=1.10.0
 
@@ -10,9 +10,9 @@ joblib>=1.3.0
 # Deep Learning e Redes Neurais
 # tensorflow>=2.13.0; sys_platform != 'darwin' or platform_machine != 'arm64'
 
-# Visão Computacional e Processamento de Imagens
+# Visão Computacional e Imagens
 Pillow>=10.0.0
-opencv-python-headless==4.8.1.78
+opencv-python-headless>=4.10.0
 
 # Visualização de Dados e Gráficos
 matplotlib>=3.7.0
@@ -40,7 +40,7 @@ pydantic>=2.5.0
 pydantic-settings>=2.2.0
 
 # Protocolo MCP (Model Context Protocol) & Utilidades
-mcp>=1.0.0
+mcp>=1.0.0,<2.0.0
 pydantic>=2.0.0
 python-dotenv>=1.0.0
 pyyaml>=6.0.0

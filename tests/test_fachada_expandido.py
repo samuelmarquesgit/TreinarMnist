@@ -10,7 +10,6 @@ import pytest
 from src.fachada import FachadaPipelineIA, ResultadoBenchmark
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
 
-
 # ── ResultadoBenchmark ─────────────────────────────────────────────────────
 
 

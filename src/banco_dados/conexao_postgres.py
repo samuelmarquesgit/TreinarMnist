@@ -39,7 +39,7 @@ class ConexaoPostgres:
     Suporta fallback para SQLite local caso DATABASE_URL nao esteja disponivel.
     """
 
-    def __init__(self, url: str = None) -> None:
+    def __init__(self, url: str | None = None) -> None:
         self.url = url or os.getenv(
             'DATABASE_URL', 'sqlite:///reports/banco_local.db')
 
