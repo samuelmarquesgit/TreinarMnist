@@ -893,3 +893,206 @@ def test_renderizar_rag_inicializa_estado():
     _mock_st.form_submit_button = MagicMock(return_value=False)
     renderizar_rag2()
     assert "historico_chat" in _mock_st.session_state
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ── Testes adicionais: painel_bancos_dados.py (cobertura expandida) ───────────
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def test_renderizar_bancos_com_postgres_nao_vazio():
+    """renderizar bancos deve exibir KPIs quando postgres retorna DataFrame com linhas."""
+    import pandas as pd
+
+    df_fake = pd.DataFrame([{
+        "ID": 1,
+        "Modelo": "SVM",
+        "Acurácia": "0.9700",
+        "Tempo Treino (s)": "1.23",
+        "Data de Execução": "01/01/2025 10:00:00",
+    }])
+
+    cols = _make_columns(3)
+    _mock_st.columns.return_value = cols
+
+    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+               return_value=df_fake), \
+         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+               return_value=[]):
+        renderizar_bancos()
+
+    # Com dados, st.dataframe deve ser chamado
+    _mock_st.dataframe.assert_called()
+
+
+def test_renderizar_bancos_postgres_nao_vazio_sem_plotly():
+    """renderizar bancos com plotly ausente nao deve levantar excecao."""
+    import pandas as pd
+    import sys
+
+    df_fake = pd.DataFrame([{
+        "ID": i, "Modelo": f"M{i}",
+        "Acurácia": f"{0.9 + i * 0.01:.4f}",
+        "Tempo Treino (s)": "1.00",
+        "Data de Execução": "01/01/2025 10:00:00",
+    } for i in range(2)])
+
+    cols = _make_columns(3)
+    _mock_st.columns.return_value = cols
+
+    # Simula ausencia de plotly
+    plotly_backup = sys.modules.pop("plotly", None)
+    plotly_express_backup = sys.modules.pop("plotly.express", None)
+    sys.modules["plotly"] = None  # type: ignore
+    sys.modules["plotly.express"] = None  # type: ignore
+
+    try:
+        with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+                   return_value=df_fake), \
+             patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+                   return_value=[]):
+            renderizar_bancos()
+    finally:
+        if plotly_backup is not None:
+            sys.modules["plotly"] = plotly_backup
+        else:
+            sys.modules.pop("plotly", None)
+        if plotly_express_backup is not None:
+            sys.modules["plotly.express"] = plotly_express_backup
+        else:
+            sys.modules.pop("plotly.express", None)
+
+
+def test_renderizar_bancos_com_mongodb_nao_vazio():
+    """renderizar bancos deve exibir lista quando mongodb retorna artefatos."""
+    artefatos_fake = [
+        {"nome": "matriz_svm", "dados": {"acuracia": 0.95}, "salvo_em": "01/01/2025 10:00:00"},
+        {"nome": "relatorio_ood", "dados": {"matriz": [[1, 0], [0, 1]]}, "salvo_em": "02/01/2025 12:00:00"},
+    ]
+
+    cols = _make_columns(2)
+    _mock_st.columns.return_value = cols
+    _mock_st.expander.return_value = _mk_ctx()
+
+    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+               return_value=__import__("pandas").DataFrame()), \
+         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+               return_value=artefatos_fake):
+        renderizar_bancos()
+
+    # Com artefatos, st.expander deve ser chamado para cada um
+    assert _mock_st.expander.call_count >= 2
+
+
+def test_renderizar_bancos_mongodb_com_matriz_confusao():
+    """renderizar bancos com dados de matriz deve tentar exibir DataFrame."""
+    import pandas as pd
+
+    artefatos_fake = [
+        {"nome": "matriz_lr", "dados": {"matriz_confusao": [[9, 1], [2, 8]]}, "salvo_em": "—"},
+    ]
+
+    cols = _make_columns(2)
+    _mock_st.columns.return_value = cols
+    _mock_st.expander.return_value = _mk_ctx()
+
+    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+               return_value=pd.DataFrame()), \
+         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+               return_value=artefatos_fake):
+        renderizar_bancos()
+
+    _mock_st.expander.assert_called()
+
+
+def test_obter_artefatos_mongodb_enriquece_com_timestamp(tmp_path, monkeypatch):
+    """_obter_artefatos_mongodb em modo local deve adicionar salvo_em se arquivo existe."""
+    import json
+
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    (reports / "artefato_ts.json").write_text(json.dumps({"k": "v"}), encoding="utf-8")
+
+    monkeypatch.chdir(tmp_path)
+
+    with patch("src.frontend.painel_bancos_dados.ConexaoMongoDB") as mock_cls:
+        mock_conn = MagicMock()
+        mock_conn.usar_local = True
+        mock_conn.listar_colecao.return_value = [{"nome": "artefato_ts", "dados": {"k": "v"}}]
+        mock_cls.return_value = mock_conn
+
+        from src.frontend.painel_bancos_dados import _obter_artefatos_mongodb
+        resultado = _obter_artefatos_mongodb()
+
+    assert len(resultado) == 1
+    assert "salvo_em" in resultado[0]
+
+
+def test_obter_experimentos_postgres_registros_vazios():
+    """_obter_experimentos_postgres com sessao sem registros deve retornar DataFrame vazio — linha 24-25."""
+    from src.frontend.painel_bancos_dados import _obter_experimentos_postgres
+
+    with patch("src.frontend.painel_bancos_dados.ConexaoPostgres") as mock_cls:
+        mock_db = MagicMock()
+        mock_cls.return_value = mock_db
+        mock_sessao = MagicMock()
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
+        mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
+        mock_sessao.query.return_value.order_by.return_value.all.return_value = []
+
+        resultado = _obter_experimentos_postgres()
+
+    import pandas as pd
+    assert isinstance(resultado, pd.DataFrame)
+    assert resultado.empty
+
+
+def test_renderizar_bancos_mongodb_matriz_malformada():
+    """Artefato com matriz invalida deve cair no except e chamar st.json — linhas 201-202."""
+    import pandas as pd
+
+    artefatos_fake = [
+        # "matriz" existe mas nao pode virar DataFrame (None invalido)
+        {"nome": "quebrado", "dados": {"matriz": 42}, "salvo_em": "—"},
+    ]
+
+    _mock_st.expander.return_value = _mk_ctx()
+    cols = _make_columns(2)
+    _mock_st.columns.return_value = cols
+
+    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+               return_value=pd.DataFrame()), \
+         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+               return_value=artefatos_fake):
+        renderizar_bancos()
+
+    # st.json deve ter sido chamado no fallback
+    _mock_st.json.assert_called()
+
+
+def test_obter_experimentos_postgres_com_registros():
+    """_obter_experimentos_postgres com registros deve retornar DataFrame populado — linha 26."""
+    from datetime import datetime
+    from src.frontend.painel_bancos_dados import _obter_experimentos_postgres
+
+    registro = MagicMock()
+    registro.id = 1
+    registro.modelo = "SVM"
+    registro.acuracia = 0.97
+    registro.tempo_treino = 1.23
+    registro.data_execucao = datetime(2025, 1, 1, 10, 0, 0)
+
+    with patch("src.frontend.painel_bancos_dados.ConexaoPostgres") as mock_cls:
+        mock_db = MagicMock()
+        mock_cls.return_value = mock_db
+        mock_sessao = MagicMock()
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
+        mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
+        mock_sessao.query.return_value.order_by.return_value.all.return_value = [registro]
+
+        resultado = _obter_experimentos_postgres()
+
+    import pandas as pd
+    assert not resultado.empty
+    assert resultado.iloc[0]["Modelo"] == "SVM"
+    assert "Acurácia" in resultado.columns
