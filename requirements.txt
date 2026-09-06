@@ -44,3 +44,8 @@ pytest>=7.4.0
 pytest-cov>=4.1.0
 flake8>=6.1.0
 black>=23.7.0
+
+# Bibliotecas de Deep Learning (PyTorch)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+torchvision>=0.15.0

@@ -41,7 +41,7 @@ def test_vit_treinar_e_prever():
 
 def test_vit_prever_probabilidades():
     modelo = ModeloViT()
-    modelo.treinar(np.zeros((2, 2)), np.zeros(2))
+    modelo.treinar(np.zeros((2, 28 * 28)), np.zeros(2))
 
     X_teste = np.zeros((5, 28 * 28))
     probs = modelo.prever_probabilidades(X_teste)
