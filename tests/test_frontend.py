@@ -1096,3 +1096,94 @@ def test_obter_experimentos_postgres_com_registros():
     assert not resultado.empty
     assert resultado.iloc[0]["Modelo"] == "SVM"
     assert "Acurácia" in resultado.columns
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ── Testes adicionais: painel_laboratorio_visao.py (cobertura expandida) ──────
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def test_pipeline_visual_sem_contornos_usa_invertida():
+    """_pipeline_visual com imagem sem contornos deve usar invertida como bbox_crop — linha 119."""
+    # Imagem all-white → apos inversao fica all-black → findNonZero retorna None
+    img_branca = np.ones((28, 28, 3), dtype=np.uint8) * 255
+    gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_branca)
+    # bbox_crop deve ser igual a invertida (o else: bbox_crop = invertida)
+    assert np.array_equal(bbox_crop, invertida)
+    assert canvas_28.shape == (28, 28)
+
+
+def test_renderizar_modo_canvas_com_image_data():
+    """_renderizar_modo_canvas com image_data nao-None deve retornar array RGB — linhas 150-151."""
+    from src.frontend.painel_laboratorio_visao import _renderizar_modo_canvas
+
+    img_data = np.zeros((280, 280, 4), dtype=np.uint8)  # RGBA
+    img_data[100:180, 100:180, :3] = 200  # bright region
+    img_data[:, :, 3] = 255  # alpha
+
+    sys.modules['streamlit_drawable_canvas'].st_canvas.return_value.image_data = img_data
+    cols = _make_columns(2)
+    _mock_st.columns.return_value = cols
+    _mock_st.slider.return_value = 20
+    _mock_st.color_picker.return_value = "#FFFFFF"
+
+    resultado = _renderizar_modo_canvas()
+
+    # Restaura para None para outros testes
+    sys.modules['streamlit_drawable_canvas'].st_canvas.return_value.image_data = None
+    assert resultado is not None
+    assert resultado.shape[2] == 3  # RGB, sem alpha
+
+
+def test_renderizar_pipeline_e_inferencia_pipeline_falha():
+    """_renderizar_pipeline_e_inferencia com _pipeline_visual falhando deve retornar — linhas 203-205."""
+    fachada = _fachada_mock()
+    img = np.zeros((28, 28, 3), dtype=np.uint8)
+    img[10:20, 10:20] = 100
+
+    with patch("src.frontend.painel_laboratorio_visao._pipeline_visual",
+               side_effect=RuntimeError("cv2 indisponivel")):
+        _renderizar_pipeline_e_inferencia(fachada, img)
+
+    _mock_st.error.assert_called()
+
+
+def test_renderizar_pipeline_e_inferencia_overconfidence():
+    """Predicao com alerta_overconfidence=True deve exibir st.warning — linha 225."""
+    fachada = _fachada_mock()
+    img = np.zeros((50, 50, 3), dtype=np.uint8)
+    img[15:35, 15:35] = 200
+
+    probs_mock = [(i, 1.0 if i == 0 else 0.0) for i in range(10)]
+    cols = _make_columns(4)
+    _mock_st.columns.return_value = cols
+    _mock_st.expander.return_value = _mk_ctx()
+
+    with patch("src.frontend.painel_laboratorio_visao._inferir_com_modelo",
+               return_value=probs_mock), \
+         patch("guardrails.validador_falsa_certeza.ValidadorFalsaCerteza") as mock_val:
+        mock_inst = MagicMock()
+        mock_val.return_value = mock_inst
+        mock_inst.avaliar_predicao.return_value = {"alerta_overconfidence": True}
+        _renderizar_pipeline_e_inferencia(fachada, img)
+
+    _mock_st.warning.assert_called()
+
+
+def test_renderizar_lab_com_imagem_upload():
+    """renderizar laboratorio em modo upload com imagem valida chama _renderizar_pipeline_e_inferencia — linha 256."""
+    fachada = _fachada_mock()
+    img_fake = np.zeros((50, 50, 3), dtype=np.uint8)
+    img_fake[10:40, 10:40] = 128
+
+    _mock_st.radio.return_value = "📷 Upload de Imagem"
+    cols = _make_columns(4)
+    _mock_st.columns.return_value = cols
+    _mock_st.expander.return_value = _mk_ctx()
+
+    with patch("src.frontend.painel_laboratorio_visao._renderizar_modo_upload",
+               return_value=img_fake), \
+         patch("src.frontend.painel_laboratorio_visao._renderizar_pipeline_e_inferencia") as mock_pipe:
+        renderizar_lab(fachada)
+
+    mock_pipe.assert_called_once_with(fachada, img_fake)
