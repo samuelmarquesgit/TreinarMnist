@@ -29,19 +29,25 @@ class ValidadorFalsaCerteza:
         probabilidades: np.ndarray,
         classes_conhecidas: List[int]
     ) -> Dict[str, Any]:
-        """Avalia se a predição apresenta risco de falsa certeza.
+        """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
 
         Args:
             probabilidades: Vetor de probabilidades (shape: 10,).
-            classes_conhecidas: Lista de classes vistas durante o treino.
+            classes_conhecidas: Lista de classes vistas durante o treino (ex: [0,1,2,3,5,6,8,9]).
 
         Returns:
-            Dicionário com classe prevista, nível de certeza, entropia e flag de alerta.
+            Dicionário com classe prevista, nível de certeza, entropia,
+            flag de classe fora do domínio e flag de alerta de overconfidence.
         """
         classe_prevista = int(np.argmax(probabilidades))
         confianca_maxima = float(np.max(probabilidades))
         entropia = self.calcular_entropia_shannon(probabilidades)
 
+        # Classe prevista não foi vista durante o treinamento (ex: mascaramento de 4 e 7)
+        classes_int = [int(c) for c in classes_conhecidas]
+        classe_fora_dominio = classe_prevista not in classes_int
+
+        # Overconfidence: modelo muito confiante com distribuição de probabilidade muito concentrada
         alerta_overconfidence = (
             confianca_maxima >= self.limiar_alerta_certeza
             and entropia < self.limiar_entropia_baixa
@@ -51,6 +57,11 @@ class ValidadorFalsaCerteza:
             "classe_prevista": classe_prevista,
             "confianca": confianca_maxima,
             "entropia": entropia,
+            "classe_fora_dominio": classe_fora_dominio,
             "alerta_overconfidence": alerta_overconfidence,
-            "confiavel": not alerta_overconfidence and (
-                confianca_maxima >= 0.5)}
+            "confiavel": (
+                not classe_fora_dominio
+                and not alerta_overconfidence
+                and confianca_maxima >= 0.5
+            ),
+        }
