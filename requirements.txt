@@ -32,6 +32,7 @@ pymongo>=4.5.0
 
 # Banco de Dados Vetorial & RAG
 chromadb>=0.4.0
+sentence-transformers>=2.2.2
 
 # Protocolo MCP (Model Context Protocol) & Utilidades
 mcp>=1.0.0

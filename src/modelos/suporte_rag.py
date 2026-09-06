@@ -1,38 +1,6 @@
-import hashlib
 import chromadb
-from chromadb import Documents, EmbeddingFunction, Embeddings
+from chromadb.utils import embedding_functions
 from typing import List
-
-
-class _EmbeddingSimples(EmbeddingFunction):
-    """
-    Funcao de embedding deterministica baseada em hash SHA-256.
-    Nao requer download de modelos externos — ideal para testes e ambientes offline.
-    """
-    DIMENSAO = 64
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    @classmethod
-    def name(cls) -> str:
-        return "embedding_simples_sha256"
-
-    def get_config(self) -> dict:
-        return {"tipo": "sha256", "dimensao": self.DIMENSAO}
-
-    @classmethod
-    def build_from_config(cls, config: dict) -> "_EmbeddingSimples":
-        return cls()
-
-    def __call__(self, input: Documents) -> Embeddings:
-        resultado = []
-        for texto in input:
-            digest = hashlib.sha256(texto.encode("utf-8")).digest()
-            # Converte 32 bytes em 64 floats normalizados no intervalo [-1, 1]
-            vetor = [(b / 127.5) - 1.0 for b in digest] + [(b / 255.0) for b in digest]
-            resultado.append(vetor)
-        return resultado
 
 
 class SuporteRAG:
@@ -42,7 +10,9 @@ class SuporteRAG:
     """
 
     def __init__(self, em_memoria: bool = True, diretorio_banco: str = "./reports/rag_db"):
-        self._ef = _EmbeddingSimples()
+        self._ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name="all-MiniLM-L6-v2"
+        )
 
         if em_memoria:
             self.cliente = chromadb.Client()
