@@ -76,6 +76,11 @@ class FabricaModelos:
     }
 
     @staticmethod
+    def listar_disponiveis() -> list[str]:
+        """Retorna a lista de modelos suportados pela fábrica."""
+        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + ['VisionTransformer']
+
+    @staticmethod
     def criar_modelo(nome_modelo: str) -> ModeloAbstratoIA:
         """
         Instancia o modelo solicitado encapsulado na interface base.

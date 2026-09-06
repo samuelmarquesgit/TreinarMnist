@@ -7,9 +7,10 @@ import chromadb
 logger = logging.getLogger(__name__)
 
 # ── Função de embedding com fallback gracioso ──────────────────────────────
+from typing import Any
 try:
     from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-    _ef_padrao = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+    _ef_padrao: Any = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
     _SENTENCE_TRANSFORMERS_OK = True
 except (ImportError, ValueError):
     # Fallback: embedding padrão do ChromaDB (onnxruntime — sem dependência extra)
@@ -57,7 +58,7 @@ class SuporteRAG:
             "Modelos como MLP e ViT são ideais para o MNIST, superando Random Forests em acurácia.",
             "Falsa certeza ocorre quando o modelo emite alta probabilidade para imagens OOD.",
         ]
-        metadados = [
+        metadados: list[dict[str, Any]] = [
             {"topico": "dataset", "nivel": "basico"},
             {"topico": "dataset", "nivel": "basico"},
             {"topico": "pre-processamento", "nivel": "intermediario"},
@@ -65,7 +66,7 @@ class SuporteRAG:
             {"topico": "seguranca_ia", "nivel": "avancado"},
         ]
         ids = [f"doc_{i}" for i in range(len(documentos))]
-        self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
+        self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)  # type: ignore[arg-type]
 
     def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
         """Consulta o banco vetorial e retorna os trechos mais relevantes.
@@ -87,4 +88,5 @@ class SuporteRAG:
             query_texts=[pergunta],
             n_results=n_resultados,
         )
-        return resultados.get("documents", [[]])[0]
+        docs = resultados.get("documents")
+        return docs[0] if docs else []  # type: ignore[index,return-value]
