@@ -270,4 +270,5 @@ def executar_experimento_ood(
     else:
         X_ood_norm = X_ood[:n_amostras]
 
-    return modelo.prever_probabilidades(X_ood_norm)
+    res = modelo.prever_probabilidades(X_ood_norm)
+    return res  # type: ignore[no-any-return]

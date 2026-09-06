@@ -33,9 +33,11 @@ def _obter_dados(fachada, modo: str, particao: str,
         X = X[y == digito]
 
     if modo == "Brutos [0–255]":
-        return (X * 255).flatten().astype(float)
+        res1: np.ndarray = (X * 255).flatten().astype(float)
+        return res1
     else:
-        return X.flatten().astype(float)
+        res2: np.ndarray = X.flatten().astype(float)
+        return res2
 
 
 def _card_metricas(stats_dict: dict) -> None:
