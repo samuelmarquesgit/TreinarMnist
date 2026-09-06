@@ -36,7 +36,7 @@ class FachadaPipelineIA:
         with mlflow.start_run(run_name=f"Exp_{nome_modelo}"):
             # 1. Treinamento
             inicio = time.time()
-            modelo = self.treinar_modelo(nome_modelo)
+            self.treinar_modelo(nome_modelo)
             tempo_treino = time.time() - inicio
 
             # 2. Avaliação

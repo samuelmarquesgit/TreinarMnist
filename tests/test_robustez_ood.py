@@ -104,8 +104,6 @@ def test_relatorio_overconfidence_predicting_unknown_class():
 
 
 def test_relatorio_overconfidence_lanca_typeerror():
-    analisador = AnalisadorRobustezOOD()
-
     # Criamos um modelo inválido (sem prever_probabilidades)
     class ModeloSemProb(ModeloAbstratoIA):
         def treinar(self, X, y):
@@ -116,4 +114,4 @@ def test_relatorio_overconfidence_lanca_typeerror():
 
     # A linguagem Python/ABC vai lançar TypeError imediatamente ao instanciar, pois falta a implementação
     with pytest.raises(TypeError, match="Can't instantiate abstract class ModeloSemProb"):
-        modelo_invalido = ModeloSemProb()
+        ModeloSemProb()
