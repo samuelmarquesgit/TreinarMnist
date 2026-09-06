@@ -1,69 +1,144 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
+"""
+Ponto de entrada do Frontend Web — Plataforma Empresarial MNIST.
 
-# Configuração da página Streamlit
-st.set_page_config(page_title='Plataforma Empresarial MNIST', layout='wide')
+Execução:
+    streamlit run app.py
+    python main.py --modo web
+"""
+
+from src.frontend.estilos import aplicar_estilos
+import streamlit as st
+
+# ── Configuração da página (deve ser a primeira chamada Streamlit) ─────────
+st.set_page_config(
+    page_title="Plataforma MNIST",
+    page_icon="🧠",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# ── Importações dos painéis ───────────────────────────────────────────────
 
 try:
     from src.fachada import FachadaPipelineIA
-except ImportError:
-    st.error("Erro ao importar a fachada do projeto. Execute o script da raiz do repositório.")
+except ImportError as e:
+    st.error(f"Erro ao importar a fachada do projeto: {e}")
+    st.info("Execute o app a partir da raiz do repositório: `streamlit run app.py`")
     st.stop()
 
-@st.cache_resource
-def carregar_fachada():
+# ── Importações dos painéis (com fallback gracioso) ───────────────────────
+
+
+def _importar_painel(modulo: str):
+    try:
+        import importlib
+        return importlib.import_module(modulo)
+    except ImportError:
+        return None
+
+
+painel_eda = _importar_painel("src.frontend.painel_eda")
+painel_estatistica = _importar_painel("src.frontend.painel_analise_estatistica")
+painel_benchmarks = _importar_painel("src.frontend.painel_benchmarks")
+painel_ood = _importar_painel("src.frontend.painel_robustez_ood")
+painel_visao = _importar_painel("src.frontend.painel_laboratorio_visao")
+painel_bancos = _importar_painel("src.frontend.painel_bancos_dados")
+painel_rag = _importar_painel("src.frontend.painel_assistente_rag")
+
+# ── Cache da fachada ──────────────────────────────────────────────────────
+
+
+@st.cache_resource(show_spinner=False)
+def carregar_fachada() -> FachadaPipelineIA:
     f = FachadaPipelineIA()
-    with st.spinner("Baixando/Carregando dados MNIST... Isso pode demorar na primeira vez."):
-        f.inicializar_dados()
+    f.inicializar_dados()
     return f
 
-st.title('🧠 Plataforma Empresarial MNIST')
-st.markdown("Bem-vindo ao **TreinarMnist**. Selecione uma funcionalidade no menu lateral.")
 
-fachada = carregar_fachada()
+# ── Estilos globais ───────────────────────────────────────────────────────
+aplicar_estilos()
 
-# Navegação lateral (Menu)
-menu = st.sidebar.selectbox('Menu Principal', [
-    '📊 Análise Exploratória',
-    '📈 Análise Estatística',
-    '🏆 Modelos & Benchmarks',
-    '🧪 Testes de Robustez OOD',
-    '✍️ Laboratório de Visão'
-])
+# ── Sidebar — Navegação ───────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown(
+        "<div style='text-align:center; padding: .5rem 0 1rem;'>"
+        "<span style='font-size:2.2rem;'>🧠</span><br>"
+        "<span style='font-size:1.1rem; font-weight:700; color:#e6edf3;'>Plataforma MNIST</span><br>"
+        "<span style='font-size:.75rem; color:#8b949e;'>Enterprise AI · pt-BR</span>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.divider()
 
-if menu == '📊 Análise Exploratória':
-    st.header('Análise Exploratória (EDA)')
-    st.info(f"Dados carregados. Total de amostras de treino: {fachada.X_treino.shape[0]}")
-    if st.button("Mostrar Distribuição de Classes"):
-        classes, contagens = np.unique(fachada.y_treino, return_counts=True)
-        df_classes = pd.DataFrame({"Dígito": classes, "Quantidade": contagens})
-        st.bar_chart(df_classes, x="Dígito", y="Quantidade")
+    MENU = {
+        "📊 Análise Exploratória (EDA)": "eda",
+        "📈 Análise Estatística": "estatistica",
+        "🏆 Benchmarks & Modelos": "benchmarks",
+        "🧪 Robustez OOD": "ood",
+        "✍️ Laboratório de Visão": "visao",
+        "🗄️ Monitor de Bancos de Dados": "bancos",
+        "💬 Assistente RAG": "rag",
+    }
 
-elif menu == '📈 Análise Estatística':
-    st.header('Análise Estatística Interativa')
-    tipo_dado = st.radio("Selecione os dados para análise:", ['Treino', 'Teste'])
-    if st.button("Calcular Estatísticas Descritivas"):
-        est = fachada.obter_estatisticas_dados(tipo_dado.lower())
-        st.json(est)
+    pagina_label = st.radio(
+        "Navegação",
+        list(MENU.keys()),
+        label_visibility="collapsed",
+    )
+    pagina = MENU[pagina_label]
 
-elif menu == '🏆 Modelos & Benchmarks':
-    st.header('Treinamento e Benchmarks')
-    modelo_selecionado = st.selectbox("Selecione o Modelo", ['RegressaoLogistica', 'ArvoreDecisao', 'FlorestaAleatoria', 'SVM'])
-    if st.button("Treinar e Avaliar"):
-        with st.spinner(f"Treinando {modelo_selecionado}..."):
-            fachada.treinar_modelo(modelo_selecionado)
-            metricas = fachada.avaliar_modelo(modelo_selecionado)
-            st.success(f"Acurácia: {metricas['acuracia']:.4f}")
-            st.write("Outras métricas:", metricas)
+    st.divider()
+    st.caption("Versão 1.0.0 · develop")
 
-elif menu == '🧪 Testes de Robustez OOD':
-    st.header('Testes Out-of-Distribution (OOD)')
-    st.warning("Módulo de saturação Softmax em desenvolvimento...")
+# ── Carregamento da fachada com spinner ───────────────────────────────────
+# Painéis que precisam dos dados
+_REQUER_DADOS = {"eda", "estatistica", "benchmarks", "ood", "visao"}
 
-elif menu == '✍️ Laboratório de Visão':
-    st.header('Laboratório de Visão Computacional')
-    uploaded_file = st.file_uploader("Envie uma imagem do dígito (28x28)", type=["png", "jpg", "jpeg"])
-    if uploaded_file is not None:
-        st.image(uploaded_file, caption='Imagem carregada.', use_column_width=False)
-        st.info("O processamento da imagem está pronto na API de visão, aguardando integração completa.")
+if pagina in _REQUER_DADOS:
+    if "fachada" not in st.session_state:
+        with st.spinner("⏳ Carregando dataset MNIST... Isso pode demorar na primeira execução."):
+            try:
+                st.session_state.fachada = carregar_fachada()
+                st.success("✅ MNIST carregado com sucesso!")
+            except Exception as e:
+                st.error(f"Falha ao carregar os dados: {e}")
+                st.stop()
+    fachada = st.session_state.fachada
+else:
+    fachada = None
+
+# ── Roteamento de páginas ─────────────────────────────────────────────────
+
+
+def _painel_indisponivel(nome: str) -> None:
+    st.warning(f"⚠️ Painel **{nome}** não pôde ser importado. Verifique as dependências.")
+
+
+def _rotear_pagina(pagina: str, fachada) -> None:
+    """Despacha para o painel correto. Complexidade mantida abaixo de C901-10."""
+    _COM_FACHADA = {
+        "eda": (painel_eda, "Análise Exploratória"),
+        "estatistica": (painel_estatistica, "Análise Estatística"),
+        "benchmarks": (painel_benchmarks, "Benchmarks"),
+        "ood": (painel_ood, "Robustez OOD"),
+        "visao": (painel_visao, "Laboratório de Visão"),
+    }
+    _SEM_FACHADA = {
+        "bancos": (painel_bancos, "Monitor de Bancos"),
+        "rag": (painel_rag, "Assistente RAG"),
+    }
+    if pagina in _COM_FACHADA:
+        modulo, nome = _COM_FACHADA[pagina]
+        if modulo:
+            modulo.renderizar(fachada)
+        else:
+            _painel_indisponivel(nome)
+    elif pagina in _SEM_FACHADA:
+        modulo, nome = _SEM_FACHADA[pagina]
+        if modulo:
+            modulo.renderizar()
+        else:
+            _painel_indisponivel(nome)
+
+
+_rotear_pagina(pagina, fachada)
