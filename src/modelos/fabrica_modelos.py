@@ -98,3 +98,12 @@ class FabricaModelos:
 
         logger.info(f"Fabrica instanciando novo modelo: {nome_modelo}")
         return ModeloSklearn(construtor(), nome_log=nome_modelo)
+
+    @staticmethod
+    def listar_disponiveis() -> list[str]:
+        """Retorna a lista completa e canônica de chaves suportadas pela fábrica.
+
+        Returns:
+            list[str]: Nomes de modelos válidos para passar a ``criar_modelo()``.
+        """
+        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + ["VisionTransformer"]
