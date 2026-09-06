@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from unittest.mock import patch, Mock
 from src.fachada import FachadaPipelineIA
+from src.utilitarios.excecoes import ModeloNaoTreinadoError
 
 
 @patch('src.fachada.pre_processar_dados')
@@ -42,7 +43,7 @@ def test_treinar_modelo_invoca_inicializacao(
 
 def test_avaliar_modelo_sem_treinar_levanta_valueerror():
     fachada = FachadaPipelineIA()
-    with pytest.raises(ValueError, match="não foi treinado"):
+    with pytest.raises(ModeloNaoTreinadoError):
         fachada.avaliar_modelo("ModeloQueNaoExiste")
 
 
