@@ -1187,3 +1187,234 @@ def test_renderizar_lab_com_imagem_upload():
         renderizar_lab(fachada)
 
     mock_pipe.assert_called_once_with(fachada, img_fake)
+
+
+def test_renderizar_graficos_barras_com_plotly():
+    """_renderizar_graficos com tipo Barras deve chamar st.plotly_chart usando go.Figure (linhas 86-90)."""
+    import src.frontend.painel_benchmarks as pb
+    _mock_st.radio.return_value = "Barras — Acurácia vs Tempo"
+    _mock_st.reset_mock()
+    df = _formatar_tabela(_tres_modelos())
+    _renderizar_graficos(df)
+    _mock_st.plotly_chart.assert_called_once()
+
+
+def test_renderizar_matriz_normalizada_com_toggle():
+    """_renderizar_matriz_confusao com st.toggle=True deve normalizar por linha (linhas 116-119)."""
+    _mock_st.selectbox.return_value = "ModeloA"
+    _mock_st.toggle.return_value = True
+    _mock_st.reset_mock()
+    mat_10x10 = [[10 if i == j else 0 for j in range(10)] for i in range(10)]
+    resultados = {"ModeloA": {"matriz_confusao": mat_10x10}}
+    _renderizar_matriz_confusao(resultados)
+    _mock_st.plotly_chart.assert_called_once()
+
+
+def test_renderizar_modo_canvas_import_error():
+    """_renderizar_modo_canvas deve chamar st.error quando streamlit_drawable_canvas não está instalado (linhas 152-153)."""
+    from src.frontend.painel_laboratorio_visao import _renderizar_modo_canvas
+    import sys
+    # The module is mocked as MagicMock at test file level — remove it so the real import fails
+    canvas_mod = sys.modules.pop("streamlit_drawable_canvas", None)
+    _mock_st.reset_mock()
+    try:
+        resultado = _renderizar_modo_canvas()
+        _mock_st.error.assert_called()
+        assert resultado is None
+    finally:
+        if canvas_mod is not None:
+            sys.modules["streamlit_drawable_canvas"] = canvas_mod
+
+
+def test_renderizar_modo_upload_com_arquivo():
+    """_renderizar_modo_upload com arquivo válido deve retornar img_array (linhas 169-189)."""
+    import io
+    from unittest.mock import MagicMock, patch
+    from PIL import Image as PILImage
+    from src.frontend.painel_laboratorio_visao import _renderizar_modo_upload
+
+    # Create a real tiny PNG in memory
+    buf = io.BytesIO()
+    PILImage.new("RGB", (28, 28), color=(128, 128, 128)).save(buf, format="PNG")
+    buf.seek(0)
+
+    mock_arquivo = MagicMock()
+    mock_arquivo.name = "digito.png"
+    mock_arquivo.getvalue.return_value = buf.getvalue()
+
+    _mock_st.file_uploader.return_value = mock_arquivo
+    _mock_st.reset_mock()
+
+    import src.frontend.painel_laboratorio_visao as plv
+    original_pil_ok = plv.PIL_OK
+    plv.PIL_OK = True
+    fake_pil = PILImage.new("RGB", (28, 28), color=(100, 100, 100))
+    try:
+        with patch("guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo"),              patch("src.frontend.painel_laboratorio_visao.Image.open", return_value=fake_pil):
+            resultado = _renderizar_modo_upload()
+        assert resultado is not None
+        assert resultado.shape == (28, 28, 3)
+    finally:
+        plv.PIL_OK = original_pil_ok
+        _mock_st.file_uploader.return_value = None
+
+
+def test_renderizar_modo_upload_validador_levanta_erro():
+    """_renderizar_modo_upload com validador lançando Exception deve chamar st.error e retornar None."""
+    import io
+    from unittest.mock import MagicMock, patch
+    from PIL import Image as PILImage
+    from src.frontend.painel_laboratorio_visao import _renderizar_modo_upload
+
+    buf = io.BytesIO()
+    PILImage.new("RGB", (28, 28)).save(buf, format="PNG")
+    buf.seek(0)
+
+    mock_arquivo = MagicMock()
+    mock_arquivo.name = "ruim.png"
+    mock_arquivo.getvalue.return_value = buf.getvalue()
+
+    _mock_st.file_uploader.return_value = mock_arquivo
+    _mock_st.reset_mock()
+
+    import src.frontend.painel_laboratorio_visao as plv
+    original_pil_ok = plv.PIL_OK
+    plv.PIL_OK = True
+    try:
+        with patch(
+            "guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo",
+            side_effect=ValueError("imagem inválida"),
+        ):
+            resultado = _renderizar_modo_upload()
+        _mock_st.error.assert_called()
+        assert resultado is None
+    finally:
+        plv.PIL_OK = original_pil_ok
+        _mock_st.file_uploader.return_value = None
+
+
+def test_renderizar_eda_projecao_pca():
+    """renderizar_eda com btn_projetar=True deve executar PCA e chamar plotly_chart (linhas 179-214)."""
+    import src.frontend.painel_eda as peda
+
+    # Fachada com dados multi-classe para projeção funcionar
+    f = MagicMock()
+    f.dados_inicializados.return_value = True
+    f.listar_modelos_treinados.return_value = []
+    n = 50
+    rng = np.random.default_rng(42)
+    f.X_treino = rng.random((n, 784), dtype=np.float64).astype(np.float32)
+    f.y_treino = np.tile(np.arange(10, dtype=np.int32), 5)  # 50 amostras, 10 classes
+    f.X_teste = rng.random((10, 784)).astype(np.float32)
+    f.y_teste = np.arange(10, dtype=np.int32)
+    f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
+    f.obter_estatisticas_dados.return_value = {
+        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
+        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
+        "assimetria": 0.0, "curtose": 0.0,
+    }
+
+    # slider chamado 3x: n_cols=5, amostra_n=0 (inspetor), n_amostras=10 (projeção)
+    _mock_st.slider.side_effect = [5, 0, 10]
+    _mock_st.button.return_value = True
+    _mock_st.radio.return_value = "PCA (Rápido)"
+    _mock_st.selectbox.return_value = 0
+    _mock_st.reset_mock()
+    # Restaura side_effect de columns e spinner
+    _mock_st.columns.side_effect = _make_columns
+    _mock_st.spinner.return_value = _mk_ctx()
+
+    try:
+        renderizar_eda(f)
+        _mock_st.plotly_chart.assert_called()
+    finally:
+        _mock_st.slider.side_effect = None
+        _mock_st.slider.return_value = MagicMock()
+        _mock_st.button.return_value = MagicMock()
+        _mock_st.radio.return_value = MagicMock()
+
+
+def test_renderizar_eda_sem_plotly_cobre_else_branches():
+    """renderizar_eda com PLOTLY_OK=False deve cobrir as mensagens de fallback (linhas 74, 142, 159, 216)."""
+    import src.frontend.painel_eda as peda
+    original = peda.PLOTLY_OK
+    peda.PLOTLY_OK = False
+
+    f = MagicMock()
+    f.dados_inicializados.return_value = True
+    f.listar_modelos_treinados.return_value = []
+    n = 20
+    f.X_treino = np.zeros((n, 784), dtype=np.float32)
+    f.y_treino = np.tile(np.arange(10, dtype=np.int32), 2)
+    f.X_teste = np.zeros((10, 784), dtype=np.float32)
+    f.y_teste = np.arange(10, dtype=np.int32)
+    f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
+    f.obter_estatisticas_dados.return_value = {
+        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
+        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
+        "assimetria": 0.0, "curtose": 0.0,
+    }
+
+    _mock_st.slider.side_effect = [5, 0, 10]
+    _mock_st.button.return_value = True   # btn_projetar=True mas PLOTLY_OK=False → warning
+    _mock_st.radio.return_value = "PCA (Rápido)"
+    _mock_st.selectbox.return_value = 0
+    _mock_st.reset_mock()
+    _mock_st.columns.side_effect = _make_columns
+    _mock_st.slider.side_effect = [5, 0, 10]
+    _mock_st.button.return_value = True
+    _mock_st.radio.return_value = "PCA (Rápido)"
+    try:
+        renderizar_eda(f)
+        _mock_st.warning.assert_called()
+    finally:
+        peda.PLOTLY_OK = original
+        _mock_st.slider.side_effect = None
+        _mock_st.slider.return_value = MagicMock()
+        _mock_st.button.return_value = MagicMock()
+        _mock_st.radio.return_value = MagicMock()
+
+
+def test_renderizar_eda_projecao_tsne():
+    """renderizar_eda com radio=t-SNE deve executar TSNE (linha 191)."""
+    from unittest.mock import patch as upatch
+    import src.frontend.painel_eda as peda
+
+    f = MagicMock()
+    f.dados_inicializados.return_value = True
+    f.listar_modelos_treinados.return_value = []
+    rng = np.random.default_rng(0)
+    n = 50
+    f.X_treino = rng.random((n, 784)).astype(np.float32)
+    f.y_treino = np.tile(np.arange(10, dtype=np.int32), 5)
+    f.X_teste = np.zeros((10, 784), dtype=np.float32)
+    f.y_teste = np.arange(10, dtype=np.int32)
+    f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
+    f.obter_estatisticas_dados.return_value = {
+        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
+        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
+        "assimetria": 0.0, "curtose": 0.0,
+    }
+
+    _mock_st.slider.side_effect = [5, 0, 10]
+    _mock_st.button.return_value = True
+    _mock_st.radio.return_value = "t-SNE (Detalhado)"
+    _mock_st.selectbox.return_value = 0
+    _mock_st.reset_mock()
+    _mock_st.columns.side_effect = _make_columns
+    _mock_st.slider.side_effect = [5, 0, 10]
+    _mock_st.button.return_value = True
+    _mock_st.radio.return_value = "t-SNE (Detalhado)"
+
+    # Patch TSNE.fit_transform to avoid slow computation
+    fake_2d = np.zeros((10, 2))
+    try:
+        with upatch("sklearn.manifold.TSNE") as mock_tsne:
+            mock_tsne.return_value.fit_transform.return_value = fake_2d
+            renderizar_eda(f)
+        mock_tsne.assert_called()
+    finally:
+        _mock_st.slider.side_effect = None
+        _mock_st.slider.return_value = MagicMock()
+        _mock_st.button.return_value = MagicMock()
+        _mock_st.radio.return_value = MagicMock()
