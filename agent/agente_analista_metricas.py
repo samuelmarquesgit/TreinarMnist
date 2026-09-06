@@ -1,6 +1,6 @@
 """Agente especialista em diagnóstico estatístico e análise comparativa de classificadores."""
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import pandas as pd
 
 

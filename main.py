@@ -1,13 +1,16 @@
 import argparse
-import os
+import subprocess
+import sys
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Plataforma Empresarial MNIST')
-    parser.add_argument('--modo', choices=['cli', 'web'], default='cli')
+    parser.add_argument('--modo', choices=['cli', 'web', 'mcp'], default='cli')
     args = parser.parse_args()
-    
+
     if args.modo == 'web':
-        os.system('streamlit run app.py')
+        subprocess.run([sys.executable, "-m", "streamlit", "run", "app.py"])
+    elif args.modo == 'mcp':
+        subprocess.run([sys.executable, "-m", "src.mcp.servidor"])
     else:
         from src.fachada import FachadaPipelineIA
         print('Iniciando Pipeline via CLI...')
@@ -17,6 +20,6 @@ if __name__ == '__main__':
         fachada.treinar_modelo('RegressaoLogistica')
         metricas = fachada.avaliar_modelo('RegressaoLogistica')
         print(f'Acurácia: {metricas["acuracia"]}')
-        
+
         estatisticas = fachada.obter_estatisticas_dados('treino')
         print(f'Estatísticas dos dados de treino: {estatisticas}')

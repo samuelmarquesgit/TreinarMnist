@@ -1,7 +1,6 @@
 """Agente autônomo responsável pela orquestração do ciclo completo de vida do pipeline MNIST."""
 
 from typing import Dict, Any, Optional
-import os
 
 
 class OrquestradorMNISTAgente:
