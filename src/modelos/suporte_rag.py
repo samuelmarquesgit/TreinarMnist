@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 # ── Função de embedding com fallback gracioso ──────────────────────────────
 from typing import Any
+
 try:
     from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
     _ef_padrao: Any = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
