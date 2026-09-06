@@ -15,3 +15,7 @@ class FalsaCertezaError(MnistException):
 class DataLeakageError(MnistException):
     """Lançada pelo Guardrail de pré-processamento quando há contaminação Teste-Treino."""
     pass
+
+class ModeloNaoEncontradoError(MnistException):
+    """Lançada pela FabricaModelos quando a chave solicitada não está no registro."""
+    pass
