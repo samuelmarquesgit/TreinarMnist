@@ -20,7 +20,7 @@ def test_carrega_cache_com_sucesso(mock_exists, mock_load):
     assert y.shape == (10,)
 
 
-@patch('src.carregador_dados.fetch_openml')
+@patch('sklearn.datasets.fetch_openml')
 @patch('src.carregador_dados.joblib.dump')
 @patch('src.carregador_dados.os.path.exists')
 def test_baixa_openml_salva_cache(mock_exists, mock_dump, mock_fetch):
@@ -38,29 +38,43 @@ def test_baixa_openml_salva_cache(mock_exists, mock_dump, mock_fetch):
     assert y.shape == (5,)
 
 
-@patch('src.carregador_dados.fetch_openml')
+@patch('sklearn.datasets.fetch_openml')
+@patch('src.carregador_dados._carregar_via_torchvision')
+@patch('src.carregador_dados._carregar_via_download_direto')
+@patch('src.carregador_dados._carregar_via_keras')
 @patch('src.carregador_dados.os.path.exists')
-def test_falha_de_rede_lanca_excecao(mock_exists, mock_fetch):
+def test_falha_de_rede_lanca_excecao(mock_exists, mock_keras, mock_download, mock_torch, mock_fetch):
     mock_exists.return_value = False
 
     import urllib.error
-    mock_fetch.side_effect = urllib.error.URLError("mock error")
+    erro = urllib.error.URLError("mock error")
+    mock_fetch.side_effect = erro
+    mock_torch.side_effect = erro
+    mock_download.side_effect = erro
+    mock_keras.side_effect = erro
 
-    with pytest.raises(ConnectionError):
+    with pytest.raises(RuntimeError, match="Todas as fontes de dados falharam"):
         carregar_dados_mnist()
 
 
-@patch('src.carregador_dados.fetch_openml')
+@patch('sklearn.datasets.fetch_openml')
+@patch('src.carregador_dados._carregar_via_torchvision')
+@patch('src.carregador_dados._carregar_via_download_direto')
+@patch('src.carregador_dados._carregar_via_keras')
 @patch('src.carregador_dados.os.path.exists')
-def test_falha_generica_openml(mock_exists, mock_fetch):
+def test_falha_generica_openml(mock_exists, mock_keras, mock_download, mock_torch, mock_fetch):
     mock_exists.return_value = False
-    mock_fetch.side_effect = Exception("Erro interno de parser")
+    erro = Exception("Erro interno de parser")
+    mock_fetch.side_effect = erro
+    mock_torch.side_effect = erro
+    mock_download.side_effect = erro
+    mock_keras.side_effect = erro
 
-    with pytest.raises(Exception, match="Erro inesperado ao buscar dados no OpenML"):
+    with pytest.raises(RuntimeError, match="Todas as fontes de dados falharam"):
         carregar_dados_mnist()
 
 
-@patch('src.carregador_dados.fetch_openml')
+@patch('sklearn.datasets.fetch_openml')
 @patch('src.carregador_dados.joblib.load')
 @patch('src.carregador_dados.os.path.exists')
 def test_cache_corrompido_faz_fallback_pro_download(
@@ -81,7 +95,7 @@ def test_cache_corrompido_faz_fallback_pro_download(
     assert X.shape == (2, 784)
 
 
-@patch('src.carregador_dados.fetch_openml')
+@patch('sklearn.datasets.fetch_openml')
 @patch('src.carregador_dados.os.path.exists')
 def test_falha_ao_salvar_cache_ignora(mock_exists, mock_fetch):
     mock_exists.return_value = False

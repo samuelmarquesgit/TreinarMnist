@@ -101,3 +101,29 @@ class SuporteRAG:
         )
         docs_encontrados = resultados.get("documents", [[]])[0]
         return docs_encontrados
+
+    def perguntar(self, pergunta: str) -> dict:
+        """
+        Método de interface para o chatbot. Realiza a busca e retorna um dicionário estruturado.
+
+        Args:
+            pergunta (str): A pergunta do usuário.
+
+        Returns:
+            dict: {"resposta": "...", "fontes": ["..."]}
+        """
+        docs = self.consultar(pergunta, n_resultados=2)
+        if not docs:
+            return {
+                "resposta": "Desculpe, não encontrei informações sobre isso na minha base de conhecimento.",
+                "fontes": []
+            }
+
+        resposta = "Com base na documentação do projeto MNIST:\n\n"
+        for i, doc in enumerate(docs, 1):
+            resposta += f"- {doc}\n"
+
+        return {
+            "resposta": resposta,
+            "fontes": [f"doc_{i}" for i in range(len(docs))]
+        }

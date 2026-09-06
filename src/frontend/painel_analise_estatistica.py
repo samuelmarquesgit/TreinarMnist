@@ -143,20 +143,21 @@ def renderizar(fachada) -> None:
         with abas[0]:
             amostra = dados if len(dados) <= 50_000 else np.random.choice(
                 dados, 50_000, replace=False)
-            fig_h = ff.create_distplot(
-                [amostra.tolist()], [label_ctx],
-                bin_size=(25 if "Brutos" in modo else 0.02),
-                colors=["#58a6ff"],
-                show_rug=False,
+            
+            fig_h = px.histogram(
+                x=amostra,
+                nbins=(20 if "Brutos" in modo else 50),
+                color_discrete_sequence=["#58a6ff"],
+                histnorm="density"
             )
             fig_h.update_layout(
                 **_TEMA,
                 height=380,
-                margin=dict(
-                    t=10,
-                    b=40),
+                margin=dict(t=10, b=40),
                 xaxis_title="Intensidade",
-                yaxis_title="Densidade")
+                yaxis_title="Densidade",
+                showlegend=False
+            )
             st.plotly_chart(fig_h, use_container_width=True)
 
         # ── Boxplot por classe ─────────────────────────────────────────────
@@ -264,9 +265,15 @@ def renderizar(fachada) -> None:
             np.random.choice(amostra_norm, 5000, replace=False)
 
         stat_sw, p_sw = scipy_stats.shapiro(amostra_norm[:3000])
-        stat_ks, p_ks = scipy_stats.kstest(
-            amostra_norm, "norm", args=(
-                amostra_norm.mean(), amostra_norm.std()))
+        
+        # Workaround para o bug "TypeError: ndtr()" em algumas versões de SciPy/NumPy 2.x:
+        # Em vez de passar `args=(mean, std)` que quebra o unpacking no C-backend,
+        # nós padronizamos a amostra manualmente (Z-score) e testamos contra a Normal padrão N(0,1).
+        std_val = amostra_norm.std()
+        if std_val == 0:
+            std_val = 1e-9
+        amostra_z = (amostra_norm - amostra_norm.mean()) / std_val
+        stat_ks, p_ks = scipy_stats.kstest(amostra_z, "norm")
 
         c1, c2 = st.columns(2)
         with c1:
