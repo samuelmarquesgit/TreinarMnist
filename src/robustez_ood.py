@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, Dict, Any, List, Union
+from typing import Tuple, Any, List, Union
 from src.modelos.base_modelo import ModeloAbstratoIA
 from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
 from dataclasses import dataclass
@@ -58,6 +58,7 @@ def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
         return probs
 
     raise TypeError("O modelo fornecido não possui métodos de predição suportados para OOD.")
+
 
 class AnalisadorRobustezOOD:
     """
@@ -139,13 +140,16 @@ class AnalisadorRobustezOOD:
 
         taxa_overconfidence = alertas_overconfidence / total_amostras if total_amostras > 0 else 0.0
         entropia_media = entropia_soma / total_amostras if total_amostras > 0 else 0.0
-        
+
         # Lógica de disparo de alerta (MSP + Entropia):
         is_ood = total_amostras > 0
         alerta_disparado = taxa_overconfidence >= 0.5 or entropia_media < threshold_entropia
 
         if alerta_disparado:
-            logger.error(f"⚠️ [ALERTA CRÍTICO OOD] Taxa Falsa Certeza: {taxa_overconfidence*100:.1f}% | Entropia Média: {entropia_media:.3f}")
+            logger.error(
+                f"⚠️ [ALERTA CRÍTICO OOD] Taxa Falsa Certeza: {taxa_overconfidence*100:.1f}% "
+                f"| Entropia Média: {entropia_media:.3f}"
+            )
         else:
             logger.info("Relatório OOD: Modelo se comportou com segurança diante de dados desconhecidos.")
 
