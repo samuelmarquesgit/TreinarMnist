@@ -24,17 +24,26 @@ def test_vit_prever_probabilidades_sem_treinar_levanta_excecao():
 
 
 def test_vit_treinar_e_prever():
-    modelo = ModeloViT()
-    X_treino = np.zeros((10, 28 * 28))
-    y_treino = np.zeros(10)
+    modelo = ModeloViT(epocas=1, batch_size=2)
+    # Tensores ruidosos pseudoaleatórios em vez de zeros para forçar o backprop
+    np.random.seed(42)
+    X_treino = np.random.rand(4, 28 * 28).astype(np.float32)
+    y_treino = np.array([0, 1, 2, 3])
+
+    # Captura os pesos iniciais da última camada (MLP) antes do treino
+    peso_inicial = modelo.model.mlp_head[1].weight.clone().detach().cpu().numpy()
 
     modelo.treinar(X_treino, y_treino)
     assert modelo._treinado is True
 
-    X_teste = np.zeros((5, 28 * 28))
+    # Verifica se os pesos mudaram (prova de fluxo de gradiente / ausência de vanishing gradients)
+    peso_final = modelo.model.mlp_head[1].weight.clone().detach().cpu().numpy()
+    assert not np.allclose(peso_inicial, peso_final), "Pesos não foram atualizados (Backprop falhou)!"
+
+    X_teste = np.random.rand(2, 28 * 28).astype(np.float32)
     preds = modelo.prever(X_teste)
 
-    assert len(preds) == 5
+    assert len(preds) == 2
     for p in preds:
         assert p in range(10)
 

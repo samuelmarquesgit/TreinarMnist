@@ -6,6 +6,7 @@ from src.modelos.fabrica_modelos import FabricaModelos
 from src.avaliacao_metricas import calcular_metricas
 from src.analise_estatistica import CalculadorEstatistico
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.utilitarios.excecoes import ModeloNaoTreinadoError
 
 
 class FachadaPipelineIA:
@@ -35,7 +36,7 @@ class FachadaPipelineIA:
 
     def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
         if nome_modelo not in self.modelos:
-            raise ValueError(f"Modelo {nome_modelo} não foi treinado.")
+            raise ModeloNaoTreinadoError(f"Modelo {nome_modelo} não foi treinado.")
 
         modelo = self.modelos[nome_modelo]
         y_previsto = modelo.prever(self.X_teste)
@@ -43,7 +44,7 @@ class FachadaPipelineIA:
 
     def prever_probabilidades(self, nome_modelo: str, X_entrada: np.ndarray) -> np.ndarray:
         if nome_modelo not in self.modelos:
-            raise ValueError(f"Modelo {nome_modelo} não foi treinado.")
+            raise ModeloNaoTreinadoError(f"Modelo {nome_modelo} não foi treinado.")
         modelo = self.modelos[nome_modelo]
         return modelo.prever_probabilidades(X_entrada)
 

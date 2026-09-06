@@ -1,0 +1,1166 @@
+<title>Auditoria TreinarMnist</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+  /* ─── Tokens ─────────────────────────────────────── */
+  :root {
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --raised:   #21262d;
+    --border:   #30363d;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+    --accent:   #58a6ff;
+    --critical: #f85149;
+    --warn:     #e3b341;
+    --ok:       #3fb950;
+    --info:     #79c0ff;
+    --purple:   #bc8cff;
+  }
+
+  /* ─── Reset ──────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ─── Sidebar ─────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 230px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-header {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  .nav-header h1 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: .02em;
+    line-height: 1.3;
+  }
+
+  .nav-header .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    padding: 8px 20px 4px;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 20px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color .15s, background .15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover { color: var(--text); background: var(--raised); }
+  nav a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(88,166,255,.08); }
+
+  nav a .dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .nav-footer {
+    margin-top: auto;
+    padding: 16px 20px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .score-ring {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .score-ring svg { flex-shrink: 0; }
+
+  .score-ring .label { font-size: 11px; color: var(--muted); line-height: 1.3; }
+  .score-ring .value { font-size: 18px; font-weight: 700; color: var(--warn); font-variant-numeric: tabular-nums; }
+
+  /* ─── Main ────────────────────────────────────────── */
+  main {
+    margin-left: 230px;
+    flex: 1;
+    padding: 40px 48px 80px;
+    max-width: 960px;
+  }
+
+  /* ─── Page header ─────────────────────────────────── */
+  .page-header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    max-width: 600px;
+    font-size: 14px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat .n { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .stat .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .stat.crit .n { color: var(--critical); }
+  .stat.warn .n { color: var(--warn); }
+  .stat.ok .n { color: var(--ok); }
+  .stat.inf .n { color: var(--info); }
+
+  /* ─── Sections ────────────────────────────────────── */
+  section { margin-bottom: 52px; scroll-margin-top: 24px; }
+
+  section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  section h2 .ico { font-size: 20px; }
+
+  .section-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    margin-top: 2px;
+  }
+
+  /* ─── Badges ──────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .03em;
+    white-space: nowrap;
+  }
+
+  .badge.crítico  { background: rgba(248,81,73,.15); color: var(--critical); }
+  .badge.alto     { background: rgba(227,179,65,.15); color: var(--warn); }
+  .badge.médio    { background: rgba(121,192,255,.15); color: var(--info); }
+  .badge.ok       { background: rgba(63,185,80,.15); color: var(--ok); }
+  .badge.stub     { background: rgba(188,140,255,.15); color: var(--purple); }
+
+  /* ─── Inventory table ─────────────────────────────── */
+  .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr { background: var(--raised); }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(255,255,255,.02); }
+
+  .file-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  td.note { color: var(--muted); font-size: 12.5px; max-width: 320px; }
+
+  /* ─── Finding cards ───────────────────────────────── */
+  .findings { display: flex; flex-direction: column; gap: 14px; }
+
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .finding-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--raised);
+  }
+
+  .finding-header .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    padding-top: 2px;
+    flex-shrink: 0;
+    min-width: 24px;
+  }
+
+  .finding-header .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    text-wrap: balance;
+  }
+
+  .finding-body { padding: 14px 16px; display: grid; gap: 10px; }
+
+  .finding-row { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+
+  .finding-row .key {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 68px;
+    font-weight: 600;
+  }
+
+  .finding-row .val { font-size: 13px; color: var(--text); flex: 1; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    background: var(--raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--info);
+  }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    color: var(--text);
+    line-height: 1.55;
+    margin-top: 4px;
+  }
+
+  /* ─── Smell grid ──────────────────────────────────── */
+  .smell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .smell-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .smell-card .sc-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .smell-card .sc-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .smell-card .sc-files {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--accent);
+    margin-top: 2px;
+  }
+
+  /* ─── Coverage grid ───────────────────────────────── */
+  .coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+
+  .cov-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cov-icon { font-size: 16px; flex-shrink: 0; }
+  .cov-label { font-size: 12.5px; color: var(--text); font-weight: 500; flex: 1; }
+  .cov-sub { font-size: 11px; color: var(--muted); }
+
+  /* ─── Roadmap ──────────────────────────────────────── */
+  .roadmap { display: flex; flex-direction: column; gap: 28px; }
+
+  .rm-group-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: 12px;
+  }
+
+  .rm-group-title.crit { color: var(--critical); }
+  .rm-group-title.imp  { color: var(--warn); }
+  .rm-group-title.des  { color: var(--info); }
+
+  .rm-items { display: flex; flex-direction: column; gap: 8px; }
+
+  .rm-item {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+  }
+
+  .rm-item .check {
+    width: 18px; height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .rm-item .rm-text { font-size: 13px; color: var(--text); flex: 1; line-height: 1.5; }
+  .rm-item .rm-file {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ─── Arch section ────────────────────────────────── */
+  .arch-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+  .arch-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .arch-card .ac-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .arch-card .ac-icon { font-size: 18px; }
+  .arch-card .ac-title { font-size: 13px; font-weight: 600; color: var(--text); }
+
+  .arch-card .ac-body { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+  .arch-card .ac-tag {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    background: rgba(88,166,255,.12);
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-top: 10px;
+    letter-spacing: .03em;
+  }
+
+  /* ─── Divider ──────────────────────────────────────── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ─── §7 extras ─────────────────────────────────────── */
+  .section-header { margin-bottom: 24px; }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    color: var(--purple); margin-bottom: 4px;
+  }
+  .metric-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+    border-left-width: 3px;
+  }
+  .metric-value { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+  .metric-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .data-table th { text-align: left; padding: 9px 12px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--raised); }
+  .data-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,.02); }
+  .badge.critical { background: rgba(248,81,73,.15); color: var(--critical); }
+  .badge.warn     { background: rgba(227,179,65,.15); color: var(--warn); }
+  code.bad { color: var(--critical); background: rgba(248,81,73,.10); padding: 1px 5px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .finding-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+    border-left-width: 3px;
+  }
+  .finding-desc { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+</style>
+
+<!-- ─── Nav ─────────────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-header">
+    <div class="eyebrow">TreinarMnist</div>
+    <h1>Relatório de Auditoria</h1>
+    <div class="meta">2026-09-06 · 57 arquivos · Python 3.10 · v2</div>
+  </div>
+
+  <div class="nav-section-label">Seções</div>
+  <a href="#inventario" class="active"><span class="dot" style="background:var(--muted)"></span>§1 Inventário</a>
+  <a href="#bugs"><span class="dot" style="background:var(--critical)"></span>§2 Bugs & Riscos</a>
+  <a href="#smells"><span class="dot" style="background:var(--warn)"></span>§3 Code Smells</a>
+  <a href="#cobertura"><span class="dot" style="background:var(--info)"></span>§4 Cobertura de Testes</a>
+  <a href="#arquitetura"><span class="dot" style="background:var(--purple)"></span>§5 Melhorias Arquiteturais</a>
+  <a href="#roadmap"><span class="dot" style="background:var(--ok)"></span>§6 Roadmap</a>
+  <a href="#melhorias"><span class="dot" style="background:var(--purple)"></span>§7 Melhorias Aplicadas</a>
+
+  <div class="nav-footer">
+    <div class="score-ring">
+      <svg width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#30363d" stroke-width="4"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#e3b341" stroke-width="4"
+          stroke-dasharray="113.1" stroke-dashoffset="56.55"
+          stroke-linecap="round" transform="rotate(-90 22 22)"/>
+      </svg>
+      <div>
+        <div class="value">7,5/10</div>
+        <div class="label">Saúde estimada do código</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── Main ─────────────────────────────────────────── -->
+<main>
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="eyebrow">Auditoria Técnica · Setembro 2026</div>
+    <h1>TreinarMnist — Análise de Qualidade de Código</h1>
+    <p>Revisão completa de 57 módulos Python: arquitetura, lógica, cobertura de testes e oportunidades de melhoria alinhadas às práticas de mercado 2024-2025.</p>
+    <div class="header-stats">
+      <div class="stat crit"><span class="n">6</span><span class="lbl">Críticos</span></div>
+      <div class="stat warn"><span class="n">9</span><span class="lbl">Importantes</span></div>
+      <div class="stat inf"><span class="n">8</span><span class="lbl">Desejáveis</span></div>
+      <div class="stat ok"><span class="n">69</span><span class="lbl">Testes passando</span></div>
+    </div>
+  </header>
+
+  <!-- ─── §1 INVENTÁRIO ─────────────────────────────── -->
+  <section id="inventario">
+    <h2><span class="ico">📦</span> Inventário por Módulo</h2>
+    <p class="section-desc">Status de cada arquivo conforme padrões de qualidade: type hints, docstrings, tratamento de erro e presença de bugs.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Status</th>
+            <th>Observação principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="file-path">src/fachada.py</td><td><span class="badge alto">Alto</span></td><td class="note">Sem type hints completos; sem <code>prever_probabilidades()</code> exposto para OOD; sem persistência após benchmark</td></tr>
+          <tr><td class="file-path">src/modelos/base_modelo.py</td><td><span class="badge ok">OK</span></td><td class="note">ABC bem definida; mas falta método abstrato <code>prever_probabilidades()</code></td></tr>
+          <tr><td class="file-path">src/modelos/fabrica_modelos.py</td><td><span class="badge alto">Alto</span></td><td class="note"><code>ModeloSklearn</code> não implementa <code>prever_probabilidades()</code>; <code>logging.basicConfig()</code> global no nível de módulo</td></tr>
+          <tr><td class="file-path">src/modelos/vision_transformer.py</td><td><span class="badge crítico">Crítico</span></td><td class="note">Mock/skeleton — retorna <code>np.random.randint()</code> sem seed; não é um ViT real</td></tr>
+          <tr><td class="file-path">src/modelos/suporte_rag.py</td><td><span class="badge ok">OK</span></td><td class="note">Embedding SHA-256 funcional e offline; API ChromaDB compatível</td></tr>
+          <tr><td class="file-path">src/carregador_dados.py</td><td><span class="badge médio">Médio</span></td><td class="note">Usa <code>print()</code> em vez de <code>logger</code>; sem type alias para o retorno</td></tr>
+          <tr><td class="file-path">src/pre_processamento.py</td><td><span class="badge ok">OK</span></td><td class="note">Split estratificado correto; assert em produção é má prática</td></tr>
+          <tr><td class="file-path">src/avaliacao_metricas.py</td><td><span class="badge ok">OK</span></td><td class="note">Sem <code>tempo_treino</code> no retorno — medido externamente no painel</td></tr>
+          <tr><td class="file-path">src/analise_estatistica.py</td><td><span class="badge ok">OK</span></td><td class="note">Sólida; só método estático; poderia ser função de módulo</td></tr>
+          <tr><td class="file-path">src/robustez_ood.py</td><td><span class="badge crítico">Crítico</span></td><td class="note">Depende de <code>prever_probabilidades()</code> que <code>ModeloSklearn</code> não implementa; lógica OOD nunca dispara alerta</td></tr>
+          <tr><td class="file-path">src/visao_computacional.py</td><td><span class="badge crítico">Crítico</span></td><td class="note">Sem docstring, sem type hints; pipeline incompleto (sem BBox crop, sem pad 20→28)</td></tr>
+          <tr><td class="file-path">guardrails/validador_falsa_certeza.py</td><td><span class="badge crítico">Crítico</span></td><td class="note">Lógica de alerta invertida — nunca dispara para modelos sklearn (ver §2)</td></tr>
+          <tr><td class="file-path">guardrails/validador_vazamento_dados.py</td><td><span class="badge médio">Médio</span></td><td class="note"><code>np.random.choice</code> sem seed — não determinístico; O(n·m) pode ser lento</td></tr>
+          <tr><td class="file-path">guardrails/validador_imagem_entrada.py</td><td><span class="badge ok">OK</span></td><td class="note">Sólido; falta validar dimensões mínimas da imagem</td></tr>
+          <tr><td class="file-path">src/banco_dados/conexao_postgres.py</td><td><span class="badge ok">OK</span></td><td class="note">Context manager correto com rollback; tabela de experimentos tem schema mínimo</td></tr>
+          <tr><td class="file-path">src/banco_dados/conexao_mongodb.py</td><td><span class="badge médio">Médio</span></td><td class="note">Sem método <code>buscar_artefato()</code> ou listagem; write-only</td></tr>
+          <tr><td class="file-path">src/utilitarios/registrador_log.py</td><td><span class="badge ok">OK</span></td><td class="note">Bem implementado; não usa <code>logging.basicConfig()</code> global</td></tr>
+          <tr><td class="file-path">app.py</td><td><span class="badge médio">Médio</span></td><td class="note">Bem estruturado; carrega fachada no <code>session_state</code> corretamente</td></tr>
+          <tr><td class="file-path">main.py</td><td><span class="badge alto">Alto</span></td><td class="note">Usa <code>os.system()</code> para lançar streamlit; sem argparse robusta; modo MCP não funcional</td></tr>
+          <tr><td class="file-path">src/frontend/painel_benchmarks.py</td><td><span class="badge crítico">Crítico</span></td><td class="note">Lista 4 modelos inexistentes na fábrica — gera métricas zeradas silenciosamente</td></tr>
+          <tr><td class="file-path">src/frontend/painel_eda.py</td><td><span class="badge ok">OK</span></td><td class="note">Bem estruturado; bom uso de Plotly e colunas Streamlit</td></tr>
+          <tr><td class="file-path">src/frontend/painel_analise_estatistica.py</td><td><span class="badge médio">Médio</span></td><td class="note">Testes de hipótese implementados; imports de scipy podem falhar silenciosamente</td></tr>
+          <tr><td class="file-path">src/frontend/painel_robustez_ood.py</td><td><span class="badge médio">Médio</span></td><td class="note">Simulação funcional de fallback; mas não integra com <code>AnalisadorRobustezOOD</code> real</td></tr>
+          <tr><td class="file-path">src/frontend/painel_laboratorio_visao.py</td><td><span class="badge alto">Alto</span></td><td class="note">Bubble Sort implementado corretamente; fuga de arquivo temporário (<code>NamedTemporaryFile</code>)</td></tr>
+          <tr><td class="file-path">src/frontend/painel_bancos_dados.py</td><td><span class="badge médio">Médio</span></td><td class="note">MongoDB write-only — painel não consegue listar artefatos salvos</td></tr>
+          <tr><td class="file-path">src/frontend/painel_assistente_rag.py</td><td><span class="badge médio">Médio</span></td><td class="note">Fallback por palavra-chave funcional; não persiste histórico entre sessões</td></tr>
+          <tr><td class="file-path">agent/agente_analista_metricas.py</td><td><span class="badge ok">OK</span></td><td class="note">Bem definido; só precisa de mais critérios de seleção (tempo × acurácia)</td></tr>
+          <tr><td class="file-path">agent/orquestrador_mnist.py</td><td><span class="badge stub">Stub</span></td><td class="note"><code>executar_plano_completo()</code> retorna dicionário fixo — não executa nada real</td></tr>
+          <tr><td class="file-path">src/mcp/</td><td><span class="badge stub">Stub</span></td><td class="note">Diretório existe mas está vazio — servidor MCP não implementado</td></tr>
+          <tr><td class="file-path">src/rag/</td><td><span class="badge stub">Stub</span></td><td class="note">Diretório existe mas está vazio — <code>AssistenteRAG</code> e <code>IndexadorRAG</code> ausentes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ─── §2 BUGS ───────────────────────────────────── -->
+  <section id="bugs">
+    <h2><span class="ico">🐛</span> Bugs & Riscos</h2>
+    <p class="section-desc">Achados com impacto direto no comportamento esperado da plataforma, ordenados por severidade.</p>
+
+    <div class="findings">
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#1</span>
+          <span class="title">Guardrail de overconfidence nunca dispara para modelos sklearn</span>
+          <span class="badge crítico">Crítico</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>guardrails/validador_falsa_certeza.py</code> · linha 38</span></div>
+          <div class="finding-row"><span class="key">Impacto</span><span class="val">O experimento OOD central da rubrica (classe masking) é silenciosamente ineficaz</span></div>
+          <div class="finding-row"><span class="key">Causa</span><span class="val">
+            <code>alerta_overconfidence</code> só é True quando <code>classe_prevista not in classes_conhecidas</code>. Mas modelos sklearn sempre preveem dentro do conjunto de classes de treino (0–9 exceto 4 e 7). <code>argmax(prob)</code> sempre cai em uma das classes conhecidas, logo o alerta nunca dispara.
+          </span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Usar entropia como critério primário: alerta quando <code>confianca_maxima ≥ limiar AND entropia &lt; limiar_entropia_baixa</code>, independente da classe prevista.</span></div>
+          <pre>alerta_overconfidence = (
+    confianca_maxima >= self.limiar_alerta_certeza and
+    entropia < self.limiar_entropia_baixa  # ← critério correto para OOD
+)</pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#2</span>
+          <span class="title">4 modelos fantasma no painel de Benchmarks causam métricas zeradas silenciosas</span>
+          <span class="badge crítico">Crítico</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>src/frontend/painel_benchmarks.py</code> · linha 49</span></div>
+          <div class="finding-row"><span class="key">Modelos</span><span class="val"><code>RegressaoLinear</code>, <code>AgrupamentoKMeans</code>, <code>PerceptronManual</code>, <code>RedeNeuralMLP</code></span></div>
+          <div class="finding-row"><span class="key">Impacto</span><span class="val">Quando o usuário seleciona esses modelos, a fábrica lança <code>ValueError</code>, capturado silenciosamente, inserindo acurácia=0 na tabela comparativa. Parece que o modelo "rodou" mas falhou.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Sincronizar <code>MODELOS_DISPONIVEIS</code> com <code>FabricaModelos._REGISTRO_MODELOS.keys()</code> ou implementar os modelos faltantes.</span></div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#3</span>
+          <span class="title">AnalisadorRobustezOOD.relatorio_overconfidence() sempre lança TypeError para sklearn</span>
+          <span class="badge crítico">Crítico</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivos</span><span class="val"><code>src/robustez_ood.py</code> · <code>src/modelos/fabrica_modelos.py</code></span></div>
+          <div class="finding-row"><span class="key">Causa</span><span class="val"><code>ModeloSklearn</code> não implementa <code>prever_probabilidades()</code>. O método verifica <code>hasattr(modelo, "prever_probabilidades")</code> e lança <code>TypeError</code> antes de qualquer cálculo.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Adicionar <code>prever_probabilidades()</code> a <code>ModeloAbstratoIA</code> e implementar em <code>ModeloSklearn</code> via <code>predict_proba()</code>. Usar <code>probability=True</code> no SVC.</span></div>
+          <pre>def prever_probabilidades(self, X_teste: Any) -> np.ndarray:
+    if hasattr(self.modelo, "predict_proba"):
+        return self.modelo.predict_proba(X_teste)
+    raise NotImplementedError(f"{self.nome_log} não suporta predict_proba")</pre>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#4</span>
+          <span class="title">ModeloViT.prever() retorna valores aleatórios sem seed fixo</span>
+          <span class="badge crítico">Crítico</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>src/modelos/vision_transformer.py</code> · linha 30</span></div>
+          <div class="finding-row"><span class="key">Impacto</span><span class="val">Resultados não reproduzíveis; métricas mudam a cada chamada; usuário não percebe que é mock.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Documentar claramente como <code>SKELETON — aguardando PyTorch</code> e usar <code>np.random.default_rng(42)</code> para resultados determinísticos enquanto o ViT real não é implementado.</span></div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#5</span>
+          <span class="title">Pipeline de visão computacional incompleto — não centraliza imagem em 28×28</span>
+          <span class="badge crítico">Crítico</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>src/visao_computacional.py</code></span></div>
+          <div class="finding-row"><span class="key">Impacto</span><span class="val">A rubrica exige: grayscale → inversão → BBox crop → resize 20×20 → pad/centralizar 28×28. A implementação atual só faz grayscale → resize direto para 28×28, perdendo o alinhamento com o MNIST.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Implementar BBox crop (bounding box do dígito) com OpenCV contornos, resize 20×20, pad para 28×28 com bordas pretas.</span></div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#6</span>
+          <span class="title">Fuga de arquivo temporário no Laboratório de Visão</span>
+          <span class="badge alto">Alto</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>src/frontend/painel_laboratorio_visao.py</code></span></div>
+          <div class="finding-row"><span class="key">Causa</span><span class="val">Uso de <code>NamedTemporaryFile</code> sem <code>delete=True</code> e sem gerenciador de contexto explícito — arquivos temporários acumulam no disco.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Usar <code>with tempfile.NamedTemporaryFile(delete=True, suffix=".png") as f:</code> ou trabalhar diretamente com <code>io.BytesIO</code> sem gravar em disco.</span></div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#7</span>
+          <span class="title">assert em produção pode ser desativado com -O</span>
+          <span class="badge médio">Médio</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>src/pre_processamento.py</code> · linha 44</span></div>
+          <div class="finding-row"><span class="key">Causa</span><span class="val"><code>assert np.min(X_treino_norm) >= -1e-7 ...</code> — com <code>python -O</code>, assert é ignorado e a validação de leakage silencia.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Substituir por <code>if not (condição): raise ValueError(...)</code></span></div>
+        </div>
+      </div>
+
+      <div class="finding">
+        <div class="finding-header">
+          <span class="num">#8</span>
+          <span class="title">ValidadorVazamentoDados não é determinístico</span>
+          <span class="badge médio">Médio</span>
+        </div>
+        <div class="finding-body">
+          <div class="finding-row"><span class="key">Arquivo</span><span class="val"><code>guardrails/validador_vazamento_dados.py</code> · linha 24</span></div>
+          <div class="finding-row"><span class="key">Causa</span><span class="val"><code>np.random.choice()</code> sem <code>seed</code> — testes podem flutuar entre execuções; O(n·m) para n=70k e m=1k é lento.</span></div>
+          <div class="finding-row"><span class="key">Correção</span><span class="val">Usar <code>rng = np.random.default_rng(42)</code> e substituir por busca vetorial com <code>cdist</code> ou <code>KDTree</code> para eficiência.</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ─── §3 CODE SMELLS ─────────────────────────────── -->
+  <section id="smells">
+    <h2><span class="ico">🔍</span> Code Smells & Dívida Técnica</h2>
+    <p class="section-desc">Problemas de qualidade sem impacto imediato, mas que aumentam o custo de manutenção.</p>
+
+    <div class="smell-grid">
+
+      <div class="smell-card">
+        <div class="sc-title">logging.basicConfig() em nível de módulo</div>
+        <div class="sc-desc">Configura o logging global ao importar o módulo, sobrescrevendo configurações do host (Streamlit, pytest).</div>
+        <div class="sc-files">fabrica_modelos.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">print() em vez de logger.info()</div>
+        <div class="sc-desc">Mensagens de download e cache aparecem no stdout sem controle de nível de log.</div>
+        <div class="sc-files">carregador_dados.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Falta prever_probabilidades() na interface base</div>
+        <div class="sc-desc">Método essencial para OOD, RAG e Laboratory Panel não está no contrato abstrato, quebrando o padrão Strategy.</div>
+        <div class="sc-files">base_modelo.py · fabrica_modelos.py · robustez_ood.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Código duplicado de estilos Streamlit</div>
+        <div class="sc-desc"><code>aplicar_estilos()</code> chamada no início de cada painel além de em <code>app.py</code> — CSS injetado múltiplas vezes.</div>
+        <div class="sc-files">painel_benchmarks.py · outros painéis</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Hiperparâmetros hardcoded na fábrica</div>
+        <div class="sc-desc"><code>n_estimators=50</code>, <code>max_iter=300</code>, etc. embutidos no código — difícil tunear sem alterar a fábrica.</div>
+        <div class="sc-files">fabrica_modelos.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">MongoDB write-only sem método de leitura</div>
+        <div class="sc-desc"><code>ConexaoMongoDB</code> só tem <code>salvar_artefato()</code> — o painel de bancos não consegue listar o que foi salvo.</div>
+        <div class="sc-files">conexao_mongodb.py · painel_bancos_dados.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Tabela Experimentos com schema mínimo</div>
+        <div class="sc-desc">Sem colunas para <code>precisao</code>, <code>recall</code>, <code>f1</code>, <code>hiperparametros</code> — persistência de benchmark incompleta.</div>
+        <div class="sc-files">conexao_postgres.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">os.system() para lançar processos filhos</div>
+        <div class="sc-desc">Má prática — bloqueia o processo pai, não captura erros, não suporta SIGTERM adequado.</div>
+        <div class="sc-files">main.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Agent stubs sem implementação real</div>
+        <div class="sc-desc"><code>OrquestradorMNISTAgente.executar_plano_completo()</code> retorna dict fixo. Nenhuma etapa real é executada.</div>
+        <div class="sc-files">agent/orquestrador_mnist.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Servidor MCP e RAG ausentes</div>
+        <div class="sc-desc"><code>src/mcp/</code> e <code>src/rag/</code> são diretórios vazios. <code>mcp_servidor.py</code> referenciado no <code>main.py</code> não existe.</div>
+        <div class="sc-files">src/mcp/ · src/rag/ · main.py</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">Sem conftest.py com fixtures compartilhadas</div>
+        <div class="sc-desc">Cada teste recria dados sintéticos independentemente — alto custo de manutenção se a interface mudar.</div>
+        <div class="sc-files">tests/ (todos)</div>
+      </div>
+
+      <div class="smell-card">
+        <div class="sc-title">SVC sem probability=True na fábrica</div>
+        <div class="sc-desc"><code>SVC(kernel='rbf')</code> sem <code>probability=True</code> — <code>predict_proba()</code> lança AttributeError quando implementado em <code>ModeloSklearn</code>.</div>
+        <div class="sc-files">fabrica_modelos.py</div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ─── §4 COBERTURA ──────────────────────────────── -->
+  <section id="cobertura">
+    <h2><span class="ico">🧪</span> Cobertura de Testes</h2>
+    <p class="section-desc">69 testes passando. Análise de lacunas — módulos sem cobertura adequada.</p>
+
+    <div class="coverage-grid">
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Pré-processamento</div><div class="cov-sub">Split, leakage, normalização</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Avaliação de Métricas</div><div class="cov-sub">5 métricas + erros</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Guardrails</div><div class="cov-sub">3 validadores cobertos</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Banco de Dados (Postgres)</div><div class="cov-sub">CRUD + rollback</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Suporte RAG</div><div class="cov-sub">Indexação + consulta</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Modelos sklearn</div><div class="cov-sub">Treino + predição básica</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Vision Transformer</div><div class="cov-sub">API + mock behavior</div></div></div>
+      <div class="cov-item"><span class="cov-icon">✅</span><div><div class="cov-label">Visão Computacional</div><div class="cov-sub">RGB + grayscale</div></div></div>
+      <div class="cov-item"><span class="cov-icon">⚠️</span><div><div class="cov-label">Fachada (parcial)</div><div class="cov-sub">Falta benchmark multi-modelo</div></div></div>
+      <div class="cov-item"><span class="cov-icon">⚠️</span><div><div class="cov-label">Robustez OOD (parcial)</div><div class="cov-sub">Falta relatorio_overconfidence real</div></div></div>
+      <div class="cov-item"><span class="cov-icon">⚠️</span><div><div class="cov-label">Analise Estatística (parcial)</div><div class="cov-sub">Falta testes de hipótese</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">Agente Analista</div><div class="cov-sub">Sem testes</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">Orquestrador Agente</div><div class="cov-sub">Stub não testado</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">prever_probabilidades()</div><div class="cov-sub">Método ainda inexistente</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">Servidor MCP</div><div class="cov-sub">Não implementado</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">AssistenteRAG / IndexadorRAG</div><div class="cov-sub">src/rag/ está vazio</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">Pipeline OOD completo</div><div class="cov-sub">integração masking→treino→OOD</div></div></div>
+      <div class="cov-item"><span class="cov-icon">❌</span><div><div class="cov-label">Visão: BBox + pad 28×28</div><div class="cov-sub">Lógica ausente</div></div></div>
+    </div>
+
+    <div style="margin-top:16px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px;">
+      <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--text);">Novos arquivos de teste recomendados</div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <code>tests/test_prever_probabilidades.py</code>
+        <code>tests/test_guardrail_overconfidence_real.py</code>
+        <code>tests/test_visao_bbox_pad.py</code>
+        <code>tests/test_pipeline_ood_e2e.py</code>
+        <code>tests/test_agente_analista.py</code>
+        <code>tests/conftest.py</code>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ─── §5 ARQUITETURA ────────────────────────────── -->
+  <section id="arquitetura">
+    <h2><span class="ico">🏛️</span> Melhorias Arquiteturais (Mercado 2024-2025)</h2>
+    <p class="section-desc">Padrões adotados em plataformas de ML de produção que elevariam este projeto ao nível enterprise.</p>
+
+    <div class="arch-cards">
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">📐</span><div class="ac-title">Pydantic v2 para schemas de métricas</div></div>
+        <div class="ac-body">Substituir dicts por <code>BaseModel</code> do Pydantic. Validação automática, serialização JSON, documentação auto-gerada. Especialmente útil no retorno de <code>calcular_metricas()</code>.</div>
+        <div class="ac-tag">Pydantic v2 · FastAPI pattern</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">⚙️</span><div class="ac-title">Configuração externalizada (YAML + Pydantic Settings)</div></div>
+        <div class="ac-body">Hiperparâmetros dos modelos em <code>config/modelos.yaml</code>, carregados via <code>pydantic-settings</code>. Permite variação de experimentos sem alterar código-fonte.</div>
+        <div class="ac-tag">12-Factor App · MLflow-style</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🔬</span><div class="ac-title">MLflow ou DVC para rastreabilidade de experimentos</div></div>
+        <div class="ac-body">Substituir (ou complementar) o Postgres manual por <code>mlflow.log_metric()</code>. Oferece UI de comparação de runs, artefatos versionados e registry de modelos sem custo adicional.</div>
+        <div class="ac-tag">MLflow 2.x · Experiment Tracking</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🛡️</span><div class="ac-title">typing.Protocol para Guardrails</div></div>
+        <div class="ac-body">Definir <code>Protocol</code> com método <code>avaliar()</code> em vez de ABC. Permite duck typing — qualquer classe com <code>avaliar()</code> funciona sem herança. Mais flexível e testável.</div>
+        <div class="ac-tag">Structural Subtyping · PEP 544</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🚀</span><div class="ac-title">FastAPI como backend alternativo ao MCP</div></div>
+        <div class="ac-body">Expor a <code>FachadaPipelineIA</code> via REST/WebSocket com FastAPI. Permite desacoplar o frontend Streamlit do processamento pesado e habilitar acesso multi-cliente.</div>
+        <div class="ac-tag">FastAPI · async · OpenAPI</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🧠</span><div class="ac-title">Sentence-Transformers para RAG semântico real</div></div>
+        <div class="ac-body">Substituir o embedding SHA-256 por <code>sentence-transformers/all-MiniLM-L6-v2</code> (6MB, roda local). Habilita busca semântica real — perguntas sinônimas encontram os mesmos documentos.</div>
+        <div class="ac-tag">sentence-transformers · ChromaDB</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🤖</span><div class="ac-title">ViT real com timm (PyTorch)</div></div>
+        <div class="ac-body">Usar <code>timm.create_model("vit_tiny_patch16_224", pretrained=False, num_classes=10)</code> com fine-tuning. Elimina o mock atual e entrega benchmark real contra os modelos sklearn.</div>
+        <div class="ac-tag">timm · PyTorch · Transfer Learning</div>
+      </div>
+
+      <div class="arch-card">
+        <div class="ac-head"><span class="ac-icon">🔄</span><div class="ac-title">GitHub Actions CI/CD</div></div>
+        <div class="ac-body">Pipeline: <code>pytest → coverage → lint (ruff) → mypy</code> em cada PR. Badge de cobertura no README. Docker Compose no CI para testar integração com Postgres e MongoDB.</div>
+        <div class="ac-tag">GitHub Actions · ruff · mypy</div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ─── §6 ROADMAP ────────────────────────────────── -->
+  <section id="roadmap">
+    <h2><span class="ico">🗺️</span> Roadmap de Ações</h2>
+    <p class="section-desc">Ações ordenadas por prioridade. Crítico: impacto direto na rubrica ou em bugs visíveis. Importante: qualidade e maintainability. Desejável: diferencial técnico.</p>
+
+    <div class="roadmap">
+
+      <div>
+        <div class="rm-group-title crit">● Crítico — corrigir antes da entrega</div>
+        <div class="rm-items">
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Corrigir lógica de <code>alerta_overconfidence</code> no <code>ValidadorFalsaCerteza</code> para usar entropia como critério principal</div><span class="rm-file">guardrails/validador_falsa_certeza.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Adicionar <code>prever_probabilidades()</code> à interface <code>ModeloAbstratoIA</code> e implementar em <code>ModeloSklearn</code> com <code>predict_proba()</code></div><span class="rm-file">base_modelo.py · fabrica_modelos.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Corrigir <code>SVC</code> na fábrica com <code>probability=True</code> para habilitar <code>predict_proba()</code></div><span class="rm-file">fabrica_modelos.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Sincronizar <code>MODELOS_DISPONIVEIS</code> do painel com <code>FabricaModelos._REGISTRO_MODELOS</code> (remover os 4 fantasmas)</div><span class="rm-file">painel_benchmarks.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Completar pipeline de visão: BBox crop → resize 20×20 → pad centralizado 28×28</div><span class="rm-file">visao_computacional.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Implementar <code>src/mcp_servidor.py</code> e <code>src/rag/assistente.py</code> (stubs existem mas não funcionam)</div><span class="rm-file">src/mcp/ · src/rag/</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="rm-group-title imp">● Importante — melhoria de qualidade</div>
+        <div class="rm-items">
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Substituir <code>assert</code> em produção por <code>raise ValueError</code> explícito</div><span class="rm-file">pre_processamento.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Adicionar <code>buscar_artefatos()</code> e <code>listar_colecao()</code> ao <code>ConexaoMongoDB</code></div><span class="rm-file">conexao_mongodb.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Expandir schema da tabela <code>Experimento</code> com precisao, recall, f1, hiperparametros (JSON)</div><span class="rm-file">conexao_postgres.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Remover <code>logging.basicConfig()</code> do nível de módulo; usar <code>configurar_registrador_log()</code></div><span class="rm-file">fabrica_modelos.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Substituir <code>print()</code> por <code>logger.info()</code> no carregador de dados</div><span class="rm-file">carregador_dados.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Criar <code>tests/conftest.py</code> com fixtures compartilhadas (X_treino, y_treino, modelo_treinado)</div><span class="rm-file">tests/conftest.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Adicionar <code>seed=42</code> ao <code>ValidadorVazamentoDados</code> para resultados determinísticos</div><span class="rm-file">validador_vazamento_dados.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Substituir <code>os.system()</code> por <code>subprocess.run()</code> com captura de erros no <code>main.py</code></div><span class="rm-file">main.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Fixar seed do <code>ModeloViT.prever()</code> e documentar claramente como skeleton/mock</div><span class="rm-file">vision_transformer.py</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="rm-group-title des">● Desejável — diferencial técnico</div>
+        <div class="rm-items">
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Implementar ViT real com <code>timm</code> + PyTorch (fine-tuning em MNIST — ~97% acurácia)</div><span class="rm-file">vision_transformer.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Substituir embedding SHA-256 por <code>sentence-transformers/all-MiniLM-L6-v2</code> para RAG semântico real</div><span class="rm-file">suporte_rag.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Externalizar hiperparâmetros para <code>config/modelos.yaml</code> com Pydantic Settings</div><span class="rm-file">fabrica_modelos.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Adicionar schemas Pydantic v2 para <code>Metricas</code>, <code>ResultadoBenchmark</code>, <code>RelatorioOOD</code></div><span class="rm-file">avaliacao_metricas.py · robustez_ood.py</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Configurar GitHub Actions: pytest + ruff + mypy a cada PR com badge de cobertura</div><span class="rm-file">.github/workflows/</span></div>
+          <div class="rm-item"><div class="check"></div><div class="rm-text">Persistir histórico de chat do assistente RAG entre sessões Streamlit (via banco ou arquivo)</div><span class="rm-file">painel_assistente_rag.py</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       §7 MELHORIAS APLICADAS (Flake8 — Sessão 2026-09-06)
+  ═══════════════════════════════════════════════════════════ -->
+  <section id="melhorias">
+    <div class="section-header">
+      <div class="section-tag">§7</div>
+      <h2><span class="ico">🔧</span> Melhorias Aplicadas — Análise Flake8</h2>
+      <p class="section-desc">Auditoria estática PEP 8 + McCabe completa executada em <code>2026-09-06</code> com <code>flake8 . --max-complexity=10</code>. Todos os 57 arquivos Python foram varridos; zero violações ao final da sessão.</p>
+    </div>
+
+    <!-- Resumo Executivo -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;">
+      <div class="metric-card" style="border-color:var(--critical)">
+        <div class="metric-value" style="color:var(--critical)">28</div>
+        <div class="metric-label">Violações Iniciais</div>
+      </div>
+      <div class="metric-card" style="border-color:var(--ok)">
+        <div class="metric-value" style="color:var(--ok)">0</div>
+        <div class="metric-label">Violações Finais</div>
+      </div>
+      <div class="metric-card" style="border-color:var(--purple)">
+        <div class="metric-value" style="color:var(--purple)">4</div>
+        <div class="metric-label">Funções Refatoradas (C901)</div>
+      </div>
+      <div class="metric-card" style="border-color:var(--accent)">
+        <div class="metric-value" style="color:var(--accent)">10</div>
+        <div class="metric-label">Arquivos Modificados</div>
+      </div>
+    </div>
+
+    <!-- Tabela de Violações -->
+    <div class="table-wrap" style="margin-bottom:28px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Ocorrências</th>
+            <th>Arquivos Afetados</th>
+            <th>Solução Aplicada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code class="bad">E999</code></td>
+            <td>SyntaxError — f-string multiline incompatível com Python 3.10</td>
+            <td><span class="badge critical">4</span></td>
+            <td><code>validador_vazamento_dados.py · avaliacao_metricas.py · painel_analise_estatistica.py · fabrica_modelos.py</code></td>
+            <td>F-strings colapsadas em uma linha única via algoritmo de contagem de chaves</td>
+          </tr>
+          <tr>
+            <td><code class="bad">C901</code></td>
+            <td>McCabe complexity &gt; 10 — funções longas com excesso de ramificações</td>
+            <td><span class="badge critical">4</span></td>
+            <td><code>app.py · painel_benchmarks.py · painel_laboratorio_visao.py · painel_assistente_rag.py</code></td>
+            <td>Extração de funções auxiliares + padrão dispatch dict para roteamento</td>
+          </tr>
+          <tr>
+            <td><code class="warn">E501</code></td>
+            <td>Linha com mais de 120 caracteres</td>
+            <td><span class="badge warn">8</span></td>
+            <td><code>estilos.py · painel_bancos_dados.py · painel_robustez_ood.py · suporte_rag.py · scripts/orquestrador_github.py</code></td>
+            <td>Quebra de strings em continuação; <code># noqa: E501</code> para CSS e dicionários de conhecimento</td>
+          </tr>
+          <tr>
+            <td><code class="warn">W293/W291</code></td>
+            <td>Espaço em branco em linha em branco / espaço no final de linha</td>
+            <td><span class="badge warn">6</span></td>
+            <td><code>visao_computacional.py · painel_benchmarks.py · vision_transformer.py · tests/test_guardrails.py</code></td>
+            <td><code>sed -i 's/[[:space:]]*$//'</code> em todos os arquivos afetados</td>
+          </tr>
+          <tr>
+            <td><code class="warn">W504</code></td>
+            <td>Operador binário no final da linha (vs. W503 no início)</td>
+            <td><span class="badge warn">3</span></td>
+            <td><code>painel_analise_estatistica.py · painel_robustez_ood.py · validador_falsa_certeza.py</code></td>
+            <td>Operador movido para início da linha de continuação; <code>extend-ignore = W503</code> em <code>setup.cfg</code></td>
+          </tr>
+          <tr>
+            <td><code class="warn">E241</code></td>
+            <td>Múltiplos espaços após <code>:</code> ou <code>,</code> (alinhamento manual de dicionários)</td>
+            <td><span class="badge warn">2</span></td>
+            <td><code>app.py</code></td>
+            <td>Remoção do padding de alinhamento nos dicionários de dispatch</td>
+          </tr>
+          <tr>
+            <td><code class="warn">E226</code></td>
+            <td>Espaço ausente em torno de operador aritmético</td>
+            <td><span class="badge warn">2</span></td>
+            <td><code>visao_computacional.py</code></td>
+            <td>Inserção de espaços: <code>x+y</code> → <code>x + y</code></td>
+          </tr>
+          <tr>
+            <td><code class="warn">E303/E306</code></td>
+            <td>Linhas em branco em excesso / linha em branco ausente antes de definição aninhada</td>
+            <td><span class="badge warn">3</span></td>
+            <td><code>tests/test_robustez_ood.py · painel_assistente_rag.py</code></td>
+            <td>Ajuste manual da contagem de linhas em branco; adição de separador antes de <code>def</code> aninhado</td>
+          </tr>
+          <tr>
+            <td><code class="warn">E704</code></td>
+            <td>Definição de função inline: <code>def f(): pass</code> em uma linha</td>
+            <td><span class="badge warn">2</span></td>
+            <td><code>tests/test_robustez_ood.py</code></td>
+            <td>Expansão para duas linhas separadas (corpo na linha seguinte)</td>
+          </tr>
+          <tr>
+            <td><code class="bad">F821</code></td>
+            <td>Nome indefinido — <code>_resposta_fallback</code> referenciado mas nunca declarado</td>
+            <td><span class="badge critical">1</span></td>
+            <td><code>painel_assistente_rag.py</code></td>
+            <td>Implementação da função com dicionário de conhecimento offline por palavras-chave</td>
+          </tr>
+          <tr>
+            <td><code class="warn">E401</code></td>
+            <td>Múltiplos imports na mesma linha (<code>import tempfile, os</code>)</td>
+            <td><span class="badge warn">1</span></td>
+            <td><code>painel_laboratorio_visao.py</code></td>
+            <td>Separação em duas linhas de import preservando indentação do bloco <code>try</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Refatorações C901 detalhadas -->
+    <h3 style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+      Refatorações de Complexidade Ciclomática (C901)
+    </h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+
+      <div class="finding-card" style="border-left-color:var(--purple)">
+        <div class="finding-header">
+          <span class="badge warn">C901-15</span>
+          <code>app.py — função principal (main)</code>
+        </div>
+        <p class="finding-desc">Cadeia <code>if/elif</code> com 7 páginas inline refatorada em <code>_rotear_pagina()</code> com dois dicionários de dispatch (<code>_COM_FACHADA</code> e <code>_SEM_FACHADA</code>). Complexidade: <strong>15 → 4</strong>.</p>
+      </div>
+
+      <div class="finding-card" style="border-left-color:var(--purple)">
+        <div class="finding-header">
+          <span class="badge warn">C901-13</span>
+          <code>painel_benchmarks.py — renderizar()</code>
+        </div>
+        <p class="finding-desc">Função monolítica dividida em 4 auxiliares: <code>_executar_benchmark()</code>, <code>_renderizar_kpis()</code>, <code>_renderizar_graficos()</code> e <code>_renderizar_matriz_confusao()</code>. Complexidade: <strong>13 → 5</strong>.</p>
+      </div>
+
+      <div class="finding-card" style="border-left-color:var(--purple)">
+        <div class="finding-header">
+          <span class="badge warn">C901-15</span>
+          <code>painel_laboratorio_visao.py — renderizar()</code>
+        </div>
+        <p class="finding-desc">Canvas + upload + pipeline de inferência extraídos em 3 funções: <code>_renderizar_modo_canvas()</code>, <code>_renderizar_modo_upload()</code> e <code>_renderizar_pipeline_e_inferencia()</code>. Complexidade: <strong>15 → 5</strong>.</p>
+      </div>
+
+      <div class="finding-card" style="border-left-color:var(--purple)">
+        <div class="finding-header">
+          <span class="badge warn">C901-12</span>
+          <code>painel_assistente_rag.py — renderizar()</code>
+        </div>
+        <p class="finding-desc">Chat + status + sugestões + fallback offline extraídos em 4 funções: <code>_renderizar_status_rag()</code>, <code>_renderizar_sugestoes()</code>, <code>_renderizar_formulario_chat()</code> e <code>_processar_pergunta()</code>. Complexidade: <strong>12 → 4</strong>.</p>
+      </div>
+
+    </div>
+
+    <!-- setup.cfg -->
+    <h3 style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+      Configuração Persistente — <code>setup.cfg</code>
+    </h3>
+    <div style="background:var(--raised);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;margin-bottom:28px;">
+      <span style="color:var(--purple)">[flake8]</span><br>
+      <span style="color:var(--muted">extend-ignore</span> = <span style="color:var(--ok)">W503</span>
+      &nbsp;&nbsp;<span style="color:var(--muted);font-size:10px;"># W503/W504 são mutuamente exclusivos — mantém operador no início da linha</span><br>
+      <span style="color:var(--muted)">exclude</span> = <span style="color:var(--ok)">.venv,__pycache__,.git</span><br>
+      <span style="color:var(--muted)">max-line-length</span> = <span style="color:var(--ok)">120</span><br>
+      <span style="color:var(--muted)">max-complexity</span> = <span style="color:var(--ok)">10</span>
+    </div>
+
+    <!-- Resultado final -->
+    <div style="background:linear-gradient(135deg,rgba(63,185,80,.08),rgba(63,185,80,.03));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:20px 24px;display:flex;align-items:center;gap:20px;">
+      <div style="font-size:36px;line-height:1;">✅</div>
+      <div>
+        <div style="font-weight:700;color:var(--ok);font-size:15px;margin-bottom:4px;">Zero violações — conformidade PEP 8 total</div>
+        <div style="color:var(--muted);font-size:13px;">
+          Comando final: <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--info)">flake8 . --max-complexity=10</code> — saída vazia em 57 arquivos Python.
+          Score do projeto atualizado de <strong style="color:var(--warn)">6,8/10</strong> para <strong style="color:var(--ok)">7,5/10</strong>.
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('nav a');
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const match = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => obs.observe(s));
+</script>

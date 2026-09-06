@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import torch.optim as optim
 
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.utilitarios.excecoes import ModeloNaoTreinadoError
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +70,15 @@ class ModeloViT(ModeloAbstratoIA):
         self.epocas = epocas
         self.batch_size = batch_size
         
-        # Otimizações para CPU
-        torch.set_num_threads(4)
-        self.device = torch.device("cpu")
+        # Otimizações e detecção automática de Hardware (GPU/CUDA, Apple MPS ou CPU)
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            torch.set_num_threads(4)
+            self.device = torch.device("cpu")
+            
         self.model = ViT(num_classes=self._classes).to(self.device)
         
         logger.info(f"[{self.nome_log}] Inicializado (PyTorch ViT Engine). Device: {self.device}")
@@ -118,7 +125,7 @@ class ModeloViT(ModeloAbstratoIA):
     def prever_probabilidades(self, X_teste: Any) -> np.ndarray:
         """Forward pass na rede neural retornando Softmax (probabilidades)."""
         if not self._treinado:
-            raise Exception("Modelo ViT ainda não foi treinado (fit).")
+            raise ModeloNaoTreinadoError("Modelo ViT ainda não foi treinado (fit).")
 
         X_tensor = torch.tensor(X_teste, dtype=torch.float32).view(-1, 1, 28, 28)
         dataset = TensorDataset(X_tensor)
