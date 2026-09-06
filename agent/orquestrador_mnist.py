@@ -73,30 +73,54 @@ class OrquestradorMNISTAgente:
         metricas: Dict[str, Any] = {}
         fachada = FachadaPipelineIA()
 
-        # ── Fase 1: Dados e EDA ───────────────────────────────────────────────
+        # Fase 1: Dados e EDA — falha aqui encerra o pipeline
+        if not self._fase1_dados(fachada, erros):
+            return self._montar_resultado(erros, metricas, "FALHA")
+
+        # Fase 2: Treinamento
+        modelos_selecionados: List[str] = self.configuracoes.get(
+            "modelos_selecionados", FabricaModelos.listar_disponiveis()
+        )
+        self._fase2_treino(fachada, modelos_selecionados, erros)
+
+        # Fase 3: Avaliação individual
+        self._fase3_avaliacao(fachada, metricas, erros)
+
+        # Fase 4: Benchmark comparativo
+        self._fase4_benchmark(fachada, metricas, erros)
+
+        # Status final
+        modelos_avaliados = list(metricas.keys())
+        if not erros:
+            status = "SUCESSO"
+        elif modelos_avaliados:
+            status = "PARCIAL"
+        else:
+            status = "FALHA"
+
+        return self._montar_resultado(erros, metricas, status)
+
+    # ── Fases privadas ────────────────────────────────────────────────────────
+
+    def _fase1_dados(self, fachada: Any, erros: List[str]) -> bool:
+        """Fase 1: Inicialização dos dados e EDA. Retorna False em caso de falha."""
         logger.info("[Orquestrador] Fase 1 — Inicialização de dados e EDA.")
         try:
             fachada.inicializar_dados()
             self.estado_execucao["eda_concluido"] = True
             self.estado_execucao["dados_preparados"] = True
             logger.info("[Orquestrador] Dados inicializados com sucesso.")
+            return True
         except Exception as exc:
             msg = f"Fase 1 (Dados/EDA): {exc}"
             erros.append(msg)
             logger.error("[Orquestrador] %s", msg)
-            # Sem dados não há como continuar
-            return self._montar_resultado(erros, metricas, "FALHA")
+            return False
 
-        # ── Fase 2: Treinamento dos modelos ───────────────────────────────────
-        modelos_selecionados: List[str] = self.configuracoes.get(
-            "modelos_selecionados", FabricaModelos.listar_disponiveis()
-        )
-        logger.info(
-            "[Orquestrador] Fase 2 — Treinando %d modelo(s): %s",
-            len(modelos_selecionados),
-            modelos_selecionados,
-        )
-        for nome_modelo in modelos_selecionados:
+    def _fase2_treino(self, fachada: Any, modelos: List[str], erros: List[str]) -> None:
+        """Fase 2: Treinamento dos modelos selecionados."""
+        logger.info("[Orquestrador] Fase 2 — Treinando %d modelo(s).", len(modelos))
+        for nome_modelo in modelos:
             try:
                 fachada.treinar_modelo(nome_modelo)
                 self.estado_execucao["modelos_treinados"].append(nome_modelo)
@@ -106,7 +130,8 @@ class OrquestradorMNISTAgente:
                 erros.append(msg)
                 logger.warning("[Orquestrador] %s", msg)
 
-        # ── Fase 3: Avaliação individual ──────────────────────────────────────
+    def _fase3_avaliacao(self, fachada: Any, metricas: Dict[str, Any], erros: List[str]) -> None:
+        """Fase 3: Avaliação individual de cada modelo treinado."""
         logger.info("[Orquestrador] Fase 3 — Avaliando modelos treinados.")
         for nome_modelo in list(self.estado_execucao["modelos_treinados"]):
             try:
@@ -121,36 +146,26 @@ class OrquestradorMNISTAgente:
                 msg = f"Fase 3 (Avaliação/{nome_modelo}): {exc}"
                 erros.append(msg)
                 logger.warning("[Orquestrador] %s", msg)
-
         if metricas:
             self.estado_execucao["avaliacao_concluida"] = True
 
-        # ── Fase 4: Benchmark comparativo ─────────────────────────────────────
+    def _fase4_benchmark(self, fachada: Any, metricas: Dict[str, Any], erros: List[str]) -> None:
+        """Fase 4: Benchmark comparativo entre os modelos avaliados."""
         logger.info("[Orquestrador] Fase 4 — Benchmark comparativo.")
         modelos_avaliados = list(metricas.keys())
-        if modelos_avaliados:
-            try:
-                fachada.executar_benchmark(modelos_avaliados)
-                logger.info(
-                    "[Orquestrador] Benchmark concluído para %d modelo(s).",
-                    len(modelos_avaliados),
-                )
-            except Exception as exc:
-                msg = f"Fase 4 (Benchmark): {exc}"
-                erros.append(msg)
-                logger.warning("[Orquestrador] %s", msg)
-        else:
+        if not modelos_avaliados:
             erros.append("Fase 4 ignorada: nenhum modelo avaliado com sucesso.")
-
-        # ── Resultado final ───────────────────────────────────────────────────
-        if not erros:
-            status = "SUCESSO"
-        elif modelos_avaliados:
-            status = "PARCIAL"
-        else:
-            status = "FALHA"
-
-        return self._montar_resultado(erros, metricas, status)
+            return
+        try:
+            fachada.executar_benchmark(modelos_avaliados)
+            logger.info(
+                "[Orquestrador] Benchmark concluído para %d modelo(s).",
+                len(modelos_avaliados),
+            )
+        except Exception as exc:
+            msg = f"Fase 4 (Benchmark): {exc}"
+            erros.append(msg)
+            logger.warning("[Orquestrador] %s", msg)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 

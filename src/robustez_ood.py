@@ -10,7 +10,10 @@ Nota de logging:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.schemas import RelatorioOOD
 
 import numpy as np
 from numpy.typing import NDArray
@@ -128,7 +131,7 @@ class AnalisadorRobustezOOD:
         modelo: ModeloAbstratoIA,
         X_ood: NDArray[np.float32],
         y_ood_real: NDArray[np.int32],
-    ) -> Dict[str, Any]:
+    ) -> "RelatorioOOD":
         """Submete o modelo às instâncias OOD e mensura a taxa de Falsa Certeza.
 
         Compatível com a nova interface ``ResultadoValidacao`` (NamedTuple) do
@@ -141,16 +144,13 @@ class AnalisadorRobustezOOD:
             y_ood_real: Rótulos originais das instâncias OOD de shape ``(N,)``.
 
         Returns:
-            Dicionário com:
-                - ``total_amostras_ood``: int
-                - ``total_falsa_certeza``: int
-                - ``taxa_overconfidence``: float em ``[0, 1]``
-                - ``entropia_media``: float
-                - ``classes_ood``: List[int]
+            RelatorioOOD: Objeto Pydantic com o relatório.
 
         Raises:
             TypeError: Se o modelo não implementar ``prever_probabilidades()``.
         """
+        from src.schemas import RelatorioOOD
+
         if not hasattr(modelo, "prever_probabilidades"):
             raise TypeError(
                 "O modelo deve implementar 'prever_probabilidades' "
@@ -192,13 +192,13 @@ class AnalisadorRobustezOOD:
             total_amostras,
         )
 
-        return {
-            "total_amostras_ood": total_amostras,
-            "total_falsa_certeza": alertas_overconfidence,
-            "taxa_overconfidence": taxa_overconfidence,
-            "entropia_media": entropia_media,
-            "classes_ood": self.classes_mascaradas,
-        }
+        return RelatorioOOD(
+            total_amostras_ood=total_amostras,
+            total_falsa_certeza=alertas_overconfidence,
+            taxa_overconfidence=taxa_overconfidence,
+            entropia_media=entropia_media,
+            classes_ood=self.classes_mascaradas,
+        )
 
 
 # ── Função de conveniência para o painel Streamlit ────────────────────────────
