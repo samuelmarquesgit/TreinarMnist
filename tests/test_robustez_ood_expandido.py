@@ -168,3 +168,64 @@ def test_executar_experimento_ood_classes_padrao_sao_4_e_7():
     # Deve funcionar sem levantar erros com classes default
     resultado = executar_experimento_ood(fachada, n_amostras=20)
     assert resultado.shape[1] == 10
+
+
+# ── AnalisadorOOD — linhas descobertas ────────────────────────────────────────
+
+
+from unittest.mock import MagicMock, patch
+
+from src.robustez_ood import AnalisadorRobustezOOD as AnalisadorOOD
+
+
+def test_preparar_dados_id_sem_classes_ocultas_usa_padrao():
+    """preparar_dados_id sem classes_ocultas deve usar [4, 7] por padrão (linha 84)."""
+    analisador = AnalisadorOOD()
+    X = np.arange(100, dtype=np.float32).reshape(10, 10)
+    y = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=np.int32)
+
+    X_id, y_id = analisador.preparar_dados_id(X, y)  # classes_ocultas=None → padrão [4,7]
+
+    assert analisador.classes_mascaradas == [4, 7]
+    assert 4 not in y_id
+    assert 7 not in y_id
+    assert len(X_id) == 8
+
+
+def test_relatorio_overconfidence_lanca_typeerror_sem_metodo():
+    """relatorio_overconfidence com modelo sem prever_probabilidades levanta TypeError (linha 155)."""
+    analisador = AnalisadorOOD()
+    analisador.classes_mascaradas = [4, 7]
+    modelo_invalido = object()  # não tem prever_probabilidades
+
+    X_ood = np.zeros((5, 10), dtype=np.float32)
+    y_ood = np.zeros(5, dtype=np.int32)
+
+    with pytest.raises(TypeError, match="prever_probabilidades"):
+        analisador.relatorio_overconfidence(modelo_invalido, X_ood, y_ood)
+
+
+def test_relatorio_overconfidence_namedtuple_interface():
+    """relatorio_overconfidence deve usar .alerta_falsa_certeza quando resultado é NamedTuple (linha 174)."""
+    from collections import namedtuple
+
+    ResultadoValidacao = namedtuple("ResultadoValidacao", ["alerta_falsa_certeza", "confianca"])
+
+    analisador = AnalisadorOOD()
+    analisador.classes_mascaradas = [4, 7]
+
+    mock_modelo = MagicMock()
+    mock_modelo.prever_probabilidades.return_value = np.ones((3, 10)) / 10.0
+
+    with patch.object(
+        analisador.validador,
+        "avaliar_predicao",
+        return_value=ResultadoValidacao(alerta_falsa_certeza=True, confianca=0.99),
+    ):
+        relatorio = analisador.relatorio_overconfidence(
+            mock_modelo,
+            np.zeros((3, 10), dtype=np.float32),
+            np.zeros(3, dtype=np.int32),
+        )
+
+    assert relatorio.taxa_overconfidence == pytest.approx(1.0, abs=1e-6)
