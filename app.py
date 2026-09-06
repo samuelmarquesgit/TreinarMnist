@@ -6,8 +6,9 @@ Execução:
     python main.py --modo web
 """
 
-from src.frontend.estilos import aplicar_estilos
 import streamlit as st
+
+from src.frontend.estilos import aplicar_estilos
 
 # ── Configuração da página (deve ser a primeira chamada Streamlit) ─────────
 st.set_page_config(

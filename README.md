@@ -91,8 +91,24 @@ flowchart TD
 * **MongoDB (Docker - Porta 27017):**
   - Armazena documentos flexíveis NoSQL: **Matrizes de Confusão completas $10 \times 10$ em JSON**, **Predições e Probabilidades de todas as amostras**, **Relatórios de Teste OOD** e **Imagens em Base64**.
 * **ChromaDB (Local):**
-  - Banco vetorial para indexação de relatórios técnicos e consultas em linguagem natural via **RAG**.
+  - Banco vetorial para indexação de relatórios técnicos e consultas em linguagem natural via **RAG semântico real** (impulsionado por `sentence-transformers/all-MiniLM-L6-v2`).
 * **Tolerância a Falhas:** Caso o Docker esteja inativo, os repositórios ativam automaticamente o modo *fallback local* salvando os dados em arquivos `.csv` e `.json` em `reports/`.
+
+---
+
+## 🎯 4. Mapeamento das Fases do Projeto (Atendimento aos Requisitos)
+
+Este projeto foi estruturado para atender e superar todos os requisitos do **Mini-Projeto Avaliativo - Módulo 2**, adotando uma abordagem profissional via Streamlit e Módulos `.py`.
+
+* **Fase 1 (EDA):** Implementada no painel `src/frontend/painel_eda.py`. O dataset é baixado, a distribuição das 70.000 amostras (balanceadas) é plotada junto com a grade visual 2x5 dos dígitos. A explicação vetorial (784 features) está presente na interface.
+* **Fase 2 (Pré-processamento):** Implementada em `src/pre_processamento.py`. Realizamos o **Stratified Split** (Treino/Teste) mantendo a proporção das classes, e a **Normalização MinMax [0, 1]**.
+  * > **Justificativa da Normalização:** Fundamental pois modelos baseados em distâncias (KNN, SVM com RBF) dão peso desproporcional a features com escalas maiores. Para modelos lineares e Redes Neurais, a escala [0,1] estabiliza o gradiente descendente, acelerando a convergência matemática e evitando estouro numérico.
+* **Fase 3 (Modelos):** Foram treinados **12 modelos** (superando os 3 exigidos), desde KNN e RandomForest até Vision Transformers, cada um com múltiplos hiperparâmetros ajustados.
+  * > **Justificativa de Hiperparâmetros:** No *Random Forest*, ajustamos `n_estimators=100` (garante diversidade de árvores sem custo excessivo) e `max_depth=20` (evita overfitting extremo). No *KNN*, `n_neighbors=5` suaviza a fronteira e `weights='distance'` dá prioridade a pixels idênticos.
+* **Fase 4 (Avaliação):** Painel `src/frontend/painel_benchmarks.py` gera matrizes de confusão $10 \times 10$ e tabela consolidada de métricas (Accuracy, Precision, Recall, F1). A **conclusão técnica** sobre a confusão de dígitos (ex: 4 vs 9) é fornecida dinamicamente na aba de Conclusões do sistema.
+* **Fase 5 (Robustez OOD e Imagens Próprias):**
+  * **Desafios A e B:** Implementados em `src/robustez_ood.py`. Dígitos 4 e 7 são ocultados no treino. Na inferência, medimos a **Falsa Certeza (Overconfidence)** e a Entropia quando o modelo tenta prever algo que nunca viu.
+  * **Desafio C:** Painel de *Visão Computacional* recebe upload de fotos tiradas pelos alunos, converte para tons de cinza, inverte cores (fundo preto, traço branco), encontra o centro de massa e redimensiona para $28 \times 28$, passando pelo classificador em tempo real.
 
 ---
 

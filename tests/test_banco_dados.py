@@ -1,7 +1,10 @@
-from unittest.mock import patch
-import pytest
 import json
+from unittest.mock import patch
+
+import pytest
+
 from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+
 try:
     from src.banco_dados.conexao_mongodb import ConexaoMongoDB
     _MONGO_DISPONIVEL = True
@@ -74,16 +77,16 @@ def test_conexao_postgres_excecao_rollback():
     """Valida se o context manager faz o rollback adequadamente em caso de erro interno."""
     db = ConexaoPostgres(url='sqlite:///:memory:')
 
-    with pytest.raises(Exception, match="Erro Forcado"):
-        with db.obter_sessao():
-            # O proprio context manager intercepta o erro interno, faz rollback
-            # e da raise
-            raise Exception("Erro Forcado")
+    with pytest.raises(Exception, match="Erro Forcado"), db.obter_sessao():
+        # O proprio context manager intercepta o erro interno, faz rollback
+        # e da raise
+        raise Exception("Erro Forcado")
 
 
 def test_conexao_postgres_cria_diretorio_reports():
     """Valida a criacao do diretorio fallback do sqlite local."""
     import os
+
     from src.banco_dados.conexao_postgres import ConexaoPostgres
 
     # Executa sem falhar, deve criar a pasta 'reports' se iniciada com o caminho relativo

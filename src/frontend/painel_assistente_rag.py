@@ -1,21 +1,39 @@
 """Painel 7 — Chatbot Assistente RAG: perguntas em linguagem natural sobre o projeto."""
 
+# ── Estado da sessão ───────────────────────────────────────────────────────
+import json
+import os
+
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, badge
+from src.frontend.estilos import aplicar_estilos, badge, titulo_secao
 
-
-# ── Estado da sessão ───────────────────────────────────────────────────────
 
 def _inicializar_estado() -> None:
     if "historico_chat" not in st.session_state:
-        st.session_state.historico_chat = []
+        caminho_hist = 'reports/historico_chat.json'
+        historico_inicial = []
+        if os.path.exists(caminho_hist):
+            try:
+                with open(caminho_hist, 'r', encoding='utf-8') as f:
+                    historico_inicial = json.load(f)
+            except Exception:
+                pass
+        st.session_state.historico_chat = historico_inicial
+
     if "rag_pronto" not in st.session_state:
         st.session_state.rag_pronto = False
         st.session_state.assistente = None
 
 
+def _salvar_historico() -> None:
+    os.makedirs('reports', exist_ok=True)
+    with open('reports/historico_chat.json', 'w', encoding='utf-8') as f:
+        json.dump(st.session_state.historico_chat, f, indent=4, ensure_ascii=False)
+
+
 # ── Tentativa de carregar o RAG (gracioso se não estiver implementado) ─────
+
 
 def _carregar_assistente():
     """Tenta importar e instanciar o AssistenteRAG. Retorna None se indisponível."""
@@ -101,16 +119,22 @@ PERGUNTAS_SUGERIDAS = [
 # ── Resposta de fallback (sem RAG ativo) ──────────────────────────────────
 
 _BASE_CONHECIMENTO = {
-    "acurácia": "A acurácia mede a proporção de predições corretas. No projeto, é calculada por sklearn.metrics.accuracy_score.",  # noqa: E501
+    "acurácia": "A acurácia mede a proporção de predições corretas."
+    " No projeto, é calculada por sklearn.metrics.accuracy_score.",
     "precisão": "A precisão (precision) indica a fração de positivos verdadeiros entre todos os positivos previstos.",
     "recall": "O recall mede a fração de positivos verdadeiros corretamente identificados pelo modelo.",
     "f1": "O F1-Score é a média harmônica entre precisão e recall, útil para conjuntos desbalanceados.",
     "ood": "O experimento OOD mascarou as classes 4 e 7 no treino e as apresentou na inferência para avaliar robustez.",
-    "overconfidence": "Falsa certeza ocorre quando o modelo atribui alta probabilidade a uma classe mesmo sem ter aprendido sobre ela.",  # noqa: E501
-    "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
-    "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
-    "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
-    "pipeline": "O pipeline de visão converte a imagem para grayscale, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+    "overconfidence": "Falsa certeza ocorre quando o modelo atribui alta probabilidade"
+    " a uma classe mesmo sem ter aprendido sobre ela.",
+    "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9),"
+    " com 60.000 para treino e 10.000 para teste.",
+    "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens."
+    " Neste projeto é uma implementação educacional em NumPy puro.",
+    "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB"
+    " com geração de resposta contextualizada.",
+    "pipeline": "O pipeline de visão converte a imagem para grayscale, detecta bounding box,"
+    " redimensiona para 20×20 e centraliza em 28×28.",
 }
 
 
@@ -149,7 +173,10 @@ def _renderizar_status_rag() -> None:
                     st.session_state.rag_pronto = True
                     st.success("RAG inicializado com sucesso!")
                 else:
-                    st.warning("Módulo RAG (src/rag/assistente.py) ainda não implementado. Respondendo com base no conhecimento geral do projeto.")  # noqa: E501
+                    st.warning(
+                        "Módulo RAG (src/rag/assistente.py) ainda não implementado. "
+                        "Respondendo com base no conhecimento geral do projeto."
+                    )
 
 
 def _renderizar_sugestoes() -> None:
@@ -176,7 +203,8 @@ def _renderizar_formulario_chat() -> str | None:
             enviado = st.form_submit_button("Enviar ➤", use_container_width=True)
     if enviado and pergunta_digitada:
         return pergunta_digitada
-    return st.session_state.pop("_pergunta_pendente", None)
+    pendente = st.session_state.pop("_pergunta_pendente", None)
+    return str(pendente) if pendente is not None else None
 
 
 def _processar_pergunta(pergunta: str) -> None:
@@ -195,6 +223,7 @@ def _processar_pergunta(pergunta: str) -> None:
             resposta = _resposta_fallback(pergunta)
             fontes = []
     st.session_state.historico_chat.append({"papel": "assistente", "conteudo": resposta, "fontes": fontes})
+    _salvar_historico()
     st.rerun()
 
 

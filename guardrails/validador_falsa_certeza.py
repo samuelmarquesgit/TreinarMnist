@@ -1,6 +1,7 @@
 """Guardrail para detecção de anomalias OOD e alerta de Falsa Certeza (Overconfidence)."""
 
-from typing import Dict, Any, List
+from typing import Any
+
 import numpy as np
 
 
@@ -27,8 +28,8 @@ class ValidadorFalsaCerteza:
     def avaliar_predicao(
         self,
         probabilidades: np.ndarray,
-        classes_conhecidas: List[int]
-    ) -> Dict[str, Any]:
+        classes_conhecidas: list[int]
+    ) -> dict[str, Any]:
         """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
 
         Args:

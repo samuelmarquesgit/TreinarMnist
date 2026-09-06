@@ -1,5 +1,7 @@
 from unittest.mock import patch
+
 import numpy as np
+
 from src.pre_processamento import pre_processar_dados
 
 
@@ -8,7 +10,7 @@ def test_pre_processar_dados():
     X = np.random.rand(100, 10)
     y = np.random.randint(0, 10, 100)
 
-    X_treino_norm, X_teste_norm, y_treino, y_teste, scaler = pre_processar_dados(
+    X_treino_norm, X_teste_norm, _y_treino, _y_teste, _scaler = pre_processar_dados(
         X, y)
 
     # Verifica splits (80/20)
@@ -53,7 +55,7 @@ def test_anti_leakage_scaler(mock_split):
     X_fake = np.zeros((100, 2))
     y_fake = np.zeros(100)
 
-    X_treino_norm, X_teste_norm, y_t, y_te, scaler = pre_processar_dados(
+    _X_treino_norm, X_teste_norm, _y_t, _y_te, scaler = pre_processar_dados(
         X_fake, y_fake)
 
     # O valor maximo encontrado pelo scaler deve ser proximo a 5, nao a 10
