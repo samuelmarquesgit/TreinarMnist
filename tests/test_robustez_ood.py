@@ -105,7 +105,7 @@ def test_relatorio_overconfidence_predicting_unknown_class():
 
 def test_relatorio_overconfidence_lanca_typeerror():
     from src.robustez_ood import obter_probabilidades
-    
+
     class ModeloInvalidoSemNada:
         pass
 
