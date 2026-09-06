@@ -1,7 +1,7 @@
 """Testes do ModeloViT — ignorados automaticamente se torch/timm não instalados."""
 
-import pytest
 import numpy as np
+import pytest
 
 torch = pytest.importorskip("torch", reason="PyTorch não instalado — testes ViT ignorados")
 pytest.importorskip("timm", reason="timm não instalado — testes ViT ignorados")

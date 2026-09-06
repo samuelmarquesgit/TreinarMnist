@@ -5,12 +5,11 @@ import pandas as pd
 import streamlit as st
 from scipy import stats as scipy_stats
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
 from src.analise_estatistica import CalculadorEstatistico
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
-    import plotly.figure_factory as ff
     import plotly.graph_objects as go
     PLOTLY_OK = True
 except ImportError:
@@ -143,11 +142,12 @@ def renderizar(fachada) -> None:
         with abas[0]:
             amostra = dados if len(dados) <= 50_000 else np.random.choice(
                 dados, 50_000, replace=False)
-            fig_h = ff.create_distplot(
-                [amostra.tolist()], [label_ctx],
-                bin_size=(25 if "Brutos" in modo else 0.02),
-                colors=["#58a6ff"],
-                show_rug=False,
+            nbins = int((max(amostra) - min(amostra)) / (25 if "Brutos" in modo else 0.02)) if len(amostra) > 0 else 50
+            nbins = max(nbins, 10)
+            df_amostra = pd.DataFrame({"Intensidade": amostra})
+            fig_h = px.histogram(
+                df_amostra, x="Intensidade", nbins=nbins,
+                histnorm='density', color_discrete_sequence=["#58a6ff"]
             )
             fig_h.update_layout(
                 **_TEMA,
