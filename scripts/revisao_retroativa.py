@@ -1,7 +1,7 @@
-import os
 import glob
-import subprocess
+import os
 import re
+import subprocess
 
 
 def run_cmd(cmd):
@@ -38,7 +38,7 @@ for arquivo in arquivos:
     # Identifica defs e classes
     partes = []
     for i, linha in enumerate(linhas):
-        if linha.startswith('def ') or linha.startswith('class '):
+        if linha.startswith(('def ', 'class ')):
             nome = re.search(r'(def|class)\s+([a-zA-Z0-9_]+)', linha)
             if nome:
                 partes.append((i, nome.group(2)))

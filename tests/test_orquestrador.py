@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 from agent.orquestrador_mnist import OrquestradorMNISTAgente
 
-
 # ── Helpers ────────────────────────────────────────────────────────────────
 
 
@@ -204,7 +203,7 @@ def test_fase1_captura_excecao_e_retorna_false():
     """_fase1_dados com exceção deve capturar erro e retornar False."""
     agente = OrquestradorMNISTAgente()
     fachada = MagicMock()
-    fachada.inicializar_dados.side_effect = IOError("disco cheio")
+    fachada.inicializar_dados.side_effect = OSError("disco cheio")
     erros: list = []
 
     ok = agente._fase1_dados(fachada, erros)

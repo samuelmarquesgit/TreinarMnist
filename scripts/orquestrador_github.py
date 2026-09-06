@@ -1,5 +1,5 @@
-import subprocess
 import argparse
+import subprocess
 import sys
 
 # ID do Projeto (Kanban) do Usuário fornecido na URL: https://github.com/users/samuelmarquesgit/projects/6

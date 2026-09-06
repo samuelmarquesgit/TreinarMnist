@@ -6,7 +6,7 @@ import pytest
 torch = pytest.importorskip("torch", reason="PyTorch não instalado — testes ViT ignorados")
 pytest.importorskip("timm", reason="timm não instalado — testes ViT ignorados")
 
-from src.modelos.vision_transformer import ModeloViT  # noqa: E402
+from src.modelos.vision_transformer import ModeloViT
 
 
 def test_vit_inicializacao():

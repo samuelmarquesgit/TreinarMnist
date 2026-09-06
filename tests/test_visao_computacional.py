@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 import numpy as np
 
 from src.visao_computacional import processar_imagem_usuario
@@ -55,7 +56,6 @@ def test_processar_imagem_usuario_all_black():
 
 def test_processar_imagem_usuario_max_dim_zero():
     """cv2.boundingRect retornando w=h=0 deve retornar array zerado — linha 54."""
-    import cv2
     img = np.zeros((50, 50, 3), dtype=np.uint8)
     img[15:35, 15:35] = 200  # bright region so contours are found
 

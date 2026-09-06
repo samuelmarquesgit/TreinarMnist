@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ── Helpers ────────────────────────────────────────────────────────────────
 
 
@@ -63,6 +62,7 @@ class TestIndexadorChromaDB:
 
         with patch.dict("sys.modules", {"chromadb": chromadb_mock}):
             from importlib import reload
+
             import src.rag.indexador as idx_mod
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
@@ -88,6 +88,7 @@ class TestIndexadorChromaDB:
 
         with patch.dict("sys.modules", {"chromadb": chromadb_mock}):
             from importlib import reload
+
             import src.rag.indexador as idx_mod
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
@@ -107,6 +108,7 @@ class TestIndexadorChromaDB:
 
         with patch.dict("sys.modules", {"chromadb": chromadb_mock}):
             from importlib import reload
+
             import src.rag.indexador as idx_mod
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
@@ -130,6 +132,7 @@ class TestIndexadorChromaDB:
 
         with patch.dict("sys.modules", {"chromadb": chromadb_mock}):
             from importlib import reload
+
             import src.rag.indexador as idx_mod
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
@@ -148,6 +151,7 @@ class TestIndexadorChromaDB:
             # Força ImportError dentro de _inicializar
             with patch.dict("sys.modules", {"chromadb": None}):
                 from importlib import reload
+
                 import src.rag.indexador as idx_mod
                 with pytest.raises(ImportError, match="ChromaDB"):
                     reload(idx_mod)
@@ -178,6 +182,7 @@ def _criar_assistente_com_mock(tmp_path, chunks_retornados=None):
 
     with patch("src.rag.assistente.IndexadorChromaDB", return_value=mock_indexador):
         from importlib import reload
+
         import src.rag.assistente as assistente_mod
         reload(assistente_mod)
         assistente = assistente_mod.AssistenteRAG(

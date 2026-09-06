@@ -201,7 +201,11 @@ class FachadaPipelineIA:
             )
         modelo = self.modelos[nome_modelo]
         y_previsto = modelo.prever(self.X_teste)  # type: ignore[arg-type]
-        return calcular_metricas(self.y_teste, y_previsto)  # type: ignore[arg-type]
+        try:
+            y_probabilidades = modelo.prever_probabilidades(self.X_teste) # type: ignore[arg-type]
+        except Exception:
+            y_probabilidades = None
+        return calcular_metricas(self.y_teste, y_previsto, y_probabilidades)  # type: ignore[arg-type]
 
     def prever_probabilidades(
         self,

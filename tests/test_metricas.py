@@ -69,8 +69,9 @@ def test_calcular_metricas_com_probabilidades_roc_brier():
 
 def test_calcular_metricas_probabilidades_invalidas_nao_levanta():
     """ROC-AUC com probabilidades invalidas deve silenciar excecao — linhas 55-56."""
-    import numpy as np
     from unittest.mock import patch
+
+    import numpy as np
 
     y_verdadeiro = [0, 1]
     y_previsto = [0, 1]

@@ -108,4 +108,14 @@ class FabricaModelos:
                 f"Modelos suportados: {list(FabricaModelos._REGISTRO_MODELOS.keys()) + ['VisionTransformer']}")
 
         logger.info(f"Fabrica instanciando novo modelo: {nome_modelo}")
-        return ModeloSklearn(construtor(), nome_log=nome_modelo)
+        estimador_base = construtor()
+        
+        # Aplica Validação Cruzada (cv=5) e Calibração Isotônica (exceto Redes Neurais e Reg Logística pura)
+        if nome_modelo not in ["PerceptronMulticamadas", "RegressaoLogistica"]:
+            from sklearn.calibration import CalibratedClassifierCV
+            logger.info(f"[{nome_modelo}] Aplicando K-Fold (cv=5) e Calibração Isotônica...")
+            # method='isotonic' é rigoroso para multiclasse e requer amostras suficientes por fold
+            # cv=5 garante validação cruzada real e não enviesada
+            estimador_base = CalibratedClassifierCV(estimador_base, method='isotonic', cv=5)
+
+        return ModeloSklearn(estimador_base, nome_log=nome_modelo)

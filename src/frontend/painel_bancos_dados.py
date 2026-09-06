@@ -138,7 +138,7 @@ def renderizar() -> None:
                         paper_bgcolor="rgba(0,0,0,0)",
                         plot_bgcolor="rgba(0,0,0,0)",
                         coloraxis_showscale=False,
-                        margin=dict(t=20, b=20),
+                        margin={"t": 20, "b": 20},
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except ImportError:
