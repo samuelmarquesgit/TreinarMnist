@@ -20,11 +20,12 @@ def _inicializar_estado() -> None:
 def _carregar_assistente():
     """Tenta importar e instanciar o AssistenteRAG. Retorna None se indisponível."""
     try:
-        from src.rag.assistente import AssistenteRAG  # type: ignore
-        assistente = AssistenteRAG()
-        assistente.indexar_documentos()
+        from src.modelos.suporte_rag import SuporteRAG
+        assistente = SuporteRAG()
+        # O construtor do SuporteRAG já indexa os documentos, então apenas retornamos
         return assistente
-    except (ImportError, Exception):
+    except (ImportError, Exception) as e:
+        print(f"RAG indisponível: {e}")
         return None
 
 
