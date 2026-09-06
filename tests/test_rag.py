@@ -1,10 +1,10 @@
 """Testes do SuporteRAG — embedding mockado para dispensar acesso à rede."""
 
-import pytest
 import numpy as np
-
+import pytest
 
 # ── Embedding fake compatível com a API interna do ChromaDB ────────────────
+
 
 class _EmbeddingFake:
     """Embedding determinístico baseado em hash — sem rede, sem modelo externo."""
@@ -24,10 +24,10 @@ class _EmbeddingFake:
             resultado.append(v.tolist())
         return resultado
 
-    def __call__(self, input):  # noqa: A002  — add / index
+    def __call__(self, input):
         return self._vetorizar(input)
 
-    def embed_query(self, input):  # noqa: A002  — query
+    def embed_query(self, input):
         return self._vetorizar(input)
 
 
