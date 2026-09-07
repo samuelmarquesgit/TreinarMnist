@@ -38,7 +38,7 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     if os.path.exists(cache_path):
         logger.info("Carregando MNIST do cache local...")
         try:
-            dados: tuple[np.ndarray, np.ndarray] = joblib.load(cache_path)  # type: ignore[assignment]
+            dados: tuple[np.ndarray, np.ndarray] = joblib.load(cache_path)  # type: ignore[assignment, no-any-return]
             return dados
         except Exception as e:
             logger.warning(

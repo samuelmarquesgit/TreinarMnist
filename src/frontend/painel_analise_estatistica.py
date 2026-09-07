@@ -12,8 +12,8 @@ try:
     import plotly.express as px
     import plotly.graph_objects as go
     PLOTLY_OK = True
-except ImportError:
-    PLOTLY_OK = False
+except ImportError:  # pragma: no cover
+    PLOTLY_OK = False  # pragma: no cover
 
 _TEMA = {
     "paper_bgcolor": "rgba(0,0,0,0)",
@@ -34,10 +34,10 @@ def _obter_dados(fachada, modo: str, particao: str,
 
     if modo == "Brutos [0–255]":
         res1: np.ndarray = (X * 255).flatten().astype(float)
-        return res1
+        return res1  # type: ignore[return-value]
     else:
         res2: np.ndarray = X.flatten().astype(float)
-        return res2
+        return res2  # type: ignore[return-value]
 
 
 def _card_metricas(stats_dict: dict) -> None:
