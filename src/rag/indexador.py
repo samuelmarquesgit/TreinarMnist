@@ -288,4 +288,4 @@ class IndexadorChromaDB:
 
     def total_documentos(self) -> int:
         """Retorna o total de documentos na coleção."""
-        return int(self._colecao.count())
+        return int(self._colecao.count())  # type: ignore[return-value]

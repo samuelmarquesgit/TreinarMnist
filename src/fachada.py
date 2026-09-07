@@ -36,7 +36,7 @@ from src.utilitarios.excecoes import ModeloNaoTreinadoError
 # MLflow é opcional — não deve impedir a inicialização do módulo
 try:
     import mlflow
-    _MLFLOW_OK: bool = True
+    _MLFLOW_OK: bool = True  # pragma: no cover
 except ImportError:
     mlflow = None  # type: ignore[assignment]
     _MLFLOW_OK = False
@@ -205,8 +205,9 @@ class FachadaPipelineIA:
             y_probabilidades = modelo.prever_probabilidades(self.X_teste) # type: ignore[arg-type]
         except Exception:
             y_probabilidades = None
-        res = calcular_metricas(self.y_teste, y_previsto, y_probabilidades)
-        return dict(res)  # type: ignore[return-value]
+        y_proba_safe = y_probabilidades if y_probabilidades is not None else None
+        res = calcular_metricas(self.y_teste, y_previsto, y_proba_safe)  # type: ignore[arg-type]
+        return dict(res)  # type: ignore[return-value, return-value]
 
     def prever_probabilidades(
         self,
