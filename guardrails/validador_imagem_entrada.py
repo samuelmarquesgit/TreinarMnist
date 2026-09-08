@@ -1,6 +1,7 @@
 """Guardrail para validação de imagens de entrada no pipeline de visão computacional."""
 
 import os
+
 from PIL import Image
 
 

@@ -1,13 +1,15 @@
 import logging
 from typing import Any
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neural_network import MLPClassifier
 
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
+from src.config import config_modelos
 from src.modelos.base_modelo import ModeloAbstratoIA
 
 # Configuração de log
@@ -58,15 +60,25 @@ class FabricaModelos:
     """
 
     _REGISTRO_MODELOS = {
-        'RegressaoLogistica': lambda: LogisticRegression(max_iter=500, random_state=42),
-        'ArvoreDecisao': lambda: DecisionTreeClassifier(random_state=42),
-        'FlorestaAleatoria': lambda: RandomForestClassifier(n_estimators=50, random_state=42),
-        'ImpulsionamentoGradiente': lambda: GradientBoostingClassifier(n_estimators=50, random_state=42),
-        'SVM': lambda: SVC(kernel='rbf', random_state=42, probability=True),
-        'KNN': lambda: KNeighborsClassifier(n_neighbors=5),
-        'NaiveBayes': lambda: GaussianNB(),
-        'PerceptronMulticamadas': lambda: MLPClassifier(hidden_layer_sizes=(100,), max_iter=300, random_state=42)
+        'RegressaoLogistica': lambda: LogisticRegression(**config_modelos.regressao_logistica.model_dump()),
+        'ArvoreDecisao': lambda: DecisionTreeClassifier(**config_modelos.arvore_decisao.model_dump()),
+        'FlorestaAleatoria': lambda: RandomForestClassifier(**config_modelos.floresta_aleatoria.model_dump()),
+        'ImpulsionamentoGradiente': lambda: GradientBoostingClassifier(
+            **config_modelos.impulsionamento_gradiente.model_dump()),
+        'SVM': lambda: SVC(**config_modelos.svm.model_dump()),
+        'KNN': lambda: KNeighborsClassifier(**config_modelos.knn.model_dump()),
+        'NaiveBayes': lambda: GaussianNB(**config_modelos.naive_bayes.model_dump()),
+        'PerceptronMulticamadas': lambda: MLPClassifier(
+            hidden_layer_sizes=tuple(config_modelos.perceptron_multicamadas.hidden_layer_sizes),
+            max_iter=config_modelos.perceptron_multicamadas.max_iter,
+            random_state=config_modelos.perceptron_multicamadas.random_state
+        )
     }
+
+    @staticmethod
+    def listar_disponiveis() -> list[str]:
+        """Retorna a lista de modelos suportados pela fábrica."""
+        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + ['VisionTransformer']
 
     @staticmethod
     def criar_modelo(nome_modelo: str) -> ModeloAbstratoIA:
@@ -85,7 +97,11 @@ class FabricaModelos:
         if nome_modelo == 'VisionTransformer':
             from src.modelos.vision_transformer import ModeloViT
             logger.info(f"Fabrica instanciando novo modelo: {nome_modelo}")
-            return ModeloViT(nome_log=nome_modelo)
+            return ModeloViT(
+                nome_log=nome_modelo,
+                epocas=config_modelos.vision_transformer.epocas,
+                batch_size=config_modelos.vision_transformer.batch_size
+            )
 
         construtor = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
 
@@ -97,4 +113,14 @@ class FabricaModelos:
                 f"Modelos suportados: {list(FabricaModelos._REGISTRO_MODELOS.keys()) + ['VisionTransformer']}")
 
         logger.info(f"Fabrica instanciando novo modelo: {nome_modelo}")
-        return ModeloSklearn(construtor(), nome_log=nome_modelo)
+        estimador_base = construtor()
+        
+        # Aplica Validação Cruzada (cv=5) e Calibração Isotônica (exceto Redes Neurais e Reg Logística pura)
+        if nome_modelo not in ["PerceptronMulticamadas", "RegressaoLogistica"]:
+            from sklearn.calibration import CalibratedClassifierCV
+            logger.info(f"[{nome_modelo}] Aplicando K-Fold (cv=5) e Calibração Isotônica...")
+            # method='isotonic' é rigoroso para multiclasse e requer amostras suficientes por fold
+            # cv=5 garante validação cruzada real e não enviesada
+            estimador_base = CalibratedClassifierCV(estimador_base, method='isotonic', cv=5)
+
+        return ModeloSklearn(estimador_base, nome_log=nome_modelo)
