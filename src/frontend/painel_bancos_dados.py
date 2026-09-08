@@ -1,17 +1,16 @@
 """Painel 6 — Monitor de Bancos de Dados: PostgreSQL (SQLAlchemy) + MongoDB (fallback JSON)."""
 
-import os
-import json
 import glob
+import json
+import os
 from datetime import datetime
 
 import pandas as pd
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, badge, kpi_tile
-from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
 from src.banco_dados.conexao_mongodb import ConexaoMongoDB
-
+from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+from src.frontend.estilos import aplicar_estilos, badge, kpi_tile, titulo_secao
 
 # ── helpers ────────────────────────────────────────────────────────────────
 
@@ -32,7 +31,7 @@ def _obter_experimentos_postgres() -> pd.DataFrame:
             "Tempo Treino (s)": f"{r.tempo_treino:.2f}" if r.tempo_treino is not None else "—",
             "Data de Execução": r.data_execucao.strftime("%d/%m/%Y %H:%M:%S") if r.data_execucao else "—",
         } for r in registros])
-    except Exception as erro:
+    except Exception as erro:  # noqa: BLE001
         st.error(f"Erro ao consultar PostgreSQL: {erro}")
         return pd.DataFrame()
 
@@ -57,11 +56,11 @@ def _obter_artefatos_mongodb() -> list[dict]:
                 with open(caminho, encoding="utf-8") as f:
                     dados = json.load(f)
                 nome = os.path.splitext(os.path.basename(caminho))[0]
-                mtime = datetime.fromtimestamp(
+                mtime = datetime.fromtimestamp(  # noqa: DTZ006
                     os.path.getmtime(caminho)).strftime("%d/%m/%Y %H:%M:%S")
                 artefatos.append(
                     {"nome": nome, "dados": dados, "salvo_em": mtime})
-            except Exception:
+            except Exception:  # noqa: BLE001, S110
                 pass
     else:
         try:
@@ -69,8 +68,8 @@ def _obter_artefatos_mongodb() -> list[dict]:
                 {}, {
                     "_id": 0}).sort(
                     "_id", -1).limit(20):
-                artefatos.append(doc)
-        except Exception as erro:
+                artefatos.append(doc)  # noqa: PERF402
+        except Exception as erro:  # noqa: BLE001
             st.error(f"Erro ao consultar MongoDB: {erro}")
 
     return artefatos
@@ -94,7 +93,7 @@ def renderizar() -> None:
     with aba_pg:
         titulo_secao("Tabela de Experimentos")
 
-        col_att, col_esp = st.columns([1, 5])
+        col_att, _col_esp = st.columns([1, 5])
         with col_att:
             st.button("🔄 Atualizar", key="att_pg")
 
@@ -148,7 +147,7 @@ def renderizar() -> None:
                         paper_bgcolor="rgba(0,0,0,0)",
                         plot_bgcolor="rgba(0,0,0,0)",
                         coloraxis_showscale=False,
-                        margin=dict(t=20, b=20),
+                        margin={"t": 20, "b": 20},
                     )
                     st.plotly_chart(fig, use_container_width=True)
             except ImportError:
@@ -206,7 +205,7 @@ def renderizar() -> None:
                         try:
                             df_mat = pd.DataFrame(dados[chave])
                             st.dataframe(df_mat, use_container_width=True)
-                        except Exception:
+                        except Exception:  # noqa: BLE001
                             st.json(dados)
                     else:
                         st.json(dados)

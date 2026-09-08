@@ -1,13 +1,15 @@
-import mlflow
 import time
-from typing import Any, Dict
+from typing import Any
+
+import mlflow
 import numpy as np
-from src.carregador_dados import carregar_dados_mnist
-from src.pre_processamento import pre_processar_dados
-from src.modelos.fabrica_modelos import FabricaModelos
-from src.avaliacao_metricas import calcular_metricas
+
 from src.analise_estatistica import CalculadorEstatistico
+from src.avaliacao_metricas import calcular_metricas
+from src.carregador_dados import carregar_dados_mnist
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.modelos.fabrica_modelos import FabricaModelos
+from src.pre_processamento import pre_processar_dados
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
 
 
@@ -19,7 +21,7 @@ class FachadaPipelineIA:
         self.X_teste: np.ndarray | None = None
         self.y_treino: np.ndarray | None = None
         self.y_teste: np.ndarray | None = None
-        self.modelos: Dict[str, ModeloAbstratoIA] = {}
+        self.modelos: dict[str, ModeloAbstratoIA] = {}
         self.scaler: Any = None
         mlflow.set_experiment("Treinamento_MNIST")
 
@@ -28,7 +30,7 @@ class FachadaPipelineIA:
         self.X_treino, self.X_teste, self.y_treino, self.y_teste, self.scaler = pre_processar_dados(
             self.X, self.y)
 
-    def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+    def executar_experimento(self, nome_modelo: str) -> dict[str, Any]:
         """Treina, avalia e registra o ciclo completo de vida no MLflow."""
         if self.X_treino is None or self.y_treino is None:
             self.inicializar_dados()
@@ -36,7 +38,7 @@ class FachadaPipelineIA:
         with mlflow.start_run(run_name=f"Exp_{nome_modelo}"):
             # 1. Treinamento
             inicio = time.time()
-            modelo = self.treinar_modelo(nome_modelo)
+            self.treinar_modelo(nome_modelo)
             tempo_treino = time.time() - inicio
 
             # 2. Avaliação
@@ -68,7 +70,7 @@ class FachadaPipelineIA:
         self.modelos[nome_modelo] = modelo
         return modelo
 
-    def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
+    def avaliar_modelo(self, nome_modelo: str) -> dict[str, Any]:
         if nome_modelo not in self.modelos:
             raise ModeloNaoTreinadoError(f"Modelo {nome_modelo} não foi treinado.")
 
@@ -82,7 +84,7 @@ class FachadaPipelineIA:
         modelo = self.modelos[nome_modelo]
         return modelo.prever_probabilidades(X_entrada)
 
-    def obter_estatisticas_dados(self, tipo: str = 'treino') -> Dict[str, float]:
+    def obter_estatisticas_dados(self, tipo: str = 'treino') -> dict[str, float]:
         calc = CalculadorEstatistico()
         dados = self.X_treino if tipo == 'treino' else self.X_teste
         if dados is None:

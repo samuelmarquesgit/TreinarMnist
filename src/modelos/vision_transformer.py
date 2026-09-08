@@ -1,10 +1,10 @@
 import logging
 from typing import Any
+
 import numpy as np
 import torch
-import torch.nn as nn
+from torch import nn, optim
 from torch.utils.data import DataLoader, TensorDataset
-import torch.optim as optim
 
 from src.modelos.base_modelo import ModeloAbstratoIA
 from src.utilitarios.excecoes import ModeloNaoTreinadoError

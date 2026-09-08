@@ -8,12 +8,12 @@ Estratégia de mock:
   é necessário simular falhas em múltiplas fontes.
 """
 
-import numpy as np
-import pytest
 from unittest.mock import patch
 
-from src.carregador_dados import carregar_dados_mnist
+import numpy as np
+import pytest
 
+from src.carregador_dados import carregar_dados_mnist
 
 # ──────────────────────────────────────────────────────────────
 # Auxiliares
@@ -58,7 +58,7 @@ def test_cache_corrompido_faz_fallback_pro_download(
     mock_sklearn.return_value = _make_xy(2)
 
     with patch('src.carregador_dados.joblib.dump'):
-        X, y = carregar_dados_mnist()
+        X, _y = carregar_dados_mnist()
 
     assert mock_sklearn.called, "Deve recorrer à fonte sklearn após falha no cache."
     assert X.shape == (2, 784)
@@ -99,7 +99,7 @@ def test_falha_ao_salvar_cache_ignora(mock_exists, mock_fetch):
 
     with patch('src.carregador_dados.joblib.dump') as mock_dump:
         mock_dump.side_effect = PermissionError("Acesso negado no diretório data")
-        X, y = carregar_dados_mnist()
+        X, _y = carregar_dados_mnist()
 
     assert X.shape == (1, 784), "Dados devem ser retornados mesmo sem cache salvo."
 
@@ -159,7 +159,7 @@ def test_fallback_para_terceira_fonte(
     # keras não deve ser chamado
 
     with patch('src.carregador_dados.joblib.dump'):
-        X, y = carregar_dados_mnist()
+        X, _y = carregar_dados_mnist()
 
     assert mock_dl.called,       "Download direto deve ser tentado."
     assert not mock_keras.called, "Keras não deve ser chamado desnecessariamente."

@@ -1,4 +1,5 @@
 import pytest
+
 from src.modelos.suporte_rag import SuporteRAG
 
 

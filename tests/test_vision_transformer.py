@@ -13,7 +13,6 @@ import pytest
 
 from src.modelos.vision_transformer import ModeloViT
 
-
 # ──────────────────────────────────────────────────────────────
 # Inicialização
 # ──────────────────────────────────────────────────────────────
@@ -96,7 +95,7 @@ def test_vit_prever_probabilidades_shape_e_soma():
 
 def test_vit_mlp_head_indices_corretos():
     """Verifica que mlp_head[0] e mlp_head[3] são camadas Linear com .weight."""
-    import torch.nn as nn
+    from torch import nn
     modelo = ModeloViT()
     assert isinstance(modelo.model.mlp_head[0], nn.Linear), (
         "mlp_head[0] deve ser nn.Linear(D, D/2)"

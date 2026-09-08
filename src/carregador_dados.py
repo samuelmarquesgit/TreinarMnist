@@ -1,12 +1,12 @@
 import os
 import urllib.error
-from typing import Tuple
-import numpy as np
+
 import joblib
+import numpy as np
 from sklearn.datasets import fetch_openml
 
 
-def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
+def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     """
     Realiza o download do dataset MNIST com suporte a cache local.
 
@@ -28,7 +28,7 @@ def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
         print("Carregando MNIST do cache local...")
         try:
             return joblib.load(cache_path)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print(
                 f"Aviso: Falha ao ler o cache. Baixando novamente. Erro: {e}")
             # Se o cache estiver corrompido, deixamos o fluxo prosseguir para
@@ -45,7 +45,7 @@ def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
         raise ConnectionError(
             f"Falha de conexao ao tentar baixar o MNIST: {e}") from e
     except Exception as e:
-        raise Exception(
+        raise Exception(  # noqa: TRY002
             f"Erro inesperado ao buscar dados no OpenML: {e}") from e
 
     X = np.array(mnist['data'], dtype=np.float32)
@@ -55,7 +55,7 @@ def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
     try:
         os.makedirs('data', exist_ok=True)
         joblib.dump((X, y), cache_path)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Aviso: Nao foi possivel salvar o cache local. Erro: {e}")
 
     return X, y

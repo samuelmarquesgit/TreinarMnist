@@ -3,7 +3,7 @@
 import numpy as np
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.graph_objects as go
@@ -17,10 +17,10 @@ try:
 except ImportError:
     PIL_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 # ── Bubble Sort (usado para ranking Top-K) ─────────────────────────────────
 
@@ -38,7 +38,7 @@ def ordenar_probabilidades_por_bolha(probs: list[tuple]) -> list[tuple]:
     arr = list(probs)
     n = len(arr)
     for i in range(n):
-        for j in range(0, n - i - 1):
+        for j in range(n - i - 1):
             if arr[j][1] < arr[j + 1][1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
     return arr
@@ -49,7 +49,7 @@ def _inferir_com_modelo(fachada, vetor: np.ndarray) -> list[tuple] | None:
     Tenta obter probabilidades do modelo treinado.
     Retorna lista de (classe, prob) ou None se nenhum modelo estiver treinado.
     """
-    for nome, modelo in fachada.modelos.items():
+    for modelo in fachada.modelos.values():
         try:
             modelo_sklearn = modelo.modelo
             if hasattr(modelo_sklearn, "predict_proba"):
@@ -61,7 +61,7 @@ def _inferir_com_modelo(fachada, vetor: np.ndarray) -> list[tuple] | None:
                 probs = [0.0] * 10
                 probs[int(pred)] = 1.0
                 return list(enumerate(probs))
-        except Exception:
+        except Exception:  # noqa: BLE001, S112
             continue
     return None
 
@@ -84,8 +84,8 @@ def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
             textposition="outside",
         ))
         fig.update_layout(
-            **_TEMA, height=320, margin=dict(t=10, b=10, l=80),
-            xaxis_title="Probabilidade (%)", yaxis=dict(autorange="reversed"),
+            **_TEMA, height=320, margin={"t": 10, "b": 10, "l": 80},
+            xaxis_title="Probabilidade (%)", yaxis={"autorange": "reversed"},
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
@@ -167,9 +167,10 @@ def _renderizar_modo_upload():
     if not arquivo or not PIL_OK:
         return None
     try:
-        from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
-        import tempfile
         import os
+        import tempfile
+
+        from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
         tmp_path = None
         try:
             with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(arquivo.name)[1]) as tmp:
@@ -179,7 +180,7 @@ def _renderizar_modo_upload():
         finally:
             if tmp_path and os.path.exists(tmp_path):
                 os.unlink(tmp_path)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Imagem inválida: {e}")
         return None
     pil_img = Image.open(arquivo).convert("RGB")
@@ -193,13 +194,13 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
     st.divider()
     titulo_secao("Pipeline de Transformação (4 Etapas)")
     try:
-        gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
+        _gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
         col1, col2, col3, col4 = st.columns(4)
         col1.image(img_array, caption="① Original", width=110, clamp=True)
         col2.image(invertida, caption="② Grayscale/Invertida", width=110, clamp=True)
         col3.image(bbox_crop, caption="③ Bounding Box", width=110, clamp=True)
         col4.image(canvas_28, caption="④ 28×28 Centralizado", width=110, clamp=True)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Erro no pipeline de visão: {e}")
         return
 
