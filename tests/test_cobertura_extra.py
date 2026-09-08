@@ -63,9 +63,8 @@ def _mock_torch_timm():
 def test_vit_sem_torch_levanta_import_error():
     """_TORCH_OK=False: garante que ModeloViT levanta ImportError sem alterar sys.modules."""
     import src.modelos.vision_transformer as vt
-    with patch.object(vt, "_TORCH_OK", False):
-        with pytest.raises(ImportError, match="PyTorch e timm"):
-            vt.ModeloViT()
+    with patch.object(vt, "_TORCH_OK", False), pytest.raises(ImportError, match="PyTorch e timm"):
+        vt.ModeloViT()
     sys.modules.pop("src.modelos.vision_transformer", None)
 
 
@@ -343,12 +342,11 @@ def test_fabrica_listar_disponiveis_inclui_vit():
 
 def test_fabrica_criar_vit_sem_torch_levanta_import_error():
     """Cobre FabricaModelos.criar_modelo('VisionTransformer') (linha 81)."""
-    from src.modelos.fabrica_modelos import FabricaModelos
     import src.modelos.vision_transformer as vt
+    from src.modelos.fabrica_modelos import FabricaModelos
     
-    with patch.object(vt, "_TORCH_OK", False):
-        with pytest.raises(ImportError, match="PyTorch e timm"):
-            FabricaModelos.criar_modelo("VisionTransformer")
+    with patch.object(vt, "_TORCH_OK", False), pytest.raises(ImportError, match="PyTorch e timm"):
+        FabricaModelos.criar_modelo("VisionTransformer")
 
 
 def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
