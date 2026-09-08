@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 0 # Necessário para SonarCloud
 
-      - name: Configurar Python 3.12
+      - name: Configurar Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.10"
           cache: "pip"
 
       - name: Instalar Dependências
@@ -47,9 +47,6 @@ jobs:
           path: coverage.xml
           retention-days: 1
 
-      - name: Cobertura Badge
-        if: github.ref == 'refs/heads/main'
-        uses: tj-actions/coverage-badge-py@v2
 
       - name: Auditoria de Dependências (Pip Audit)
         run: |
