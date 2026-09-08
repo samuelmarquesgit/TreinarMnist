@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 0 # Necessário para SonarCloud
 
-      - name: Configurar Python 3.10
+      - name: Configurar Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Instalar Dependências
@@ -40,10 +40,17 @@ jobs:
         run: |
           pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
 
+      - name: Publicar Relatório de Cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 1
+
       - name: Cobertura Badge
         if: github.ref == 'refs/heads/main'
         uses: tj-actions/coverage-badge-py@v2
-        
+
       - name: Auditoria de Dependências (Pip Audit)
         run: |
           safety check -r requirements.txt || true
@@ -80,9 +87,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: qualidade-e-testes
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do Código
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Baixar Relatório de Cobertura
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -93,6 +107,8 @@ jobs:
             -Dsonar.projectKey=samuelmarquesgit_TreinarMnist
             -Dsonar.organization=samuelmarquesgit
             -Dsonar.sources=src/
+            -Dsonar.tests=tests/
+            -Dsonar.python.version=3.12
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
   ci-gate:
