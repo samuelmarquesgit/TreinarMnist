@@ -55,7 +55,7 @@ class ModeloViT(ModeloAbstratoIA):
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
         elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
-            self.device = torch.device("mps")
+            self.device = torch.device("mps")  # pragma: no cover
         else:
             torch.set_num_threads(4)
             self.device = torch.device("cpu")
