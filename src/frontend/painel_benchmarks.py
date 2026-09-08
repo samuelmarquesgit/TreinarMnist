@@ -74,7 +74,7 @@ def _obter_modelos_disponiveis() -> list[str]:
     """
     try:
         return FabricaModelos.listar_disponiveis()
-    except Exception as exc:  # pragma: no cover
+    except Exception as exc:  # pragma: no cover  # noqa: BLE001
         logger.error("[Benchmarks] Falha ao consultar FabricaModelos: %s", exc)
         return []
 
@@ -121,7 +121,7 @@ def _executar_benchmark(
             resultados[nome] = metricas
             logger.info("[Benchmarks] '%s' concluído — acurácia=%.4f", nome, metricas["acuracia"])
 
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             msg = str(exc)
             logger.error("[Benchmarks] Falha ao executar '%s': %s", nome, msg)
             # Armazena APENAS a falha — zero métricas numéricas para não enganar
@@ -287,7 +287,7 @@ def _renderizar_graficos(df_ord: pd.DataFrame) -> None:
             **_TEMA_PLOTLY,
             barmode="group",
             height=350,
-            margin=dict(t=10, b=80),
+            margin={"t": 10, "b": 80},
             xaxis_tickangle=-30,
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -305,7 +305,7 @@ def _renderizar_graficos(df_ord: pd.DataFrame) -> None:
                     name=row["Modelo"],
                 )
             )
-        fig.update_layout(**_TEMA_PLOTLY, height=420, margin=dict(t=20, b=20))
+        fig.update_layout(**_TEMA_PLOTLY, height=420, margin={"t": 20, "b": 20})
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -352,11 +352,11 @@ def _renderizar_matriz_confusao(validos: dict[str, dict[str, Any]]) -> None:
         mat_plot,
         text_auto=True,
         color_continuous_scale="Blues",
-        labels=dict(x="Previsto", y="Real", color=f"Contagem{sufixo}"),
+        labels={"x": "Previsto", "y": "Real", "color": f"Contagem{sufixo}"},
         x=[str(i) for i in range(10)],
         y=[str(i) for i in range(10)],
     )
-    fig_cm.update_layout(**_TEMA_PLOTLY, height=500, margin=dict(t=10, b=10))
+    fig_cm.update_layout(**_TEMA_PLOTLY, height=500, margin={"t": 10, "b": 10})
     st.plotly_chart(fig_cm, use_container_width=True)
 
     erros = mat_np.sum(axis=1) - np.diag(mat_np)

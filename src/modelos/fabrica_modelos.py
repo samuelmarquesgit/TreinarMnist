@@ -16,11 +16,11 @@ Nota de logging:
 from __future__ import annotations
 
 import logging
-from typing import Any, Callable, Dict, List, Optional, Union
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
-
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
@@ -255,7 +255,7 @@ class FabricaModelos:
         ['RegressaoLogistica', 'ArvoreDecisao', ..., 'VisionTransformer']
     """
 
-    _REGISTRO_MODELOS: Dict[str, _Construtor] = {
+    _REGISTRO_MODELOS: dict[str, _Construtor] = {  # noqa: RUF012
         "RegressaoLogistica": lambda: LogisticRegression(
             max_iter=500, solver="lbfgs", multi_class="auto", random_state=42
         ),
@@ -288,7 +288,7 @@ class FabricaModelos:
     _CHAVE_VIT: str = "VisionTransformer"
 
     @staticmethod
-    def listar_disponiveis() -> List[str]:
+    def listar_disponiveis() -> list[str]:
         """Retorna a lista canônica e completa de chaves aceitas por ``criar_modelo()``.
 
         A lista é derivada diretamente do registro interno — nunca hardcoded
@@ -341,11 +341,11 @@ class FabricaModelos:
         # ── VisionTransformer (importação lazy) ───────────────────────────────
         if nome_modelo == FabricaModelos._CHAVE_VIT:
             logger.info("[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch).")
-            from src.modelos.vision_transformer import ModeloViT  # noqa: PLC0415
+            from src.modelos.vision_transformer import ModeloViT
             return ModeloViT(nome_log=nome_modelo)
 
         # ── Modelos Scikit-Learn ──────────────────────────────────────────────
-        construtor: Optional[_Construtor] = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
+        construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
 
         if construtor is None:
             chaves_validas = FabricaModelos.listar_disponiveis()

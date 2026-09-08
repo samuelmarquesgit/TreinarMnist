@@ -1,11 +1,12 @@
-import os
 import json
 import logging
-from typing import Dict, Any
+import os
+from typing import Any
+
 try:
     from pymongo import MongoClient
     _PYMONGO_OK = True
-except Exception:
+except Exception:  # noqa: BLE001
     MongoClient = None  # type: ignore
     _PYMONGO_OK = False
 
@@ -18,7 +19,7 @@ class ConexaoMongoDB:
     Especializado no armazenamento de metadados complexos como matrizes de confusao.
     """
 
-    def __init__(self, uri: str = None) -> None:
+    def __init__(self, uri: str | None = None) -> None:
         self.uri = uri or os.getenv('MONGO_URI', None)
         self.usar_local = not bool(self.uri)
 
@@ -32,15 +33,15 @@ class ConexaoMongoDB:
                 # inacessivel
                 self.client.server_info()
                 logger.info("Conexao com MongoDB Cloud inicializada.")
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.warning(
-                    f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {str(e)}")
+                    f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {e!s}")
                 self.usar_local = True
         else:
             logger.info(
                 "MONGO_URI nao definida. Utilizando armazenamento local Json.")
 
-    def salvar_artefato(self, nome: str, dados: Dict[str, Any]) -> None:
+    def salvar_artefato(self, nome: str, dados: dict[str, Any]) -> None:
         """
         Persiste os dados em colecao remota ou arquivo JSON local.
 
