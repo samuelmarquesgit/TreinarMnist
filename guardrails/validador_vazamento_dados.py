@@ -1,6 +1,5 @@
 """Guardrail para validação estrita de ausência de vazamento de dados (Data Leakage)."""
 
-from typing import Tuple
 import numpy as np
 
 
@@ -25,19 +24,30 @@ class ValidadorVazamentoDados:
         """
         if conjunto_treino.shape[1] != conjunto_teste.shape[1]:
             raise ValueError(
-                f"Incompatibilidade de dimensões: Treino {conjunto_treino.shape[1]} != Teste {conjunto_teste.shape[1]}"
+                f"Incompatibilidade de dimensões: "
+                f"Treino {conjunto_treino.shape[1]} != Teste {conjunto_teste.shape[1]}"
             )
 
-        # Amostragem de segurança para alta dimensionalidade
-        n_amostras_verificacao = min(len(conjunto_teste), 1000)
-        indices_teste = np.random.choice(len(conjunto_teste), n_amostras_verificacao, replace=False)
+        from scipy.spatial.distance import cdist
 
-        for idx in indices_teste:
-            amostra = conjunto_teste[idx]
-            distancias = np.linalg.norm(conjunto_treino - amostra, axis=1)
-            if np.any(distancias < tolerancia):
-                raise ValueError(
-                    f"Alerta de Data Leakage detectado: Instância de teste {idx} encontrada no conjunto de treino!"
-                )
+        # Amostragem de segurança para alta dimensionalidade (determinística)
+        n_amostras_verificacao = min(len(conjunto_teste), 1000)
+        rng = np.random.default_rng(42)
+        indices_teste = rng.choice(
+            len(conjunto_teste),
+            n_amostras_verificacao,
+            replace=False)
+
+        amostras = conjunto_teste[indices_teste]
+
+        # O(n*m) processado em C de forma muito mais rápida que o loop Python
+        distancias = cdist(amostras, conjunto_treino, metric='euclidean')
+        vazamentos = np.where(distancias < tolerancia)
+
+        if len(vazamentos[0]) > 0:
+            idx_vazamento = indices_teste[vazamentos[0][0]]
+            raise ValueError(
+                f"Data Leakage detectado: instância de teste {idx_vazamento}"
+                f" encontrada no conjunto de treino!")
 
         return True

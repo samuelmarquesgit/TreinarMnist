@@ -1,0 +1,600 @@
+<title>Diagnóstico de Testes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --surface2: #1c2128;
+    --border:   #30363d;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+    --blue:     #58a6ff;
+    --green:    #3fb950;
+    --amber:    #d29922;
+    --red:      #f85149;
+    --purple:   #bc8cff;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:       #f6f8fa;
+      --surface:  #ffffff;
+      --surface2: #f0f3f6;
+      --border:   #d0d7de;
+      --text:     #1f2328;
+      --muted:    #57606a;
+      --blue:     #0969da;
+      --green:    #1a7f37;
+      --amber:    #9a6700;
+      --red:      #cf222e;
+      --purple:   #8250df;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;--border:#30363d;
+    --text:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;
+    --amber:#d29922;--red:#f85149;--purple:#bc8cff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px; line-height: 1.6; margin: 0;
+  }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+  nav {
+    width: 240px; min-width: 240px; background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0; position: sticky; top: 0; height: 100vh;
+    overflow-y: auto; flex-shrink: 0;
+  }
+  nav .logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  nav .logo-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  nav .logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  nav a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 20px; color: var(--muted); text-decoration: none;
+    font-size: 13px; border-left: 2px solid transparent;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  nav a:hover { color: var(--text); background: var(--surface2); }
+  nav a.active { color: var(--blue); border-left-color: var(--blue); background: var(--surface2); }
+  nav .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 16px 20px 4px;
+  }
+
+  main { flex: 1; padding: 40px 48px; max-width: 960px; }
+
+  h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
+  h2 { font-size: 17px; font-weight: 700; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 14px; font-weight: 600; margin: 24px 0 10px; }
+  p { margin: 0 0 12px; color: var(--muted); }
+  p strong { color: var(--text); }
+
+  .meta { font-size: 12px; color: var(--muted); margin-bottom: 32px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Status chips */
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: .02em;
+  }
+  .chip-green  { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+  .chip-red    { background: color-mix(in srgb, var(--red)   15%, transparent); color: var(--red);   border: 1px solid color-mix(in srgb, var(--red)   30%, transparent); }
+  .chip-amber  { background: color-mix(in srgb, var(--amber) 15%, transparent); color: var(--amber); border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent); }
+  .chip-blue   { background: color-mix(in srgb, var(--blue)  15%, transparent); color: var(--blue);  border: 1px solid color-mix(in srgb, var(--blue)  30%, transparent); }
+  .chip-purple { background: color-mix(in srgb, var(--purple)15%, transparent); color: var(--purple);border: 1px solid color-mix(in srgb, var(--purple)30%, transparent); }
+
+  /* Summary tiles */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .tile-num { font-size: 28px; font-weight: 700; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+  .tile-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .tile-green .tile-num { color: var(--green); }
+  .tile-amber .tile-num { color: var(--amber); }
+  .tile-red   .tile-num { color: var(--red);   }
+  .tile-blue  .tile-num { color: var(--blue);  }
+
+  /* Coverage table */
+  .cov-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cov-table th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cov-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .cov-table tr:last-child td { border-bottom: none; }
+  .cov-table tr:hover td { background: var(--surface2); }
+  .cov-table .mod { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .cov-table .num { font-family: 'JetBrains Mono', monospace; text-align: right; color: var(--muted); }
+  .cov-table .pct { font-family: 'JetBrains Mono', monospace; font-weight: 600; text-align: right; width: 48px; }
+  .pct-high  { color: var(--green); }
+  .pct-mid   { color: var(--amber); }
+  .pct-low   { color: var(--red);   }
+  .pct-zero  { color: var(--red); opacity: .7; }
+
+  /* Bar */
+  .bar-wrap { width: 90px; }
+  .bar-bg { background: var(--border); border-radius: 3px; height: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+  .bar-high { background: var(--green); }
+  .bar-mid  { background: var(--amber); }
+  .bar-low  { background: var(--red);   }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; margin-bottom: 16px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .card-body  { font-size: 13px; color: var(--muted); }
+
+  /* Tool grid */
+  .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tool-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .tool-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .tool-cmd  { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--blue); background: var(--surface2); padding: 4px 8px; border-radius: 4px; margin: 6px 0; }
+  .tool-desc { font-size: 12px; color: var(--muted); }
+  .tool-status { float: right; }
+
+  /* Error list */
+  .err-list { list-style: none; padding: 0; margin: 0; }
+  .err-list li {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  .err-list li:last-child { border-bottom: none; }
+  .err-file { font-family: 'JetBrains Mono', monospace; color: var(--blue); min-width: 190px; flex-shrink: 0; }
+  .err-msg  { color: var(--muted); }
+
+  /* Priority list */
+  .prio-list { list-style: none; padding: 0; margin: 0; counter-reset: prio; }
+  .prio-list li {
+    counter-increment: prio;
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .prio-list li:last-child { border-bottom: none; }
+  .prio-list li::before {
+    content: counter(prio);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    min-width: 22px; height: 22px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); flex-shrink: 0;
+  }
+  .prio-text strong { color: var(--text); }
+  .prio-text { color: var(--muted); }
+
+  /* HTML section */
+  .html-note {
+    background: color-mix(in srgb, var(--amber) 8%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+    border-radius: 8px; padding: 16px; margin-bottom: 16px; font-size: 13px;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: var(--surface2); padding: 2px 6px; border-radius: 3px;
+    color: var(--purple);
+  }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  @media (max-width: 700px) {
+    nav { display: none; }
+    main { padding: 24px 20px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="shell">
+  <nav id="sidenav">
+    <div class="logo">
+      <div class="logo-title">🧪 TreinarMnist</div>
+      <div class="logo-sub">Diagnóstico de Qualidade</div>
+    </div>
+
+    <div class="section-label">Análise</div>
+    <a href="#cobertura" class="active">📊 Cobertura atual</a>
+    <a href="#lacunas">🔴 Módulos sem teste</a>
+    <a href="#prioridade">📋 O que testar primeiro</a>
+
+    <div class="section-label">Ferramentas</div>
+    <a href="#linters">✅ Linters & Static</a>
+    <a href="#html">🌐 Testes HTML</a>
+    <a href="#ferramentas">🛠 Catálogo completo</a>
+
+    <div class="section-label">Erros</div>
+    <a href="#mypy">⚠️ Erros mypy</a>
+    <a href="#falhas">🐛 Falhas por objeto</a>
+  </nav>
+
+  <main>
+    <h1>Diagnóstico de Testes — TreinarMnist</h1>
+    <div class="meta">feat/semantic-rag · pytest 64 passed · 1 skipped · 0 failed</div>
+
+    <!-- Tiles -->
+    <div class="tiles">
+      <div class="tile tile-red">
+        <div class="tile-num">29%</div>
+        <div class="tile-label">Cobertura total (TOTAL)</div>
+      </div>
+      <div class="tile tile-green">
+        <div class="tile-num">64</div>
+        <div class="tile-label">Testes passando</div>
+      </div>
+      <div class="tile tile-amber">
+        <div class="tile-num">9</div>
+        <div class="tile-label">Módulos com 0% cobertura</div>
+      </div>
+      <div class="tile tile-blue">
+        <div class="tile-num">30</div>
+        <div class="tile-label">Erros mypy encontrados</div>
+      </div>
+    </div>
+
+    <!-- Cobertura -->
+    <h2 id="cobertura">📊 Cobertura por módulo</h2>
+    <p><strong>Meta mínima de qualidade:</strong> ≥ 80% nos módulos de domínio (src/), ≥ 60% em agent/ e guardrails/. A cobertura atual de <strong>29%</strong> reflete ausência total de testes nos painéis Streamlit e no RAG.</p>
+
+    <table class="cov-table">
+      <thead>
+        <tr>
+          <th>Módulo</th>
+          <th class="num">Stmts</th>
+          <th class="num">Miss</th>
+          <th></th>
+          <th class="pct">Cover</th>
+        </tr>
+      </thead>
+      <tbody id="cov-body"></tbody>
+    </table>
+
+    <!-- Lacunas -->
+    <h2 id="lacunas">🔴 Módulos sem nenhum teste (0%)</h2>
+    <p>Estes módulos <strong>nunca foram executados</strong> por nenhum teste. Uma falha neles não é detectada automaticamente.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="chip chip-red">0% cobertura</span> Agentes</div>
+      <div class="card-body">
+        <code>agent/agente_analista_metricas.py</code> — lógica de ranking de modelos por F1<br>
+        <code>agent/orquestrador_mnist.py</code> — pipeline completo ponta-a-ponta (4 fases)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="chip chip-red">0% cobertura</span> RAG (Retrieval-Augmented Generation)</div>
+      <div class="card-body">
+        <code>src/rag/indexador.py</code> — IndexadorChromaDB: indexar(), buscar(), total_documentos()<br>
+        <code>src/rag/assistente.py</code> — AssistenteRAG: indexar_documentos(), perguntar()
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="chip chip-red">0% cobertura</span> Frontend Streamlit (7 painéis)</div>
+      <div class="card-body">
+        <code>src/frontend/painel_eda.py</code> · <code>painel_benchmarks.py</code> · <code>painel_robustez_ood.py</code><br>
+        <code>painel_laboratorio_visao.py</code> · <code>painel_bancos_dados.py</code> · <code>painel_assistente_rag.py</code><br>
+        <code>painel_analise_estatistica.py</code> · <code>estilos.py</code><br><br>
+        <em>Requer <strong>streamlit.testing.v1.AppTest</strong> — framework nativo do Streamlit para testes sem browser.</em>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="chip chip-amber">0% cobertura</span> MCP & ViT</div>
+      <div class="card-body">
+        <code>src/mcp_servidor.py</code> — servidor Model Context Protocol (43 stmts)<br>
+        <code>src/modelos/vision_transformer.py</code> — ViT timm (skipped: torch não instalado no CI)
+      </div>
+    </div>
+
+    <!-- Prioridade -->
+    <h2 id="prioridade">📋 O que testar primeiro (por impacto)</h2>
+    <ol class="prio-list">
+      <li>
+        <div class="prio-text">
+          <strong>src/rag/indexador.py + assistente.py (0%)</strong><br>
+          Criar <code>tests/test_rag_indexador.py</code> com fixture em memória já existente (<code>_EmbeddingFake</code>). Testar <code>indexar()</code>, <code>buscar()</code>, <code>perguntar()</code> e fallback sem ChromaDB. Impacto direto na rubrica do chatbot RAG.
+        </div>
+      </li>
+      <li>
+        <div class="prio-text">
+          <strong>agent/orquestrador_mnist.py (0%)</strong><br>
+          Mockar <code>FachadaPipelineIA</code> completo. Testar: SUCESSO, PARCIAL (fase 2 com erro), FALHA (fase 1 lança exceção). Cobriria as 4 fases extraídas na refatoração.
+        </div>
+      </li>
+      <li>
+        <div class="prio-text">
+          <strong>src/fachada.py (50%)</strong><br>
+          Ampliar testes de <code>FachadaPipelineIA</code>: <code>avaliar_ood()</code>, <code>executar_benchmark()</code>, <code>desenhar_digito()</code>, persistência SQL/Mongo mockadas. É o orquestrador central do projeto.
+        </div>
+      </li>
+      <li>
+        <div class="prio-text">
+          <strong>src/banco_dados/conexao_mongodb.py (44%)</strong><br>
+          Testar <code>salvar_artefato()</code>, <code>buscar_artefato()</code>, <code>listar_experimentos()</code> com <code>mongomock</code> ou <code>monkeypatch</code>. Cobriria o fallback de indisponibilidade do Mongo.
+        </div>
+      </li>
+      <li>
+        <div class="prio-text">
+          <strong>src/frontend/* (0%) — via AppTest</strong><br>
+          Usar <code>streamlit.testing.v1.AppTest.from_function(renderizar)</code>. Verificar que cada painel renderiza sem exceção, os títulos aparecem e os widgets respondem. Baixo custo, alto valor de regressão.
+        </div>
+      </li>
+      <li>
+        <div class="prio-text">
+          <strong>src/robustez_ood.py (65%)</strong><br>
+          Cobrir linhas 231–273: o loop completo com múltiplos modelos e mascaramento de 3+ classes. Testar a entropia de Shannon calculada manualmente.
+        </div>
+      </li>
+    </ol>
+
+    <!-- Linters -->
+    <h2 id="linters">✅ Status dos linters e análise estática</h2>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">flake8 <span class="tool-status"><span class="chip chip-green">✓ ZERO</span></span></div>
+        <div class="tool-cmd">flake8 . --max-complexity=10 --max-line-length=120</div>
+        <div class="tool-desc">Nenhuma violação. Complexidade ciclomática ≤ 10 em todos os métodos.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">bandit <span class="tool-status"><span class="chip chip-green">✓ LIMPO</span></span></div>
+        <div class="tool-cmd">bandit -r src/ agent/ guardrails/ -ll -q</div>
+        <div class="tool-desc">Nenhum problema de segurança de nível médio ou alto detectado.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">mypy <span class="tool-status"><span class="chip chip-amber">30 erros</span></span></div>
+        <div class="tool-cmd">mypy src/ agent/ guardrails/ --ignore-missing-imports</div>
+        <div class="tool-desc">Erros de tipo não impedem execução, mas indicam inconsistências de contrato entre módulos. Ver seção ⚠️ mypy abaixo.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">pytest-cov <span class="tool-status"><span class="chip chip-red">29%</span></span></div>
+        <div class="tool-cmd">pytest --cov=src --cov=agent --cov=guardrails --cov-report=term-missing</div>
+        <div class="tool-desc">Cobertura total 29%. Meta: ≥ 70% para aprovação em produção.</div>
+      </div>
+    </div>
+
+    <!-- HTML -->
+    <h2 id="html">🌐 Testes de HTML — Como validar os arquivos .html</h2>
+    <div class="html-note">
+      ⚠️ O projeto tem <strong>80%+ do conteúdo de apresentação em HTML</strong> (docs/analise_estatistica.html, src/frontend/analise_estatistica.html, curriculo etc.). Nenhum teste verifica a integridade desses arquivos atualmente.
+    </div>
+
+    <h3>Ferramentas disponíveis por abordagem</h3>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">html5lib <span class="tool-status"><span class="chip chip-blue">parsing</span></span></div>
+        <div class="tool-cmd">pip install html5lib beautifulsoup4</div>
+        <div class="tool-desc">Valida estrutura HTML5 e detecta tags não fechadas, atributos inválidos e erros de aninhamento. Ideal para testar os .html do <code>docs/</code> via pytest.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">BeautifulSoup4 <span class="tool-status"><span class="chip chip-blue">estrutural</span></span></div>
+        <div class="tool-cmd">from bs4 import BeautifulSoup</div>
+        <div class="tool-desc">Verifica presença de elementos-chave: <code>&lt;title&gt;</code>, seções, IDs esperados, links internos válidos, ausência de textos de placeholder.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Playwright <span class="tool-status"><span class="chip chip-purple">E2E</span></span></div>
+        <div class="tool-cmd">playwright codegen localhost:8501</div>
+        <div class="tool-desc">Já instalado no ambiente. Testa o Streamlit rodando de verdade: clica em abas, verifica textos renderizados, tira screenshots para regressão visual.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">AppTest (Streamlit) <span class="tool-status"><span class="chip chip-green">nativo</span></span></div>
+        <div class="tool-cmd">from streamlit.testing.v1 import AppTest</div>
+        <div class="tool-desc">Framework nativo do Streamlit ≥ 1.18. Testa painéis sem browser: <code>at = AppTest.from_function(renderizar); at.run(); assert not at.exception</code></div>
+      </div>
+    </div>
+
+    <h3>Exemplo de teste HTML com pytest + html5lib</h3>
+    <div class="card" style="padding:16px">
+      <pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);overflow-x:auto"><span style="color:var(--muted)"># tests/test_html_docs.py</span>
+<span style="color:var(--purple)">import</span> pytest, html5lib
+<span style="color:var(--purple)">from</span> pathlib <span style="color:var(--purple)">import</span> Path
+<span style="color:var(--purple)">from</span> bs4 <span style="color:var(--purple)">import</span> BeautifulSoup
+
+HTML_DOCS = list(Path(<span style="color:var(--green)">"docs"</span>).glob(<span style="color:var(--green)">"*.html"</span>))
+
+<span style="color:var(--blue)">@pytest.mark.parametrize</span>(<span style="color:var(--green)">"caminho"</span>, HTML_DOCS)
+<span style="color:var(--purple)">def</span> <span style="color:var(--blue)">test_html_valido</span>(caminho):
+    conteudo = caminho.read_text(encoding=<span style="color:var(--green)">"utf-8"</span>)
+    parser = html5lib.HTMLParser(strict=<span style="color:var(--blue)">True</span>)
+    parser.parseFragment(conteudo)  <span style="color:var(--muted)"># lança ParseError se inválido</span>
+
+<span style="color:var(--blue)">@pytest.mark.parametrize</span>(<span style="color:var(--green)">"caminho"</span>, HTML_DOCS)
+<span style="color:var(--purple)">def</span> <span style="color:var(--blue)">test_html_tem_titulo</span>(caminho):
+    soup = BeautifulSoup(caminho.read_bytes(), <span style="color:var(--green)">"html5lib"</span>)
+    <span style="color:var(--purple)">assert</span> soup.find(<span style="color:var(--green)">"title"</span>) <span style="color:var(--purple)">or</span> soup.find(<span style="color:var(--green)">"h1"</span>)</pre>
+    </div>
+
+    <!-- Catálogo de ferramentas -->
+    <h2 id="ferramentas">🛠 Catálogo completo de ferramentas de teste</h2>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">pytest-cov</div>
+        <div class="tool-cmd">--cov-fail-under=70</div>
+        <div class="tool-desc">Falha o CI automaticamente se a cobertura cair abaixo de 70%.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">pytest-mock</div>
+        <div class="tool-cmd">pip install pytest-mock</div>
+        <div class="tool-desc">Já usado no projeto. Essencial para mockar fachada, banco e embeddings.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">mongomock</div>
+        <div class="tool-cmd">pip install mongomock</div>
+        <div class="tool-desc">Substitui PyMongo por implementação em memória. Testa ConexaoMongoDB sem Docker.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">mypy</div>
+        <div class="tool-cmd">mypy src/ --ignore-missing-imports</div>
+        <div class="tool-desc">30 erros de tipo encontrados. Não falha a execução, mas sinaliza contratos quebrados entre módulos.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">bandit</div>
+        <div class="tool-cmd">bandit -r src/ -ll</div>
+        <div class="tool-desc">Análise de segurança estática. Resultado atual: limpo.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">hypothesis</div>
+        <div class="tool-cmd">pip install hypothesis</div>
+        <div class="tool-desc">Testes baseados em propriedades. Gera automaticamente entradas extremas para calcular_metricas() e pre_processar_dados().</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">pydantic validate</div>
+        <div class="tool-cmd">Metricas.model_validate({...})</div>
+        <div class="tool-desc">Pydantic v2 já valida em runtime. Adicionar testes de ValidationError nos schemas.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">pytest-benchmark</div>
+        <div class="tool-cmd">pip install pytest-benchmark</div>
+        <div class="tool-desc">Mede tempo de treino dos modelos sklearn. Detecta regressões de performance entre commits.</div>
+      </div>
+    </div>
+
+    <!-- mypy -->
+    <h2 id="mypy">⚠️ Erros mypy — 30 erros de tipo encontrados</h2>
+    <p>Não bloqueiam execução, mas indicam contratos quebrados entre módulos. Os mais críticos:</p>
+
+    <ul class="err-list">
+      <li>
+        <span class="err-file">src/fachada.py:204</span>
+        <span class="err-msg"><code>avaliar_modelo()</code> retorna <code>Metricas</code> (Pydantic) mas a assinatura declara <code>dict[str, Any]</code>. Corrigir a assinatura ou converter com <code>.model_dump()</code>.</span>
+      </li>
+      <li>
+        <span class="err-file">src/fachada.py:298</span>
+        <span class="err-msg"><code>FabricaModelos.listar_disponiveis()</code> não existe. O método real é <code>_REGISTRO_MODELOS.keys()</code> ou similar. Mesmo erro em <code>agent/orquestrador_mnist.py:82</code>.</span>
+      </li>
+      <li>
+        <span class="err-file">src/rag/indexador.py:217–291</span>
+        <span class="err-msg"><code>self._colecao</code> tipado como <code>None</code> mas usado como coleção ChromaDB. Corrigir para <code>Optional[Collection]</code> e adicionar guard antes do uso.</span>
+      </li>
+      <li>
+        <span class="err-file">src/banco_dados/conexao_postgres.py:41</span>
+        <span class="err-msg">Parâmetro <code>url: str = None</code> — valor padrão None incompatível com str. Corrigir para <code>url: Optional[str] = None</code>.</span>
+      </li>
+      <li>
+        <span class="err-file">src/modelos/suporte_rag.py:18</span>
+        <span class="err-msg">Fallback <code>DefaultEmbeddingFunction</code> atribuído a variável tipada como <code>SentenceTransformerEmbeddingFunction</code>. Usar <code>EmbeddingFunction</code> como tipo base.</span>
+      </li>
+      <li>
+        <span class="err-file">src/frontend/painel_robustez_ood.py:180</span>
+        <span class="err-msg"><code>df_ood</code> e <code>df_ind</code> redefinidos (F821). Renomear variáveis ou usar escopo de bloco separado.</span>
+      </li>
+    </ul>
+
+    <!-- Falhas por objeto -->
+    <h2 id="falhas">🐛 Cobertura de falhas por objeto</h2>
+    <p>O que acontece se cada componente falhar — está coberto nos testes?</p>
+
+    <div class="card">
+      <div class="card-title">✅ Coberto — falhas são detectadas</div>
+      <div class="card-body">
+        <strong>ValidadorVazamentoDados</strong> — lança ValueError se leakage detectado ✓<br>
+        <strong>ValidadorFalsaCerteza</strong> — 100% de cobertura ✓<br>
+        <strong>ValidadorImagemEntrada</strong> — 100% de cobertura ✓<br>
+        <strong>ConexaoPostgres</strong> — fallback para SQLite testado ✓<br>
+        <strong>ModeloAbstratoIA</strong> — TypeError ao instanciar sem métodos ✓<br>
+        <strong>Metricas / RelatorioOOD</strong> — ValidationError do Pydantic testado ✓<br>
+        <strong>AnalisadorRobustezOOD</strong> — overconfidence e entropia ✓
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="chip chip-red">❌ Não coberto</span> — falhas silenciosas</div>
+      <div class="card-body">
+        <strong>AssistenteRAG.perguntar()</strong> — se ChromaDB indisponível, não há teste de fallback ✗<br>
+        <strong>FabricaModelos.listar_disponiveis()</strong> — método inexistente, chamado por fachada e orquestrador ✗<br>
+        <strong>OrquestradorMNISTAgente</strong> — nenhuma das 4 fases é testada ✗<br>
+        <strong>ConexaoMongoDB</strong> — 56% das linhas não testadas; falha de conexão não verificada ✗<br>
+        <strong>Painéis Streamlit</strong> — qualquer exceção nos painéis não é detectada em CI ✗<br>
+        <strong>ModeloViT</strong> — timm/torch indisponível no CI; skip não substitui teste real ✗
+      </div>
+    </div>
+
+    <hr class="divider">
+    <p style="font-size:12px;color:var(--muted)">Gerado em feat/semantic-rag · flake8 ✓ · bandit ✓ · pytest 64/64 · mypy 30 erros · cobertura 29%</p>
+  </main>
+</div>
+
+<script>
+  // Coverage data
+  const cov = [
+    ["guardrails/validador_falsa_certeza.py", 17, 0, 100],
+    ["guardrails/validador_imagem_entrada.py", 21, 0, 100],
+    ["guardrails/validador_vazamento_dados.py", 17, 0, 100],
+    ["src/analise_estatistica.py", 11, 0, 100],
+    ["src/avaliacao_metricas.py", 10, 0, 100],
+    ["src/banco_dados/conexao_postgres.py", 40, 0, 100],
+    ["src/carregador_dados.py", 32, 0, 100],
+    ["src/schemas.py", 14, 0, 100],
+    ["src/modelos/base_modelo.py", 9, 0, 100],
+    ["src/config.py", 49, 1, 98],
+    ["src/modelos/suporte_rag.py", 32, 1, 97],
+    ["src/pre_processamento.py", 16, 1, 94],
+    ["src/modelos/fabrica_modelos.py", 47, 4, 91],
+    ["src/visao_computacional.py", 45, 7, 84],
+    ["src/robustez_ood.py", 78, 27, 65],
+    ["src/fachada.py", 136, 68, 50],
+    ["src/banco_dados/conexao_mongodb.py", 84, 47, 44],
+    ["agent/agente_analista_metricas.py", 9, 9, 0],
+    ["agent/orquestrador_mnist.py", 84, 84, 0],
+    ["src/frontend/estilos.py", 13, 13, 0],
+    ["src/frontend/painel_analise_estatistica.py", 186, 186, 0],
+    ["src/frontend/painel_assistente_rag.py", 112, 112, 0],
+    ["src/frontend/painel_bancos_dados.py", 92, 92, 0],
+    ["src/frontend/painel_benchmarks.py", 115, 115, 0],
+    ["src/frontend/painel_eda.py", 90, 90, 0],
+    ["src/frontend/painel_laboratorio_visao.py", 151, 151, 0],
+    ["src/frontend/painel_robustez_ood.py", 129, 129, 0],
+    ["src/mcp_servidor.py", 43, 43, 0],
+    ["src/modelos/vision_transformer.py", 69, 69, 0],
+    ["src/rag/assistente.py", 37, 37, 0],
+    ["src/rag/indexador.py", 40, 40, 0],
+  ];
+
+  const tbody = document.getElementById("cov-body");
+  cov.forEach(([mod, stmts, miss, pct]) => {
+    const cls = pct >= 80 ? "high" : pct >= 40 ? "mid" : "low";
+    const pctCls = pct === 0 ? "pct-zero" : `pct-${cls}`;
+    tbody.innerHTML += `
+      <tr>
+        <td class="mod">${mod}</td>
+        <td class="num">${stmts}</td>
+        <td class="num">${miss}</td>
+        <td class="bar-wrap"><div class="bar-bg"><div class="bar-fill bar-${cls}" style="width:${pct}%"></div></div></td>
+        <td class="pct ${pctCls}">${pct}%</td>
+      </tr>`;
+  });
+
+  // Active nav on scroll
+  const headings = document.querySelectorAll("h2[id]");
+  const links = document.querySelectorAll("nav a");
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove("active"));
+        const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (a) a.classList.add("active");
+      }
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  headings.forEach(h => obs.observe(h));
+</script>

@@ -160,5 +160,7 @@ EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
     - Visualizador de documentos JSON do **MongoDB** (matrizes de confusão e predições armazenadas).
   - **Aba do Assistente RAG:**
     - Interface de chat interativa (*Chatbot*) para fazer perguntas em linguagem natural sobre o projeto, métricas e análises estatísticas com respostas fundamentadas no ChromaDB.
+    - Implementação de embeddings semânticos reais via `sentence-transformers/all-MiniLM-L6-v2`.
 * **Critérios de Aceite:**
-  - [ ] Consultas aos bancos e respostas do RAG exibidas diretamente na interface web.
+  - [x] Consultas aos bancos e respostas do RAG exibidas diretamente na interface web.
+  - [x] OOD e Benchmarks completos.
