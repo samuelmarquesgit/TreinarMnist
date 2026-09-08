@@ -61,43 +61,28 @@ def _mock_torch_timm():
 # ═════════════════════════════════════════════════════════════════════════════
 
 def test_vit_sem_torch_levanta_import_error():
-    """_TORCH_OK=False: importa módulo e garante que ModeloViT levanta ImportError."""
-    sys.modules.pop("src.modelos.vision_transformer", None)
-    for k in [k for k in sys.modules if k.startswith("torch") or k == "timm"]:
-        sys.modules.pop(k, None)
-
+    """_TORCH_OK=False: garante que ModeloViT levanta ImportError sem alterar sys.modules."""
     import src.modelos.vision_transformer as vt
-    assert vt._TORCH_OK is False
-    with pytest.raises(ImportError, match="PyTorch e timm"):
-        vt.ModeloViT()
+    with patch.object(vt, "_TORCH_OK", False):
+        with pytest.raises(ImportError, match="PyTorch e timm"):
+            vt.ModeloViT()
+    sys.modules.pop("src.modelos.vision_transformer", None)
 
 
 def test_vit_com_torch_mockado_treinar_e_prever():
     """Cobre ModeloViT.__init__, treinar, prever e prever_probabilidades com torch mockado."""
-    sys.modules.pop("src.modelos.vision_transformer", None)
     mt, timm_mock, fake_model = _mock_torch_timm()
 
-    torch_mods_keys = [
-        "torch", "timm", "torch.nn", "torch.nn.functional",
-        "torch.optim", "torch.utils", "torch.utils.data",
-    ]
-    original = {k: sys.modules.get(k) for k in torch_mods_keys}
-    sys.modules["torch"] = mt
-    sys.modules["timm"] = timm_mock
-    for k in torch_mods_keys[2:]:
-        sys.modules[k] = MagicMock()
-
-    try:
-        import src.modelos.vision_transformer as vt
-        # Injeta referências mockadas no namespace do módulo
-        vt._TORCH_OK = True
-        vt.torch = mt
-        vt.timm = timm_mock
-        vt.F = mt.nn.functional
-        vt.nn = mt.nn
-        vt.optim = mt.optim
-        vt.DataLoader = mt.utils.data.DataLoader
-        vt.TensorDataset = mt.utils.data.TensorDataset
+    import src.modelos.vision_transformer as vt
+    
+    with patch.object(vt, "_TORCH_OK", True, create=True), \
+         patch.object(vt, "torch", mt, create=True), \
+         patch.object(vt, "timm", timm_mock, create=True), \
+         patch.object(vt, "F", mt.nn.functional, create=True), \
+         patch.object(vt, "nn", mt.nn, create=True), \
+         patch.object(vt, "optim", mt.optim, create=True), \
+         patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True), \
+         patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True):
 
         modelo = vt.ModeloViT(nome_log="ViTMock", epocas=1, batch_size=2)
         assert modelo._treinado is False
@@ -127,51 +112,26 @@ def test_vit_com_torch_mockado_treinar_e_prever():
         # prever usa prever_probabilidades
         modelo._treinado = True
         _ = modelo.prever(X)
-    finally:
-        sys.modules.pop("src.modelos.vision_transformer", None)
-        for k, v in original.items():
-            if v is None:
-                sys.modules.pop(k, None)
-            else:
-                sys.modules[k] = v
 
 
 def test_vit_cuda_disponivel():
     """Cobre branch CUDA disponível em __init__."""
-    sys.modules.pop("src.modulos.vision_transformer", None)
-    sys.modules.pop("src.modelos.vision_transformer", None)
     mt, timm_mock, fake_model = _mock_torch_timm()
     mt.cuda.is_available.return_value = True  # ← branch CUDA
 
-    torch_mods_keys = [
-        "torch", "timm", "torch.nn", "torch.nn.functional",
-        "torch.optim", "torch.utils", "torch.utils.data",
-    ]
-    original = {k: sys.modules.get(k) for k in torch_mods_keys}
-    sys.modules["torch"] = mt
-    sys.modules["timm"] = timm_mock
-    for k in torch_mods_keys[2:]:
-        sys.modules[k] = MagicMock()
+    import src.modelos.vision_transformer as vt
 
-    try:
-        import src.modelos.vision_transformer as vt
-        vt._TORCH_OK = True
-        vt.torch = mt
-        vt.timm = timm_mock
-        vt.F = mt.nn.functional
-        vt.nn = mt.nn
-        vt.optim = mt.optim
-        vt.DataLoader = mt.utils.data.DataLoader
-        vt.TensorDataset = mt.utils.data.TensorDataset
+    with patch.object(vt, "_TORCH_OK", True, create=True), \
+         patch.object(vt, "torch", mt, create=True), \
+         patch.object(vt, "timm", timm_mock, create=True), \
+         patch.object(vt, "F", mt.nn.functional, create=True), \
+         patch.object(vt, "nn", mt.nn, create=True), \
+         patch.object(vt, "optim", mt.optim, create=True), \
+         patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True), \
+         patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True):
+
         modelo = vt.ModeloViT()
         assert modelo is not None
-    finally:
-        sys.modules.pop("src.modelos.vision_transformer", None)
-        for k, v in original.items():
-            if v is None:
-                sys.modules.pop(k, None)
-            else:
-                sys.modules[k] = v
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -187,19 +147,29 @@ def _setup_mcp_mocks():
     mock_fastmcp_cls = MagicMock(return_value=mock_fastmcp_inst)
     mock_mcp.server.fastmcp.FastMCP = mock_fastmcp_cls
 
+    # Mock completo do suporte_rag para evitar:
+    #  - crash sentence_transformers no Python 3.14/Windows (importlib_metadata + pathlib)
+    #  - ChromaDB criar coleção em memória com embedding errado (polui test_rag.py)
+    mock_suporte_rag = MagicMock()
+    mock_suporte_rag.SuporteRAG = MagicMock()
+
     mods = {
         "mcp": mock_mcp,
         "mcp.server": mock_mcp.server,
         "mcp.server.fastmcp": mock_mcp.server.fastmcp,
+        "src.modelos.suporte_rag": mock_suporte_rag,
+        "src.mcp_servidor": None,  # força reimport abaixo
     }
     original = {k: sys.modules.get(k) for k in mods}
     sys.modules.update(mods)
+    # Força reimport do mcp_servidor com os mocks acima
     sys.modules.pop("src.mcp_servidor", None)
     return original
 
 
 def _teardown_mcp_mocks(original):
     sys.modules.pop("src.mcp_servidor", None)
+    sys.modules.pop("src.modelos.suporte_rag", None)
     for k, v in original.items():
         if v is None:
             sys.modules.pop(k, None)
@@ -374,8 +344,11 @@ def test_fabrica_listar_disponiveis_inclui_vit():
 def test_fabrica_criar_vit_sem_torch_levanta_import_error():
     """Cobre FabricaModelos.criar_modelo('VisionTransformer') (linha 81)."""
     from src.modelos.fabrica_modelos import FabricaModelos
-    with pytest.raises(ImportError, match="PyTorch e timm"):
-        FabricaModelos.criar_modelo("VisionTransformer")
+    import src.modelos.vision_transformer as vt
+    
+    with patch.object(vt, "_TORCH_OK", False):
+        with pytest.raises(ImportError, match="PyTorch e timm"):
+            FabricaModelos.criar_modelo("VisionTransformer")
 
 
 def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
@@ -383,8 +356,8 @@ def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
     from sklearn.svm import SVC
 
     from src.modelos.fabrica_modelos import ModeloSklearn
-    # SVC sem probability=True não tem predict_proba
-    modelo = ModeloSklearn(SVC(probability=False), "SVC_semProba")
+    # SVC padrão não tem predict_proba configurado (precisa de probability=True no sklearn < 1.9, ou ensemble_false)
+    modelo = ModeloSklearn(SVC(), "SVC_semProba")
     X = np.zeros((5, 784), dtype=np.float32)
     # Precisa de pelo menos 2 classes para SVC
     y = np.array([0, 1, 0, 1, 0], dtype=np.int32)
