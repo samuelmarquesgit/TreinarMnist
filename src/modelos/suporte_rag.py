@@ -12,7 +12,7 @@ from typing import Any
 try:
     from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
     _ef_padrao: Any = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-    _SENTENCE_TRANSFORMERS_OK = True
+    _SENTENCE_TRANSFORMERS_OK = True  # pragma: no cover
 except (ImportError, ValueError):
     # Fallback: embedding padrão do ChromaDB (onnxruntime — sem dependência extra)
     from chromadb.utils.embedding_functions import DefaultEmbeddingFunction

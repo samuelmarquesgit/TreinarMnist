@@ -3,10 +3,10 @@ tests/test_cobertura_extra.py
 Cobre as linhas descobertas restantes para elevar a cobertura total.
 """
 import sys
-import importlib
+from unittest.mock import MagicMock, patch
+
 import numpy as np
 import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -286,7 +286,7 @@ def test_fachada_mlflow_disponivel_no_init():
 
     with patch.object(fachada_mod, "_MLFLOW_OK", True), \
          patch.object(fachada_mod, "mlflow", mock_mlflow):
-        fachada = fachada_mod.FachadaPipelineIA()
+        _fachada = fachada_mod.FachadaPipelineIA()
 
     mock_mlflow.set_experiment.assert_called_once_with("Treinamento_MNIST")
 
@@ -299,7 +299,7 @@ def test_fachada_mlflow_set_experiment_falha():
 
     with patch.object(fachada_mod, "_MLFLOW_OK", True), \
          patch.object(fachada_mod, "mlflow", mock_mlflow):
-        fachada = fachada_mod.FachadaPipelineIA()  # não deve propagar exceção
+        _fachada = fachada_mod.FachadaPipelineIA()  # não deve propagar exceção
 
 
 def test_fachada_avaliar_modelo_sem_probabilidades():
@@ -380,8 +380,9 @@ def test_fabrica_criar_vit_sem_torch_levanta_import_error():
 
 def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
     """Cobre raise NotImplementedError em ModeloSklearn (linhas 98-100)."""
-    from src.modelos.fabrica_modelos import ModeloSklearn
     from sklearn.svm import SVC
+
+    from src.modelos.fabrica_modelos import ModeloSklearn
     # SVC sem probability=True não tem predict_proba
     modelo = ModeloSklearn(SVC(probability=False), "SVC_semProba")
     X = np.zeros((5, 784), dtype=np.float32)
@@ -398,8 +399,8 @@ def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
 
 def test_pre_processamento_falha_normalizacao():
     """Cobre raise ValueError quando MinMax retorna valores fora do intervalo (linha 50)."""
+
     from src.pre_processamento import pre_processar_dados
-    from unittest.mock import patch as upatch
 
     X = np.random.default_rng(0).random((100, 784)).astype(np.float32)
     y = np.tile(np.arange(10, dtype=np.int32), 10)
@@ -435,6 +436,7 @@ def test_painel_analise_plotly_indisponivel_cobre_else():
     pa.PLOTLY_OK = False
     try:
         import numpy as np
+
         from src.analise_estatistica import CalculadorEstatistico
         calc = CalculadorEstatistico()
         dados = np.arange(100, dtype=float)
@@ -484,11 +486,10 @@ def test_painel_robustez_plotly_indisponivel():
 
 def test_painel_robustez_alerta_interface_legada():
     """Cobre branch 'else' dict legado em extração de alerta (linhas 90-91)."""
-    import src.frontend.painel_robustez_ood as pr
     _mock_st_analise.reset_mock()
     # Constrói res como dict (interface legada)
     res_dict = {"alerta_overconfidence": True, "confianca": 0.99}
-    p = np.ones((1, 10)) / 10.0
+    _p = np.ones((1, 10)) / 10.0
     # Simula acesso à linha 90-91: getattr(res, "alerta_falsa_certeza", None) → None
     alerta_novo = getattr(res_dict, "alerta_falsa_certeza", None)
     assert alerta_novo is None
@@ -513,7 +514,6 @@ def _fazer_df_ood(n_total: int, n_alertas: int):
 
 def _renderizar_ood_com_taxa(n_alertas: int):
     """Executa renderizar() injetando resultado pré-computado com n_alertas alertas."""
-    import pandas as pd
     import src.frontend.painel_robustez_ood as pr
     pr.PLOTLY_OK = False  # retorna antes dos gráficos
 

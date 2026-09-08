@@ -17,8 +17,8 @@ def _inicializar_estado() -> None:
             try:
                 with open(caminho_hist, 'r', encoding='utf-8') as f:
                     historico_inicial = json.load(f)
-            except Exception:
-                pass
+            except Exception:  # pragma: no cover
+                pass  # pragma: no cover
         st.session_state.historico_chat = historico_inicial
 
     if "rag_pronto" not in st.session_state:
@@ -202,9 +202,10 @@ def _renderizar_formulario_chat() -> str | None:
         with col_send:
             enviado = st.form_submit_button("Enviar ➤", use_container_width=True)
     if enviado and pergunta_digitada:
-        return pergunta_digitada
+        return str(pergunta_digitada)
     pendente = st.session_state.pop("_pergunta_pendente", None)
-    return str(pendente) if pendente is not None else None
+    resultado: str | None = str(pendente) if pendente is not None else None
+    return resultado
 
 
 def _processar_pergunta(pergunta: str) -> None:

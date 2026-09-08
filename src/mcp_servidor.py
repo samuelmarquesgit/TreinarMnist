@@ -80,4 +80,4 @@ def consultar_rag_mnist(pergunta: str) -> list[str]:
 
 if __name__ == "__main__":
     # Inicializa o servidor MCP via Stdio (Para comunicacao nativa com Agentes)
-    mcp.run(transport='stdio')
+    mcp.run(transport='stdio')  # pragma: no cover

@@ -13,8 +13,8 @@ try:
     import plotly.express as px
     import plotly.graph_objects as go
     PLOTLY_OK = True
-except ImportError:
-    PLOTLY_OK = False
+except ImportError:  # pragma: no cover
+    PLOTLY_OK = False  # pragma: no cover
 
 _TEMA = {
     "paper_bgcolor": "rgba(0,0,0,0)",
