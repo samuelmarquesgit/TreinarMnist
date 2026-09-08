@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
 
 
@@ -24,7 +25,7 @@ def test_prever_antes_de_treinar():
     X_teste = np.random.rand(2, 5)
 
     # Sklearn lanca NotFittedError que herda de AttributeError ou ValueError
-    with pytest.raises(Exception):
+    with pytest.raises((AttributeError, ValueError)):
         modelo.prever(X_teste)
 
 

@@ -1,7 +1,7 @@
 import hashlib
+
 import chromadb
 from chromadb import Documents, EmbeddingFunction, Embeddings
-from typing import List
 
 
 class _EmbeddingSimples(EmbeddingFunction):
@@ -61,12 +61,12 @@ class SuporteRAG:
             documentos = [
                 "MNIST e um dataset classico de visao computacional contendo digitos manuscritos de 0 a 9.",
                 "O tamanho padrao das imagens do MNIST e de 28x28 pixels em tons de cinza.",
-                "Para melhorar a acuracia, e recomendavel normalizar"
-                " as imagens dividindo os pixels por 255.",
-                "Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
-                " para o MNIST, superando Random Forests.",
-                "Falsa certeza ocorre quando o modelo preenche probabilidades"
-                " altas para imagens fora da distribuicao (OOD).",
+                ("Para melhorar a acuracia, e recomendavel normalizar"
+                " as imagens dividindo os pixels por 255."),
+                ("Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
+                " para o MNIST, superando Random Forests."),
+                ("Falsa certeza ocorre quando o modelo preenche probabilidades"
+                " altas para imagens fora da distribuicao (OOD)."),
             ]
             metadados = [
                 {"topico": "dataset", "nivel": "basico"},
@@ -78,7 +78,7 @@ class SuporteRAG:
             ids = [f"doc_{i}" for i in range(len(documentos))]
             self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
 
-    def consultar(self, pergunta: str, n_resultados: int = 1) -> List[str]:
+    def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
         """
         Consulta o banco vetorial e retorna os trechos mais relevantes para a pergunta.
 

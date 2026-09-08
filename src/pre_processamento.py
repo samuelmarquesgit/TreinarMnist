@@ -1,11 +1,11 @@
-from typing import Tuple
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 
 def pre_processar_dados(X: np.ndarray,
-                        y: np.ndarray) -> Tuple[np.ndarray,
+                        y: np.ndarray) -> tuple[np.ndarray,
                                                 np.ndarray,
                                                 np.ndarray,
                                                 np.ndarray,

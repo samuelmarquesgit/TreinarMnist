@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 from src.utilitarios.registrador_log import configurar_registrador_log
 
 

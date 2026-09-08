@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
@@ -12,10 +12,10 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 def renderizar(fachada) -> None:
@@ -68,7 +68,7 @@ def renderizar(fachada) -> None:
                     "Quantidade": "Nº de amostras"})
             fig.update_traces(textposition="outside")
             fig.update_layout(**_TEMA, coloraxis_showscale=False,
-                              margin=dict(t=10, b=10), height=300)
+                              margin={"t": 10, "b": 10}, height=300)
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.bar_chart(df_bal.set_index("Dígito")["Quantidade"])
@@ -131,9 +131,9 @@ def renderizar(fachada) -> None:
             # Reconverte para [0,255] para exibição intuitiva
             img_255 = (img_insp * 255).astype(int)
             fig_h = px.imshow(img_255, color_continuous_scale="Blues",
-                              labels=dict(color="Intensidade"),
+                              labels={"color": "Intensidade"},
                               zmin=0, zmax=255)
-            fig_h.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+            fig_h.update_layout(**_TEMA, margin={"t": 5, "b": 5}, height=220,
                                 coloraxis_showscale=True)
             fig_h.update_xaxes(showticklabels=False)
             fig_h.update_yaxes(showticklabels=False)
@@ -152,7 +152,7 @@ def renderizar(fachada) -> None:
                     "x": "Intensidade [0,1]",
                     "y": "Frequência"},
                 color_discrete_sequence=["#58a6ff"])
-            fig_bar.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+            fig_bar.update_layout(**_TEMA, margin={"t": 5, "b": 5}, height=220,
                                   showlegend=False)
             st.plotly_chart(fig_bar, use_container_width=True)
         else:

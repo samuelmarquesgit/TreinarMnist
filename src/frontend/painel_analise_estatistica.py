@@ -5,21 +5,21 @@ import pandas as pd
 import streamlit as st
 from scipy import stats as scipy_stats
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
 from src.analise_estatistica import CalculadorEstatistico
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
-    import plotly.figure_factory as ff
+    import plotly.figure_factory as ff  # noqa: F401
     import plotly.graph_objects as go
     PLOTLY_OK = True
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ def renderizar(fachada) -> None:
             fig_h.update_layout(
                 **_TEMA,
                 height=380,
-                margin=dict(t=10, b=40),
+                margin={"t": 10, "b": 40},
                 xaxis_title="Intensidade",
                 yaxis_title="Densidade",
                 showlegend=False
@@ -184,7 +184,7 @@ def renderizar(fachada) -> None:
                 color="Dígito",
                 template="plotly_dark",
                 color_discrete_sequence=px.colors.qualitative.Plotly)
-            fig_box.update_layout(**_TEMA, height=380, margin=dict(t=10, b=40),
+            fig_box.update_layout(**_TEMA, height=380, margin={"t": 10, "b": 40},
                                   showlegend=False)
             st.plotly_chart(fig_box, use_container_width=True)
 
@@ -192,11 +192,11 @@ def renderizar(fachada) -> None:
         with abas[2]:
             amostra_qq = dados if len(dados) <= 5000 else np.random.choice(
                 dados, 5000, replace=False)
-            qq_teor, qq_obs = scipy_stats.probplot(amostra_qq, dist="norm")[:2]
+            qq_teor, _qq_obs = scipy_stats.probplot(amostra_qq, dist="norm")[:2]
             fig_qq = go.Figure()
             fig_qq.add_trace(go.Scatter(x=qq_teor[0], y=qq_teor[1],
                                         mode="markers", name="Observado",
-                                        marker=dict(color="#58a6ff", size=3)))
+                                        marker={"color": "#58a6ff", "size": 3}))
             x_line = np.linspace(min(qq_teor[0]), max(qq_teor[0]), 100)
             slope, intercept = np.polyfit(qq_teor[0], qq_teor[1], 1)
             fig_qq.add_trace(
@@ -205,10 +205,10 @@ def renderizar(fachada) -> None:
                     y=slope * x_line + intercept,
                     mode="lines",
                     name="Normal teórica",
-                    line=dict(
-                        color="#f78166",
-                        dash="dash")))
-            fig_qq.update_layout(**_TEMA, height=380, margin=dict(t=10, b=40),
+                    line={
+                        "color": "#f78166",
+                        "dash": "dash"}))
+            fig_qq.update_layout(**_TEMA, height=380, margin={"t": 10, "b": 40},
                                  xaxis_title="Quantis Teóricos (Normal)",
                                  yaxis_title="Quantis Observados")
             st.plotly_chart(fig_qq, use_container_width=True)
@@ -230,14 +230,14 @@ def renderizar(fachada) -> None:
 
             fig_heat = px.imshow(
                 media_espacial, color_continuous_scale="Blues", zmin=0, zmax=(
-                    255 if "Brutos" in modo else 1), labels=dict(
-                    color="Intensidade"))
+                    255 if "Brutos" in modo else 1), labels={
+                    "color": "Intensidade"})
             fig_heat.update_layout(
                 **_TEMA,
                 height=380,
-                margin=dict(
-                    t=30,
-                    b=10),
+                margin={
+                    "t": 30,
+                    "b": 10},
                 title=titulo_heat)
             fig_heat.update_xaxes(showticklabels=False)
             fig_heat.update_yaxes(showticklabels=False)
@@ -340,9 +340,9 @@ def renderizar(fachada) -> None:
                 **_TEMA,
                 height=300,
                 coloraxis_showscale=False,
-                margin=dict(
-                    t=10,
-                    b=40))
+                margin={
+                    "t": 10,
+                    "b": 40})
             st.plotly_chart(fig_an, use_container_width=True)
 
     # ── Qui-Quadrado ───────────────────────────────────────────────────────

@@ -33,10 +33,9 @@ from __future__ import annotations
 
 import io
 import logging
-import os
 import tempfile
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import numpy as np
 import streamlit as st
@@ -100,7 +99,7 @@ def ordenar_ranking(
 def _inferir_com_fachada(
     fachada: Any,
     vetor: NDArray[np.float32],
-) -> Optional[tuple[str, list[tuple[int, float]]]]:
+) -> tuple[str, list[tuple[int, float]]] | None:
     """Obtém distribuição de probabilidade do primeiro modelo treinado disponível.
 
     Delega para ``FachadaPipelineIA.prever_probabilidades()``, que gerencia
@@ -124,7 +123,7 @@ def _inferir_com_fachada(
             probs_linha = probs[0]  # shape (n_classes,)
             pares = [(int(c), float(p)) for c, p in enumerate(probs_linha)]
             return nome, pares
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.warning(
                 "[LaboratorioVisao] Falha ao inferir com '%s': %s", nome, exc
             )
@@ -166,7 +165,7 @@ def _pipeline_visual(
         ImportError: Se OpenCV (``cv2``) não estiver instalado.
         ValueError: Se a imagem de entrada estiver vazia ou com shape inválido.
     """
-    import cv2  # type: ignore  # noqa: PLC0415
+    import cv2  # type: ignore
 
     if img_orig.size == 0:
         raise ValueError("Imagem de entrada vazia — shape inválido.")
@@ -235,9 +234,9 @@ def _grafico_topk(
         fig.update_layout(
             **_TEMA_PLOTLY,
             height=320,
-            margin=dict(t=10, b=10, l=80),
+            margin={"t": 10, "b": 10, "l": 80},
             xaxis_title="Probabilidade (%)",
-            yaxis=dict(autorange="reversed"),
+            yaxis={"autorange": "reversed"},
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
@@ -256,7 +255,9 @@ def _renderizar_guardrail(
         ranking_bruto: Lista de ``(classe, prob)`` não necessariamente ordenada.
     """
     try:
-        from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: PLC0415
+        from guardrails.validador_falsa_certeza import (
+            ValidadorFalsaCerteza,
+        )
 
         probs_array = np.array(
             [p for _, p in sorted(ranking_bruto, key=lambda x: x[0])],
@@ -280,7 +281,7 @@ def _renderizar_guardrail(
             )
     except ImportError:
         logger.debug("[LaboratorioVisao] guardrails.validador_falsa_certeza não disponível.")
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.warning("[LaboratorioVisao] Erro ao avaliar guardrail: %s", exc)
 
 
@@ -298,8 +299,8 @@ def _renderizar_pipeline_e_inferencia(
     st.divider()
     titulo_secao("Pipeline de Transformação (4 Etapas)")
     try:
-        gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
-    except Exception as exc:
+        _gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
+    except Exception as exc:  # noqa: BLE001
         logger.error("[LaboratorioVisao] Falha no pipeline de visão: %s", exc)
         st.error(f"Erro no pipeline de pré-processamento: {exc}", icon="🚨")
         return
@@ -349,7 +350,7 @@ def _renderizar_pipeline_e_inferencia(
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def _renderizar_modo_canvas() -> Optional[NDArray[np.uint8]]:
+def _renderizar_modo_canvas() -> NDArray[np.uint8] | None:
     """Renderiza o canvas de desenho livre e retorna a imagem capturada.
 
     Requer o pacote opcional ``streamlit-drawable-canvas``.
@@ -359,7 +360,7 @@ def _renderizar_modo_canvas() -> Optional[NDArray[np.uint8]]:
         o componente não estiver instalado ou o canvas estiver vazio.
     """
     try:
-        from streamlit_drawable_canvas import st_canvas  # type: ignore  # noqa: PLC0415
+        from streamlit_drawable_canvas import st_canvas  # type: ignore
     except ImportError:
         st.error(
             "Componente `streamlit-drawable-canvas` não instalado. "
@@ -395,7 +396,7 @@ def _renderizar_modo_canvas() -> Optional[NDArray[np.uint8]]:
 def _carregar_imagem_de_bytes(
     dados: bytes,
     nome_arquivo: str,
-) -> Optional[NDArray[np.uint8]]:
+) -> NDArray[np.uint8] | None:
     """Decodifica bytes de imagem em array NumPy inteiramente em memória.
 
     Não cria arquivos temporários em disco. Usa ``io.BytesIO`` para passar
@@ -433,7 +434,7 @@ def _carregar_imagem_de_bytes(
             icon="🚨",
         )
         return None
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.error("[LaboratorioVisao] Erro ao decodificar '%s': %s", nome_arquivo, exc)
         st.error(f"Imagem corrompida ou inválida ({exc}).", icon="🚨")
         return None
@@ -461,19 +462,21 @@ def _validar_com_guardrail_arquivo(
         ``False`` se o validador rejeitou a imagem (já exibe ``st.error``).
     """
     try:
-        from guardrails.validador_imagem_entrada import ValidadorImagemEntrada  # noqa: PLC0415
+        from guardrails.validador_imagem_entrada import (
+            ValidadorImagemEntrada,
+        )
     except ImportError:
         logger.debug("[LaboratorioVisao] ValidadorImagemEntrada não disponível — validação ignorada.")
         return True  # fail-open: módulo ausente não bloqueia o fluxo
 
-    caminho_tmp: Optional[Path] = None
+    caminho_tmp: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=sufixo) as tmp:
             tmp.write(dados)
             caminho_tmp = Path(tmp.name)
         ValidadorImagemEntrada.validar_arquivo(str(caminho_tmp))
         return True
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.warning("[LaboratorioVisao] Validação de imagem falhou para '%s': %s", nome_arquivo, exc)
         st.error(f"Imagem inválida: {exc}", icon="🚨")
         return False
@@ -482,7 +485,7 @@ def _validar_com_guardrail_arquivo(
             caminho_tmp.unlink(missing_ok=True)
 
 
-def _renderizar_modo_upload() -> Optional[NDArray[np.uint8]]:
+def _renderizar_modo_upload() -> NDArray[np.uint8] | None:
     """Renderiza o uploader de arquivo e retorna a imagem decodificada.
 
     O processamento é inteiramente em memória (``io.BytesIO``). Um arquivo
@@ -554,7 +557,7 @@ def renderizar(fachada: Any) -> None:
         horizontal=True,
     )
 
-    img_array: Optional[NDArray[np.uint8]] = (
+    img_array: NDArray[np.uint8] | None = (
         _renderizar_modo_canvas() if "Canvas" in modo else _renderizar_modo_upload()
     )
 

@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import NamedTuple, Optional, Union
+from typing import NamedTuple
 
 import cv2
 import numpy as np
@@ -43,7 +43,7 @@ GrayImage = NDArray[np.uint8]
 ColorImage = NDArray[np.uint8]
 
 # Entrada aceita por processar_imagem_usuario / preprocessar_imagem_mnist
-EntradaImagem = Union[str, Path, NDArray[np.uint8]]
+EntradaImagem = str | Path | NDArray[np.uint8]
 
 
 class BoundingBox(NamedTuple):
@@ -256,8 +256,8 @@ def redimensionar_com_proporcao(
         raise ValueError(f"tamanho_alvo deve ser >= 1, recebido: {tamanho_alvo}.")
 
     fator = float(tamanho_alvo) / float(max(h, w))
-    nova_largura = max(1, int(round(w * fator)))
-    nova_altura  = max(1, int(round(h * fator)))
+    nova_largura = max(1, round(w * fator))
+    nova_altura  = max(1, round(h * fator))
 
     redimensionado = cv2.resize(
         imagem, (nova_largura, nova_altura), interpolation=interpolacao
@@ -325,8 +325,8 @@ def aplicar_padding_centralizado(
     if usar_centro_massa:
         momentos = cv2.moments(imagem)
         if momentos["m00"] != 0:
-            cx = int(round(momentos["m10"] / momentos["m00"]))
-            cy = int(round(momentos["m01"] / momentos["m00"]))
+            cx = round(momentos["m10"] / momentos["m00"])
+            cy = round(momentos["m01"] / momentos["m00"])
         else:
             cx, cy = w // 2, h // 2
         shift_x = centro - cx
@@ -455,7 +455,7 @@ def preprocessar_imagem_mnist(
     # ── Etapa 0: carregamento e cinza ──────────────────────────
     try:
         gray = _carregar_imagem(entrada)
-    except (FileNotFoundError, ValueError, TypeError):
+    except (FileNotFoundError, ValueError, TypeError):  # noqa: TRY203
         raise  # propaga sem silenciar
 
     # ── Etapa 1: fundo preto ───────────────────────────────────

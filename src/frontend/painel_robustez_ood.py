@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
 from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
@@ -14,10 +14,10 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 def _simular_softmax(
@@ -112,7 +112,7 @@ def renderizar(fachada) -> None:
                 from src.robustez_ood import executar_experimento_ood  # type: ignore
                 probs_ood = executar_experimento_ood(
                     fachada, classes_mascaradas=classes_mascaradas, n_amostras=n_amostras_ood)
-            except (ImportError, Exception):
+            except (ImportError, Exception):  # noqa: BLE001
                 probs_ood = _simular_softmax(
                     n_amostras_ood, classes_conhecidas)
 
@@ -199,9 +199,9 @@ def renderizar(fachada) -> None:
             height=350,
             xaxis_title="Confiança Máxima (Softmax)",
             yaxis_title="Nº de Amostras",
-            margin=dict(
-                t=10,
-                b=40))
+            margin={
+                "t": 10,
+                "b": 40})
         st.plotly_chart(fig, use_container_width=True)
 
         # ── Distribuição de entropia ───────────────────────────────────────
@@ -224,9 +224,9 @@ def renderizar(fachada) -> None:
             height=320,
             xaxis_title="Entropia de Shannon",
             yaxis_title="Nº de Amostras",
-            margin=dict(
-                t=10,
-                b=40))
+            margin={
+                "t": 10,
+                "b": 40})
         st.plotly_chart(fig_e, use_container_width=True)
 
         # ── Para quais classes o modelo mapeou as OODs ────────────────────
@@ -248,15 +248,15 @@ def renderizar(fachada) -> None:
             **_TEMA,
             coloraxis_showscale=False,
             height=320,
-            margin=dict(
-                t=10,
-                b=40),
-            xaxis=dict(
-                tickmode="array",
-                tickvals=list(
+            margin={
+                "t": 10,
+                "b": 40},
+            xaxis={
+                "tickmode": "array",
+                "tickvals": list(
                     range(10)),
-                ticktext=[
-                    str(i) for i in range(10)]))
+                "ticktext": [
+                    str(i) for i in range(10)]})
         st.plotly_chart(fig_map, use_container_width=True)
 
     # ── Tabela detalhada ───────────────────────────────────────────────────

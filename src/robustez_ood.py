@@ -1,8 +1,10 @@
-import numpy as np
-from typing import Tuple, Dict, Any, List
-from src.modelos.base_modelo import ModeloAbstratoIA
-from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
 import logging
+from typing import Any
+
+import numpy as np
+
+from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+from src.modelos.base_modelo import ModeloAbstratoIA
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +20,12 @@ class AnalisadorRobustezOOD:
     def __init__(self, limiar_alerta: float = 0.85):
         self.validador = ValidadorFalsaCerteza(
             limiar_alerta_certeza=limiar_alerta)
-        self.classes_mascaradas: List[int] = []
+        self.classes_mascaradas: list[int] = []
 
     def preparar_dados_id(self,
                           X: np.ndarray,
                           y: np.ndarray,
-                          classes_ocultas: List[int] = [4,
-                                                        7]) -> Tuple[np.ndarray,
+                          classes_ocultas: list[int] | None = None) -> tuple[np.ndarray,
                                                                      np.ndarray]:
         """
         Remove as classes especificadas para criar um conjunto estritamente In-Distribution (ID).
@@ -37,6 +38,8 @@ class AnalisadorRobustezOOD:
         Returns:
             Tupla (X_id, y_id) sem as instâncias das classes ocultas.
         """
+        if classes_ocultas is None:
+            classes_ocultas = [4, 7]
         self.classes_mascaradas = classes_ocultas
         mascara_id = ~np.isin(y, classes_ocultas)
         X_id = X[mascara_id]
@@ -46,7 +49,7 @@ class AnalisadorRobustezOOD:
         return X_id, y_id
 
     def isolar_dados_ood(self, X: np.ndarray,
-                         y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+                         y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """
         Isola exclusivamente as classes ocultadas (Out-Of-Distribution) para teste de estresse.
         """
@@ -60,7 +63,7 @@ class AnalisadorRobustezOOD:
     def relatorio_overconfidence(self,
                                  modelo: ModeloAbstratoIA,
                                  X_ood: np.ndarray,
-                                 y_ood_real: np.ndarray) -> Dict[str,
+                                 y_ood_real: np.ndarray) -> dict[str,
                                                                  Any]:
         """
         Submete o modelo às instâncias OOD e mensura a taxa de falsa certeza.

@@ -17,11 +17,10 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -91,16 +90,16 @@ class ResultadoBenchmark:
         self,
         modelo_id: str,
         status: str,
-        metricas: Optional[Dict[str, Any]] = None,
-        erro: Optional[str] = None,
+        metricas: dict[str, Any] | None = None,
+        erro: str | None = None,
     ) -> None:
         self.modelo_id: str = modelo_id
         self.status: str = status
-        self.metricas: Optional[Dict[str, Any]] = metricas
-        self.erro: Optional[str] = erro
+        self.metricas: dict[str, Any] | None = metricas
+        self.erro: str | None = erro
         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
 
-    def para_dict(self) -> Dict[str, Any]:
+    def para_dict(self) -> dict[str, Any]:
         """Serializa o resultado em dicionário pronto para JSON.
 
         Returns:
@@ -140,14 +139,14 @@ class FachadaPipelineIA:
     """
 
     def __init__(self) -> None:
-        self.X: Optional[NDArray[np.float32]] = None
-        self.y: Optional[NDArray[np.int32]] = None
-        self.X_treino: Optional[NDArray[np.float32]] = None
-        self.X_teste: Optional[NDArray[np.float32]] = None
-        self.y_treino: Optional[NDArray[np.int32]] = None
-        self.y_teste: Optional[NDArray[np.int32]] = None
+        self.X: NDArray[np.float32] | None = None
+        self.y: NDArray[np.int32] | None = None
+        self.X_treino: NDArray[np.float32] | None = None
+        self.X_teste: NDArray[np.float32] | None = None
+        self.y_treino: NDArray[np.int32] | None = None
+        self.y_teste: NDArray[np.int32] | None = None
         self.scaler: Any = None
-        self.modelos: Dict[str, ModeloAbstratoIA] = {}
+        self.modelos: dict[str, ModeloAbstratoIA] = {}
 
         if _MLFLOW_OK:
             mlflow.set_experiment("Treinamento_MNIST")
@@ -225,7 +224,7 @@ class FachadaPipelineIA:
         logger.info("[Fachada] Modelo '%s' treinado e registrado em memória.", nome_modelo)
         return modelo
 
-    def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
+    def avaliar_modelo(self, nome_modelo: str) -> dict[str, Any]:
         """Avalia o modelo treinado sobre a partição de teste.
 
         Args:
@@ -261,7 +260,7 @@ class FachadaPipelineIA:
     def prever_probabilidades(
         self,
         modelo_id: str,
-        x: Union[NDArray[np.floating], Any],
+        x: NDArray[np.floating] | Any,
     ) -> NDArray[np.float64]:
         """Retorna distribuição de probabilidade por classe para cada amostra.
 
@@ -365,9 +364,9 @@ class FachadaPipelineIA:
 
     def executar_benchmark(
         self,
-        modelos_ids: List[str],
-        dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
-    ) -> Dict[str, ResultadoBenchmark]:
+        modelos_ids: list[str],
+        dir_saida: str | Path = _DIR_BENCHMARKS,
+    ) -> dict[str, ResultadoBenchmark]:
         """Executa ciclo completo de treino + avaliação e persiste os resultados.
 
         Para cada modelo em ``modelos_ids``:
@@ -395,7 +394,7 @@ class FachadaPipelineIA:
             raise ValueError("A lista de modelos para benchmark não pode ser vazia.")
 
         self._garantir_dados()
-        resultados: Dict[str, ResultadoBenchmark] = {}
+        resultados: dict[str, ResultadoBenchmark] = {}
         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
         logger.info("[Fachada] Iniciando benchmark de %d modelos…", len(modelos_ids))
 
@@ -418,12 +417,12 @@ class FachadaPipelineIA:
                 latencia_media_ms = round((tempo_inf_s / n_amostras) * 1_000, 4)
                 throughput = round(n_amostras / tempo_inf_s, 1) if tempo_inf_s > 0 else float("inf")
 
-                metricas_completas: Dict[str, Any] = {
+                metricas_completas: dict[str, Any] = {
                     **metricas_base,
                     "tempo_treino_s": tempo_treino_s,
                     "latencia_media_ms": latencia_media_ms,
                     "throughput_amostras_s": throughput,
-                    "n_amostras_treino": int(len(self.X_treino)),
+                    "n_amostras_treino": len(self.X_treino),
                     "n_amostras_teste": int(n_amostras),
                 }
                 # matriz_confusao é serializável mas pode ser grande — mantida
@@ -437,7 +436,7 @@ class FachadaPipelineIA:
                     nome, metricas_base["acuracia"], latencia_media_ms,
                 )
 
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 logger.error("[Fachada] Falha no benchmark de '%s': %s", nome, exc)
                 resultados[nome] = ResultadoBenchmark(
                     modelo_id=nome,
@@ -457,9 +456,9 @@ class FachadaPipelineIA:
 
     def _persistir_benchmark(
         self,
-        resultados: Dict[str, ResultadoBenchmark],
+        resultados: dict[str, ResultadoBenchmark],
         ts_inicio: str,
-        dir_saida: Union[str, Path],
+        dir_saida: str | Path,
     ) -> None:
         """Serializa os resultados de benchmark para JSON estruturado em disco.
 
@@ -472,7 +471,7 @@ class FachadaPipelineIA:
             ts_inicio: Timestamp ISO 8601 do início do benchmark.
             dir_saida: Diretório destino para o arquivo JSON.
         """
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "schema_versao": "1.0",
             "timestamp_inicio": ts_inicio,
             "timestamp_fim": datetime.now(tz=timezone.utc).isoformat(),
@@ -505,7 +504,7 @@ class FachadaPipelineIA:
     # Experimento MLflow
     # ──────────────────────────────────────────────────────────────────────────
 
-    def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+    def executar_experimento(self, nome_modelo: str) -> dict[str, Any]:
         """Executa o ciclo completo de treino + avaliação com rastreio MLflow.
 
         Quando o MLflow não está instalado, executa normalmente sem rastreio.
@@ -556,7 +555,7 @@ class FachadaPipelineIA:
 
     def obter_estatisticas_dados(
         self, tipo: str = "treino"
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Calcula estatísticas descritivas sobre a partição especificada.
 
         Args:
@@ -582,7 +581,7 @@ class FachadaPipelineIA:
     # Utilitários de consulta
     # ──────────────────────────────────────────────────────────────────────────
 
-    def listar_modelos_treinados(self) -> List[str]:
+    def listar_modelos_treinados(self) -> list[str]:
         """Retorna os nomes dos modelos atualmente treinados e em memória.
 
         Returns:

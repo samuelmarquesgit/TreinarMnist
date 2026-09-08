@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from src.modelos.vision_transformer import ModeloViT
 
 

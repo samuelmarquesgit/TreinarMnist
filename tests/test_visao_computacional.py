@@ -1,4 +1,5 @@
 import numpy as np
+
 from src.visao_computacional import processar_imagem_usuario
 
 

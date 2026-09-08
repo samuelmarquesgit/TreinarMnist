@@ -19,7 +19,6 @@ import os
 import struct
 import urllib.error
 import urllib.request
-from typing import Tuple
 
 import joblib
 import numpy as np
@@ -57,7 +56,7 @@ def _normalizar_e_consolidar(
     y_treino: np.ndarray,
     X_teste: np.ndarray,
     y_teste: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Concatena treino + teste, normaliza pixels para [0, 1] e retorna (X, y).
 
@@ -80,7 +79,7 @@ def _normalizar_e_consolidar(
     return X, y
 
 
-def _carregar_via_sklearn() -> Tuple[np.ndarray, np.ndarray]:
+def _carregar_via_sklearn() -> tuple[np.ndarray, np.ndarray]:
     """
     Fonte 1 — sklearn OpenML.
 
@@ -93,7 +92,7 @@ def _carregar_via_sklearn() -> Tuple[np.ndarray, np.ndarray]:
         ImportError: sklearn não instalado.
         Exception:   Qualquer falha de rede ou parse.
     """
-    from sklearn.datasets import fetch_openml  # noqa: PLC0415
+    from sklearn.datasets import fetch_openml
 
     logger.info("[MNIST] Tentando sklearn fetch_openml...")
     mnist = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
@@ -107,7 +106,7 @@ def _carregar_via_sklearn() -> Tuple[np.ndarray, np.ndarray]:
     return X, y
 
 
-def _carregar_via_torchvision() -> Tuple[np.ndarray, np.ndarray]:
+def _carregar_via_torchvision() -> tuple[np.ndarray, np.ndarray]:
     """
     Fonte 2 — torchvision.datasets.MNIST.
 
@@ -120,7 +119,7 @@ def _carregar_via_torchvision() -> Tuple[np.ndarray, np.ndarray]:
         ImportError: torchvision ou torch não instalados.
         Exception:   Qualquer falha de download.
     """
-    import torchvision.datasets as tv_datasets  # noqa: PLC0415
+    import torchvision.datasets as tv_datasets
 
     logger.info("[MNIST] Tentando torchvision.datasets.MNIST...")
     raiz = os.path.join("data", "torchvision_mnist")
@@ -165,7 +164,7 @@ def _ler_idx_rotulos(dados: bytes) -> np.ndarray:
     Returns:
         Array int32 de shape (N,).
     """
-    magic, n = struct.unpack(">II", dados[:8])
+    magic, _n = struct.unpack(">II", dados[:8])
     assert magic == 0x0801, f"Magic number inválido: {magic:#010x}"
     return np.frombuffer(dados[8:], dtype=np.uint8).astype(np.int32)
 
@@ -192,7 +191,7 @@ def _baixar_idx(base_url: str, nome_arquivo: str) -> bytes:
         return f.read()
 
 
-def _carregar_via_download_direto() -> Tuple[np.ndarray, np.ndarray]:
+def _carregar_via_download_direto() -> tuple[np.ndarray, np.ndarray]:
     """
     Fonte 3 — download direto dos arquivos IDX via HTTP.
 
@@ -222,7 +221,7 @@ def _carregar_via_download_direto() -> Tuple[np.ndarray, np.ndarray]:
             logger.info("[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape)
             return X, y
 
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.warning("[MNIST] Mirror %s falhou: %s", base_url, exc)
 
     raise ConnectionError(
@@ -231,7 +230,7 @@ def _carregar_via_download_direto() -> Tuple[np.ndarray, np.ndarray]:
     )
 
 
-def _carregar_via_keras() -> Tuple[np.ndarray, np.ndarray]:
+def _carregar_via_keras() -> tuple[np.ndarray, np.ndarray]:
     """
     Fonte 4 — TensorFlow / Keras.
 
@@ -247,7 +246,7 @@ def _carregar_via_keras() -> Tuple[np.ndarray, np.ndarray]:
     logger.info("[MNIST] Tentando keras (TensorFlow)...")
 
     # Importação tardia para não impor TF como dependência obrigatória
-    import tensorflow as tf  # noqa: PLC0415
+    import tensorflow as tf
 
     (X_treino, y_treino), (X_teste, y_teste) = (
         tf.keras.datasets.mnist.load_data()
@@ -268,7 +267,7 @@ def _carregar_via_keras() -> Tuple[np.ndarray, np.ndarray]:
 # Função pública
 # ──────────────────────────────────────────────────────────────
 
-def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
+def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     """
     Carrega o dataset MNIST com cadeia de fallback multi-fonte.
 
@@ -296,7 +295,7 @@ def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
                 "[MNIST] Cache OK — shape X=%s y=%s", X.shape, y.shape
             )
             return X, y
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.warning("[MNIST] Cache corrompido, ignorando: %s", exc)
 
     # ── Cadeia de fallback ──────────────────────────────────────
@@ -317,12 +316,12 @@ def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
                 os.makedirs(os.path.dirname(_CACHE_PATH), exist_ok=True)
                 joblib.dump((X, y), _CACHE_PATH)
                 logger.info("[MNIST] Cache salvo em %s", _CACHE_PATH)
-            except Exception as exc_cache:
+            except Exception as exc_cache:  # noqa: BLE001
                 logger.warning("[MNIST] Não foi possível salvar o cache: %s", exc_cache)
 
             return X, y
 
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             logger.warning(
                 "[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc
             )

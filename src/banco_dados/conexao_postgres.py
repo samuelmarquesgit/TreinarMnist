@@ -1,10 +1,11 @@
-import os
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
-from datetime import datetime, timezone
-from contextlib import contextmanager
-from typing import Generator
 import logging
+import os
+from collections.abc import Generator
+from contextlib import contextmanager
+from datetime import datetime, timezone
+
+from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
@@ -34,7 +35,7 @@ class ConexaoPostgres:
     Suporta fallback para SQLite local caso DATABASE_URL nao esteja disponivel.
     """
 
-    def __init__(self, url: str = None) -> None:
+    def __init__(self, url: str | None = None) -> None:
         self.url = url or os.getenv(
             'DATABASE_URL', 'sqlite:///reports/banco_local.db')
 
@@ -61,7 +62,7 @@ class ConexaoPostgres:
             sessao.commit()
         except Exception as e:
             sessao.rollback()
-            logger.error(f"Erro em transacao de banco de dados: {str(e)}")
+            logger.error(f"Erro em transacao de banco de dados: {e!s}")
             raise
         finally:
             sessao.close()
