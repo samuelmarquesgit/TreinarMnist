@@ -2,7 +2,6 @@
 
 import streamlit as st
 
-
 CSS_GLOBAL = """
 <style>
 /* ── Variáveis de tema ─────────────────────────────────────────── */

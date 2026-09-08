@@ -1,7 +1,8 @@
 import logging
-from typing import Dict, Any, List
+from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+
 from src.fachada import FachadaPipelineIA
 from src.modelos.suporte_rag import SuporteRAG
 
@@ -42,12 +43,12 @@ def treinar_modelo_mnist(nome_modelo: str) -> str:
     try:
         fachada.treinar_modelo(nome_modelo)
         return f"Modelo '{nome_modelo}' treinado com sucesso."
-    except Exception as e:
-        return f"Erro ao treinar modelo: {str(e)}"
+    except Exception as e:  # noqa: BLE001
+        return f"Erro ao treinar modelo: {e!s}"
 
 
 @mcp.tool()
-def avaliar_modelo_mnist(nome_modelo: str) -> Dict[str, Any]:
+def avaliar_modelo_mnist(nome_modelo: str) -> dict[str, Any]:
     """
     Avalia a performance de um modelo treinado na base MNIST.
 
@@ -57,12 +58,12 @@ def avaliar_modelo_mnist(nome_modelo: str) -> Dict[str, Any]:
     fachada = get_fachada()
     try:
         return fachada.avaliar_modelo(nome_modelo)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return {"erro": str(e)}
 
 
 @mcp.tool()
-def consultar_rag_mnist(pergunta: str) -> List[str]:
+def consultar_rag_mnist(pergunta: str) -> list[str]:
     """
     Consulta a base de conhecimento RAG especializada na arquitetura MNIST.
 
@@ -73,8 +74,8 @@ def consultar_rag_mnist(pergunta: str) -> List[str]:
     try:
         respostas = rag.consultar(pergunta, n_resultados=2)
         return respostas
-    except Exception as e:
-        return [f"Erro na consulta RAG: {str(e)}"]
+    except Exception as e:  # noqa: BLE001
+        return [f"Erro na consulta RAG: {e!s}"]
 
 
 if __name__ == "__main__":

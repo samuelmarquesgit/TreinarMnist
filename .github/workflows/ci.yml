@@ -48,6 +48,10 @@ jobs:
           retention-days: 1
 
 
+      - name: Cobertura Badge
+        if: github.ref == 'refs/heads/main'
+        uses: tj-actions/coverage-badge-py@v2
+
       - name: Auditoria de Dependências (Pip Audit)
         run: |
           safety check -r requirements.txt || true

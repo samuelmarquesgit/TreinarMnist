@@ -1,12 +1,13 @@
 import logging
 from typing import Any
+
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 
 from src.modelos.base_modelo import ModeloAbstratoIA
 
@@ -57,7 +58,7 @@ class FabricaModelos:
     Fornece um ponto centralizado para injecao de hiperparametros padrao.
     """
 
-    _REGISTRO_MODELOS = {
+    _REGISTRO_MODELOS = {  # noqa: RUF012
         'RegressaoLogistica': lambda: LogisticRegression(max_iter=500, random_state=42),
         'ArvoreDecisao': lambda: DecisionTreeClassifier(random_state=42),
         'FlorestaAleatoria': lambda: RandomForestClassifier(n_estimators=50, random_state=42),

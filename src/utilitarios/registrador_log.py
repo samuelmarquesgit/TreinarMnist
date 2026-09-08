@@ -3,12 +3,11 @@
 import logging
 import os
 import sys
-from typing import Optional
 
 
 def configurar_registrador_log(
     nome_modulo: str = "mnist_ia",
-    nivel_log: Optional[str] = None
+    nivel_log: str | None = None
 ) -> logging.Logger:
     """Configura e retorna um registrador de log padronizado para o sistema.
 

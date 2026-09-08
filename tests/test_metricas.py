@@ -1,4 +1,5 @@
 import pytest
+
 from src.avaliacao_metricas import calcular_metricas
 
 

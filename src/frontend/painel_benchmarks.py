@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
@@ -13,10 +13,10 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 def _formatar_tabela(resultados: dict) -> pd.DataFrame:
@@ -50,7 +50,7 @@ def _executar_benchmark(fachada, modelos_sel: list, resultados: dict) -> None:
             metricas = fachada.avaliar_modelo(nome)
             metricas["tempo_treino"] = round(time.perf_counter() - t0, 2)
             resultados[nome] = metricas
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             resultados[nome] = {
                 "acuracia": 0, "precisao": 0, "recall": 0, "f1": 0,
                 "tempo_treino": 0, "erro": str(e),
@@ -83,7 +83,7 @@ def _renderizar_graficos(df_ord) -> None:
         fig = go.Figure()
         fig.add_trace(go.Bar(name="Acurácia", x=df_ord["Modelo"], y=df_ord["Acurácia"], marker_color="#58a6ff"))
         fig.add_trace(go.Bar(name="F1-Score", x=df_ord["Modelo"], y=df_ord["F1-Score"], marker_color="#3fb950"))
-        fig.update_layout(**_TEMA, barmode="group", height=350, margin=dict(t=10, b=80), xaxis_tickangle=-30)
+        fig.update_layout(**_TEMA, barmode="group", height=350, margin={"t": 10, "b": 80}, xaxis_tickangle=-30)
         st.plotly_chart(fig, use_container_width=True)
     else:
         categorias = ["Acurácia", "Precisão", "Recall", "F1-Score"]
@@ -93,7 +93,7 @@ def _renderizar_graficos(df_ord) -> None:
             fig.add_trace(go.Scatterpolar(
                 r=vals, theta=categorias + [categorias[0]],
                 fill="toself", name=row["Modelo"]))
-        fig.update_layout(**_TEMA, height=420, margin=dict(t=20, b=20))
+        fig.update_layout(**_TEMA, height=420, margin={"t": 20, "b": 20})
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -119,10 +119,10 @@ def _renderizar_matriz_confusao(resultados: dict) -> None:
         fmt_label = ""
     fig_cm = px.imshow(
         mat_plot, text_auto=True, color_continuous_scale="Blues",
-        labels=dict(x="Previsto", y="Real", color=f"Contagem{fmt_label}"),
+        labels={"x": "Previsto", "y": "Real", "color": f"Contagem{fmt_label}"},
         x=[str(i) for i in range(10)], y=[str(i) for i in range(10)],
     )
-    fig_cm.update_layout(**_TEMA, height=500, margin=dict(t=10, b=10))
+    fig_cm.update_layout(**_TEMA, height=500, margin={"t": 10, "b": 10})
     st.plotly_chart(fig_cm, use_container_width=True)
     erros_por_classe = mat_np.sum(axis=1) - np.diag(mat_np)
     classe_pior = int(np.argmax(erros_por_classe))

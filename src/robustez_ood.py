@@ -1,9 +1,11 @@
-import numpy as np
-from typing import Tuple, Any, List, Union
-from src.modelos.base_modelo import ModeloAbstratoIA
-from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
+
+from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+from src.modelos.base_modelo import ModeloAbstratoIA
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +17,7 @@ class RelatorioOOD:
     total_falsa_certeza: int
     taxa_overconfidence: float
     entropia_media: float
-    classes_ood: List[int]
+    classes_ood: list[int]
     is_ood: bool
     score_incerteza: float
     metrica_utilizada: str
@@ -71,13 +73,12 @@ class AnalisadorRobustezOOD:
     def __init__(self, limiar_alerta: float = 0.85):
         self.validador = ValidadorFalsaCerteza(
             limiar_alerta_certeza=limiar_alerta)
-        self.classes_mascaradas: List[int] = []
+        self.classes_mascaradas: list[int] = []
 
     def preparar_dados_id(self,
                           X: np.ndarray,
                           y: np.ndarray,
-                          classes_ocultas: List[int] = [4,
-                                                        7]) -> Tuple[np.ndarray,
+                          classes_ocultas: list[int] | None = None) -> tuple[np.ndarray,
                                                                      np.ndarray]:
         """
         Remove as classes especificadas para criar um conjunto estritamente In-Distribution (ID).
@@ -90,6 +91,8 @@ class AnalisadorRobustezOOD:
         Returns:
             Tupla (X_id, y_id) sem as instâncias das classes ocultas.
         """
+        if classes_ocultas is None:
+            classes_ocultas = [4, 7]
         self.classes_mascaradas = classes_ocultas
         mascara_id = ~np.isin(y, classes_ocultas)
         X_id = X[mascara_id]
@@ -99,7 +102,7 @@ class AnalisadorRobustezOOD:
         return X_id, y_id
 
     def isolar_dados_ood(self, X: np.ndarray,
-                         y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+                         y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """
         Isola exclusivamente as classes ocultadas (Out-Of-Distribution) para teste de estresse.
         """
@@ -111,7 +114,7 @@ class AnalisadorRobustezOOD:
         return X[mascara_ood], y[mascara_ood]
 
     def relatorio_overconfidence(self,
-                                 modelo: Union[ModeloAbstratoIA, Any],
+                                 modelo: ModeloAbstratoIA | Any,
                                  X_ood: np.ndarray,
                                  y_ood_real: np.ndarray,
                                  threshold_entropia: float = 0.5) -> RelatorioOOD:

@@ -1,12 +1,17 @@
+from typing import Any
+
 import numpy as np
-from typing import Dict, Any, Union, List
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 
 
-def calcular_metricas(y_verdadeiro: Union[List[int],
-                                          np.ndarray],
-                      y_previsto: Union[List[int],
-                      np.ndarray]) -> Dict[str,
+def calcular_metricas(y_verdadeiro: list[int] | np.ndarray,
+                      y_previsto: list[int] | np.ndarray) -> dict[str,
                                            Any]:
     """
     Calcula métricas de classificação padrão para validação de modelos preditivos.
