@@ -11,4 +11,5 @@ extend-ignore = [
     "C401",    # Unnecessary generator (rewrite as a set comprehension)
     "PLW1510", # `subprocess.run` without explicit `check` argument
     "DTZ006",  # `datetime.datetime.fromtimestamp()` called without a `tz` argument
+    "EXE002",  # Arquivo executável sem shebang (artefato do mount local; git armazena como 100644)
 ]
