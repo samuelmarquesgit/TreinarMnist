@@ -1,6 +1,6 @@
+
 import numpy as np
 from scipy import stats
-from typing import Dict, Union, List
 
 
 class CalculadorEstatistico:
@@ -11,7 +11,7 @@ class CalculadorEstatistico:
 
     @staticmethod
     def estatisticas_descritivas(
-            dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+            dados: np.ndarray | list[float]) -> dict[str, float]:
         """
         Calcula as estatísticas descritivas principais de um conjunto de dados.
 
