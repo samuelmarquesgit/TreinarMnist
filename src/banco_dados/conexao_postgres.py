@@ -1,16 +1,18 @@
-import os
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
-from datetime import datetime, timezone
-from contextlib import contextmanager
-from typing import Generator
 import logging
+import os
+from collections.abc import Generator
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from typing import Any
+
+from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
-class Experimento(Base):
+class Experimento(Base):  # type: ignore[misc, valid-type]
     """
     Mapeamento ORM (Object-Relational Mapping) da tabela de experimentos.
     Persiste resultados das avaliacoes estatisticas e de metricas de IA.
@@ -19,6 +21,10 @@ class Experimento(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     modelo = Column(String, nullable=False)
     acuracia = Column(Float)
+    precisao = Column(Float, nullable=True)
+    recall = Column(Float, nullable=True)
+    f1 = Column(Float, nullable=True)
+    hiperparametros = Column(String, nullable=True)
     tempo_treino = Column(Float)
 
     # datetime.utcnow() esta deprecado. Usamos timezone-aware nativo.
@@ -34,19 +40,18 @@ class ConexaoPostgres:
     Suporta fallback para SQLite local caso DATABASE_URL nao esteja disponivel.
     """
 
-    def __init__(self, url: str = None) -> None:
-        self.url = url or os.getenv(
-            'DATABASE_URL', 'sqlite:///reports/banco_local.db')
+    def __init__(self, url: str | None = None) -> None:
+        self.url: str = url or os.getenv('DATABASE_URL', 'sqlite:///reports/banco_local.db') or 'sqlite:///reports/banco_local.db'
 
         # Garante que a pasta reports exista para o sqlite local
-        if self.url.startswith('sqlite:///reports/'):
+        if self.url.startswith('sqlite:///reports/'):  # type: ignore[union-attr]
             os.makedirs('reports', exist_ok=True)
 
-        self.engine = create_engine(self.url, echo=False)
+        self.engine = create_engine(self.url, echo=False)  # type: ignore[arg-type]
         Base.metadata.create_all(self.engine)
         self.SessionLocal = sessionmaker(
             bind=self.engine, autocommit=False, autoflush=False)
-        logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")
+        logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")  # type: ignore[union-attr]
 
     @contextmanager
     def obter_sessao(self) -> Generator[Session, None, None]:
@@ -61,7 +66,7 @@ class ConexaoPostgres:
             sessao.commit()
         except Exception as e:
             sessao.rollback()
-            logger.error(f"Erro em transacao de banco de dados: {str(e)}")
+            logger.error(f"Erro em transacao de banco de dados: {e!s}")
             raise
         finally:
             sessao.close()

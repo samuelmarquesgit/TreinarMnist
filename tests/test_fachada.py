@@ -1,6 +1,8 @@
-import pytest
+from unittest.mock import Mock, patch
+
 import numpy as np
-from unittest.mock import patch, Mock
+import pytest
+
 from src.fachada import FachadaPipelineIA
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
 

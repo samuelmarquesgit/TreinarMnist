@@ -1,6 +1,8 @@
-import pytest
-import numpy as np
 from unittest.mock import patch
+
+import numpy as np
+import pytest
+
 from src.carregador_dados import carregar_dados_mnist
 
 
@@ -75,7 +77,7 @@ def test_cache_corrompido_faz_fallback_pro_download(
     }
 
     with patch('src.carregador_dados.joblib.dump'):
-        X, y = carregar_dados_mnist()
+        X, _y = carregar_dados_mnist()
 
     assert mock_fetch.called
     assert X.shape == (2, 784)
@@ -93,6 +95,6 @@ def test_falha_ao_salvar_cache_ignora(mock_exists, mock_fetch):
     # Simula erro de permissão negada ao tentar salvar o arquivo no diretorio
     with patch('src.carregador_dados.joblib.dump') as mock_dump:
         mock_dump.side_effect = PermissionError("Acesso negado no diretorio data")
-        X, y = carregar_dados_mnist()
+        X, _y = carregar_dados_mnist()
 
     assert X.shape == (1, 784)
