@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 0 # Necessário para SonarCloud
 
-      - name: Configurar Python 3.12
+      - name: Configurar Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.10"
           cache: "pip"
 
       - name: Instalar Dependências
