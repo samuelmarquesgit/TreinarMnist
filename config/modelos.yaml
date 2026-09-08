@@ -1,0 +1,27 @@
+# Configuração externalizada de hiperparâmetros
+modelos:
+  regressao_logistica:
+    max_iter: 500
+    random_state: 42
+  arvore_decisao:
+    random_state: 42
+  floresta_aleatoria:
+    n_estimators: 50
+    random_state: 42
+  impulsionamento_gradiente:
+    n_estimators: 50
+    random_state: 42
+  svm:
+    kernel: "rbf"
+    random_state: 42
+    probability: true
+  knn:
+    n_neighbors: 5
+  naive_bayes: {}
+  perceptron_multicamadas:
+    hidden_layer_sizes: [100]
+    max_iter: 300
+    random_state: 42
+  vision_transformer:
+    epocas: 2
+    batch_size: 128

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.express as px
@@ -12,10 +12,10 @@ try:
 except ImportError:
     PLOTLY_OK = False
 
-_TEMA = dict(
-    paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(0,0,0,0)",
-    template="plotly_dark")
+_TEMA = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "template": "plotly_dark"}
 
 
 def renderizar(fachada) -> None:
@@ -68,7 +68,7 @@ def renderizar(fachada) -> None:
                     "Quantidade": "Nº de amostras"})
             fig.update_traces(textposition="outside")
             fig.update_layout(**_TEMA, coloraxis_showscale=False,
-                              margin=dict(t=10, b=10), height=300)
+                              margin={"t": 10, "b": 10}, height=300)
             st.plotly_chart(fig, use_container_width=True)
         else:
             st.bar_chart(df_bal.set_index("Dígito")["Quantidade"])
@@ -131,9 +131,9 @@ def renderizar(fachada) -> None:
             # Reconverte para [0,255] para exibição intuitiva
             img_255 = (img_insp * 255).astype(int)
             fig_h = px.imshow(img_255, color_continuous_scale="Blues",
-                              labels=dict(color="Intensidade"),
+                              labels={"color": "Intensidade"},
                               zmin=0, zmax=255)
-            fig_h.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+            fig_h.update_layout(**_TEMA, margin={"t": 5, "b": 5}, height=220,
                                 coloraxis_showscale=True)
             fig_h.update_xaxes(showticklabels=False)
             fig_h.update_yaxes(showticklabels=False)
@@ -152,7 +152,7 @@ def renderizar(fachada) -> None:
                     "x": "Intensidade [0,1]",
                     "y": "Frequência"},
                 color_discrete_sequence=["#58a6ff"])
-            fig_bar.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+            fig_bar.update_layout(**_TEMA, margin={"t": 5, "b": 5}, height=220,
                                   showlegend=False)
             st.plotly_chart(fig_bar, use_container_width=True)
         else:
@@ -162,3 +162,57 @@ def renderizar(fachada) -> None:
     with st.expander("🔢 Ver matriz 28×28 de intensidades brutas"):
         img_255_df = pd.DataFrame((img_insp * 255).astype(int))
         st.dataframe(img_255_df, use_container_width=True)
+
+    # ── Projeção de Alta Dimensionalidade (PCA / t-SNE) ────────────────────
+    st.divider()
+    titulo_secao("Espaço Latente de Features (Redução de Dimensionalidade)")
+    st.caption("Projeção matemática das 784 dimensões em 2D para visualização topológica das classes.")
+    
+    col_proj1, col_proj2 = st.columns([1, 3])
+    with col_proj1:
+        algoritmo = st.radio("Algoritmo de Projeção", ["PCA (Rápido)", "t-SNE (Detalhado)"])
+        n_amostras = st.slider("Amostras p/ Projeção", 500, 3000, 1000, 500)
+        btn_projetar = st.button("Gerar Projeção 2D", use_container_width=True, type="primary")
+        
+    with col_proj2:
+        if btn_projetar and PLOTLY_OK:
+            with st.spinner(f"Calculando {algoritmo}..."):
+                from sklearn.decomposition import PCA
+                from sklearn.manifold import TSNE
+                
+                # Sub-amostragem aleatória para não travar o t-SNE
+                idx_sub = np.random.choice(len(X_treino), size=n_amostras, replace=False)
+                X_sub = X_treino[idx_sub]
+                y_sub = y_treino[idx_sub]
+                
+                if "PCA" in algoritmo:
+                    modelo_proj = PCA(n_components=2, random_state=42)
+                else:
+                    modelo_proj = TSNE(n_components=2, random_state=42, perplexity=30)
+                    
+                X_2d = modelo_proj.fit_transform(X_sub)
+                
+                df_proj = pd.DataFrame({
+                    "Dimensão 1": X_2d[:, 0],
+                    "Dimensão 2": X_2d[:, 1],
+                    "Dígito": y_sub.astype(str)
+                })
+                # Ordena para a legenda ficar correta (0 a 9)
+                df_proj = df_proj.sort_values("Dígito")
+                
+                fig_scatter = px.scatter(
+                    df_proj,
+                    x="Dimensão 1",
+                    y="Dimensão 2",
+                    color="Dígito",
+                    category_orders={"Dígito": [str(i) for i in range(10)]},
+                    color_discrete_sequence=px.colors.qualitative.Plotly,
+                    opacity=0.8,
+                    title=f"Projeção 2D via {algoritmo}"
+                )
+                fig_scatter.update_layout(**_TEMA, height=450, margin={"t": 40, "b": 10})
+                st.plotly_chart(fig_scatter, use_container_width=True)
+        elif not PLOTLY_OK:
+            st.warning("Instale Plotly para visualizar a projeção.")
+        else:
+            st.info("Clique no botão para computar e visualizar a projeção no espaço 2D.")

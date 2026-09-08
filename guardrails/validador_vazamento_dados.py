@@ -24,7 +24,9 @@ class ValidadorVazamentoDados:
         """
         if conjunto_treino.shape[1] != conjunto_teste.shape[1]:
             raise ValueError(
-                f"Incompatibilidade de dimensões: Treino {conjunto_treino.shape[1]} != Teste {conjunto_teste.shape[1]}")
+                f"Incompatibilidade de dimensões: "
+                f"Treino {conjunto_treino.shape[1]} != Teste {conjunto_teste.shape[1]}"
+            )
 
         from scipy.spatial.distance import cdist
 
@@ -37,7 +39,7 @@ class ValidadorVazamentoDados:
             replace=False)
 
         amostras = conjunto_teste[indices_teste]
-        
+
         # O(n*m) processado em C de forma muito mais rápida que o loop Python
         distancias = cdist(amostras, conjunto_treino, metric='euclidean')
         vazamentos = np.where(distancias < tolerancia)
@@ -45,6 +47,7 @@ class ValidadorVazamentoDados:
         if len(vazamentos[0]) > 0:
             idx_vazamento = indices_teste[vazamentos[0][0]]
             raise ValueError(
-                f"Alerta de Data Leakage detectado: Instância de teste {idx_vazamento} encontrada no conjunto de treino!")
+                f"Data Leakage detectado: instância de teste {idx_vazamento}"
+                f" encontrada no conjunto de treino!")
 
         return True
