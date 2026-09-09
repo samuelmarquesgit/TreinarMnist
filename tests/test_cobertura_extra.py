@@ -65,7 +65,6 @@ def test_vit_sem_torch_levanta_import_error():
     import src.modelos.vision_transformer as vt
     with patch.object(vt, "_TORCH_OK", False), pytest.raises(ImportError, match="PyTorch e timm"):
         vt.ModeloViT()
-    sys.modules.pop("src.modelos.vision_transformer", None)
 
 
 def test_vit_com_torch_mockado_treinar_e_prever():

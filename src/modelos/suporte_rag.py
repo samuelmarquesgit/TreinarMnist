@@ -1,13 +1,13 @@
 """SuporteRAG — motor de busca semântica via ChromaDB com fallback de embedding."""
 
 import logging
+from typing import Any
 
 import chromadb
 
 logger = logging.getLogger(__name__)
 
 # ── Função de embedding com fallback gracioso ──────────────────────────────
-from typing import Any
 
 try:
     from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction

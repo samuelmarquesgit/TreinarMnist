@@ -5,7 +5,13 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
-from src.robustez_ood import _entropia_shannon, executar_experimento_ood
+from src.robustez_ood import (
+    AnalisadorRobustezOOD as AnalisadorOOD,
+)
+from src.robustez_ood import (
+    _entropia_shannon,
+    executar_experimento_ood,
+)
 
 # ── _entropia_shannon ──────────────────────────────────────────────────────
 
@@ -170,10 +176,6 @@ def test_executar_experimento_ood_classes_padrao_sao_4_e_7():
 
 
 # ── AnalisadorOOD — linhas descobertas ────────────────────────────────────────
-
-
-
-from src.robustez_ood import AnalisadorRobustezOOD as AnalisadorOOD
 
 
 def test_preparar_dados_id_sem_classes_ocultas_usa_padrao():

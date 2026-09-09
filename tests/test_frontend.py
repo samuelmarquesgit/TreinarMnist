@@ -571,9 +571,10 @@ def test_renderizar_kpis_chama_columns():
 
 
 def test_renderizar_graficos_sem_plotly_retorna():
-    """_renderizar_graficos com _PLOTLY_OK=False não deve chamar st.plotly_chart."""
+    """_renderizar_graficos com PLOTLY_OK=False não deve chamar st.plotly_chart."""
     import src.frontend.painel_benchmarks as pb
-    original = pb._PLOTLY_OK
+    orig1, orig2 = pb.PLOTLY_OK, pb._PLOTLY_OK
+    pb.PLOTLY_OK = False
     pb._PLOTLY_OK = False
     _mock_st.reset_mock()
     try:
@@ -581,7 +582,8 @@ def test_renderizar_graficos_sem_plotly_retorna():
         _renderizar_graficos(df)
         _mock_st.plotly_chart.assert_not_called()
     finally:
-        pb._PLOTLY_OK = original
+        pb.PLOTLY_OK = orig1
+        pb._PLOTLY_OK = orig2
 
 
 def test_renderizar_matriz_sem_mat_exibe_info():
@@ -595,9 +597,10 @@ def test_renderizar_matriz_sem_mat_exibe_info():
 
 
 def test_renderizar_matriz_com_mat_sem_plotly():
-    """_renderizar_matriz_confusao com _PLOTLY_OK=False deve sair antes de plotar."""
+    """_renderizar_matriz_confusao com PLOTLY_OK=False deve sair antes de plotar."""
     import src.frontend.painel_benchmarks as pb
-    original = pb._PLOTLY_OK
+    orig1, orig2 = pb.PLOTLY_OK, pb._PLOTLY_OK
+    pb.PLOTLY_OK = False
     pb._PLOTLY_OK = False
     _mock_st.selectbox.return_value = "ModeloA"
     _mock_st.toggle.return_value = False
@@ -607,7 +610,8 @@ def test_renderizar_matriz_com_mat_sem_plotly():
         _renderizar_matriz_confusao(resultados)
         _mock_st.plotly_chart.assert_not_called()
     finally:
-        pb._PLOTLY_OK = original
+        pb.PLOTLY_OK = orig1
+        pb._PLOTLY_OK = orig2
 
 
 def test_renderizar_benchmarks_com_resultados_em_session():
