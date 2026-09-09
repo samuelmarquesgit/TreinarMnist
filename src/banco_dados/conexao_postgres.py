@@ -7,8 +7,10 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
+from typing import Any
+
 logger = logging.getLogger(__name__)
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
 class Experimento(Base):
@@ -36,8 +38,8 @@ class ConexaoPostgres:
     """
 
     def __init__(self, url: str | None = None) -> None:
-        self.url = url or os.getenv(
-            'DATABASE_URL', 'sqlite:///reports/banco_local.db')
+        _url = url or os.getenv('DATABASE_URL') or 'sqlite:///reports/banco_local.db'
+        self.url: str = str(_url)
 
         # Garante que a pasta reports exista para o sqlite local
         if self.url.startswith('sqlite:///reports/'):

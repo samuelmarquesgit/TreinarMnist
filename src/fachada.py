@@ -60,7 +60,7 @@ def _softmax(logits: NDArray[np.floating]) -> NDArray[np.float64]:
     """
     shifted = logits - logits.max(axis=-1, keepdims=True)
     exp = np.exp(shifted)
-    return exp / exp.sum(axis=-1, keepdims=True)
+    return exp / exp.sum(axis=-1, keepdims=True)  # type: ignore[no-any-return]
 
 
 def _sigmoid(scores: NDArray[np.floating]) -> NDArray[np.float64]:
@@ -72,7 +72,7 @@ def _sigmoid(scores: NDArray[np.floating]) -> NDArray[np.float64]:
     Returns:
         Array com valores em ``(0, 1)``.
     """
-    return 1.0 / (1.0 + np.exp(-scores))
+    return 1.0 / (1.0 + np.exp(-scores))  # type: ignore[no-any-return]
 
 
 class ResultadoBenchmark:
@@ -242,6 +242,8 @@ class FachadaPipelineIA:
                 f"Modelo '{nome_modelo}' não foi treinado. Chame treinar_modelo() primeiro."
             )
         self._garantir_dados()
+        assert self.X_teste is not None
+        assert self.y_teste is not None
 
         modelo = self.modelos[nome_modelo]
         logger.info("[Fachada] Avaliando '%s' sobre %d amostras de teste…", nome_modelo, len(self.X_teste))
@@ -394,6 +396,8 @@ class FachadaPipelineIA:
             raise ValueError("A lista de modelos para benchmark não pode ser vazia.")
 
         self._garantir_dados()
+        assert self.X_treino is not None
+        assert self.X_teste is not None
         resultados: dict[str, ResultadoBenchmark] = {}
         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
         logger.info("[Fachada] Iniciando benchmark de %d modelos…", len(modelos_ids))

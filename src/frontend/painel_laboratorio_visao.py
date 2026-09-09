@@ -177,7 +177,7 @@ def _pipeline_visual(
         gray = img_orig.copy()
 
     # Etapa 2: inversão (fundo preto, dígito branco)
-    invertida: NDArray[np.uint8] = 255 - gray
+    invertida: NDArray[np.uint8] = (255 - gray).astype(np.uint8)
 
     # Etapa 3: bounding box
     _, bin_img = cv2.threshold(invertida, 30, 255, cv2.THRESH_BINARY)
@@ -389,7 +389,7 @@ def _renderizar_modo_canvas() -> NDArray[np.uint8] | None:
         )
 
     if resultado.image_data is not None:
-        return resultado.image_data[:, :, :3].astype(np.uint8)
+        return resultado.image_data[:, :, :3].astype(np.uint8)  # type: ignore[no-any-return]
     return None
 
 

@@ -262,7 +262,7 @@ class VisionTransformer(nn.Module):
         x = self.transformer_blocks(x)   # (B, N+1, D)
         x = self.norm(x)                 # (B, N+1, D)
         cls = x[:, 0]                    # (B, D)      — token [CLS] final
-        return self.mlp_head(cls)        # (B, num_classes)
+        return self.mlp_head(cls)  # type: ignore[no-any-return]
 
 
 # ──────────────────────────────────────────────────────────────
@@ -410,7 +410,7 @@ class ModeloViT(ModeloAbstratoIA):
             np.ndarray int64, shape (N,) — classes 0-9.
         """
         probs = self.prever_probabilidades(X_teste)  # (N, 10)
-        return np.argmax(probs, axis=1)               # (N,)
+        return np.argmax(probs, axis=1)  # type: ignore[no-any-return]
 
     def prever_probabilidades(self, X_teste: Any) -> np.ndarray:
         """
