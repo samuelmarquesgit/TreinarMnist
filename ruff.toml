@@ -12,4 +12,6 @@ extend-ignore = [
     "PLW1510", # `subprocess.run` without explicit `check` argument
     "DTZ006",  # `datetime.datetime.fromtimestamp()` called without a `tz` argument
     "EXE002",  # Arquivo executável sem shebang (artefato do mount local; git armazena como 100644)
+    "E402",    # Module level import not at top of file
 ]
+
