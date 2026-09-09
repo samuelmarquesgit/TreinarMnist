@@ -77,7 +77,7 @@ modelos:
 
   naive_bayes:
     suavizacao_var: 1e-9
-
+ 
   perceptron_manual:
     taxa_aprendizado: 0.01
     epocas: 100

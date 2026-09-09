@@ -1,7 +1,6 @@
 """Agente especialista em diagnóstico estatístico e análise comparativa de classificadores."""
-
-from typing import Any
-
+ 
+from typing import Dict, Any
 import pandas as pd
 
 
@@ -9,7 +8,7 @@ class AgenteAnalistaMetricas:
     """Agente que sintetiza resultados, identifica trade-offs e seleciona o modelo campeão."""
 
     @staticmethod
-    def identificar_modelo_campeao(tabela_metricas: pd.DataFrame) -> dict[str, Any]:
+    def identificar_modelo_campeao(tabela_metricas: pd.DataFrame) -> Dict[str, Any]:
         """Avalia o melhor equilíbrio entre Acurácia, F1-Score e Custo Computacional.
 
         Args:

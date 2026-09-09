@@ -1,6 +1,6 @@
 # 🏛️ Arquitetura e Planejamento Mestre: Plataforma Empresarial MNIST & Análise Preditiva
 ## Sistema Integrado com Machine Learning, Deep Learning, Transformers, Bancos Híbridos (SQL + NoSQL), RAG, Servidor MCP e Frontend Interativo
-
+ 
 > **Convenção Fundamental:** Toda a base de código, variáveis, classes, métodos, funções e interface gráfica serão desenvolvidos rigorosamente em **Português do Brasil (`pt-BR`)**, adotando os mais altos padrões de Engenharia de Software com IA (Clean Architecture, SOLID, Design Patterns, CI/CD, Containerização, Governança de MLOps e Frontend Reativo).
 
 ---

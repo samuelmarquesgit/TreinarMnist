@@ -1,1 +1,1 @@
-"""Pacote de agentes autônomos e orquestradores de IA."""
+"""Pacote de agentes autônomos e orquestradores de IA. """

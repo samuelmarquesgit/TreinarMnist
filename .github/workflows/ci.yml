@@ -1,5 +1,5 @@
 name: Pipeline de CI/CD - Plataforma MNIST
-
+ 
 on:
   push:
     branches: [ main, develop, 'feat/**', 'fix/**', 'docs/**', 'refactor/**', 'test/**' ]

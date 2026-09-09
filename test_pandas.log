@@ -1,0 +1,14 @@
+<frozen importlib._bootstrap>:491: Warning: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for 
+testing. You are advised not to use it for production. 
+
+CRASHES ARE TO BE EXPECTED - PLEASE REPORT THEM TO NUMPY DEVELOPERS
+C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist\.venv\Lib\site-packages\numpy\core\getlimits.py:225: RuntimeWarning: invalid value encountered in exp2
+  epsneg_f128 = exp2(ld(-113))
+C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist\.venv\Lib\site-packages\numpy\core\getlimits.py:226: RuntimeWarning: invalid value encountered in exp2
+  tiny_f128 = exp2(ld(-16382))
+C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist\.venv\Lib\site-packages\numpy\core\getlimits.py:240: RuntimeWarning: invalid value encountered in exp2
+  eps=exp2(ld(-112)),
+C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist\.venv\Lib\site-packages\numpy\core\getlimits.py:41: RuntimeWarning: invalid value encountered in nextafter
+  self._smallest_subnormal = nextafter(
+C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist\.venv\Lib\site-packages\numpy\core\getlimits.py:52: RuntimeWarning: invalid value encountered in log10
+  self.precision = int(-log10(self.eps))

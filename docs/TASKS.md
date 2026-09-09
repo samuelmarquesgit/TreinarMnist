@@ -43,7 +43,7 @@ Este documento gerencia o ciclo completo de desenvolvimento do projeto, estrutur
 
 ## 📂 Detalhamento do Épico de Frontend
 
-```
+``` 
 ========================================================================================
 EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
 ========================================================================================

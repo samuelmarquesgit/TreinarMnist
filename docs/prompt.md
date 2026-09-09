@@ -63,7 +63,7 @@ TreinarMnist/
 ```
 
 ---
-
+ 
 ## 📋 3. GUIA DE EXECUÇÃO MODULAR PASSO A PASSO
 
 1. **Setup da Infraestrutura, Docker e CI/CD (`EPIC-01`)**

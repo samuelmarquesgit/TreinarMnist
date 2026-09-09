@@ -10,7 +10,7 @@ class ValidadorImagemEntrada:
 
     EXTENSOES_PERMITIDAS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
     TAMANHO_MAXIMO_BYTES = 10 * 1024 * 1024  # 10 MB
-
+ 
     @classmethod
     def validar_arquivo(cls, caminho_arquivo: str) -> bool:
         """Verifica se o caminho existe, é uma extensão válida e tamanho razoável.

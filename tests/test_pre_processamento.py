@@ -69,6 +69,23 @@ def test_anti_leakage_scaler(mock_split):
     assert np.max(X_teste_norm) > 1.0
 
 
+def test_anti_leakage_scaler_fail():
+    import pytest
+    # Cria uma distribuição que poderia causar leak no StandardScaler,
+    # e certifica que o MinMaxScaler mantém estrito no Treino, mas permite fora no Teste.
+    X = np.random.rand(10, 10)
+    y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
+    
+    # Adicionando mock para forçar o ValueError da normalização
+    from unittest.mock import patch
+    with patch("src.pre_processamento.MinMaxScaler.fit_transform", return_value=np.array([[2.0], [3.0]])), \
+         patch("src.pre_processamento.MinMaxScaler.transform", return_value=np.array([[2.0]])):
+        with pytest.raises(ValueError, match="Falha na normalizacao MinMax no Treino"):
+            pre_processar_dados(X, y)
+    
+    X_tr_n, X_te_n, _, _, scaler = pre_processar_dados(X, y)
+
+
 def test_estratificacao():
     X = np.random.rand(200, 10)
     # Criamos um dataset desbalanceado intencionalmente: 90% classe 0, 10%

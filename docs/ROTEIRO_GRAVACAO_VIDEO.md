@@ -8,7 +8,7 @@
 > * **Entrega:** Link do Google Drive com modo de leitura aberto para qualquer pessoa com o link, inserido no `README.md` e na tarefa do AVA.
 
 ---
-
+ 
 ## ⏱️ Minutagem Estruturada e Script de Apresentação
 
 ```
