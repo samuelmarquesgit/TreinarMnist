@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP  # type: ignore[attr-defined]
 
 from src.fachada import FachadaPipelineIA
 from src.modelos.suporte_rag import SuporteRAG

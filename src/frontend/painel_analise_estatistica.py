@@ -34,9 +34,9 @@ def _obter_dados(fachada, modo: str, particao: str,
         X = X[y == digito]
 
     if modo == "Brutos [0–255]":
-        return (X * 255).flatten().astype(float)
+        return (X * 255).flatten().astype(float)  # type: ignore[no-any-return]
     else:
-        return X.flatten().astype(float)
+        return X.flatten().astype(float)  # type: ignore[no-any-return]
 
 
 def _card_metricas(stats_dict: dict) -> None:

@@ -176,7 +176,7 @@ def _renderizar_formulario_chat() -> str | None:
             enviado = st.form_submit_button("Enviar ➤", use_container_width=True)
     if enviado and pergunta_digitada:
         return pergunta_digitada
-    return st.session_state.pop("_pergunta_pendente", None)
+    return st.session_state.pop("_pergunta_pendente", None)  # type: ignore[no-any-return]
 
 
 def _processar_pergunta(pergunta: str) -> None:

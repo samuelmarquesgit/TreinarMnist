@@ -56,7 +56,7 @@ def _softmax(logits: NDArray[np.floating]) -> NDArray[np.float64]:
     """
     shifted = logits - logits.max(axis=-1, keepdims=True)
     exp_vals = np.exp(shifted)
-    return (exp_vals / exp_vals.sum(axis=-1, keepdims=True)).astype(np.float64)
+    return (exp_vals / exp_vals.sum(axis=-1, keepdims=True)).astype(np.float64)  # type: ignore[no-any-return]
 
 
 def _sigmoid(scores: NDArray[np.floating]) -> NDArray[np.float64]:
@@ -168,7 +168,7 @@ class ModeloSklearn(ModeloAbstratoIA):
             Vetor de classes preditas de shape ``(N,)``.
         """
         logger.debug("[%s] Inferência em %d amostras…", self.nome_log, len(X_teste))
-        return self.modelo.predict(X_teste)  # type: ignore[return-value]
+        return self.modelo.predict(X_teste)  # type: ignore[no-any-return]
 
     def prever_probabilidades(
         self, X_teste: NDArray[np.floating]
