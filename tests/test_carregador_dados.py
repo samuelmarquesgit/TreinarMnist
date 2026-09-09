@@ -5,13 +5,28 @@ import pytest
 
 from src.carregador_dados import carregar_dados_mnist
 
+# ──────────────────────────────────────────────────────────────
+# Auxiliares
+# ──────────────────────────────────────────────────────────────
+
+def _make_xy(n: int = 5) -> tuple:
+    """Retorna (X, y) com shapes e dtypes corretos."""
+    return (
+        np.zeros((n, 784), dtype=np.float32),
+        np.zeros(n, dtype=np.int32),
+    )
+
+
+# ──────────────────────────────────────────────────────────────
+# Testes de cache local
+# ──────────────────────────────────────────────────────────────
 
 @patch('src.carregador_dados.joblib.load')
 @patch('src.carregador_dados.os.path.exists')
 def test_carrega_cache_com_sucesso(mock_exists, mock_load):
+    """Cache válido deve ser retornado sem chamar nenhuma fonte remota."""
     mock_exists.return_value = True
-    mock_X = np.zeros((10, 784))
-    mock_y = np.zeros(10)
+    mock_X, mock_y = _make_xy(10)
     mock_load.return_value = (mock_X, mock_y)
 
     X, y = carregar_dados_mnist()
@@ -26,16 +41,17 @@ def test_carrega_cache_com_sucesso(mock_exists, mock_load):
 @patch('src.carregador_dados.joblib.dump')
 @patch('src.carregador_dados.os.path.exists')
 def test_baixa_openml_salva_cache(mock_exists, mock_dump, mock_fetch):
+    """Fonte sklearn OK → deve chamar fetch_openml e salvar o cache."""
     mock_exists.return_value = False
     mock_fetch.return_value = {
-        'data': np.zeros((5, 784)),
-        'target': np.zeros(5)
+        'data':   np.zeros((5, 784), dtype=np.float32),
+        'target': np.array([0, 1, 2, 3, 4], dtype=np.int32),
     }
 
     X, y = carregar_dados_mnist()
 
-    assert mock_fetch.called
-    assert mock_dump.called
+    assert mock_fetch.called, "fetch_openml deve ser chamado."
+    assert mock_dump.called,  "Cache deve ser salvo após download."
     assert X.shape == (5, 784)
     assert y.shape == (5,)
 
@@ -100,13 +116,13 @@ def test_cache_corrompido_faz_fallback_pro_download(
 @patch('sklearn.datasets.fetch_openml')
 @patch('src.carregador_dados.os.path.exists')
 def test_falha_ao_salvar_cache_ignora(mock_exists, mock_fetch):
+    """Falha de permissão ao salvar cache não deve interromper o retorno dos dados."""
     mock_exists.return_value = False
     mock_fetch.return_value = {
-        'data': np.zeros((1, 784)),
-        'target': np.zeros(1)
+        'data':   np.zeros((1, 784), dtype=np.float32),
+        'target': np.zeros(1, dtype=np.int32),
     }
 
-    # Simula erro de permissão negada ao tentar salvar o arquivo no diretorio
     with patch('src.carregador_dados.joblib.dump') as mock_dump:
         mock_dump.side_effect = PermissionError("Acesso negado no diretorio data")
         X, _y = carregar_dados_mnist()

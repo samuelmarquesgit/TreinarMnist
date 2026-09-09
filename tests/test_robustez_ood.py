@@ -68,11 +68,11 @@ def test_relatorio_overconfidence():
     modelo = MockModeloOverconfident()
     relatorio = analisador.relatorio_overconfidence(modelo, X_ood, y_ood)
 
-    assert relatorio["total_amostras_ood"] == 2
+    assert relatorio.total_amostras_ood == 2
     # Como o modelo retorna 99% para a classe 1 e a classe 1 é CONHECIDA (não foi mascarada)
     # ISSO É a essência da Falsa Certeza. Ele está super confiante prevendo um dígito conhecido
     # para uma amostra que na verdade é OOD. O alerta DEVE disparar (2 de 2).
-    assert relatorio["total_falsa_certeza"] == 2
+    assert relatorio.total_falsa_certeza == 2
 
 
 def test_relatorio_overconfidence_predicting_unknown_class():
@@ -103,8 +103,8 @@ def test_relatorio_overconfidence_predicting_unknown_class():
     # e entropia baixa (< 0.3) disparará o alerta de overconfidence,
     # mesmo que o modelo consiga "magicamente" prever a classe OOD.
     # O mock preenche 0.99 de probabilidade, o que gera entropia quase zero.
-    assert relatorio["total_falsa_certeza"] == 2
-    assert relatorio["taxa_overconfidence"] == 1.0
+    assert relatorio.total_falsa_certeza == 2
+    assert relatorio.taxa_overconfidence == 1.0
 
 
 def test_relatorio_overconfidence_lanca_typeerror():
