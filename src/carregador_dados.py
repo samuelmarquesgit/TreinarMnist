@@ -1,25 +1,64 @@
-"""Módulo de ingestão do dataset MNIST com cache local e tratamento de erros robusto.
+"""
+Carregador de dados MNIST com cadeia de fallback multi-fonte.
 
-Nota de logging:
-    Biblioteca interna — nunca chama ``logging.basicConfig()``.
-    Usa apenas ``logger = logging.getLogger(__name__)`` para emitir mensagens
-    rastreáveis sem interferir no pipeline de logs do sistema pai.
+Tentativas em ordem:
+  1. Cache local (joblib)
+  2. sklearn  — fetch_openml('mnist_784')
+  3. torchvision — torchvision.datasets.MNIST
+  4. Download direto — arquivos IDX comprimidos (mirror Yann LeCun)
+  5. keras/TensorFlow — tf.keras.datasets.mnist
+
+Retorna sempre (X, y) com:
+  - X: np.ndarray float32, shape (N, 784), valores em [0, 1]
+  - y: np.ndarray int32,   shape (N,),   rótulos 0-9
 """
 
+import gzip
 import logging
 import os
 import struct
 import urllib.error
+import urllib.request
 
 import joblib
 import numpy as np
-from sklearn.datasets import fetch_openml
 
 logger = logging.getLogger(__name__)
 
+# ──────────────────────────────────────────────────────────────
+# Constantes
+# ──────────────────────────────────────────────────────────────
 
-def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
-    """Realiza o download do dataset MNIST com suporte a cache local.
+_CACHE_PATH = os.path.join("data", "mnist_cache.pkl")
+
+# Mirrors públicos dos arquivos IDX originais
+_URLS_DOWNLOAD_DIRETO = [
+    # Mirror de Yann LeCun via ossci-datasets (AWS)
+    "https://ossci-datasets.s3.amazonaws.com/mnist/",
+    # Mirror alternativo do github
+    "https://raw.githubusercontent.com/mrgloom/MNIST-dataset-in-different-formats/master/data/original/",
+]
+
+_ARQUIVOS_IDX = {
+    "treino_imagens": "train-images-idx3-ubyte.gz",
+    "treino_rotulos": "train-labels-idx1-ubyte.gz",
+    "teste_imagens":  "t10k-images-idx3-ubyte.gz",
+    "teste_rotulos":  "t10k-labels-idx1-ubyte.gz",
+}
+
+
+# ──────────────────────────────────────────────────────────────
+# Funções privadas — cada fonte de dados
+# ──────────────────────────────────────────────────────────────
+
+def _normalizar_e_consolidar(
+    X_treino: np.ndarray,
+    y_treino: np.ndarray,
+    X_teste: np.ndarray,
+    y_teste: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Concatena treino + teste, normaliza pixels para [0, 1] e retorna (X, y).
 
     Args:
         X_treino: Imagens de treino (N_treino, 784).
@@ -28,56 +67,14 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
         y_teste:  Rótulos de teste  (N_teste,  784).
 
     Returns:
-        Tuple[np.ndarray, np.ndarray]: Uma tupla contendo:
-            - X (np.ndarray): Matriz de features (imagens achatadas 784 dimensões).
-            - y (np.ndarray): Vetor de rótulos (inteiros de 0 a 9).
-
-    Raises:
-        ConnectionError: Se falhar ao baixar o dataset devido a problemas de rede.
-        RuntimeError: Se todas as fontes de dados falharem.
-        Exception: Se ocorrer qualquer outro erro fatal de parse.
+        Tupla (X, y) com shape (70 000, 784) e (70 000,).
     """
     X = np.concatenate([X_treino, X_teste], axis=0).astype(np.float32)
     y = np.concatenate([y_treino, y_teste], axis=0).astype(np.int32)
 
-    if os.path.exists(cache_path):
-        logger.info("Carregando MNIST do cache local...")
-        try:
-            dados: tuple[np.ndarray, np.ndarray] = joblib.load(cache_path)  # type: ignore[assignment, no-any-return]
-            return dados
-        except Exception as e:
-            logger.warning(
-                "Falha ao ler o cache local. Baixando novamente. Erro: %s", e
-            )
-            # Cache corrompido — prossegue para download
-
-    logger.info("Baixando MNIST (OpenML)... Isso pode levar alguns minutos.")
-    try:
-        mnist = fetch_openml(
-            'mnist_784',
-            version=1,
-            as_frame=False,
-            parser='auto',
-        )
-    except urllib.error.URLError as e:
-        raise ConnectionError(
-            f"Falha de conexao ao tentar baixar o MNIST: {e}"
-        ) from e
-    except Exception as e:
-        raise Exception(
-            f"Erro inesperado ao buscar dados no OpenML: {e}"
-        ) from e
-
-    X = np.array(mnist['data'], dtype=np.float32)
-    y = np.array(mnist['target'], dtype=np.int32)
-
-    # Salva no cache para acelerar futuras execuções
-    try:
-        os.makedirs('data', exist_ok=True)
-        joblib.dump((X, y), cache_path)
-        logger.info("Cache MNIST salvo em '%s'.", cache_path)
-    except Exception as e:
-        logger.warning("Nao foi possivel salvar o cache local. Erro: %s", e)
+    # Normalização idempotente: só divide se os valores ainda são [0, 255]
+    if X.max() > 1.0:
+        X /= 255.0
 
     return X, y
 

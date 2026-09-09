@@ -35,36 +35,32 @@ import pandas as pd
 import streamlit as st
 
 from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
+from src.modelos.fabrica_modelos import FabricaModelos
+
+logger = logging.getLogger(__name__)
 
 try:
     import plotly.express as px
     import plotly.graph_objects as go
 
-_TEMA = {
+    _PLOTLY_OK = True
+except ImportError:  # pragma: no cover
+    _PLOTLY_OK = False
+
+_TEMA_PLOTLY: dict[str, Any] = {
     "paper_bgcolor": "rgba(0,0,0,0)",
     "plot_bgcolor": "rgba(0,0,0,0)",
-    "template": "plotly_dark"}
+    "template": "plotly_dark",
+}
+
+# Sentinel interno: nunca exposto ao usuário final.
+_CHAVE_FALHOU = "_falhou"
+_CHAVE_ERRO = "erro"
 
 
-def _formatar_tabela(resultados: dict) -> pd.DataFrame:
-    linhas = []
-    for nome, m in resultados.items():
-        linhas.append({
-            "Modelo": nome,
-            "Acurácia": round(m.get("acuracia", 0), 4),
-            "Precisão": round(m.get("precisao", 0), 4),
-            "Recall": round(m.get("recall", 0), 4),
-            "F1-Score": round(m.get("f1", 0), 4),
-            "ROC-AUC": round(m.get("roc_auc", 0), 4) if m.get("roc_auc") is not None else 0.0,
-            "Brier Score": round(m.get("brier_score", 0), 4) if m.get("brier_score") is not None else 0.0,
-            "Tempo (s)": round(m.get("tempo_treino", 0), 2),
-        })
-    df = pd.DataFrame(linhas).sort_values(
-        "Acurácia",
-        ascending=False).reset_index(
-        drop=True)
-    df.insert(0, "🏅", ["🥇", "🥈", "🥉"] + [""] * max(0, len(df) - 3))
-    return df
+# ──────────────────────────────────────────────────────────────────────────────
+# Descoberta dinâmica de modelos
+# ──────────────────────────────────────────────────────────────────────────────
 
 
 def _obter_modelos_disponiveis() -> list[str]:
@@ -123,13 +119,14 @@ def _executar_benchmark(
             metricas["tempo_treino"] = round(time.perf_counter() - t0, 2)
             metricas[_CHAVE_FALHOU] = False
             resultados[nome] = metricas
-        except Exception as e:  # noqa: BLE001
-            resultados[nome] = {
-                "acuracia": 0, "precisao": 0, "recall": 0, "f1": 0,
-                "roc_auc": None, "brier_score": None,
-                "tempo_treino": 0, "erro": str(e),
-                "matriz_confusao": [[0] * 10 for _ in range(10)],
-            }
+            logger.info("[Benchmarks] '%s' concluído — acurácia=%.4f", nome, metricas["acuracia"])
+
+        except Exception as exc:  # noqa: BLE001
+            msg = str(exc)
+            logger.error("[Benchmarks] Falha ao executar '%s': %s", nome, msg)
+            # Armazena APENAS a falha — zero métricas numéricas para não enganar
+            resultados[nome] = {_CHAVE_FALHOU: True, _CHAVE_ERRO: msg}
+
     barra.progress(1.0, text="✅ Benchmark concluído!")
 
 
@@ -270,9 +267,29 @@ def _renderizar_graficos(df_ord: pd.DataFrame) -> None:
 
     if "Barras" in tipo_graf:
         fig = go.Figure()
-        fig.add_trace(go.Bar(name="Acurácia", x=df_ord["Modelo"], y=df_ord["Acurácia"], marker_color="#58a6ff"))
-        fig.add_trace(go.Bar(name="F1-Score", x=df_ord["Modelo"], y=df_ord["F1-Score"], marker_color="#3fb950"))
-        fig.update_layout(**_TEMA, barmode="group", height=350, margin={"t": 10, "b": 80}, xaxis_tickangle=-30)
+        fig.add_trace(
+            go.Bar(
+                name="Acurácia",
+                x=df_ord["Modelo"],
+                y=df_ord["Acurácia"],
+                marker_color="#58a6ff",
+            )
+        )
+        fig.add_trace(
+            go.Bar(
+                name="F1-Score",
+                x=df_ord["Modelo"],
+                y=df_ord["F1-Score"],
+                marker_color="#3fb950",
+            )
+        )
+        fig.update_layout(
+            **_TEMA_PLOTLY,
+            barmode="group",
+            height=350,
+            margin={"t": 10, "b": 80},
+            xaxis_tickangle=-30,
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     else:  # Radar
@@ -280,10 +297,15 @@ def _renderizar_graficos(df_ord: pd.DataFrame) -> None:
         fig = go.Figure()
         for _, row in df_ord.iterrows():
             vals = [row[c] for c in categorias] + [row[categorias[0]]]
-            fig.add_trace(go.Scatterpolar(
-                r=vals, theta=categorias + [categorias[0]],
-                fill="toself", name=row["Modelo"]))
-        fig.update_layout(**_TEMA, height=420, margin={"t": 20, "b": 20})
+            fig.add_trace(
+                go.Scatterpolar(
+                    r=vals,
+                    theta=categorias + [categorias[0]],
+                    fill="toself",
+                    name=row["Modelo"],
+                )
+            )
+        fig.update_layout(**_TEMA_PLOTLY, height=420, margin={"t": 20, "b": 20})
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -327,11 +349,14 @@ def _renderizar_matriz_confusao(validos: dict[str, dict[str, Any]]) -> None:
         sufixo = ""
 
     fig_cm = px.imshow(
-        mat_plot, text_auto=True, color_continuous_scale="Blues",
-        labels={"x": "Previsto", "y": "Real", "color": f"Contagem{fmt_label}"},
-        x=[str(i) for i in range(10)], y=[str(i) for i in range(10)],
+        mat_plot,
+        text_auto=True,
+        color_continuous_scale="Blues",
+        labels={"x": "Previsto", "y": "Real", "color": f"Contagem{sufixo}"},
+        x=[str(i) for i in range(10)],
+        y=[str(i) for i in range(10)],
     )
-    fig_cm.update_layout(**_TEMA, height=500, margin={"t": 10, "b": 10})
+    fig_cm.update_layout(**_TEMA_PLOTLY, height=500, margin={"t": 10, "b": 10})
     st.plotly_chart(fig_cm, use_container_width=True)
 
     erros = mat_np.sum(axis=1) - np.diag(mat_np)
@@ -440,8 +465,14 @@ def renderizar(fachada: Any) -> None:
 
     col_ord, _ = st.columns([2, 4])
     with col_ord:
-        coluna_ord = st.selectbox("Ordenar por", ["Acurácia", "F1-Score", "ROC-AUC", "Brier Score", "Tempo (s)"])
-    df_ord = df.sort_values(coluna_ord, ascending=(coluna_ord == "Tempo (s)" or coluna_ord == "Brier Score")).reset_index(drop=True)
+        coluna_ord: str = st.selectbox(
+            "Ordenar por", ["Acurácia", "F1-Score", "Precisão", "Recall", "Tempo (s)"]
+        )
+
+    df_ord = df.sort_values(
+        coluna_ord, ascending=(coluna_ord == "Tempo (s)")
+    ).reset_index(drop=True)
+
     st.dataframe(
         df_ord.style.background_gradient(subset=["Acurácia", "F1-Score"], cmap="Blues"),
         use_container_width=True,

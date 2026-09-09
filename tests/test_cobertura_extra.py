@@ -350,18 +350,24 @@ def test_fabrica_criar_vit_sem_torch_levanta_import_error():
 
 
 def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
-    """Cobre raise NotImplementedError em ModeloSklearn (linhas 98-100)."""
-    from sklearn.svm import SVC
-
+    """Cobre fallback _one_hot_a_partir_de_predict em ModeloSklearn."""
     from src.modelos.fabrica_modelos import ModeloSklearn
-    # SVC padrão não tem predict_proba configurado (precisa de probability=True no sklearn < 1.9, ou ensemble_false)
-    modelo = ModeloSklearn(SVC(), "SVC_semProba")
+    
+    class FakeEstimatorSemProba:
+        def __init__(self):
+            self.classes_ = np.array([0, 1, 2])
+        def fit(self, X, y):
+            pass
+        def predict(self, X):
+            return np.array([1, 2, 0, 1, 1])
+
+    modelo = ModeloSklearn(FakeEstimatorSemProba(), "Fake_semProba")
     X = np.zeros((5, 784), dtype=np.float32)
-    # Precisa de pelo menos 2 classes para SVC
-    y = np.array([0, 1, 0, 1, 0], dtype=np.int32)
-    modelo.treinar(X, y)
-    with pytest.raises(NotImplementedError, match="não suporta previsão de probabilidades"):
-        modelo.prever_probabilidades(X)
+    
+    probs = modelo.prever_probabilidades(X)
+    assert probs.shape == (5, 3)
+    assert probs[0, 1] == 1.0
+    assert probs[1, 2] == 1.0
 
 
 # ═════════════════════════════════════════════════════════════════════════════

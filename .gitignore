@@ -91,3 +91,17 @@ imports_test.txt
 
 # Rastreamento de experimentos MLflow
 mlruns/
+
+# Artefatos de execucao local
+fake_dir/
+coverage_report.txt
+mlflow.db
+*.log
+out.log
+test_pandas.log
+mypy_errors.txt
+fix_*.py
+
+# Dados MNIST baixados pelo torchvision
+data/torchvision_mnist/
+data/mnist_cache.pkl
