@@ -106,8 +106,10 @@ def _pipeline_visual(img_orig: np.ndarray) -> tuple:
     else:
         gray = img_orig.copy()
 
-    # Etapa 2: inversão (fundo preto, dígito branco)
-    invertida = 255 - gray
+    # Etapa 2: garante fundo preto/dígito branco (igual ao pipeline canonical)
+    # Inverte apenas se o fundo for claro (média > 127); canvas já é fundo preto
+    media = float(gray.mean())
+    invertida = (255 - gray).astype('uint8') if media > 127.0 else gray.copy()
 
     # Etapa 3: bounding box
     _, bin_img = cv2.threshold(invertida, 30, 255, cv2.THRESH_BINARY)
@@ -207,7 +209,8 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
 
     st.divider()
     titulo_secao("Inferência e Ranking Top-K (Bubble Sort)")
-    vetor = (canvas_28 / 255.0).flatten().reshape(1, -1)
+    from src.visao_computacional import processar_imagem_usuario
+    vetor = processar_imagem_usuario(img_array)
     ranking_raw = _inferir_com_modelo(fachada, vetor)
     if ranking_raw is None:
         st.info("Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui.")
