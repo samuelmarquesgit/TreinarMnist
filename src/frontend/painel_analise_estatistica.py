@@ -158,7 +158,9 @@ def renderizar(fachada) -> None:
                     "t": 10,
                     "b": 40},
                 xaxis_title="Intensidade",
-                yaxis_title="Densidade")
+                yaxis_title="Densidade",
+                showlegend=False
+            )
             st.plotly_chart(fig_h, use_container_width=True)
 
         # ── Boxplot por classe ─────────────────────────────────────────────
