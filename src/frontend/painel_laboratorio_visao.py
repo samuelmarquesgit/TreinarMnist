@@ -172,7 +172,7 @@ def _pipeline_visual(
 
     # Etapa 1: escala de cinza
     if img_orig.ndim == 3:
-        gray: NDArray[np.uint8] = cv2.cvtColor(img_orig, cv2.COLOR_RGB2GRAY)
+        gray: NDArray[np.uint8] = cv2.cvtColor(img_orig, cv2.COLOR_RGB2GRAY)  # type: ignore[assignment]
     else:
         gray = img_orig.copy()
 
@@ -189,7 +189,7 @@ def _pipeline_visual(
         bbox_crop = invertida
 
     # Etapa 4: resize 20×20 → canvas 28×28 centralizado
-    resized: NDArray[np.uint8] = cv2.resize(bbox_crop, (20, 20), interpolation=cv2.INTER_AREA)
+    resized: NDArray[np.uint8] = cv2.resize(bbox_crop, (20, 20), interpolation=cv2.INTER_AREA)  # type: ignore[assignment]
     canvas: NDArray[np.uint8] = np.zeros((28, 28), dtype=np.uint8)
     canvas[4:24, 4:24] = resized
 
