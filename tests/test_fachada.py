@@ -79,3 +79,161 @@ def test_obter_estatisticas_dados(mock_calc_class):
     assert stats == {"fake_stats": 1}
     mock_instancia.estatisticas_descritivas.assert_called_once_with(
         fachada.X_treino)
+
+
+@patch('src.fachada.time.perf_counter', side_effect=[0.0, 1.0, 1.0, 2.0])
+@patch('src.fachada.FachadaPipelineIA.treinar_modelo')
+@patch('src.fachada.FachadaPipelineIA.avaliar_modelo')
+@patch('src.fachada.FachadaPipelineIA._persistir_benchmark')
+def test_executar_benchmark_sucesso(mock_persist, mock_avaliar, mock_treinar, mock_time):
+    fachada = FachadaPipelineIA()
+    fachada.X_treino = np.array([[1]])
+    fachada.X_teste = np.array([[2]])
+    fachada.y_teste = np.array([1])
+    
+    mock_modelo = Mock()
+    mock_modelo.prever.return_value = np.array([1])
+    fachada.modelos["RegressaoLogistica"] = mock_modelo
+    
+    mock_avaliar.return_value = {"acuracia": 0.9}
+    
+    resultados = fachada.executar_benchmark(["RegressaoLogistica"])
+    
+    assert "RegressaoLogistica" in resultados
+    res = resultados["RegressaoLogistica"]
+    assert res.status == "sucesso"
+    assert res.metricas["acuracia"] == 0.9
+    assert res.metricas["tempo_treino_s"] == 1.0
+    mock_persist.assert_called_once()
+
+
+def test_executar_benchmark_vazio():
+    fachada = FachadaPipelineIA()
+    with pytest.raises(ValueError, match="não pode ser vazia"):
+        fachada.executar_benchmark([])
+
+
+@patch('src.fachada.FachadaPipelineIA.treinar_modelo')
+def test_executar_benchmark_falha(mock_treinar):
+    fachada = FachadaPipelineIA()
+    fachada.X_treino = np.array([[1]])
+    fachada.X_teste = np.array([[2]])
+    mock_treinar.side_effect = Exception("Falha simulada")
+    
+    resultados = fachada.executar_benchmark(["RegressaoLogistica"], dir_saida="fake_dir")
+    
+    res = resultados["RegressaoLogistica"]
+    assert res.status == "falha"
+    assert res.erro == "Falha simulada"
+
+
+@patch('mlflow.start_run')
+@patch('src.fachada.FachadaPipelineIA.avaliar_modelo')
+@patch('src.fachada.FachadaPipelineIA.treinar_modelo')
+def test_executar_experimento(mock_treinar, mock_avaliar, mock_run):
+    fachada = FachadaPipelineIA()
+    fachada.X_treino = np.array([[1]])
+    mock_avaliar.return_value = {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9}
+    
+    metricas = fachada.executar_experimento("RegressaoLogistica")
+    assert "tempo_treino_s" in metricas
+    mock_treinar.assert_called_once()
+    mock_avaliar.assert_called_once()
+
+
+def test_persistir_benchmark_cria_arquivo(tmp_path):
+    from src.fachada import ResultadoBenchmark
+    fachada = FachadaPipelineIA()
+    res = ResultadoBenchmark("Mod1", "sucesso", {"acc": 1.0})
+    
+    fachada._persistir_benchmark({"Mod1": res}, "2023-01-01T00:00:00Z", tmp_path)
+    
+    arquivos = list(tmp_path.glob("*.json"))
+    assert len(arquivos) == 1
+
+
+def test_prever_probabilidades_predict_proba():
+    fachada = FachadaPipelineIA()
+    mock_estimador = Mock()
+    mock_estimador.predict_proba.return_value = np.array([[0.1, 0.9]])
+    
+    # Simula wrapper
+    mock_wrapper = Mock()
+    mock_wrapper.modelo = mock_estimador
+    fachada.modelos["TesteProba"] = mock_wrapper
+    
+    probs = fachada.prever_probabilidades("TesteProba", np.array([[1]]))
+    assert probs.shape == (1, 2)
+    assert probs[0, 1] == 0.9
+
+
+def test_prever_probabilidades_decision_function():
+    fachada = FachadaPipelineIA()
+    mock_estimador = Mock()
+    # Sem predict_proba
+    del mock_estimador.predict_proba
+    mock_estimador.decision_function.return_value = np.array([2.0])
+    
+    mock_wrapper = Mock()
+    mock_wrapper.modelo = mock_estimador
+    fachada.modelos["TesteDF"] = mock_wrapper
+    
+    probs = fachada.prever_probabilidades("TesteDF", np.array([[1]]))
+    assert probs.shape == (1, 2)
+
+
+def test_prever_probabilidades_pytorch_mock():
+    import torch
+    fachada = FachadaPipelineIA()
+    mock_wrapper = Mock()
+    del mock_wrapper.modelo
+    
+    mock_model_pt = Mock()
+    # Simula saida do modelo PyTorch (logits)
+    mock_model_pt.return_value = torch.tensor([[1.0, 2.0]])
+    mock_wrapper.model = mock_model_pt
+    mock_wrapper.device = "cpu"
+    
+    fachada.modelos["TestePT"] = mock_wrapper
+    
+    probs = fachada.prever_probabilidades("TestePT", np.array([[1.0] * 784]))
+    assert probs.shape == (1, 2)
+    # PyTorch usa reshape interno
+    mock_model_pt.assert_called_once()
+
+
+def test_prever_probabilidades_fallback():
+    fachada = FachadaPipelineIA()
+    mock_wrapper = Mock()
+    del mock_wrapper.modelo
+    del mock_wrapper.model
+    
+    mock_wrapper.prever_probabilidades.return_value = np.array([[0.5, 0.5]])
+    fachada.modelos["TesteFB"] = mock_wrapper
+    
+    probs = fachada.prever_probabilidades("TesteFB", np.array([[1]]))
+    assert probs[0, 0] == 0.5
+
+
+def test_prever_probabilidades_erro_nao_implementado():
+    fachada = FachadaPipelineIA()
+    mock_wrapper = Mock()
+    del mock_wrapper.modelo
+    del mock_wrapper.model
+    mock_wrapper.prever_probabilidades.side_effect = NotImplementedError()
+    
+    fachada.modelos["TesteErro"] = mock_wrapper
+    with pytest.raises(NotImplementedError):
+        fachada.prever_probabilidades("TesteErro", np.array([[1]]))
+
+
+def test_utilitarios_fachada():
+    fachada = FachadaPipelineIA()
+    assert fachada.dados_inicializados() is False
+    assert fachada.listar_modelos_treinados() == []
+    
+    fachada.modelos["SVM"] = Mock()
+    fachada.X_treino = np.array([[1]])
+    
+    assert fachada.dados_inicializados() is True
+    assert fachada.listar_modelos_treinados() == ["SVM"]
