@@ -156,9 +156,10 @@ def test_carregar_via_torchvision_com_sucesso():
 
 
 def test_carregar_via_keras_com_sucesso():
-    from src.carregador_dados import _carregar_via_keras
     import sys
     from unittest.mock import MagicMock
+
+    from src.carregador_dados import _carregar_via_keras
     
     # Mock keras para evitar import de verdade (que é muito lento ou falha)
     mock_tf = MagicMock()
@@ -175,8 +176,9 @@ def test_carregar_via_keras_com_sucesso():
 
 @patch('src.carregador_dados._baixar_idx')
 def test_carregar_via_download_direto_sucesso(mock_baixar):
-    from src.carregador_dados import _carregar_via_download_direto
     import struct
+
+    from src.carregador_dados import _carregar_via_download_direto
     
     # Simula bytes do IDX magic 0x0803 (imagens) e 0x0801 (rotulos)
     def mock_idx(url, nome):
@@ -209,10 +211,11 @@ def test_carregar_via_download_direto_falha_todos_mirrors(mock_baixar):
 
 @patch('src.carregador_dados.urllib.request.urlopen')
 def test_baixar_idx(mock_urlopen):
-    from src.carregador_dados import _baixar_idx
     import gzip
     from io import BytesIO
     from unittest.mock import MagicMock
+
+    from src.carregador_dados import _baixar_idx
     
     mock_resp = MagicMock()
     # Cria gz falso

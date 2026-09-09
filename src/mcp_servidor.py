@@ -2,14 +2,14 @@
 
 import base64
 import logging
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 from mcp.server.fastmcp import FastMCP
 
 from src.fachada import FachadaPipelineIA
-from src.modelos.suporte_rag import SuporteRAG
 from src.modelos.fabrica_modelos import FabricaModelos
+from src.modelos.suporte_rag import SuporteRAG
 from src.visao_computacional import processar_imagem_usuario
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ def get_rag() -> SuporteRAG:
 # ──────────────────────────────────────────────────────────────
 
 @mcp.tool()
-def listar_modelos_disponiveis() -> List[str]:
+def listar_modelos_disponiveis() -> list[str]:
     """
     Lista todos os modelos de IA registrados na fábrica e disponíveis para treino.
 
@@ -94,7 +94,7 @@ def avaliar_modelo_mnist(nome_modelo: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> Dict[str, Any]:
+def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any]:
     """
     Processa uma imagem enviada pelo usuário e retorna a predição do modelo.
 
@@ -140,7 +140,7 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> Dict[str, Any
 
 
 @mcp.tool()
-def obter_estatisticas_dados(particao: str = "treino") -> Dict[str, float]:
+def obter_estatisticas_dados(particao: str = "treino") -> dict[str, float]:
     """
     Retorna estatísticas descritivas da partição de dados MNIST.
 

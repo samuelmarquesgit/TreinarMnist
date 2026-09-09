@@ -74,7 +74,7 @@ def _obter_modelos_disponiveis() -> list[str]:
     """
     try:
         return FabricaModelos.listar_disponiveis()
-    except Exception as exc:  # pragma: no cover  # noqa: BLE001
+    except Exception as exc:  # pragma: no cover
         logger.error("[Benchmarks] Falha ao consultar FabricaModelos: %s", exc)
         return []
 
@@ -121,7 +121,7 @@ def _executar_benchmark(
             resultados[nome] = metricas
             logger.info("[Benchmarks] '%s' concluído — acurácia=%.4f", nome, metricas["acuracia"])
 
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             msg = str(exc)
             logger.error("[Benchmarks] Falha ao executar '%s': %s", nome, msg)
             # Armazena APENAS a falha — zero métricas numéricas para não enganar

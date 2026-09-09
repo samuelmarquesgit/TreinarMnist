@@ -65,11 +65,17 @@ def test_prever_probabilidades_multiclasse():
 
     
 def test_fabrica_modelos_auxiliares():
-    from src.modelos.fabrica_modelos import (
-        _softmax, _sigmoid, _one_hot_a_partir_de_predict, FabricaModelos, ModeloSklearn
-    )
-    import numpy as np
     from unittest.mock import MagicMock
+
+    import numpy as np
+
+    from src.modelos.fabrica_modelos import (
+        FabricaModelos,
+        ModeloSklearn,
+        _one_hot_a_partir_de_predict,
+        _sigmoid,
+        _softmax,
+    )
     
     # test _softmax
     logits = np.array([[1.0, 2.0, 3.0], [0.0, 0.0, 0.0]])

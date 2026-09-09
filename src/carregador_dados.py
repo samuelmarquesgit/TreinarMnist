@@ -221,7 +221,7 @@ def _carregar_via_download_direto() -> tuple[np.ndarray, np.ndarray]:
             logger.info("[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape)
             return X, y
 
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.warning("[MNIST] Mirror %s falhou: %s", base_url, exc)
 
     raise ConnectionError(
@@ -295,7 +295,7 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
                 "[MNIST] Cache OK — shape X=%s y=%s", X.shape, y.shape
             )
             return X, y
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.warning("[MNIST] Cache corrompido, ignorando: %s", exc)
 
     # ── Cadeia de fallback ──────────────────────────────────────
@@ -316,12 +316,12 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
                 os.makedirs(os.path.dirname(_CACHE_PATH), exist_ok=True)
                 joblib.dump((X, y), _CACHE_PATH)
                 logger.info("[MNIST] Cache salvo em %s", _CACHE_PATH)
-            except Exception as exc_cache:  # noqa: BLE001
+            except Exception as exc_cache:
                 logger.warning("[MNIST] Não foi possível salvar o cache: %s", exc_cache)
 
             return X, y
 
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.warning(
                 "[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc
             )

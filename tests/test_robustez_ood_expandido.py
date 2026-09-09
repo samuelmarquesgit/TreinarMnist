@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import numpy as np
-# ruff: noqa: E402
 import pytest
 
 from src.robustez_ood import _entropia_shannon, executar_experimento_ood

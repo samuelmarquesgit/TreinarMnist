@@ -42,7 +42,7 @@ def _carregar_assistente():
         assistente = AssistenteRAG()
         assistente.indexar_documentos()
         return assistente
-    except (ImportError, Exception):  # noqa: BLE001
+    except (ImportError, Exception):
         return None
 
 
@@ -217,7 +217,7 @@ def _processar_pergunta(pergunta: str) -> None:
                 resultado = st.session_state.assistente.perguntar(pergunta)
                 resposta = resultado.get("resposta", "Não foi possível gerar uma resposta.")
                 fontes = resultado.get("fontes", [])
-            except Exception as e:  # noqa: BLE001
+            except Exception as e:
                 resposta = f"Erro ao consultar o RAG: {e}"
                 fontes = []
         else:

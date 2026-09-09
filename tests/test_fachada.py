@@ -1,10 +1,11 @@
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 import numpy as np
 import pytest
 
 from src.fachada import FachadaPipelineIA
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
+
 
 @pytest.fixture
 def fachada():
@@ -266,9 +267,8 @@ def test_prever_probabilidades_pytorch_exception(fachada_com_dados):
     
     fachada_com_dados.modelos["FakeTorch"] = FakeTorchModel()
     import sys
-    with patch.dict(sys.modules, {"torch": MagicMock(tensor=MagicMock(side_effect=Exception("Simulated tensor error")))}):
-        with pytest.raises(Exception, match="Simulated tensor error"):
-            fachada_com_dados.prever_probabilidades("FakeTorch", fachada_com_dados.X_teste[:5])
+    with patch.dict(sys.modules, {"torch": MagicMock(tensor=MagicMock(side_effect=Exception("Simulated tensor error")))}), pytest.raises(Exception, match="Simulated tensor error"):
+        fachada_com_dados.prever_probabilidades("FakeTorch", fachada_com_dados.X_teste[:5])
 
 def test_prever_probabilidades_modelo_nao_treinado(fachada):
     with pytest.raises(ModeloNaoTreinadoError):
@@ -294,10 +294,9 @@ def test_executar_benchmark_oserror(fachada_com_dados, tmp_path):
 def test_obter_estatisticas_dados_erro_nao_inicializado():
     from src.fachada import FachadaPipelineIA
     f = FachadaPipelineIA()
-    with patch.object(f, '_garantir_dados'):
+    with patch.object(f, '_garantir_dados'), pytest.raises(ValueError, match="O array de dados esta vazio"):
         # _garantir_dados nao fara nada, entao X_treino permanecera None
-        with pytest.raises(ValueError, match="O array de dados esta vazio"):
-            f.obter_estatisticas_dados("teste")
+        f.obter_estatisticas_dados("teste")
 
 def test_utilitarios_fachada():
     fachada = FachadaPipelineIA()
