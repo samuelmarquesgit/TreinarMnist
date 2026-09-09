@@ -7,6 +7,8 @@ import pytest
 
 from src.robustez_ood import (
     AnalisadorRobustezOOD as AnalisadorOOD,
+)
+from src.robustez_ood import (
     _entropia_shannon,
     executar_experimento_ood,
 )
