@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
+from src.utilitarios.excecoes import ModeloNaoEncontradoError
 
 
 def test_criacao_modelos_suportados():
@@ -16,7 +17,7 @@ def test_criacao_modelos_suportados():
 
 
 def test_criacao_modelo_invalido():
-    with pytest.raises(ValueError, match="desconhecido"):
+    with pytest.raises(ModeloNaoEncontradoError):
         FabricaModelos.criar_modelo('ModeloInexistenteRedeNeural')
 
 
