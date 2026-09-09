@@ -25,7 +25,7 @@ class ConexaoMongoDB:
 
         if not self.usar_local:
             try:
-                self.client = MongoClient(
+                self.client: Any = MongoClient(
                     self.uri, serverSelectionTimeoutMS=5000)
                 self.db = self.client['treinarmnist']
                 self.colecao = self.db['matrizes_confusao']

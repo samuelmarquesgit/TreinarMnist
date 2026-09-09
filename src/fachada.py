@@ -76,13 +76,13 @@ class FachadaPipelineIA:
 
         modelo = self.modelos[nome_modelo]
         y_previsto = modelo.prever(self.X_teste)
-        return calcular_metricas(self.y_teste, y_previsto)
+        return calcular_metricas(self.y_teste, y_previsto)  # type: ignore[arg-type]
 
     def prever_probabilidades(self, nome_modelo: str, X_entrada: np.ndarray) -> np.ndarray:
         if nome_modelo not in self.modelos:
             raise ModeloNaoTreinadoError(f"Modelo {nome_modelo} não foi treinado.")
         modelo = self.modelos[nome_modelo]
-        return modelo.prever_probabilidades(X_entrada)
+        return modelo.prever_probabilidades(X_entrada)  # type: ignore[no-any-return]
 
     def obter_estatisticas_dados(self, tipo: str = 'treino') -> dict[str, float]:
         calc = CalculadorEstatistico()

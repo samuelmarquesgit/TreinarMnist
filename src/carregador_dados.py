@@ -27,7 +27,7 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     if os.path.exists(cache_path):
         print("Carregando MNIST do cache local...")
         try:
-            return joblib.load(cache_path)
+            return joblib.load(cache_path)  # type: ignore[no-any-return]
         except Exception as e:  # noqa: BLE001
             print(
                 f"Aviso: Falha ao ler o cache. Baixando novamente. Erro: {e}")
