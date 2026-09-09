@@ -32,7 +32,7 @@ class _EmbeddingSimples(EmbeddingFunction):
             # Converte 32 bytes em 64 floats normalizados no intervalo [-1, 1]
             vetor = [(b / 127.5) - 1.0 for b in digest] + [(b / 255.0) for b in digest]
             resultado.append(vetor)
-        return resultado
+        return resultado  # type: ignore[return-value]
 
 
 class SuporteRAG:
@@ -76,7 +76,7 @@ class SuporteRAG:
                 {"topico": "seguranca_ia", "nivel": "avancado"}
             ]
             ids = [f"doc_{i}" for i in range(len(documentos))]
-            self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
+            self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)  # type: ignore[arg-type]
 
     def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
         """
@@ -99,5 +99,5 @@ class SuporteRAG:
             query_texts=[pergunta],
             n_results=n_resultados
         )
-        docs_encontrados = resultados.get("documents", [[]])[0]
+        docs_encontrados = resultados.get("documents", [[]])[0]  # type: ignore[index]
         return docs_encontrados

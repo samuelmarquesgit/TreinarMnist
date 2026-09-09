@@ -83,7 +83,7 @@ class ExtratorProbabilidades:
         """Softmax linha a linha em (N, C) → (N, C) com soma 1."""
         l_est = logits - np.max(logits, axis=1, keepdims=True)
         exp = np.exp(l_est)
-        return exp / np.sum(exp, axis=1, keepdims=True)
+        return exp / np.sum(exp, axis=1, keepdims=True)  # type: ignore[no-any-return]
 
     @staticmethod
     def _sigmoid_binario(scores: NDArray[np.float64]) -> NDArray[np.float64]:

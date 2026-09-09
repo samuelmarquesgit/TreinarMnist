@@ -30,14 +30,14 @@ def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
     """
     try:
         if hasattr(modelo, "prever_probabilidades"):
-            return modelo.prever_probabilidades(X)
+            return modelo.prever_probabilidades(X)  # type: ignore[no-any-return]
     except NotImplementedError:
         pass
 
     mod_interno = getattr(modelo, "modelo", modelo)
 
     if hasattr(mod_interno, "predict_proba"):
-        return mod_interno.predict_proba(X)
+        return mod_interno.predict_proba(X)  # type: ignore[no-any-return]
 
     if hasattr(mod_interno, "decision_function"):
         scores = mod_interno.decision_function(X)
@@ -46,7 +46,7 @@ def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
             return np.vstack([1 - probs_pos, probs_pos]).T
         else:
             exp_scores = np.exp(scores - np.max(scores, axis=1, keepdims=True))
-            return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
+            return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)  # type: ignore[no-any-return]
 
     if hasattr(mod_interno, "predict") or hasattr(modelo, "prever"):
         logger.warning(
@@ -71,7 +71,7 @@ class AnalisadorRobustezOOD:
     """
 
     def __init__(self, limiar_alerta: float = 0.85):
-        self.validador = ValidadorFalsaCerteza(
+        self.validador = ValidadorFalsaCerteza(  # type: ignore[call-arg]
             limiar_alerta_certeza=limiar_alerta)
         self.classes_mascaradas: list[int] = []
 
@@ -138,7 +138,7 @@ class AnalisadorRobustezOOD:
 
             # Guardrail clássico: alta confiança para classes que ele pensa conhecer
             resultado = self.validador.avaliar_predicao(prob, classes_conhecidas)
-            if resultado['alerta_overconfidence']:
+            if resultado['alerta_overconfidence']:  # type: ignore[call-overload]
                 alertas_overconfidence += 1
 
         taxa_overconfidence = alertas_overconfidence / total_amostras if total_amostras > 0 else 0.0

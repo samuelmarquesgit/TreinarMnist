@@ -221,7 +221,7 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
     from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
     probs_array = np.array([p for _, p in sorted(ranking_raw, key=lambda x: x[0])])
     avaliacao = ValidadorFalsaCerteza().avaliar_predicao(probs_array, list(range(10)))
-    if avaliacao["alerta_overconfidence"]:
+    if avaliacao["alerta_overconfidence"]:  # type: ignore[call-overload]
         st.warning("⚠️ Alerta de Falsa Certeza: confiança alta em classe potencialmente desconhecida.")
 
     st.markdown("<br>", unsafe_allow_html=True)

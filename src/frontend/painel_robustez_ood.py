@@ -61,11 +61,11 @@ def _avaliar_lote(
         res = validador.avaliar_predicao(p, classes_conhecidas)
         linhas.append({
             "Amostra": i,
-            "Classe Prevista": res["classe_prevista"],
-            "Confiança": round(res["confianca"], 4),
-            "Entropia": round(res["entropia"], 4),
-            "Alerta OOD": "⚠️ Sim" if res["alerta_overconfidence"] else "✅ Não",
-            "Confiável": res["confiavel"],
+            "Classe Prevista": res["classe_prevista"],  # type: ignore[call-overload]
+            "Confiança": round(res["confianca"], 4),  # type: ignore[arg-type, call-overload]
+            "Entropia": round(res["entropia"], 4),  # type: ignore[arg-type, call-overload]
+            "Alerta OOD": "⚠️ Sim" if res["alerta_overconfidence"] else "✅ Não",  # type: ignore[call-overload]
+            "Confiável": res["confiavel"],  # type: ignore[call-overload]
         })
     return pd.DataFrame(linhas)
 
@@ -118,7 +118,7 @@ def renderizar(fachada) -> None:
 
             probs_ind = _simular_softmax_in_dist(n_amostras_ood)
 
-            validador = ValidadorFalsaCerteza(
+            validador = ValidadorFalsaCerteza(  # type: ignore[call-arg]
                 limiar_alerta_certeza=limiar_overconf)
             df_ood = _avaliar_lote(probs_ood, classes_conhecidas, validador)
             df_ind = _avaliar_lote(probs_ind, list(range(10)), validador)
