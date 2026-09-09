@@ -1,6 +1,6 @@
 # 🏛️ Plataforma Empresarial MNIST: Análise Preditiva, Robustez OOD e Visão Computacional
 
-[![CI Pipeline](https://github.com/samuelmarques/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarques/TreinarMnist/actions)
+[![CI Pipeline](https://github.com/samuelmarquesgit/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarquesgit/TreinarMnist/actions)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-PostgreSQL%20%2B%20MongoDB-blue)](docker-compose.yml)
@@ -13,7 +13,7 @@
 
 ## 📹 Link do Vídeo de Apresentação
 * 🔗 **Google Drive (Acesso Público Leitor):** `[INSERIR_LINK_DO_GOOGLE_DRIVE_AQUI]`
-* 📝 **Roteiro Estruturado do Vídeo:** [docs/ROTEIRO_GRAVACAO_VIDEO.md](file:///c:/Users/samuelmarques/OneDrive/Documentos/Claude/TreinarMnist/docs/ROTEIRO_GRAVACAO_VIDEO.md)
+* 📝 **Roteiro Estruturado do Vídeo:** [docs/ROTEIRO_GRAVACAO_VIDEO.md](docs/ROTEIRO_GRAVACAO_VIDEO.md)
 
 ---
 
@@ -117,7 +117,7 @@ Este projeto foi estruturado para atender e superar todos os requisitos do **Min
 ### 4.1. Clonar o Repositório e Criar Ambiente Virtual
 ```bash
 # Clonar repositório
-git clone https://github.com/samuelmarques/TreinarMnist.git
+git clone https://github.com/samuelmarquesgit/TreinarMnist.git
 cd TreinarMnist
 
 # Criar ambiente virtual
