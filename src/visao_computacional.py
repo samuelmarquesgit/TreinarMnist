@@ -106,15 +106,15 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         img_bgr = cv2.imread(str(caminho))
         if img_bgr is None:
             raise ValueError(f"OpenCV não conseguiu decodificar o arquivo: {caminho}")
-        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return]
 
     if isinstance(entrada, np.ndarray):
         if entrada.ndim == 2:
             return entrada.astype(np.uint8)
         if entrada.ndim == 3 and entrada.shape[2] == 3:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
+            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return]
         if entrada.ndim == 3 and entrada.shape[2] == 4:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[return-value]
+            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[no-any-return]
         raise ValueError(
             f"ndarray com shape {entrada.shape} não suportado. "
             "Esperado (H, W) ou (H, W, 3) ou (H, W, 4)."
@@ -266,7 +266,7 @@ def redimensionar_com_proporcao(
         "[visao] Resize: (%d, %d) → (%d, %d) | fator=%.4f",
         h, w, nova_altura, nova_largura, fator,
     )
-    return redimensionado  # type: ignore[return-value]
+    return redimensionado  # type: ignore[no-any-return]
 
 
 # ──────────────────────────────────────────────────────────────
