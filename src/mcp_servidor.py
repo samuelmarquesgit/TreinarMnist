@@ -4,6 +4,7 @@ import base64
 import logging
 from typing import Any
 
+import cv2
 import numpy as np
 from mcp.server.fastmcp import FastMCP
 
@@ -51,8 +52,7 @@ def listar_modelos_disponiveis() -> list[str]:
     Returns:
         Lista com os nomes dos modelos suportados pela plataforma.
     """
-    modelos = list(FabricaModelos._REGISTRO_MODELOS.keys()) + ["VisionTransformer"]
-    return modelos
+    return FabricaModelos.listar_disponiveis()
 
 
 @mcp.tool()
@@ -89,7 +89,7 @@ def avaliar_modelo_mnist(nome_modelo: str) -> dict[str, Any]:
     try:
         return fachada.avaliar_modelo(nome_modelo)
     except Exception as e:
-        logger.error(f"[MCP] Erro ao avaliar '{nome_modelo}': {e}")
+        logger.error("[MCP] Erro ao avaliar '%s': %s", nome_modelo, e)
         return {"erro": str(e)}  # type: ignore[dict-item]
 
 
@@ -109,8 +109,6 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
     Returns:
         Dicionário com 'classe_prevista', 'probabilidades' e 'nome_modelo'.
     """
-    import cv2
-
     fachada = get_fachada()
     try:
         # Decodificar Base64 → numpy array
@@ -135,12 +133,12 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
             "nome_modelo": nome_modelo,
         }
     except Exception as e:
-        logger.error(f"[MCP] Erro na predição de imagem: {e}")
+        logger.error("[MCP] Erro na predição de imagem: %s", e)
         return {"erro": str(e)}  # type: ignore[dict-item]
 
 
 @mcp.tool()
-def obter_estatisticas_dados(particao: str = "treino") -> dict[str, float]:
+def obter_estatisticas_dados(particao: str = "treino") -> dict[str, Any]:
     """
     Retorna estatísticas descritivas da partição de dados MNIST.
 
@@ -154,7 +152,7 @@ def obter_estatisticas_dados(particao: str = "treino") -> dict[str, float]:
     try:
         return fachada.obter_estatisticas_dados(tipo=particao)
     except Exception as e:
-        logger.error(f"[MCP] Erro ao obter estatísticas: {e}")
+        logger.error("[MCP] Erro ao obter estatísticas: %s", e)
         return {"erro": str(e)}  # type: ignore[dict-item]
 
 
