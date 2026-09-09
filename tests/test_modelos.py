@@ -1,8 +1,12 @@
+from importlib.util import find_spec
+
 import numpy as np
 import pytest
 
 from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
 from src.utilitarios.excecoes import ModeloNaoEncontradoError
+
+_torch_disponivel = find_spec("torch") is not None
 
 
 def test_criacao_modelos_suportados():
@@ -103,9 +107,10 @@ def test_fabrica_modelos_auxiliares():
     assert not FabricaModelos.esta_registrado("ModeloAlien")
     assert FabricaModelos.esta_registrado("VisionTransformer")
     
-    # test criar_modelo VisionTransformer
-    vit = FabricaModelos.criar_modelo("VisionTransformer")
-    assert type(vit).__name__ == "ModeloViT"
+    # test criar_modelo VisionTransformer (requer torch e timm)
+    if _torch_disponivel:
+        vit = FabricaModelos.criar_modelo("VisionTransformer")
+        assert type(vit).__name__ == "ModeloViT"
     
     # test decision_function fallback in ModeloSklearn (binario e multiclasse)
     from sklearn.linear_model import SGDClassifier

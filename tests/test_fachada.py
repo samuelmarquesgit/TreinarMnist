@@ -1,3 +1,4 @@
+from importlib.util import find_spec
 from unittest.mock import MagicMock, Mock, patch
 
 import numpy as np
@@ -5,6 +6,8 @@ import pytest
 
 from src.fachada import FachadaPipelineIA
 from src.utilitarios.excecoes import ModeloNaoTreinadoError
+
+_mlflow_disponivel = find_spec("mlflow") is not None
 
 
 @pytest.fixture
@@ -141,6 +144,7 @@ def test_executar_benchmark_falha(mock_treinar):
     assert "Falha simulada" in res.erro
 
 
+@pytest.mark.skipif(not _mlflow_disponivel, reason="mlflow não instalado")
 @patch('mlflow.start_run')
 @patch('src.fachada.FachadaPipelineIA.avaliar_modelo')
 @patch('src.fachada.FachadaPipelineIA.treinar_modelo')
