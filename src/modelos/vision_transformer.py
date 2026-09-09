@@ -69,6 +69,8 @@ class ModeloViT(ModeloAbstratoIA):
             ).to(self.device)
         )
 
+        self._treinado = False
+
         logger.info(
             "[%s] Inicializado (timm ViT-Tiny). Device: %s",
             self.nome_log,

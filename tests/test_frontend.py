@@ -573,15 +573,15 @@ def test_renderizar_kpis_chama_columns():
 def test_renderizar_graficos_sem_plotly_retorna():
     """_renderizar_graficos com _PLOTLY_OK=False não deve chamar st.plotly_chart."""
     import src.frontend.painel_benchmarks as pb
-    original = pb._PLOTLY_OK
-    pb._PLOTLY_OK = False
+    original = pb.PLOTLY_OK
+    pb.PLOTLY_OK = False
     _mock_st.reset_mock()
     try:
         df = _formatar_tabela(_tres_modelos())
         _renderizar_graficos(df)
         _mock_st.plotly_chart.assert_not_called()
     finally:
-        pb._PLOTLY_OK = original
+        pb.PLOTLY_OK = original
 
 
 def test_renderizar_matriz_sem_mat_exibe_info():
@@ -597,8 +597,8 @@ def test_renderizar_matriz_sem_mat_exibe_info():
 def test_renderizar_matriz_com_mat_sem_plotly():
     """_renderizar_matriz_confusao com _PLOTLY_OK=False deve sair antes de plotar."""
     import src.frontend.painel_benchmarks as pb
-    original = pb._PLOTLY_OK
-    pb._PLOTLY_OK = False
+    original = pb.PLOTLY_OK
+    pb.PLOTLY_OK = False
     _mock_st.selectbox.return_value = "ModeloA"
     _mock_st.toggle.return_value = False
     _mock_st.reset_mock()
@@ -607,7 +607,7 @@ def test_renderizar_matriz_com_mat_sem_plotly():
         _renderizar_matriz_confusao(resultados)
         _mock_st.plotly_chart.assert_not_called()
     finally:
-        pb._PLOTLY_OK = original
+        pb.PLOTLY_OK = original
 
 
 def test_renderizar_benchmarks_com_resultados_em_session():
@@ -712,8 +712,8 @@ def test_inferir_com_modelo_excecao_continua():
 def test_grafico_topk_sem_plotly_usa_bar_chart():
     """_grafico_topk com _PLOTLY_OK=False deve chamar st.bar_chart."""
     import src.frontend.painel_laboratorio_visao as plv
-    original = plv._PLOTLY_OK
-    plv._PLOTLY_OK = False
+    original = plv.PLOTLY_OK
+    plv.PLOTLY_OK = False
     _mock_st.reset_mock()
     ranking = [(i, 0.1) for i in range(10)]
     try:
@@ -721,7 +721,7 @@ def test_grafico_topk_sem_plotly_usa_bar_chart():
         _grafico_topk(ranking)
         _mock_st.bar_chart.assert_called()
     finally:
-        plv._PLOTLY_OK = original
+        plv.PLOTLY_OK = original
 
 
 def test_renderizar_pipeline_e_inferencia_sem_modelo():
@@ -1354,8 +1354,8 @@ def test_renderizar_eda_projecao_pca():
 def test_renderizar_eda_sem_plotly_cobre_else_branches():
     """renderizar_eda com _PLOTLY_OK=False deve cobrir as mensagens de fallback (linhas 74, 142, 159, 216)."""
     import src.frontend.painel_eda as peda
-    original = peda._PLOTLY_OK
-    peda._PLOTLY_OK = False
+    original = peda.PLOTLY_OK
+    peda.PLOTLY_OK = False
 
     f = MagicMock()
     f.dados_inicializados.return_value = True
@@ -1385,7 +1385,7 @@ def test_renderizar_eda_sem_plotly_cobre_else_branches():
         renderizar_eda(f)
         _mock_st.warning.assert_called()
     finally:
-        peda._PLOTLY_OK = original
+        peda.PLOTLY_OK = original
         _mock_st.slider.side_effect = None
         _mock_st.slider.return_value = MagicMock()
         _mock_st.button.return_value = MagicMock()
