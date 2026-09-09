@@ -33,7 +33,7 @@ def _obter_experimentos_postgres() -> pd.DataFrame:
                 if r.data_execucao else "—"
             ),
         } for r in registros])
-    except Exception as erro:
+    except Exception as erro:  # noqa: BLE001
         st.error(f"Erro ao consultar PostgreSQL: {erro}")
         return pd.DataFrame()
 
@@ -198,7 +198,7 @@ def renderizar() -> None:
                         try:
                             df_mat = pd.DataFrame(dados[chave])
                             st.dataframe(df_mat, use_container_width=True)
-                        except Exception:
+                        except Exception:  # noqa: BLE001
                             st.json(dados)
                     else:
                         st.json(dados)
