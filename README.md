@@ -207,7 +207,79 @@ pytest tests/ -v --cov=src
 
 ---
 
-## 👥 7. Autor e Licença
+## 🛠️ 7. Melhorias que Podem Ser Aplicadas
+
+O sistema atende às cinco fases exigidas, mas o pipeline tem pontos de evolução
+mapeados durante o desenvolvimento. Estão listados em ordem de impacto técnico.
+
+### 7.1. Conjunto de Validação Explícito
+
+Hoje `src/pre_processamento.py` faz uma única divisão estratificada 80/20
+(treino/teste). A validação existe de forma indireta, pelo `CalibratedClassifierCV(cv=5)`
+aplicado na fábrica de modelos — mas ele **não** cobre `PerceptronMulticamadas`
+nem `RegressaoLogistica`, que estão explicitamente fora da calibração
+(`src/modelos/fabrica_modelos.py:119`).
+
+**Melhoria:** um terceiro corte estratificado (70% treino / 10% validação / 20% teste),
+usado para *early stopping* na rede neural e para a seleção de modelo, sem nunca
+tocar no conjunto de teste.
+
+### 7.2. Busca Sistemática de Hiperparâmetros
+
+Os hiperparâmetros atuais são fixos, declarados em `config/modelos.yaml` e
+`src/config.py`, e escolhidos por justificativa teórica — o que atende ao requisito,
+mas não prova que são os melhores.
+
+**Melhoria:** `GridSearchCV` ou `Optuna` sobre o conjunto de validação, registrando
+o espaço de busca percorrido. Ganha-se o argumento empírico além do teórico.
+
+### 7.3. Aumento de Dados (Data Augmentation)
+
+O treino usa o MNIST puro. Dígitos escritos à mão em papel real chegam com
+inclinação, espessura de traço e ruído de iluminação que o dataset original não tem —
+que é exatamente a lacuna que o Desafio C expõe.
+
+**Melhoria:** rotações leves (±10°), translações, variação de espessura e ruído
+gaussiano no conjunto de treino. É a intervenção com maior chance de melhorar a
+acurácia em fotos reais.
+
+### 7.4. Ampliação do Conjunto de Imagens Próprias
+
+O Desafio C hoje se apoia em poucas amostras em `data/custom_digits/`. Com uma
+amostra por dígito não há como separar erro do modelo de ruído da foto.
+
+**Melhoria:** conjunto ampliado com variação controlada — caneta e lápis, papel
+branco e pautado, luz natural e artificial — e reporte da acurácia por condição.
+
+### 7.5. Medir a Calibração, Não Apenas Aplicá-la
+
+A calibração isotônica já está no pipeline (`src/modelos/fabrica_modelos.py:124`),
+mas o efeito dela não é reportado em nenhum lugar.
+
+**Melhoria:** curva de confiabilidade e *Expected Calibration Error* (ECE) antes e
+depois da calibração. Isso fecha o argumento da "falsa certeza" levantado no
+Desafio B com número, e não só com narrativa.
+
+### 7.6. Reprodutibilidade Estrita das Dependências
+
+O `requirements.txt` usa faixas abertas (`>=`) para todas as bibliotecas. Uma
+instalação feita daqui a seis meses resolve versões diferentes das testadas.
+
+**Melhoria:** fixar as versões exatas (`==`) validadas pela suíte de testes, mantendo
+a faixa aberta apenas onde houver restrição real de plataforma.
+
+### 7.7. Higiene do Versionamento
+
+Alguns artefatos de execução estão versionados: `pytest_out.txt`, `imports_test.txt`,
+os bancos locais em `reports/` e o índice vetorial `chroma_db/`. Além do peso, esses
+arquivos podem carregar caminhos absolutos da máquina de origem.
+
+**Melhoria:** movê-los para o `.gitignore` e adicionar o arquivo `LICENSE`, hoje
+referenciado pelo selo do README mas ausente do repositório.
+
+---
+
+## 👥 8. Autor e Licença
 * **Desenvolvido por:** Samuel Marques
 * **Especialização:** Inteligência Artificial & Engenharia de Software com IA
 * **Licença:** MIT License
