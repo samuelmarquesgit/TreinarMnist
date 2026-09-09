@@ -201,7 +201,7 @@ def test_relatorio_overconfidence_lanca_typeerror_sem_metodo():
     X_ood = np.zeros((5, 10), dtype=np.float32)
     y_ood = np.zeros(5, dtype=np.int32)
 
-    with pytest.raises(TypeError, match="prever_probabilidades"):
+    with pytest.raises(TypeError, match="métodos de predição suportados|prever_probabilidades"):
         analisador.relatorio_overconfidence(modelo_invalido, X_ood, y_ood)
 
 

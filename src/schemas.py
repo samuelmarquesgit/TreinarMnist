@@ -22,3 +22,7 @@ class RelatorioOOD(BaseModel):
     )
     entropia_media: float = Field(..., description="Entropia de Shannon média nas inferências OOD")
     classes_ood: list[int] = Field(..., description="Lista de classes consideradas OOD neste relatório")
+    is_ood: bool | None = Field(None, description="Flag indicando detecção de anomalia OOD")
+    score_incerteza: float | None = Field(None, description="Score composto de incerteza")
+    metrica_utilizada: str | None = Field(None, description="Nome do método de detecção utilizado")
+    alerta_disparado: bool | None = Field(None, description="Se alerta de segurança foi emitido")
