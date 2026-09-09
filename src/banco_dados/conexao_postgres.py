@@ -3,11 +3,10 @@ import os
 from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
-
-from typing import Any
 
 logger = logging.getLogger(__name__)
 Base: Any = declarative_base()
