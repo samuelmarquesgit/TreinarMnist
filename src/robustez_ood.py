@@ -40,6 +40,58 @@ def _entropia_shannon(prob: NDArray[np.float64]) -> float:
     return float(-np.sum(p * np.log(p)))
 
 
+@dataclass
+class RelatorioOOD:
+    """Relatório estruturado detalhando a análise Out-of-Distribution."""
+    total_amostras_ood: int
+    total_falsa_certeza: int
+    taxa_overconfidence: float
+    entropia_media: float
+    classes_ood: list[int]
+    is_ood: bool
+    score_incerteza: float
+    metrica_utilizada: str
+    alerta_disparado: bool
+
+
+def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
+    """
+    Função utilitária com Duck Typing e tolerância a falhas para extrair ou inferir probabilidades.
+    """
+    try:
+        if hasattr(modelo, "prever_probabilidades"):
+            return modelo.prever_probabilidades(X)  # type: ignore[no-any-return]
+    except NotImplementedError:
+        pass
+
+    mod_interno = getattr(modelo, "modelo", modelo)
+
+    if hasattr(mod_interno, "predict_proba"):
+        return mod_interno.predict_proba(X)  # type: ignore[no-any-return]
+
+    if hasattr(mod_interno, "decision_function"):
+        scores = mod_interno.decision_function(X)
+        if len(scores.shape) == 1 or scores.shape[1] == 1:
+            probs_pos = 1 / (1 + np.exp(-scores))
+            return np.vstack([1 - probs_pos, probs_pos]).T
+        else:
+            exp_scores = np.exp(scores - np.max(scores, axis=1, keepdims=True))
+            return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)  # type: ignore[no-any-return]
+
+    if hasattr(mod_interno, "predict") or hasattr(modelo, "prever"):
+        logger.warning(
+            "Modelo suporta apenas predict(). Utilizando heurística de entropia sintética (One-Hot) para análise OOD."
+        )
+        previsoes = mod_interno.predict(X) if hasattr(mod_interno, "predict") else modelo.prever(X)
+        n_classes = 10
+        probs = np.zeros((len(X), n_classes))
+        for i, pred in enumerate(previsoes):
+            probs[i, int(pred)] = 1.0
+        return probs
+
+    raise TypeError("O modelo fornecido não possui métodos de predição suportados para OOD.")
+
+
 class AnalisadorRobustezOOD:
     """Motor analítico para simulação de dados Out-Of-Distribution (OOD).
 

@@ -123,7 +123,7 @@ def _executar_benchmark(
             metricas["tempo_treino"] = round(time.perf_counter() - t0, 2)
             metricas[_CHAVE_FALHOU] = False
             resultados[nome] = metricas
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             resultados[nome] = {
                 "acuracia": 0, "precisao": 0, "recall": 0, "f1": 0,
                 "roc_auc": None, "brier_score": None,

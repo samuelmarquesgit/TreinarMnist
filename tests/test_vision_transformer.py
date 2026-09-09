@@ -8,6 +8,9 @@ pytest.importorskip("timm", reason="timm não instalado — testes ViT ignorados
 
 from src.modelos.vision_transformer import ModeloViT
 
+# ──────────────────────────────────────────────────────────────
+# Inicialização
+# ──────────────────────────────────────────────────────────────
 
 def test_vit_inicializacao():
     modelo = ModeloViT()
@@ -15,7 +18,12 @@ def test_vit_inicializacao():
     assert modelo._treinado is False
 
 
+# ──────────────────────────────────────────────────────────────
+# Proteção contra inferência sem treino
+# ──────────────────────────────────────────────────────────────
+
 def test_vit_prever_sem_treinar_levanta_excecao():
+    """prever() deve delegar para prever_probabilidades(), que levanta RuntimeError."""
     modelo = ModeloViT()
     X = np.zeros((5, 28 * 28), dtype=np.float32)
     with pytest.raises(Exception, match="Modelo ViT ainda não foi treinado"):
@@ -29,7 +37,12 @@ def test_vit_prever_probabilidades_sem_treinar_levanta_excecao():
         modelo.prever_probabilidades(X)
 
 
+# ──────────────────────────────────────────────────────────────
+# Ciclo treino → predição
+# ──────────────────────────────────────────────────────────────
+
 def test_vit_treinar_e_prever():
+    """Backprop deve atualizar os pesos da primeira camada Linear do MLP Head."""
     modelo = ModeloViT(epocas=1, batch_size=2)
     rng = np.random.default_rng(42)
     X_treino = rng.random((4, 28 * 28)).astype(np.float32)
