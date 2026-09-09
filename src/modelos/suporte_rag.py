@@ -70,7 +70,6 @@ class SuporteRAG:
         self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)  # type: ignore[arg-type]
 
     def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
-        # ruff: noqa: E402
         """Consulta o banco vetorial e retorna os trechos mais relevantes.
 
         Args:

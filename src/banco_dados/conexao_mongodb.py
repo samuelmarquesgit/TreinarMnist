@@ -14,7 +14,7 @@ from typing import Any
 try:
     from pymongo import MongoClient
     _PYMONGO_OK = True
-except Exception:  # noqa: BLE001
+except Exception:
     MongoClient = None  # type: ignore
     _PYMONGO_OK = False
 

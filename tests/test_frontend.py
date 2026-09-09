@@ -1,4 +1,3 @@
-# ruff: noqa: E402
 """Testes do frontend Streamlit — streamlit e plotly completamente mockados."""
 
 import sys

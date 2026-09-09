@@ -61,7 +61,7 @@ def _inferir_com_modelo(fachada, vetor: np.ndarray) -> list[tuple] | None:
                 probs = [0.0] * 10
                 probs[int(pred)] = 1.0
                 return list(enumerate(probs))
-        except Exception:  # noqa: BLE001, S112
+        except Exception:
             continue
     return None
 
@@ -181,7 +181,7 @@ def _renderizar_modo_upload():
         finally:
             if tmp_path and os.path.exists(tmp_path):
                 os.unlink(tmp_path)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         st.error(f"Imagem inválida: {e}")
         return None
     pil_img = Image.open(arquivo).convert("RGB")
@@ -201,7 +201,7 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
         col2.image(invertida, caption="② Grayscale/Invertida", width=110, clamp=True)
         col3.image(bbox_crop, caption="③ Bounding Box", width=110, clamp=True)
         col4.image(canvas_28, caption="④ 28×28 Centralizado", width=110, clamp=True)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         st.error(f"Erro no pipeline de visão: {e}")
         return
 

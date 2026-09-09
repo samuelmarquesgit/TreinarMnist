@@ -255,7 +255,7 @@ class FabricaModelos:
         ['RegressaoLogistica', 'ArvoreDecisao', ..., 'VisionTransformer']
     """
 
-    _REGISTRO_MODELOS: dict[str, _Construtor] = {  # noqa: RUF012
+    _REGISTRO_MODELOS: dict[str, _Construtor] = {
         "RegressaoLogistica": lambda: LogisticRegression(
             max_iter=500, solver="lbfgs", random_state=42
         ),

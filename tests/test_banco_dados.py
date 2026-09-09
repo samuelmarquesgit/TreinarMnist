@@ -8,7 +8,7 @@ from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
 try:
     from src.banco_dados.conexao_mongodb import ConexaoMongoDB
     _MONGO_DISPONIVEL = True
-except Exception:  # noqa: BLE001
+except Exception:
     ConexaoMongoDB = None  # type: ignore
     _MONGO_DISPONIVEL = False
 
@@ -118,7 +118,7 @@ def test_conexao_mongodb_fallback_excecao(
     # Força ServerSelectionTimeoutError no client
     try:
         from pymongo.errors import ServerSelectionTimeoutError
-    except Exception:  # noqa: BLE001
+    except Exception:
         pytest.skip("pymongo indisponivel")
     mock_mongo_client.side_effect = ServerSelectionTimeoutError(
         "Timeout simulado")

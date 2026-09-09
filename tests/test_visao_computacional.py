@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from src.visao_computacional import processar_imagem_usuario
 
 
@@ -36,14 +37,20 @@ def test_processar_imagem_usuario_grayscale():
 
 
 def test_visao_computacional_todas_excecoes_e_branches(tmp_path):
-    from src.visao_computacional import (
-        BoundingBox, _carregar_imagem, extrair_bbox,
-        redimensionar_com_proporcao, aplicar_padding_centralizado,
-        normalizar_imagem, preprocessar_imagem_mnist
-    )
+    from unittest.mock import patch
+
     import cv2
     import numpy as np
-    from unittest.mock import patch
+
+    from src.visao_computacional import (
+        BoundingBox,
+        _carregar_imagem,
+        aplicar_padding_centralizado,
+        extrair_bbox,
+        normalizar_imagem,
+        preprocessar_imagem_mnist,
+        redimensionar_com_proporcao,
+    )
     
     # BoundingBox properties
     b = BoundingBox(10, 20, 30, 50)
@@ -56,9 +63,8 @@ def test_visao_computacional_todas_excecoes_e_branches(tmp_path):
         _carregar_imagem(str(fake_img))
         
     cv2.imwrite(str(fake_img), np.zeros((10, 10, 3), dtype=np.uint8))
-    with patch('src.visao_computacional.cv2.imread', return_value=None):
-        with pytest.raises(ValueError, match="decodificar o arquivo"):
-            _carregar_imagem(str(fake_img))
+    with patch('src.visao_computacional.cv2.imread', return_value=None), pytest.raises(ValueError, match="decodificar o arquivo"):
+        _carregar_imagem(str(fake_img))
     
     # _carregar_imagem RGBA and invalid
     rgba = np.zeros((10, 10, 4), dtype=np.uint8)

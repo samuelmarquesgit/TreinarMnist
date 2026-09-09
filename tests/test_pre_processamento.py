@@ -79,9 +79,9 @@ def test_anti_leakage_scaler_fail():
     # Adicionando mock para forçar o ValueError da normalização
     from unittest.mock import patch
     with patch("src.pre_processamento.MinMaxScaler.fit_transform", return_value=np.array([[2.0], [3.0]])), \
-         patch("src.pre_processamento.MinMaxScaler.transform", return_value=np.array([[2.0]])):
-        with pytest.raises(ValueError, match="Falha na normalizacao MinMax no Treino"):
-            pre_processar_dados(X, y)
+         patch("src.pre_processamento.MinMaxScaler.transform", return_value=np.array([[2.0]])), \
+         pytest.raises(ValueError, match="Falha na normalizacao MinMax no Treino"):
+        pre_processar_dados(X, y)
     
     X_tr_n, X_te_n, _, _, scaler = pre_processar_dados(X, y)
 
