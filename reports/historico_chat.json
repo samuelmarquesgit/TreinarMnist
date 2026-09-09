@@ -18,9 +18,9 @@
         "papel": "assistente",
         "conteudo": "O pipeline de visão computacional processa imagens reais de dígitos manuscritos. Etapas: (1) Converter para escala de cinza (grayscale). (2) Detectar bounding box do dígito por limiarização de Otsu. (3) Recortar e redimensionar para 20×20 pixels preservando proporção. (4) Centralizar em canvas 28×28 (padding uniforme). (5) Normalizar pixels para [0, 1]. O canvas de desenho no frontend usa JavaScript para capturar traços e enviar ao pipeline.\n\n\n**Informação adicional** (dataset):\nO MNIST contém 70.000 imagens 28×28 pixels de dígitos manuscritos (0–9). 60.000 imagens são usadas para treino e 10.000 para teste. Cada pixel varia de 0 a 255 (escala de cinza). O dataset está perfeitamente balanceado com ~6.000–7.000 amostras por classe.\n\n\n**Informação adicional** (mcp):\nO servidor MCP (Model Context Protocol) expõe as funcionalidades do pipeline como ferramentas. Ferramentas disponíveis: treinar_modelo, avaliar_modelo, executar_benchmark, obter_estatisticas. O servidor permite que agentes de IA externos interajam com o pipeline MNIST via protocolo padronizado. Implementado com FastMCP seguindo a especificação MCP oficial da Anthropic.",
         "fontes": [
+            "src/visao_computacional.py",
             "mcp_servidor.py",
-            "carregador_dados.py",
-            "src/visao_computacional.py"
+            "carregador_dados.py"
         ]
     }
 ]

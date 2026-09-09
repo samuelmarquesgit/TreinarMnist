@@ -45,11 +45,14 @@ pydantic>=2.0.0
 python-dotenv>=1.0.0
 pyyaml>=6.0.0
 
-# Qualidade, Testes e Linting
-pytest>=7.4.0
+# Ferramentas extras
+pytest>=8.0.0
 pytest-cov>=4.1.0
-flake8>=6.1.0
-black>=23.7.0
+flake8>=7.0.0
+mypy>=1.8.0
+ruff>=0.2.0
+langsmith>=0.1.0
+mcp<2.0.0
 
 # Bibliotecas de Deep Learning (PyTorch)
 --extra-index-url https://download.pytorch.org/whl/cpu

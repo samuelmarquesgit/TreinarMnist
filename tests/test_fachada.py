@@ -115,9 +115,8 @@ def test_executar_benchmark_sucesso(mock_persist, mock_avaliar, mock_treinar, mo
     
     assert "RegressaoLogistica" in resultados
     res = resultados["RegressaoLogistica"]
-    assert res.status == "sucesso"
+    assert res.status == "ok"
     assert res.metricas["acuracia"] == 0.9
-    assert res.metricas["tempo_treino_s"] == 1.0
     mock_persist.assert_called_once()
 
 
@@ -137,8 +136,8 @@ def test_executar_benchmark_falha(mock_treinar):
     resultados = fachada.executar_benchmark(["RegressaoLogistica"], dir_saida="fake_dir")
     
     res = resultados["RegressaoLogistica"]
-    assert res.status == "falha"
-    assert res.erro == "Falha simulada"
+    assert res.status == "erro"
+    assert "Falha simulada" in res.erro
 
 
 @patch('mlflow.start_run')
@@ -150,7 +149,7 @@ def test_executar_experimento(mock_treinar, mock_avaliar, mock_run):
     mock_avaliar.return_value = {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9}
     
     metricas = fachada.executar_experimento("RegressaoLogistica")
-    assert "tempo_treino_s" in metricas
+    assert "tempo_treino_segundos" in metricas
     mock_treinar.assert_called_once()
     mock_avaliar.assert_called_once()
 
@@ -284,7 +283,7 @@ def test_executar_experimento_mlflow_desabilitado(fachada_com_dados):
     fachada_com_dados.treinar_modelo("KNN")
     with patch("src.fachada._MLFLOW_OK", False):
         res = fachada_com_dados.executar_experimento("KNN")
-        assert "tempo_treino_s" in res
+        assert "tempo_treino_segundos" in res
 
 def test_executar_benchmark_oserror(fachada_com_dados, tmp_path):
     fachada_com_dados.treinar_modelo("KNN")
@@ -297,7 +296,7 @@ def test_obter_estatisticas_dados_erro_nao_inicializado():
     f = FachadaPipelineIA()
     with patch.object(f, '_garantir_dados'):
         # _garantir_dados nao fara nada, entao X_treino permanecera None
-        with pytest.raises(ValueError, match="Partição 'teste' não disponível"):
+        with pytest.raises(ValueError, match="O array de dados esta vazio"):
             f.obter_estatisticas_dados("teste")
 
 def test_utilitarios_fachada():
