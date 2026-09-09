@@ -82,3 +82,30 @@ def test_consulta_rag_persistente(tmp_path):
     assert rag.colecao.count() > 0
     resposta = rag.consultar("mnist dataset", n_resultados=2)
     assert len(resposta) == 2
+
+
+def test_perguntar_com_respostas():
+    rag = SuporteRAG(em_memoria=True)
+    res = rag.perguntar("mnist")
+    assert "resposta" in res
+    assert "fontes" in res
+    assert len(res["fontes"]) > 0
+    assert "Com base na documentação" in res["resposta"]
+
+
+def test_perguntar_sem_respostas():
+    from unittest.mock import patch
+    rag = SuporteRAG(em_memoria=True)
+    with patch.object(rag, 'consultar', return_value=[]):
+        res = rag.perguntar("extraterrestres")
+        assert "Desculpe" in res["resposta"]
+        assert res["fontes"] == []
+
+
+def test_embedding_simples_config():
+    from src.modelos.suporte_rag import _EmbeddingSimples
+    emb = _EmbeddingSimples()
+    assert emb.name() == "embedding_simples_sha256"
+    assert emb.get_config()["tipo"] == "sha256"
+    emb2 = _EmbeddingSimples.build_from_config({})
+    assert isinstance(emb2, _EmbeddingSimples)

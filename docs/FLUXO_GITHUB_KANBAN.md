@@ -10,7 +10,7 @@ Todas as funcionalidades e correções seguem o fluxo:
 1. **`main`:** Código de produção final. Nenhum commit direto é permitido. As submissões chegam exclusivamente através de PRs vindos de `develop`, aprovados pelo **CI-Gate**.
 2. **`develop`:** Branch de integração contínua. É a base de onde nascem as *features* e onde são testadas globalmente (SonarCloud, Trivy).
 3. **Branches Semânticas (`feat/`, `fix/`, `docs/`, `refactor/`):** Branches de trabalho. Criadas exclusivamente a partir do `develop`.
-
+ 
 ---
 
 ## 🛠️ Orquestrador GitHub (Scripts)

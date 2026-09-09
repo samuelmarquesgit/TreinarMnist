@@ -1,0 +1,3579 @@
+Run ruff check src/ tests/
+  ruff check src/ tests/
+  shell: /usr/bin/bash -e {0}
+  env:
+    pythonLocation: /opt/hostedtoolcache/Python/3.10.21/x64
+    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib/pkgconfig
+    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
+    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
+    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
+    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/analise_estatistica.py:1:1
+  |
+1 | / import numpy as np
+2 | | from scipy import stats
+3 | | from typing import Dict, Union, List
+  | |____________________________________^
+help: Organize imports
+  |
+1 + from typing import Dict, List, Union
+2 +
+3 | import numpy as np
+4 | from scipy import stats
+  - from typing import Dict, Union, List
+5 |
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/analise_estatistica.py:3:1
+  |
+1 | import numpy as np
+2 | from scipy import stats
+3 | from typing import Dict, Union, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/analise_estatistica.py:3:1
+  |
+1 | import numpy as np
+2 | from scipy import stats
+3 | from typing import Dict, Union, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+UP007 [*] Use `X | Y` for type annotations
+  --> src/analise_estatistica.py:14:20
+   |
+12 |     @staticmethod
+13 |     def estatisticas_descritivas(
+14 |             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |         """
+16 |         Calcula as estatísticas descritivas principais de um conjunto de dados.
+   |
+help: Convert to `X | Y`
+   |
+13 |     def estatisticas_descritivas(
+   -             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+14 +             dados: np.ndarray | List[float]) -> Dict[str, float]:
+15 |         """
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/analise_estatistica.py:14:38
+   |
+12 |     @staticmethod
+13 |     def estatisticas_descritivas(
+14 |             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+   |                                      ^^^^
+15 |         """
+16 |         Calcula as estatísticas descritivas principais de um conjunto de dados.
+   |
+help: Replace with `list`
+   |
+13 |     def estatisticas_descritivas(
+   -             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+14 +             dados: Union[np.ndarray, list[float]]) -> Dict[str, float]:
+15 |         """
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/analise_estatistica.py:14:55
+   |
+12 |     @staticmethod
+13 |     def estatisticas_descritivas(
+14 |             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+   |                                                       ^^^^
+15 |         """
+16 |         Calcula as estatísticas descritivas principais de um conjunto de dados.
+   |
+help: Replace with `dict`
+   |
+13 |     def estatisticas_descritivas(
+   -             dados: Union[np.ndarray, List[float]]) -> Dict[str, float]:
+14 +             dados: Union[np.ndarray, List[float]]) -> dict[str, float]:
+15 |         """
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/avaliacao_metricas.py:1:1
+  |
+1 | / import numpy as np
+2 | | from typing import Dict, Any, Union, List
+3 | | from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+  | |_____________________________________________________________________________________________________^
+help: Organize imports
+   |
+1  + from typing import Any, Dict, List, Union
+2  +
+3  | import numpy as np
+   - from typing import Dict, Any, Union, List
+   - from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+4  + from sklearn.metrics import (
+5  +     accuracy_score,
+6  +     confusion_matrix,
+7  +     f1_score,
+8  +     precision_score,
+9  +     recall_score,
+10 + )
+11 |
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/avaliacao_metricas.py:2:1
+  |
+1 | import numpy as np
+2 | from typing import Dict, Any, Union, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 | from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/avaliacao_metricas.py:2:1
+  |
+1 | import numpy as np
+2 | from typing import Dict, Any, Union, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 | from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+  |
+
+UP007 [*] Use `X | Y` for type annotations
+ --> src/avaliacao_metricas.py:6:37
+  |
+6 |   def calcular_metricas(y_verdadeiro: Union[List[int],
+  |  _____________________________________^
+7 | |                                           np.ndarray],
+  | |_____________________________________________________^
+8 |                         y_previsto: Union[List[int],
+9 |                         np.ndarray]) -> Dict[str,
+  |
+help: Convert to `X | Y`
+  |
+5 |
+  - def calcular_metricas(y_verdadeiro: Union[List[int],
+  -                                           np.ndarray],
+6 + def calcular_metricas(y_verdadeiro: List[int] | np.ndarray,
+7 |                       y_previsto: Union[List[int],
+  |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+ --> src/avaliacao_metricas.py:6:43
+  |
+6 | def calcular_metricas(y_verdadeiro: Union[List[int],
+  |                                           ^^^^
+7 |                                           np.ndarray],
+8 |                       y_previsto: Union[List[int],
+  |
+help: Replace with `list`
+  |
+5 |
+  - def calcular_metricas(y_verdadeiro: Union[List[int],
+6 + def calcular_metricas(y_verdadeiro: Union[list[int],
+7 |                                           np.ndarray],
+  |
+
+UP007 [*] Use `X | Y` for type annotations
+  --> src/avaliacao_metricas.py:8:35
+   |
+ 6 |   def calcular_metricas(y_verdadeiro: Union[List[int],
+ 7 |                                             np.ndarray],
+ 8 |                         y_previsto: Union[List[int],
+   |  ___________________________________^
+ 9 | |                       np.ndarray]) -> Dict[str,
+   | |_________________________________^
+10 |                                              Any]:
+11 |       """
+   |
+help: Convert to `X | Y`
+  |
+7 |                                           np.ndarray],
+  -                       y_previsto: Union[List[int],
+  -                       np.ndarray]) -> Dict[str,
+8 +                       y_previsto: List[int] | np.ndarray) -> Dict[str,
+9 |                                            Any]:
+  |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/avaliacao_metricas.py:8:41
+   |
+ 6 | def calcular_metricas(y_verdadeiro: Union[List[int],
+ 7 |                                           np.ndarray],
+ 8 |                       y_previsto: Union[List[int],
+   |                                         ^^^^
+ 9 |                       np.ndarray]) -> Dict[str,
+10 |                                            Any]:
+   |
+help: Replace with `list`
+  |
+7 |                                           np.ndarray],
+  -                       y_previsto: Union[List[int],
+8 +                       y_previsto: Union[list[int],
+9 |                       np.ndarray]) -> Dict[str,
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/avaliacao_metricas.py:9:39
+   |
+ 7 |                                           np.ndarray],
+ 8 |                       y_previsto: Union[List[int],
+ 9 |                       np.ndarray]) -> Dict[str,
+   |                                       ^^^^
+10 |                                            Any]:
+11 |     """
+   |
+help: Replace with `dict`
+   |
+8  |                       y_previsto: Union[List[int],
+   -                       np.ndarray]) -> Dict[str,
+9  +                       np.ndarray]) -> dict[str,
+10 |                                            Any]:
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/banco_dados/conexao_mongodb.py:1:1
+  |
+1 | / import os
+2 | | import json
+3 | | import logging
+4 | | from typing import Dict, Any
+  | |____________________________^
+5 |   try:
+6 |       from pymongo import MongoClient
+  |
+help: Organize imports
+  |
+  - import os
+1 | import json
+2 | import logging
+  - from typing import Dict, Any
+3 + import os
+4 + from typing import Any, Dict
+5 +
+6 | try:
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/banco_dados/conexao_mongodb.py:4:1
+  |
+2 | import json
+3 | import logging
+4 | from typing import Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5 | try:
+6 |     from pymongo import MongoClient
+  |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/banco_dados/conexao_mongodb.py:8:8
+   |
+ 6 |     from pymongo import MongoClient
+ 7 |     _PYMONGO_OK = True
+ 8 | except Exception:
+   |        ^^^^^^^^^
+ 9 |     MongoClient = None  # type: ignore
+10 |     _PYMONGO_OK = False
+   |
+
+RUF013 PEP 484 prohibits implicit `Optional`
+  --> src/banco_dados/conexao_mongodb.py:21:29
+   |
+19 |     """
+20 |
+21 |     def __init__(self, uri: str = None) -> None:
+   |                             ^^^
+22 |         self.uri = uri or os.getenv('MONGO_URI', None)
+23 |         self.usar_local = not bool(self.uri)
+   |
+help: Convert to `T | None`
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/banco_dados/conexao_mongodb.py:35:20
+   |
+33 |                 self.client.server_info()
+34 |                 logger.info("Conexao com MongoDB Cloud inicializada.")
+35 |             except Exception as e:
+   |                    ^^^^^^^^^
+36 |                 logger.warning(
+37 |                     f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {str(e)}")
+   |
+
+RUF010 [*] Use explicit conversion flag
+  --> src/banco_dados/conexao_mongodb.py:37:84
+   |
+35 |             except Exception as e:
+36 |                 logger.warning(
+37 |                     f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {str(e)}")
+   |                                                                                    ^^^^^^
+38 |                 self.usar_local = True
+39 |         else:
+   |
+help: Replace with conversion flag
+   |
+36 |                 logger.warning(
+   -                     f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {str(e)}")
+37 +                     f"Falha ao conectar no MongoDB Cloud. Fazendo fallback local: {e!s}")
+38 |                 self.usar_local = True
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/banco_dados/conexao_mongodb.py:43:49
+   |
+41 |                 "MONGO_URI nao definida. Utilizando armazenamento local Json.")
+42 |
+43 |     def salvar_artefato(self, nome: str, dados: Dict[str, Any]) -> None:
+   |                                                 ^^^^
+44 |         """
+45 |         Persiste os dados em colecao remota ou arquivo JSON local.
+   |
+help: Replace with `dict`
+   |
+42 |
+   -     def salvar_artefato(self, nome: str, dados: Dict[str, Any]) -> None:
+43 +     def salvar_artefato(self, nome: str, dados: dict[str, Any]) -> None:
+44 |         """
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/banco_dados/conexao_postgres.py:1:1
+  |
+1 | / import os
+2 | | from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+3 | | from sqlalchemy.orm import declarative_base, sessionmaker, Session
+4 | | from datetime import datetime, timezone
+5 | | from contextlib import contextmanager
+6 | | from typing import Generator
+7 | | import logging
+  | |______________^
+8 |
+9 |   logger = logging.getLogger(__name__)
+  |
+help: Organize imports
+   |
+1  + import logging
+2  | import os
+   - from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
+   - from sqlalchemy.orm import declarative_base, sessionmaker, Session
+3  + from contextlib import contextmanager
+4  | from datetime import datetime, timezone
+   - from contextlib import contextmanager
+5  | from typing import Generator
+   - import logging
+6  |
+7  + from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
+8  + from sqlalchemy.orm import Session, declarative_base, sessionmaker
+9  +
+10 | logger = logging.getLogger(__name__)
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Generator`
+ --> src/banco_dados/conexao_postgres.py:6:1
+  |
+4 | from datetime import datetime, timezone
+5 | from contextlib import contextmanager
+6 | from typing import Generator
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+7 | import logging
+  |
+help: Import from `collections.abc`
+  |
+5 | from contextlib import contextmanager
+  - from typing import Generator
+6 + from collections.abc import Generator
+7 | import logging
+  |
+
+RUF013 PEP 484 prohibits implicit `Optional`
+  --> src/banco_dados/conexao_postgres.py:37:29
+   |
+35 |     """
+36 |
+37 |     def __init__(self, url: str = None) -> None:
+   |                             ^^^
+38 |         self.url = url or os.getenv(
+39 |             'DATABASE_URL', 'sqlite:///reports/banco_local.db')
+   |
+help: Convert to `T | None`
+
+RUF010 [*] Use explicit conversion flag
+  --> src/banco_dados/conexao_postgres.py:64:66
+   |
+62 |         except Exception as e:
+63 |             sessao.rollback()
+64 |             logger.error(f"Erro em transacao de banco de dados: {str(e)}")
+   |                                                                  ^^^^^^
+65 |             raise
+66 |         finally:
+   |
+help: Replace with conversion flag
+   |
+63 |             sessao.rollback()
+   -             logger.error(f"Erro em transacao de banco de dados: {str(e)}")
+64 +             logger.error(f"Erro em transacao de banco de dados: {e!s}")
+65 |             raise
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/carregador_dados.py:22:1
+   |
+20 | import urllib.error
+21 | import urllib.request
+22 | from typing import Tuple
+   | ^^^^^^^^^^^^^^^^^^^^^^^^
+23 |
+24 | import joblib
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/carregador_dados.py:60:6
+   |
+58 |     X_teste: np.ndarray,
+59 |     y_teste: np.ndarray,
+60 | ) -> Tuple[np.ndarray, np.ndarray]:
+   |      ^^^^^
+61 |     """
+62 |     Concatena treino + teste, normaliza pixels para [0, 1] e retorna (X, y).
+   |
+help: Replace with `tuple`
+   |
+59 |     y_teste: np.ndarray,
+   - ) -> Tuple[np.ndarray, np.ndarray]:
+60 + ) -> tuple[np.ndarray, np.ndarray]:
+61 |     """
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/carregador_dados.py:83:32
+   |
+83 | def _carregar_via_sklearn() -> Tuple[np.ndarray, np.ndarray]:
+   |                                ^^^^^
+84 |     """
+85 |     Fonte 1 — sklearn OpenML.
+   |
+help: Replace with `tuple`
+   |
+82 |
+   - def _carregar_via_sklearn() -> Tuple[np.ndarray, np.ndarray]:
+83 + def _carregar_via_sklearn() -> tuple[np.ndarray, np.ndarray]:
+84 |     """
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+  --> src/carregador_dados.py:96:48
+   |
+94 |         Exception:   Qualquer falha de rede ou parse.
+95 |     """
+96 |     from sklearn.datasets import fetch_openml  # noqa: PLC0415
+   |                                                ^^^^^^^^^^^^^^^
+97 |
+98 |     logger.info("[MNIST] Tentando sklearn fetch_openml...")
+   |
+help: Remove unused `noqa` directive
+   |
+95 |     """
+   -     from sklearn.datasets import fetch_openml  # noqa: PLC0415
+96 +     from sklearn.datasets import fetch_openml
+97 |
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/carregador_dados.py:110:36
+    |
+110 | def _carregar_via_torchvision() -> Tuple[np.ndarray, np.ndarray]:
+    |                                    ^^^^^
+111 |     """
+112 |     Fonte 2 — torchvision.datasets.MNIST.
+    |
+help: Replace with `tuple`
+    |
+109 |
+    - def _carregar_via_torchvision() -> Tuple[np.ndarray, np.ndarray]:
+110 + def _carregar_via_torchvision() -> tuple[np.ndarray, np.ndarray]:
+111 |     """
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/carregador_dados.py:123:49
+    |
+121 |         Exception:   Qualquer falha de download.
+122 |     """
+123 |     import torchvision.datasets as tv_datasets  # noqa: PLC0415
+    |                                                 ^^^^^^^^^^^^^^^
+124 |
+125 |     logger.info("[MNIST] Tentando torchvision.datasets.MNIST...")
+    |
+help: Remove unused `noqa` directive
+    |
+122 |     """
+    -     import torchvision.datasets as tv_datasets  # noqa: PLC0415
+123 +     import torchvision.datasets as tv_datasets
+124 |
+    |
+
+RUF059 Unpacked variable `n` is never used
+   --> src/carregador_dados.py:168:12
+    |
+166 |         Array int32 de shape (N,).
+167 |     """
+168 |     magic, n = struct.unpack(">II", dados[:8])
+    |            ^
+169 |     assert magic == 0x0801, f"Magic number inválido: {magic:#010x}"
+170 |     return np.frombuffer(dados[8:], dtype=np.uint8).astype(np.int32)
+    |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/carregador_dados.py:195:40
+    |
+195 | def _carregar_via_download_direto() -> Tuple[np.ndarray, np.ndarray]:
+    |                                        ^^^^^
+196 |     """
+197 |     Fonte 3 — download direto dos arquivos IDX via HTTP.
+    |
+help: Replace with `tuple`
+    |
+194 |
+    - def _carregar_via_download_direto() -> Tuple[np.ndarray, np.ndarray]:
+195 + def _carregar_via_download_direto() -> tuple[np.ndarray, np.ndarray]:
+196 |     """
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/carregador_dados.py:225:16
+    |
+223 |             return X, y
+224 |
+225 |         except Exception as exc:
+    |                ^^^^^^^^^
+226 |             logger.warning("[MNIST] Mirror %s falhou: %s", base_url, exc)
+    |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/carregador_dados.py:234:30
+    |
+234 | def _carregar_via_keras() -> Tuple[np.ndarray, np.ndarray]:
+    |                              ^^^^^
+235 |     """
+236 |     Fonte 4 — TensorFlow / Keras.
+    |
+help: Replace with `tuple`
+    |
+233 |
+    - def _carregar_via_keras() -> Tuple[np.ndarray, np.ndarray]:
+234 + def _carregar_via_keras() -> tuple[np.ndarray, np.ndarray]:
+235 |     """
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/carregador_dados.py:250:30
+    |
+249 |     # Importação tardia para não impor TF como dependência obrigatória
+250 |     import tensorflow as tf  # noqa: PLC0415
+    |                              ^^^^^^^^^^^^^^^
+251 |
+252 |     (X_treino, y_treino), (X_teste, y_teste) = (
+    |
+help: Remove unused `noqa` directive
+    |
+249 |     # Importação tardia para não impor TF como dependência obrigatória
+    -     import tensorflow as tf  # noqa: PLC0415
+250 +     import tensorflow as tf
+251 |
+    |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+   --> src/carregador_dados.py:271:31
+    |
+269 | # ──────────────────────────────────────────────────────────────
+270 |
+271 | def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
+    |                               ^^^^^
+272 |     """
+273 |     Carrega o dataset MNIST com cadeia de fallback multi-fonte.
+    |
+help: Replace with `tuple`
+    |
+270 |
+    - def carregar_dados_mnist() -> Tuple[np.ndarray, np.ndarray]:
+271 + def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
+272 |     """
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/carregador_dados.py:299:16
+    |
+297 |             )
+298 |             return X, y
+299 |         except Exception as exc:
+    |                ^^^^^^^^^
+300 |             logger.warning("[MNIST] Cache corrompido, ignorando: %s", exc)
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/carregador_dados.py:320:20
+    |
+318 |                 joblib.dump((X, y), _CACHE_PATH)
+319 |                 logger.info("[MNIST] Cache salvo em %s", _CACHE_PATH)
+320 |             except Exception as exc_cache:
+    |                    ^^^^^^^^^
+321 |                 logger.warning("[MNIST] Não foi possível salvar o cache: %s", exc_cache)
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/carregador_dados.py:325:16
+    |
+323 |             return X, y
+324 |
+325 |         except Exception as exc:
+    |                ^^^^^^^^^
+326 |             logger.warning(
+327 |                 "[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc
+    |
+
+F401 [*] `os` imported but unused
+  --> src/fachada.py:20:8
+   |
+18 | import json
+19 | import logging
+20 | import os
+   |        ^^
+21 | import time
+22 | from datetime import datetime, timezone
+   |
+help: Remove unused import: `os`
+   |
+19 | import logging
+   - import os
+20 | import time
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/fachada.py:24:1
+   |
+22 | from datetime import datetime, timezone
+23 | from pathlib import Path
+24 | from typing import Any, Dict, List, Optional, Tuple, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+25 |
+26 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/fachada.py:24:1
+   |
+22 | from datetime import datetime, timezone
+23 | from pathlib import Path
+24 | from typing import Any, Dict, List, Optional, Tuple, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+25 |
+26 | import numpy as np
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+  --> src/fachada.py:24:1
+   |
+22 | from datetime import datetime, timezone
+23 | from pathlib import Path
+24 | from typing import Any, Dict, List, Optional, Tuple, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+25 |
+26 | import numpy as np
+   |
+
+F401 [*] `typing.Tuple` imported but unused
+  --> src/fachada.py:24:47
+   |
+22 | from datetime import datetime, timezone
+23 | from pathlib import Path
+24 | from typing import Any, Dict, List, Optional, Tuple, Union
+   |                                               ^^^^^
+25 |
+26 | import numpy as np
+   |
+help: Remove unused import: `typing.Tuple`
+   |
+23 | from pathlib import Path
+   - from typing import Any, Dict, List, Optional, Tuple, Union
+24 + from typing import Any, Dict, List, Optional, Union
+25 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/fachada.py:94:19
+   |
+92 |         modelo_id: str,
+93 |         status: str,
+94 |         metricas: Optional[Dict[str, Any]] = None,
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^
+95 |         erro: Optional[str] = None,
+96 |     ) -> None:
+   |
+help: Convert to `X | None`
+   |
+93 |         status: str,
+   -         metricas: Optional[Dict[str, Any]] = None,
+94 +         metricas: Dict[str, Any] | None = None,
+95 |         erro: Optional[str] = None,
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/fachada.py:94:28
+   |
+92 |         modelo_id: str,
+93 |         status: str,
+94 |         metricas: Optional[Dict[str, Any]] = None,
+   |                            ^^^^
+95 |         erro: Optional[str] = None,
+96 |     ) -> None:
+   |
+help: Replace with `dict`
+   |
+93 |         status: str,
+   -         metricas: Optional[Dict[str, Any]] = None,
+94 +         metricas: Optional[dict[str, Any]] = None,
+95 |         erro: Optional[str] = None,
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/fachada.py:95:15
+   |
+93 |         status: str,
+94 |         metricas: Optional[Dict[str, Any]] = None,
+95 |         erro: Optional[str] = None,
+   |               ^^^^^^^^^^^^^
+96 |     ) -> None:
+97 |         self.modelo_id: str = modelo_id
+   |
+help: Convert to `X | None`
+   |
+94 |         metricas: Optional[Dict[str, Any]] = None,
+   -         erro: Optional[str] = None,
+95 +         erro: str | None = None,
+96 |     ) -> None:
+   |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:99:24
+    |
+ 97 |         self.modelo_id: str = modelo_id
+ 98 |         self.status: str = status
+ 99 |         self.metricas: Optional[Dict[str, Any]] = metricas
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^
+100 |         self.erro: Optional[str] = erro
+101 |         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
+    |
+help: Convert to `X | None`
+    |
+98  |         self.status: str = status
+    -         self.metricas: Optional[Dict[str, Any]] = metricas
+99  +         self.metricas: Dict[str, Any] | None = metricas
+100 |         self.erro: Optional[str] = erro
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:99:33
+    |
+ 97 |         self.modelo_id: str = modelo_id
+ 98 |         self.status: str = status
+ 99 |         self.metricas: Optional[Dict[str, Any]] = metricas
+    |                                 ^^^^
+100 |         self.erro: Optional[str] = erro
+101 |         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
+    |
+help: Replace with `dict`
+    |
+98  |         self.status: str = status
+    -         self.metricas: Optional[Dict[str, Any]] = metricas
+99  +         self.metricas: Optional[dict[str, Any]] = metricas
+100 |         self.erro: Optional[str] = erro
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:100:20
+    |
+ 98 |         self.status: str = status
+ 99 |         self.metricas: Optional[Dict[str, Any]] = metricas
+100 |         self.erro: Optional[str] = erro
+    |                    ^^^^^^^^^^^^^
+101 |         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
+    |
+help: Convert to `X | None`
+    |
+99  |         self.metricas: Optional[Dict[str, Any]] = metricas
+    -         self.erro: Optional[str] = erro
+100 +         self.erro: str | None = erro
+101 |         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:103:28
+    |
+101 |         self.timestamp: str = datetime.now(tz=timezone.utc).isoformat()
+102 |
+103 |     def para_dict(self) -> Dict[str, Any]:
+    |                            ^^^^
+104 |         """Serializa o resultado em dicionário pronto para JSON.
+    |
+help: Replace with `dict`
+    |
+102 |
+    -     def para_dict(self) -> Dict[str, Any]:
+103 +     def para_dict(self) -> dict[str, Any]:
+104 |         """Serializa o resultado em dicionário pronto para JSON.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:143:17
+    |
+142 |     def __init__(self) -> None:
+143 |         self.X: Optional[NDArray[np.float32]] = None
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 |         self.y: Optional[NDArray[np.int32]] = None
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+    |
+help: Convert to `X | None`
+    |
+142 |     def __init__(self) -> None:
+    -         self.X: Optional[NDArray[np.float32]] = None
+143 +         self.X: NDArray[np.float32] | None = None
+144 |         self.y: Optional[NDArray[np.int32]] = None
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:144:17
+    |
+142 |     def __init__(self) -> None:
+143 |         self.X: Optional[NDArray[np.float32]] = None
+144 |         self.y: Optional[NDArray[np.int32]] = None
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+    |
+help: Convert to `X | None`
+    |
+143 |         self.X: Optional[NDArray[np.float32]] = None
+    -         self.y: Optional[NDArray[np.int32]] = None
+144 +         self.y: NDArray[np.int32] | None = None
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:145:24
+    |
+143 |         self.X: Optional[NDArray[np.float32]] = None
+144 |         self.y: Optional[NDArray[np.int32]] = None
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+    |
+help: Convert to `X | None`
+    |
+144 |         self.y: Optional[NDArray[np.int32]] = None
+    -         self.X_treino: Optional[NDArray[np.float32]] = None
+145 +         self.X_treino: NDArray[np.float32] | None = None
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:146:23
+    |
+144 |         self.y: Optional[NDArray[np.int32]] = None
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+148 |         self.y_teste: Optional[NDArray[np.int32]] = None
+    |
+help: Convert to `X | None`
+    |
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+    -         self.X_teste: Optional[NDArray[np.float32]] = None
+146 +         self.X_teste: NDArray[np.float32] | None = None
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:147:24
+    |
+145 |         self.X_treino: Optional[NDArray[np.float32]] = None
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+148 |         self.y_teste: Optional[NDArray[np.int32]] = None
+149 |         self.scaler: Any = None
+    |
+help: Convert to `X | None`
+    |
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+    -         self.y_treino: Optional[NDArray[np.int32]] = None
+147 +         self.y_treino: NDArray[np.int32] | None = None
+148 |         self.y_teste: Optional[NDArray[np.int32]] = None
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/fachada.py:148:23
+    |
+146 |         self.X_teste: Optional[NDArray[np.float32]] = None
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+148 |         self.y_teste: Optional[NDArray[np.int32]] = None
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+149 |         self.scaler: Any = None
+150 |         self.modelos: Dict[str, ModeloAbstratoIA] = {}
+    |
+help: Convert to `X | None`
+    |
+147 |         self.y_treino: Optional[NDArray[np.int32]] = None
+    -         self.y_teste: Optional[NDArray[np.int32]] = None
+148 +         self.y_teste: NDArray[np.int32] | None = None
+149 |         self.scaler: Any = None
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:150:23
+    |
+148 |         self.y_teste: Optional[NDArray[np.int32]] = None
+149 |         self.scaler: Any = None
+150 |         self.modelos: Dict[str, ModeloAbstratoIA] = {}
+    |                       ^^^^
+151 |
+152 |         if _MLFLOW_OK:
+    |
+help: Replace with `dict`
+    |
+149 |         self.scaler: Any = None
+    -         self.modelos: Dict[str, ModeloAbstratoIA] = {}
+150 +         self.modelos: dict[str, ModeloAbstratoIA] = {}
+151 |
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:228:51
+    |
+226 |         return modelo
+227 |
+228 |     def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
+    |                                                   ^^^^
+229 |         """Avalia o modelo treinado sobre a partição de teste.
+    |
+help: Replace with `dict`
+    |
+227 |
+    -     def avaliar_modelo(self, nome_modelo: str) -> Dict[str, Any]:
+228 +     def avaliar_modelo(self, nome_modelo: str) -> dict[str, Any]:
+229 |         """Avalia o modelo treinado sobre a partição de teste.
+    |
+
+UP007 [*] Use `X | Y` for type annotations
+   --> src/fachada.py:264:12
+    |
+262 |         self,
+263 |         modelo_id: str,
+264 |         x: Union[NDArray[np.floating], Any],
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+265 |     ) -> NDArray[np.float64]:
+266 |         """Retorna distribuição de probabilidade por classe para cada amostra.
+    |
+help: Convert to `X | Y`
+    |
+263 |         modelo_id: str,
+    -         x: Union[NDArray[np.floating], Any],
+264 +         x: NDArray[np.floating] | Any,
+265 |     ) -> NDArray[np.float64]:
+    |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/fachada.py:368:22
+    |
+366 |     def executar_benchmark(
+367 |         self,
+368 |         modelos_ids: List[str],
+    |                      ^^^^
+369 |         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+370 |     ) -> Dict[str, ResultadoBenchmark]:
+    |
+help: Replace with `list`
+    |
+367 |         self,
+    -         modelos_ids: List[str],
+368 +         modelos_ids: list[str],
+369 |         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+    |
+
+UP007 [*] Use `X | Y` for type annotations
+   --> src/fachada.py:369:20
+    |
+367 |         self,
+368 |         modelos_ids: List[str],
+369 |         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+    |                    ^^^^^^^^^^^^^^^^
+370 |     ) -> Dict[str, ResultadoBenchmark]:
+371 |         """Executa ciclo completo de treino + avaliação e persiste os resultados.
+    |
+help: Convert to `X | Y`
+    |
+368 |         modelos_ids: List[str],
+    -         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+369 +         dir_saida: str | Path = _DIR_BENCHMARKS,
+370 |     ) -> Dict[str, ResultadoBenchmark]:
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:370:10
+    |
+368 |         modelos_ids: List[str],
+369 |         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+370 |     ) -> Dict[str, ResultadoBenchmark]:
+    |          ^^^^
+371 |         """Executa ciclo completo de treino + avaliação e persiste os resultados.
+    |
+help: Replace with `dict`
+    |
+369 |         dir_saida: Union[str, Path] = _DIR_BENCHMARKS,
+    -     ) -> Dict[str, ResultadoBenchmark]:
+370 +     ) -> dict[str, ResultadoBenchmark]:
+371 |         """Executa ciclo completo de treino + avaliação e persiste os resultados.
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:398:21
+    |
+397 |         self._garantir_dados()
+398 |         resultados: Dict[str, ResultadoBenchmark] = {}
+    |                     ^^^^
+399 |         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
+400 |         logger.info("[Fachada] Iniciando benchmark de %d modelos…", len(modelos_ids))
+    |
+help: Replace with `dict`
+    |
+397 |         self._garantir_dados()
+    -         resultados: Dict[str, ResultadoBenchmark] = {}
+398 +         resultados: dict[str, ResultadoBenchmark] = {}
+399 |         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:421:37
+    |
+419 |                 throughput = round(n_amostras / tempo_inf_s, 1) if tempo_inf_s > 0 else float("inf")
+420 |
+421 |                 metricas_completas: Dict[str, Any] = {
+    |                                     ^^^^
+422 |                     **metricas_base,
+423 |                     "tempo_treino_s": tempo_treino_s,
+    |
+help: Replace with `dict`
+    |
+420 |
+    -                 metricas_completas: Dict[str, Any] = {
+421 +                 metricas_completas: dict[str, Any] = {
+422 |                     **metricas_base,
+    |
+
+RUF046 [*] Value being cast to `int` is already an integer
+   --> src/fachada.py:426:42
+    |
+424 |                     "latencia_media_ms": latencia_media_ms,
+425 |                     "throughput_amostras_s": throughput,
+426 |                     "n_amostras_treino": int(len(self.X_treino)),
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^
+427 |                     "n_amostras_teste": int(n_amostras),
+428 |                 }
+    |
+help: Remove unnecessary `int` call
+    |
+425 |                     "throughput_amostras_s": throughput,
+    -                     "n_amostras_treino": int(len(self.X_treino)),
+426 +                     "n_amostras_treino": len(self.X_treino),
+427 |                     "n_amostras_teste": int(n_amostras),
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/fachada.py:440:20
+    |
+438 |                 )
+439 |
+440 |             except Exception as exc:
+    |                    ^^^^^^^^^
+441 |                 logger.error("[Fachada] Falha no benchmark de '%s': %s", nome, exc)
+442 |                 resultados[nome] = ResultadoBenchmark(
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:460:21
+    |
+458 |     def _persistir_benchmark(
+459 |         self,
+460 |         resultados: Dict[str, ResultadoBenchmark],
+    |                     ^^^^
+461 |         ts_inicio: str,
+462 |         dir_saida: Union[str, Path],
+    |
+help: Replace with `dict`
+    |
+459 |         self,
+    -         resultados: Dict[str, ResultadoBenchmark],
+460 +         resultados: dict[str, ResultadoBenchmark],
+461 |         ts_inicio: str,
+    |
+
+UP007 [*] Use `X | Y` for type annotations
+   --> src/fachada.py:462:20
+    |
+460 |         resultados: Dict[str, ResultadoBenchmark],
+461 |         ts_inicio: str,
+462 |         dir_saida: Union[str, Path],
+    |                    ^^^^^^^^^^^^^^^^
+463 |     ) -> None:
+464 |         """Serializa os resultados de benchmark para JSON estruturado em disco.
+    |
+help: Convert to `X | Y`
+    |
+461 |         ts_inicio: str,
+    -         dir_saida: Union[str, Path],
+462 +         dir_saida: str | Path,
+463 |     ) -> None:
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:475:18
+    |
+473 |             dir_saida: Diretório destino para o arquivo JSON.
+474 |         """
+475 |         payload: Dict[str, Any] = {
+    |                  ^^^^
+476 |             "schema_versao": "1.0",
+477 |             "timestamp_inicio": ts_inicio,
+    |
+help: Replace with `dict`
+    |
+474 |         """
+    -         payload: Dict[str, Any] = {
+475 +         payload: dict[str, Any] = {
+476 |             "schema_versao": "1.0",
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:508:57
+    |
+506 |     # ──────────────────────────────────────────────────────────────────────────
+507 |
+508 |     def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+    |                                                         ^^^^
+509 |         """Executa o ciclo completo de treino + avaliação com rastreio MLflow.
+    |
+help: Replace with `dict`
+    |
+507 |
+    -     def executar_experimento(self, nome_modelo: str) -> Dict[str, Any]:
+508 +     def executar_experimento(self, nome_modelo: str) -> dict[str, Any]:
+509 |         """Executa o ciclo completo de treino + avaliação com rastreio MLflow.
+    |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/fachada.py:559:10
+    |
+557 |     def obter_estatisticas_dados(
+558 |         self, tipo: str = "treino"
+559 |     ) -> Dict[str, float]:
+    |          ^^^^
+560 |         """Calcula estatísticas descritivas sobre a partição especificada.
+    |
+help: Replace with `dict`
+    |
+558 |         self, tipo: str = "treino"
+    -     ) -> Dict[str, float]:
+559 +     ) -> dict[str, float]:
+560 |         """Calcula estatísticas descritivas sobre a partição especificada.
+    |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/fachada.py:585:43
+    |
+583 |     # ──────────────────────────────────────────────────────────────────────────
+584 |
+585 |     def listar_modelos_treinados(self) -> List[str]:
+    |                                           ^^^^
+586 |         """Retorna os nomes dos modelos atualmente treinados e em memória.
+    |
+help: Replace with `list`
+    |
+584 |
+    -     def listar_modelos_treinados(self) -> List[str]:
+585 +     def listar_modelos_treinados(self) -> list[str]:
+586 |         """Retorna os nomes dos modelos atualmente treinados e em memória.
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/frontend/estilos.py:3:1
+  |
+1 | """Injeção de CSS customizado: Dark Mode profissional com efeito Glassmorphism."""
+2 |
+3 | import streamlit as st
+  | ^^^^^^^^^^^^^^^^^^^^^^
+help: Organize imports
+  |
+4 |
+  -
+5 | CSS_GLOBAL = """
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/frontend/painel_analise_estatistica.py:3:1
+   |
+ 1 |   """Painel 2 — Análise Estatística Interativa: Dados Brutos vs Tratados + Testes de Hipótese."""
+ 2 |
+ 3 | / import numpy as np
+ 4 | | import pandas as pd
+ 5 | | import streamlit as st
+ 6 | | from scipy import stats as scipy_stats
+ 7 | |
+ 8 | | from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+ 9 | | from src.analise_estatistica import CalculadorEstatistico
+   | |_________________________________________________________^
+10 |
+11 |   try:
+   |
+help: Organize imports
+   |
+7  |
+   - from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+8  | from src.analise_estatistica import CalculadorEstatistico
+9  + from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
+10 |
+   |
+
+F401 `plotly.figure_factory` imported but unused; consider using `importlib.util.find_spec` to test for availability
+  --> src/frontend/painel_analise_estatistica.py:13:37
+   |
+11 | try:
+12 |     import plotly.express as px
+13 |     import plotly.figure_factory as ff
+   |                                     ^^
+14 |     import plotly.graph_objects as go
+15 |     PLOTLY_OK = True
+   |
+help: Remove unused import: `plotly.figure_factory`
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+  --> src/frontend/painel_analise_estatistica.py:19:9
+   |
+17 |       PLOTLY_OK = False
+18 |
+19 |   _TEMA = dict(
+   |  _________^
+20 | |     paper_bgcolor="rgba(0,0,0,0)",
+21 | |     plot_bgcolor="rgba(0,0,0,0)",
+22 | |     template="plotly_dark")
+   | |___________________________^
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:156:24
+    |
+154 |                 **_TEMA,
+155 |                 height=380,
+156 |                 margin=dict(t=10, b=40),
+    |                        ^^^^^^^^^^^^^^^^
+157 |                 xaxis_title="Intensidade",
+158 |                 yaxis_title="Densidade",
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:187:63
+    |
+185 |                 template="plotly_dark",
+186 |                 color_discrete_sequence=px.colors.qualitative.Plotly)
+187 |             fig_box.update_layout(**_TEMA, height=380, margin=dict(t=10, b=40),
+    |                                                               ^^^^^^^^^^^^^^^^
+188 |                                   showlegend=False)
+189 |             st.plotly_chart(fig_box, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+RUF059 Unpacked variable `qq_obs` is never used
+   --> src/frontend/painel_analise_estatistica.py:195:22
+    |
+193 |             amostra_qq = dados if len(dados) <= 5000 else np.random.choice(
+194 |                 dados, 5000, replace=False)
+195 |             qq_teor, qq_obs = scipy_stats.probplot(amostra_qq, dist="norm")[:2]
+    |                      ^^^^^^
+196 |             fig_qq = go.Figure()
+197 |             fig_qq.add_trace(go.Scatter(x=qq_teor[0], y=qq_teor[1],
+    |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:199:48
+    |
+197 |             fig_qq.add_trace(go.Scatter(x=qq_teor[0], y=qq_teor[1],
+198 |                                         mode="markers", name="Observado",
+199 |                                         marker=dict(color="#58a6ff", size=3)))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+200 |             x_line = np.linspace(min(qq_teor[0]), max(qq_teor[0]), 100)
+201 |             slope, intercept = np.polyfit(qq_teor[0], qq_teor[1], 1)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:208:26
+    |
+206 |                       mode="lines",
+207 |                       name="Normal teórica",
+208 |                       line=dict(
+    |  __________________________^
+209 | |                         color="#f78166",
+210 | |                         dash="dash")))
+    | |____________________________________^
+211 |               fig_qq.update_layout(**_TEMA, height=380, margin=dict(t=10, b=40),
+212 |                                    xaxis_title="Quantis Teóricos (Normal)",
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:211:62
+    |
+209 |                         color="#f78166",
+210 |                         dash="dash")))
+211 |             fig_qq.update_layout(**_TEMA, height=380, margin=dict(t=10, b=40),
+    |                                                              ^^^^^^^^^^^^^^^^
+212 |                                  xaxis_title="Quantis Teóricos (Normal)",
+213 |                                  yaxis_title="Quantis Observados")
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:233:61
+    |
+231 |               fig_heat = px.imshow(
+232 |                   media_espacial, color_continuous_scale="Blues", zmin=0, zmax=(
+233 |                       255 if "Brutos" in modo else 1), labels=dict(
+    |  _____________________________________________________________^
+234 | |                     color="Intensidade"))
+    | |________________________________________^
+235 |               fig_heat.update_layout(
+236 |                   **_TEMA,
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:238:24
+    |
+236 |                   **_TEMA,
+237 |                   height=380,
+238 |                   margin=dict(
+    |  ________________________^
+239 | |                     t=30,
+240 | |                     b=10),
+    | |_________________________^
+241 |                   title=titulo_heat)
+242 |               fig_heat.update_xaxes(showticklabels=False)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_analise_estatistica.py:343:24
+    |
+341 |                   height=300,
+342 |                   coloraxis_showscale=False,
+343 |                   margin=dict(
+    |  ________________________^
+344 | |                     t=10,
+345 | |                     b=40))
+    | |_________________________^
+346 |               st.plotly_chart(fig_an, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/frontend/painel_assistente_rag.py:3:1
+  |
+1 |   """Painel 7 — Chatbot Assistente RAG: perguntas em linguagem natural sobre o projeto."""
+2 |
+3 | / import streamlit as st
+4 | |
+5 | | from src.frontend.estilos import aplicar_estilos, titulo_secao, badge
+  | |_____________________________________________________________________^
+help: Organize imports
+  |
+4 |
+  - from src.frontend.estilos import aplicar_estilos, titulo_secao, badge
+  -
+5 + from src.frontend.estilos import aplicar_estilos, badge, titulo_secao
+6 |
+  |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/frontend/painel_assistente_rag.py:27:26
+   |
+25 |         # O construtor do SuporteRAG já indexa os documentos, então apenas retornamos
+26 |         return assistente
+27 |     except (ImportError, Exception) as e:
+   |                          ^^^^^^^^^
+28 |         print(f"RAG indisponível: {e}")
+29 |         return None
+   |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:105:132
+    |
+104 | …
+105 | …projeto, é calculada por sklearn.metrics.accuracy_score.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+106 | …rdadeiros entre todos os positivos previstos.",
+107 | …ente identificados pelo modelo.",
+    |
+help: Remove unused `noqa` directive
+    |
+104 | _BASE_CONHECIMENTO = {
+    -     "acurácia": "A acurácia mede a proporção de predições corretas. No projeto, é calculada por sklearn.metrics.accuracy_score.",  # noqa: E501
+105 +     "acurácia": "A acurácia mede a proporção de predições corretas. No projeto, é calculada por sklearn.metrics.accuracy_score.",
+106 |     "precisão": "A precisão (precision) indica a fração de positivos verdadeiros entre todos os positivos previstos.",
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:110:139
+    |
+108 | …onjuntos desbalanceados.",
+109 | …tou na inferência para avaliar robustez.",
+110 | …bilidade a uma classe mesmo sem ter aprendido sobre ela.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+111 | …, com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+112 | … de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+    |
+help: Remove unused `noqa` directive
+    |
+109 |     "ood": "O experimento OOD mascarou as classes 4 e 7 no treino e as apresentou na inferência para avaliar robustez.",
+    -     "overconfidence": "Falsa certeza ocorre quando o modelo atribui alta probabilidade a uma classe mesmo sem ter aprendido sobre ela.",  # noqa: E501
+110 +     "overconfidence": "Falsa certeza ocorre quando o modelo atribui alta probabilidade a uma classe mesmo sem ter aprendido sobre ela.",
+111 |     "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:111:128
+    |
+109 | … as apresentou na inferência para avaliar robustez.",
+110 | … alta probabilidade a uma classe mesmo sem ter aprendido sobre ela.",  # noqa: E501
+111 | …ritos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+112 | …ara patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+113 | …ntica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
+    |
+help: Remove unused `noqa` directive
+    |
+110 |     "overconfidence": "Falsa certeza ocorre quando o modelo atribui alta probabilidade a uma classe mesmo sem ter aprendido sobre ela.",  # noqa: E501
+    -     "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+111 +     "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9), com 60.000 para treino e 10.000 para teste.",
+112 |     "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:112:156
+    |
+110 | …asse mesmo sem ter aprendido sobre ela.",  # noqa: E501
+111 | … treino e 10.000 para teste.",  # noqa: E501
+112 | …e projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+113 | …o de resposta contextualizada.",  # noqa: E501
+114 | …dimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+    |
+help: Remove unused `noqa` directive
+    |
+111 |     "mnist": "O MNIST contém 70.000 imagens 28×28 de dígitos manuscritos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+    -     "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+112 +     "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",
+113 |     "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:113:130
+    |
+111 | …tos (0–9), com 60.000 para treino e 10.000 para teste.",  # noqa: E501
+112 | …a patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+113 | …ica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+114 | …, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+115 | …
+    |
+help: Remove unused `noqa` directive
+    |
+112 |     "vision transformer": "O ViT adapta a arquitetura Transformer para patches de imagens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+    -     "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
+113 +     "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB com geração de resposta contextualizada.",
+114 |     "pipeline": "O pipeline de visão converte a imagem para grayscale, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:114:144
+    |
+112 | …magens. Neste projeto é uma implementação educacional em NumPy puro.",  # noqa: E501
+113 | …B com geração de resposta contextualizada.",  # noqa: E501
+114 | …ding box, redimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+115 | …
+    |
+help: Remove unused `noqa` directive
+    |
+113 |     "rag": "RAG (Retrieval-Augmented Generation) combina busca semântica em ChromaDB com geração de resposta contextualizada.",  # noqa: E501
+    -     "pipeline": "O pipeline de visão converte a imagem para grayscale, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",  # noqa: E501
+114 +     "pipeline": "O pipeline de visão converte a imagem para grayscale, detecta bounding box, redimensiona para 20×20 e centraliza em 28×28.",
+115 | }
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `E501`)
+   --> src/frontend/painel_assistente_rag.py:153:150
+    |
+151 | …
+152 | …
+153 | …. Respondendo com base no conhecimento geral do projeto.")  # noqa: E501
+    |                                                              ^^^^^^^^^^^^
+help: Remove unused `noqa` directive
+    |
+152 |                 else:
+    -                     st.warning("Módulo RAG (src/rag/assistente.py) ainda não implementado. Respondendo com base no conhecimento geral do projeto.")  # noqa: E501
+153 +                     st.warning("Módulo RAG (src/rag/assistente.py) ainda não implementado. Respondendo com base no conhecimento geral do projeto.")
+154 |
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_assistente_rag.py:192:20
+    |
+190 |                 resposta = resultado.get("resposta", "Não foi possível gerar uma resposta.")
+191 |                 fontes = resultado.get("fontes", [])
+192 |             except Exception as e:
+    |                    ^^^^^^^^^
+193 |                 resposta = f"Erro ao consultar o RAG: {e}"
+194 |                 fontes = []
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/frontend/painel_bancos_dados.py:3:1
+   |
+ 1 |   """Painel 6 — Monitor de Bancos de Dados: PostgreSQL (SQLAlchemy) + MongoDB (fallback JSON)."""
+ 2 |
+ 3 | / import os
+ 4 | | import json
+ 5 | | import glob
+ 6 | | from datetime import datetime
+ 7 | |
+ 8 | | import pandas as pd
+ 9 | | import streamlit as st
+10 | |
+11 | | from src.frontend.estilos import aplicar_estilos, titulo_secao, badge, kpi_tile
+12 | | from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+13 | | from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+   | |__________________________________________________________^
+help: Organize imports
+   |
+2  |
+   - import os
+   - import json
+3  | import glob
+4  + import json
+5  + import os
+6  | from datetime import datetime
+--------------------------------------------------------------------------------
+10 |
+   - from src.frontend.estilos import aplicar_estilos, titulo_secao, badge, kpi_tile
+11 + from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+12 | from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+   - from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+   -
+13 + from src.frontend.estilos import aplicar_estilos, badge, kpi_tile, titulo_secao
+14 |
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/frontend/painel_bancos_dados.py:35:12
+   |
+33 |             "Data de Execução": r.data_execucao.strftime("%d/%m/%Y %H:%M:%S") if r.data_execucao else "—",
+34 |         } for r in registros])
+35 |     except Exception as erro:
+   |            ^^^^^^^^^
+36 |         st.error(f"Erro ao consultar PostgreSQL: {erro}")
+37 |         return pd.DataFrame()
+   |
+
+DTZ006 `datetime.datetime.fromtimestamp()` called without a `tz` argument
+  --> src/frontend/painel_bancos_dados.py:60:25
+   |
+58 |                       dados = json.load(f)
+59 |                   nome = os.path.splitext(os.path.basename(caminho))[0]
+60 |                   mtime = datetime.fromtimestamp(
+   |  _________________________^
+61 | |                     os.path.getmtime(caminho)).strftime("%d/%m/%Y %H:%M:%S")
+   | |______________________________________________^
+62 |                   artefatos.append(
+63 |                       {"nome": nome, "dados": dados, "salvo_em": mtime})
+   |
+help: Pass a `datetime.timezone` object to the `tz` parameter
+
+S110 `try`-`except`-`pass` detected, consider logging the exception
+  --> src/frontend/painel_bancos_dados.py:64:13
+   |
+62 |                   artefatos.append(
+63 |                       {"nome": nome, "dados": dados, "salvo_em": mtime})
+64 | /             except Exception:
+65 | |                 pass
+   | |____________________^
+66 |       else:
+67 |           try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/frontend/painel_bancos_dados.py:64:20
+   |
+62 |                 artefatos.append(
+63 |                     {"nome": nome, "dados": dados, "salvo_em": mtime})
+64 |             except Exception:
+   |                    ^^^^^^^^^
+65 |                 pass
+66 |     else:
+   |
+
+PERF402 Use `list` or `list.copy` to create a copy of a list
+  --> src/frontend/painel_bancos_dados.py:72:17
+   |
+70 |                     "_id": 0}).sort(
+71 |                     "_id", -1).limit(20):
+72 |                 artefatos.append(doc)
+   |                 ^^^^^^^^^^^^^^^^^^^^^
+73 |         except Exception as erro:
+74 |             st.error(f"Erro ao consultar MongoDB: {erro}")
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/frontend/painel_bancos_dados.py:73:16
+   |
+71 |                     "_id", -1).limit(20):
+72 |                 artefatos.append(doc)
+73 |         except Exception as erro:
+   |                ^^^^^^^^^
+74 |             st.error(f"Erro ao consultar MongoDB: {erro}")
+   |
+
+RUF059 Unpacked variable `col_esp` is never used
+  --> src/frontend/painel_bancos_dados.py:97:18
+   |
+95 |         titulo_secao("Tabela de Experimentos")
+96 |
+97 |         col_att, col_esp = st.columns([1, 5])
+   |                  ^^^^^^^
+98 |         with col_att:
+99 |             st.button("🔄 Atualizar", key="att_pg")
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_bancos_dados.py:151:32
+    |
+149 |                         plot_bgcolor="rgba(0,0,0,0)",
+150 |                         coloraxis_showscale=False,
+151 |                         margin=dict(t=20, b=20),
+    |                                ^^^^^^^^^^^^^^^^
+152 |                     )
+153 |                     st.plotly_chart(fig, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_bancos_dados.py:209:32
+    |
+207 |                             df_mat = pd.DataFrame(dados[chave])
+208 |                             st.dataframe(df_mat, use_container_width=True)
+209 |                         except Exception:
+    |                                ^^^^^^^^^
+210 |                             st.json(dados)
+211 |                     else:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/frontend/painel_benchmarks.py:77:12
+   |
+75 |     try:
+76 |         return FabricaModelos.listar_disponiveis()
+77 |     except Exception as exc:  # pragma: no cover
+   |            ^^^^^^^^^
+78 |         logger.error("[Benchmarks] Falha ao consultar FabricaModelos: %s", exc)
+79 |         return []
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_benchmarks.py:124:16
+    |
+122 |             logger.info("[Benchmarks] '%s' concluído — acurácia=%.4f", nome, metricas["acuracia"])
+123 |
+124 |         except Exception as exc:
+    |                ^^^^^^^^^
+125 |             msg = str(exc)
+126 |             logger.error("[Benchmarks] Falha ao executar '%s': %s", nome, msg)
+    |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_benchmarks.py:290:20
+    |
+288 |             barmode="group",
+289 |             height=350,
+290 |             margin=dict(t=10, b=80),
+    |                    ^^^^^^^^^^^^^^^^
+291 |             xaxis_tickangle=-30,
+292 |         )
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_benchmarks.py:308:62
+    |
+306 |                 )
+307 |             )
+308 |         fig.update_layout(**_TEMA_PLOTLY, height=420, margin=dict(t=20, b=20))
+    |                                                              ^^^^^^^^^^^^^^^^
+309 |         st.plotly_chart(fig, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_benchmarks.py:355:16
+    |
+353 |         text_auto=True,
+354 |         color_continuous_scale="Blues",
+355 |         labels=dict(x="Previsto", y="Real", color=f"Contagem{sufixo}"),
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+356 |         x=[str(i) for i in range(10)],
+357 |         y=[str(i) for i in range(10)],
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_benchmarks.py:359:61
+    |
+357 |         y=[str(i) for i in range(10)],
+358 |     )
+359 |     fig_cm.update_layout(**_TEMA_PLOTLY, height=500, margin=dict(t=10, b=10))
+    |                                                             ^^^^^^^^^^^^^^^^
+360 |     st.plotly_chart(fig_cm, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/frontend/painel_eda.py:3:1
+  |
+1 |   """Painel 1 — Análise Exploratória de Dados (EDA) interativa do MNIST."""
+2 |
+3 | / import numpy as np
+4 | | import pandas as pd
+5 | | import streamlit as st
+6 | |
+7 | | from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+  | |________________________________________________________________________^
+8 |
+9 |   try:
+  |
+help: Organize imports
+  |
+6 |
+  - from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+7 + from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
+8 |
+  |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+  --> src/frontend/painel_eda.py:15:9
+   |
+13 |       PLOTLY_OK = False
+14 |
+15 |   _TEMA = dict(
+   |  _________^
+16 | |     paper_bgcolor="rgba(0,0,0,0)",
+17 | |     plot_bgcolor="rgba(0,0,0,0)",
+18 | |     template="plotly_dark")
+   | |___________________________^
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+  --> src/frontend/painel_eda.py:71:38
+   |
+69 |             fig.update_traces(textposition="outside")
+70 |             fig.update_layout(**_TEMA, coloraxis_showscale=False,
+71 |                               margin=dict(t=10, b=10), height=300)
+   |                                      ^^^^^^^^^^^^^^^^
+72 |             st.plotly_chart(fig, use_container_width=True)
+73 |         else:
+   |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_eda.py:134:38
+    |
+132 |             img_255 = (img_insp * 255).astype(int)
+133 |             fig_h = px.imshow(img_255, color_continuous_scale="Blues",
+134 |                               labels=dict(color="Intensidade"),
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+135 |                               zmin=0, zmax=255)
+136 |             fig_h.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_eda.py:136:49
+    |
+134 |                               labels=dict(color="Intensidade"),
+135 |                               zmin=0, zmax=255)
+136 |             fig_h.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+    |                                                 ^^^^^^^^^^^^^^
+137 |                                 coloraxis_showscale=True)
+138 |             fig_h.update_xaxes(showticklabels=False)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_eda.py:155:51
+    |
+153 |                     "y": "Frequência"},
+154 |                 color_discrete_sequence=["#58a6ff"])
+155 |             fig_bar.update_layout(**_TEMA, margin=dict(t=5, b=5), height=220,
+    |                                                   ^^^^^^^^^^^^^^
+156 |                                   showlegend=False)
+157 |             st.plotly_chart(fig_bar, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+F401 [*] `os` imported but unused
+  --> src/frontend/painel_laboratorio_visao.py:36:8
+   |
+34 | import io
+35 | import logging
+36 | import os
+   |        ^^
+37 | import tempfile
+38 | from pathlib import Path
+   |
+help: Remove unused import: `os`
+   |
+35 | import logging
+   - import os
+36 | import tempfile
+   |
+
+F401 [*] `typing.Union` imported but unused
+  --> src/frontend/painel_laboratorio_visao.py:39:35
+   |
+37 | import tempfile
+38 | from pathlib import Path
+39 | from typing import Any, Optional, Union
+   |                                   ^^^^^
+40 |
+41 | import numpy as np
+   |
+help: Remove unused import: `typing.Union`
+   |
+38 | from pathlib import Path
+   - from typing import Any, Optional, Union
+39 + from typing import Any, Optional
+40 |
+   |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:103:6
+    |
+101 |     fachada: Any,
+102 |     vetor: NDArray[np.float32],
+103 | ) -> Optional[tuple[str, list[tuple[int, float]]]]:
+    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+104 |     """Obtém distribuição de probabilidade do primeiro modelo treinado disponível.
+    |
+help: Convert to `X | None`
+    |
+102 |     vetor: NDArray[np.float32],
+    - ) -> Optional[tuple[str, list[tuple[int, float]]]]:
+103 + ) -> tuple[str, list[tuple[int, float]]] | None:
+104 |     """Obtém distribuição de probabilidade do primeiro modelo treinado disponível.
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_laboratorio_visao.py:127:16
+    |
+125 |             pares = [(int(c), float(p)) for c, p in enumerate(probs_linha)]
+126 |             return nome, pares
+127 |         except Exception as exc:
+    |                ^^^^^^^^^
+128 |             logger.warning(
+129 |                 "[LaboratorioVisao] Falha ao inferir com '%s': %s", nome, exc
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/frontend/painel_laboratorio_visao.py:169:33
+    |
+167 |         ValueError: Se a imagem de entrada estiver vazia ou com shape inválido.
+168 |     """
+169 |     import cv2  # type: ignore  # noqa: PLC0415
+    |                                 ^^^^^^^^^^^^^^^
+170 |
+171 |     if img_orig.size == 0:
+    |
+help: Remove unused `noqa` directive
+    |
+168 |     """
+    -     import cv2  # type: ignore  # noqa: PLC0415
+169 +     import cv2  # type: ignore
+170 |
+    |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_laboratorio_visao.py:238:20
+    |
+236 |             **_TEMA_PLOTLY,
+237 |             height=320,
+238 |             margin=dict(t=10, b=10, l=80),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^
+239 |             xaxis_title="Probabilidade (%)",
+240 |             yaxis=dict(autorange="reversed"),
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_laboratorio_visao.py:240:19
+    |
+238 |             margin=dict(t=10, b=10, l=80),
+239 |             xaxis_title="Probabilidade (%)",
+240 |             yaxis=dict(autorange="reversed"),
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+241 |         )
+242 |         st.plotly_chart(fig, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> src/frontend/painel_laboratorio_visao.py:259:9
+    |
+257 |     """
+258 |     try:
+259 |         from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: PLC0415
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+260 |
+261 |         probs_array = np.array(
+    |
+help: Organize imports
+    |
+258 |     try:
+    -         from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: PLC0415
+259 +         from guardrails.validador_falsa_certeza import (
+260 +             ValidadorFalsaCerteza,  # noqa: PLC0415
+261 +         )
+262 |
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/frontend/painel_laboratorio_visao.py:259:79
+    |
+257 |     """
+258 |     try:
+259 |         from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: PLC0415
+    |                                                                               ^^^^^^^^^^^^^^^
+260 |
+261 |         probs_array = np.array(
+    |
+help: Remove unused `noqa` directive
+    |
+258 |     try:
+    -         from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza  # noqa: PLC0415
+259 +         from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+260 |
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_laboratorio_visao.py:283:12
+    |
+281 |     except ImportError:
+282 |         logger.debug("[LaboratorioVisao] guardrails.validador_falsa_certeza não disponível.")
+283 |     except Exception as exc:
+    |            ^^^^^^^^^
+284 |         logger.warning("[LaboratorioVisao] Erro ao avaliar guardrail: %s", exc)
+    |
+
+RUF059 Unpacked variable `gray` is never used
+   --> src/frontend/painel_laboratorio_visao.py:301:9
+    |
+299 |     titulo_secao("Pipeline de Transformação (4 Etapas)")
+300 |     try:
+301 |         gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
+    |         ^^^^
+302 |     except Exception as exc:
+303 |         logger.error("[LaboratorioVisao] Falha no pipeline de visão: %s", exc)
+    |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_laboratorio_visao.py:302:12
+    |
+300 |     try:
+301 |         gray, invertida, bbox_crop, canvas_28 = _pipeline_visual(img_array)
+302 |     except Exception as exc:
+    |            ^^^^^^^^^
+303 |         logger.error("[LaboratorioVisao] Falha no pipeline de visão: %s", exc)
+304 |         st.error(f"Erro no pipeline de pré-processamento: {exc}", icon="🚨")
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:352:34
+    |
+352 | def _renderizar_modo_canvas() -> Optional[NDArray[np.uint8]]:
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+353 |     """Renderiza o canvas de desenho livre e retorna a imagem capturada.
+    |
+help: Convert to `X | None`
+    |
+351 |
+    - def _renderizar_modo_canvas() -> Optional[NDArray[np.uint8]]:
+352 + def _renderizar_modo_canvas() -> NDArray[np.uint8] | None:
+353 |     """Renderiza o canvas de desenho livre e retorna a imagem capturada.
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/frontend/painel_laboratorio_visao.py:362:74
+    |
+360 |     """
+361 |     try:
+362 |         from streamlit_drawable_canvas import st_canvas  # type: ignore  # noqa: PLC0415
+    |                                                                          ^^^^^^^^^^^^^^^
+363 |     except ImportError:
+364 |         st.error(
+    |
+help: Remove unused `noqa` directive
+    |
+361 |     try:
+    -         from streamlit_drawable_canvas import st_canvas  # type: ignore  # noqa: PLC0415
+362 +         from streamlit_drawable_canvas import st_canvas  # type: ignore
+363 |     except ImportError:
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:398:6
+    |
+396 |     dados: bytes,
+397 |     nome_arquivo: str,
+398 | ) -> Optional[NDArray[np.uint8]]:
+    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+399 |     """Decodifica bytes de imagem em array NumPy inteiramente em memória.
+    |
+help: Convert to `X | None`
+    |
+397 |     nome_arquivo: str,
+    - ) -> Optional[NDArray[np.uint8]]:
+398 + ) -> NDArray[np.uint8] | None:
+399 |     """Decodifica bytes de imagem em array NumPy inteiramente em memória.
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_laboratorio_visao.py:436:12
+    |
+434 |         )
+435 |         return None
+436 |     except Exception as exc:
+    |            ^^^^^^^^^
+437 |         logger.error("[LaboratorioVisao] Erro ao decodificar '%s': %s", nome_arquivo, exc)
+438 |         st.error(f"Imagem corrompida ou inválida ({exc}).", icon="🚨")
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> src/frontend/painel_laboratorio_visao.py:464:9
+    |
+462 |     """
+463 |     try:
+464 |         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada  # noqa: PLC0415
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+465 |     except ImportError:
+466 |         logger.debug("[LaboratorioVisao] ValidadorImagemEntrada não disponível — validação ignorada.")
+    |
+help: Organize imports
+    |
+463 |     try:
+    -         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada  # noqa: PLC0415
+464 +         from guardrails.validador_imagem_entrada import (
+465 +             ValidadorImagemEntrada,  # noqa: PLC0415
+466 +         )
+467 |     except ImportError:
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/frontend/painel_laboratorio_visao.py:464:81
+    |
+462 |     """
+463 |     try:
+464 |         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada  # noqa: PLC0415
+    |                                                                                 ^^^^^^^^^^^^^^^
+465 |     except ImportError:
+466 |         logger.debug("[LaboratorioVisao] ValidadorImagemEntrada não disponível — validação ignorada.")
+    |
+help: Remove unused `noqa` directive
+    |
+463 |     try:
+    -         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada  # noqa: PLC0415
+464 +         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
+465 |     except ImportError:
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:469:18
+    |
+467 |         return True  # fail-open: módulo ausente não bloqueia o fluxo
+468 |
+469 |     caminho_tmp: Optional[Path] = None
+    |                  ^^^^^^^^^^^^^^
+470 |     try:
+471 |         with tempfile.NamedTemporaryFile(delete=False, suffix=sufixo) as tmp:
+    |
+help: Convert to `X | None`
+    |
+468 |
+    -     caminho_tmp: Optional[Path] = None
+469 +     caminho_tmp: Path | None = None
+470 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_laboratorio_visao.py:476:12
+    |
+474 |         ValidadorImagemEntrada.validar_arquivo(str(caminho_tmp))
+475 |         return True
+476 |     except Exception as exc:
+    |            ^^^^^^^^^
+477 |         logger.warning("[LaboratorioVisao] Validação de imagem falhou para '%s': %s", nome_arquivo, exc)
+478 |         st.error(f"Imagem inválida: {exc}", icon="🚨")
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:485:34
+    |
+485 | def _renderizar_modo_upload() -> Optional[NDArray[np.uint8]]:
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+486 |     """Renderiza o uploader de arquivo e retorna a imagem decodificada.
+    |
+help: Convert to `X | None`
+    |
+484 |
+    - def _renderizar_modo_upload() -> Optional[NDArray[np.uint8]]:
+485 + def _renderizar_modo_upload() -> NDArray[np.uint8] | None:
+486 |     """Renderiza o uploader de arquivo e retorna a imagem decodificada.
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/frontend/painel_laboratorio_visao.py:557:16
+    |
+555 |     )
+556 |
+557 |     img_array: Optional[NDArray[np.uint8]] = (
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+558 |         _renderizar_modo_canvas() if "Canvas" in modo else _renderizar_modo_upload()
+559 |     )
+    |
+help: Convert to `X | None`
+    |
+556 |
+    -     img_array: Optional[NDArray[np.uint8]] = (
+557 +     img_array: NDArray[np.uint8] | None = (
+558 |         _renderizar_modo_canvas() if "Canvas" in modo else _renderizar_modo_upload()
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/frontend/painel_robustez_ood.py:3:1
+   |
+ 1 |   """Painel 4 — Robustez OOD e Falsa Certeza (Overconfidence / Saturação Softmax)."""
+ 2 |
+ 3 | / import numpy as np
+ 4 | | import pandas as pd
+ 5 | | import streamlit as st
+ 6 | |
+ 7 | | from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+ 8 | | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+   | |____________________________________________________________________^
+ 9 |
+10 |   try:
+   |
+help: Organize imports
+  |
+6 |
+  - from src.frontend.estilos import aplicar_estilos, titulo_secao, kpi_tile
+7 | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+8 + from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
+9 |
+  |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+  --> src/frontend/painel_robustez_ood.py:17:9
+   |
+15 |       PLOTLY_OK = False
+16 |
+17 |   _TEMA = dict(
+   |  _________^
+18 | |     paper_bgcolor="rgba(0,0,0,0)",
+19 | |     plot_bgcolor="rgba(0,0,0,0)",
+20 | |     template="plotly_dark")
+   | |___________________________^
+help: Rewrite as a literal
+
+BLE001 Do not catch blind exception: `Exception`
+   --> src/frontend/painel_robustez_ood.py:115:34
+    |
+113 |                 probs_ood = executar_experimento_ood(
+114 |                     fachada, classes_mascaradas=classes_mascaradas, n_amostras=n_amostras_ood)
+115 |             except (ImportError, Exception):
+    |                                  ^^^^^^^^^
+116 |                 probs_ood = _simular_softmax(
+117 |                     n_amostras_ood, classes_conhecidas)
+    |
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_robustez_ood.py:202:20
+    |
+200 |               xaxis_title="Confiança Máxima (Softmax)",
+201 |               yaxis_title="Nº de Amostras",
+202 |               margin=dict(
+    |  ____________________^
+203 | |                 t=10,
+204 | |                 b=40))
+    | |_____________________^
+205 |           st.plotly_chart(fig, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_robustez_ood.py:227:20
+    |
+225 |               xaxis_title="Entropia de Shannon",
+226 |               yaxis_title="Nº de Amostras",
+227 |               margin=dict(
+    |  ____________________^
+228 | |                 t=10,
+229 | |                 b=40))
+    | |_____________________^
+230 |           st.plotly_chart(fig_e, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_robustez_ood.py:251:20
+    |
+249 |               coloraxis_showscale=False,
+250 |               height=320,
+251 |               margin=dict(
+    |  ____________________^
+252 | |                 t=10,
+253 | |                 b=40),
+    | |_____________________^
+254 |               xaxis=dict(
+255 |                   tickmode="array",
+    |
+help: Rewrite as a literal
+
+C408 Unnecessary `dict()` call (rewrite as a literal)
+   --> src/frontend/painel_robustez_ood.py:254:19
+    |
+252 |                   t=10,
+253 |                   b=40),
+254 |               xaxis=dict(
+    |  ___________________^
+255 | |                 tickmode="array",
+256 | |                 tickvals=list(
+257 | |                     range(10)),
+258 | |                 ticktext=[
+259 | |                     str(i) for i in range(10)]))
+    | |_______________________________________________^
+260 |           st.plotly_chart(fig_map, use_container_width=True)
+    |
+help: Rewrite as a literal
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/mcp_servidor.py:1:1
+  |
+1 | / import logging
+2 | | from typing import Dict, Any, List
+3 | |
+4 | | from mcp.server.fastmcp import FastMCP
+5 | | from src.fachada import FachadaPipelineIA
+6 | | from src.modelos.suporte_rag import SuporteRAG
+  | |______________________________________________^
+7 |
+8 |   logger = logging.getLogger(__name__)
+  |
+help: Organize imports
+  |
+1 | import logging
+  - from typing import Dict, Any, List
+2 + from typing import Any, Dict, List
+3 |
+4 | from mcp.server.fastmcp import FastMCP
+5 +
+6 | from src.fachada import FachadaPipelineIA
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/mcp_servidor.py:2:1
+  |
+1 | import logging
+2 | from typing import Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 |
+4 | from mcp.server.fastmcp import FastMCP
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/mcp_servidor.py:2:1
+  |
+1 | import logging
+2 | from typing import Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 |
+4 | from mcp.server.fastmcp import FastMCP
+  |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/mcp_servidor.py:45:12
+   |
+43 |         fachada.treinar_modelo(nome_modelo)
+44 |         return f"Modelo '{nome_modelo}' treinado com sucesso."
+45 |     except Exception as e:
+   |            ^^^^^^^^^
+46 |         return f"Erro ao treinar modelo: {str(e)}"
+   |
+
+RUF010 [*] Use explicit conversion flag
+  --> src/mcp_servidor.py:46:43
+   |
+44 |         return f"Modelo '{nome_modelo}' treinado com sucesso."
+45 |     except Exception as e:
+46 |         return f"Erro ao treinar modelo: {str(e)}"
+   |                                           ^^^^^^
+help: Replace with conversion flag
+   |
+45 |     except Exception as e:
+   -         return f"Erro ao treinar modelo: {str(e)}"
+46 +         return f"Erro ao treinar modelo: {e!s}"
+47 |
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/mcp_servidor.py:50:47
+   |
+49 | @mcp.tool()
+50 | def avaliar_modelo_mnist(nome_modelo: str) -> Dict[str, Any]:
+   |                                               ^^^^
+51 |     """
+52 |     Avalia a performance de um modelo treinado na base MNIST.
+   |
+help: Replace with `dict`
+   |
+49 | @mcp.tool()
+   - def avaliar_modelo_mnist(nome_modelo: str) -> Dict[str, Any]:
+50 + def avaliar_modelo_mnist(nome_modelo: str) -> dict[str, Any]:
+51 |     """
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/mcp_servidor.py:60:12
+   |
+58 |     try:
+59 |         return fachada.avaliar_modelo(nome_modelo)
+60 |     except Exception as e:
+   |            ^^^^^^^^^
+61 |         return {"erro": str(e)}
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/mcp_servidor.py:65:43
+   |
+64 | @mcp.tool()
+65 | def consultar_rag_mnist(pergunta: str) -> List[str]:
+   |                                           ^^^^
+66 |     """
+67 |     Consulta a base de conhecimento RAG especializada na arquitetura MNIST.
+   |
+help: Replace with `list`
+   |
+64 | @mcp.tool()
+   - def consultar_rag_mnist(pergunta: str) -> List[str]:
+65 + def consultar_rag_mnist(pergunta: str) -> list[str]:
+66 |     """
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> src/mcp_servidor.py:76:12
+   |
+74 |         respostas = rag.consultar(pergunta, n_resultados=2)
+75 |         return respostas
+76 |     except Exception as e:
+   |            ^^^^^^^^^
+77 |         return [f"Erro na consulta RAG: {str(e)}"]
+   |
+
+RUF010 [*] Use explicit conversion flag
+  --> src/mcp_servidor.py:77:42
+   |
+75 |         return respostas
+76 |     except Exception as e:
+77 |         return [f"Erro na consulta RAG: {str(e)}"]
+   |                                          ^^^^^^
+help: Replace with conversion flag
+   |
+76 |     except Exception as e:
+   -         return [f"Erro na consulta RAG: {str(e)}"]
+77 +         return [f"Erro na consulta RAG: {e!s}"]
+78 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/modelos/fabrica_modelos.py:16:1
+   |
+14 |   """
+15 |
+16 | / from __future__ import annotations
+17 | |
+18 | | import logging
+19 | | from typing import Any, Callable, Dict, List, Optional, Union
+20 | |
+21 | | import numpy as np
+22 | | from numpy.typing import NDArray
+23 | |
+24 | | from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+25 | | from sklearn.linear_model import LogisticRegression
+26 | | from sklearn.naive_bayes import GaussianNB
+27 | | from sklearn.neighbors import KNeighborsClassifier
+28 | | from sklearn.neural_network import MLPClassifier
+29 | | from sklearn.pipeline import Pipeline
+30 | | from sklearn.svm import SVC
+31 | | from sklearn.tree import DecisionTreeClassifier
+32 | |
+33 | | from src.modelos.base_modelo import ModeloAbstratoIA
+34 | | from src.utilitarios.excecoes import ModeloNaoEncontradoError
+   | |_____________________________________________________________^
+35 |
+36 |   # Logger de módulo — sem basicConfig; configuração delegada ao ponto de entrada.
+   |
+help: Organize imports
+   |
+22 | from numpy.typing import NDArray
+   -
+23 | from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+   |
+
+UP035 [*] Import from `collections.abc` instead: `Callable`
+  --> src/modelos/fabrica_modelos.py:19:1
+   |
+18 | import logging
+19 | from typing import Any, Callable, Dict, List, Optional, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |
+21 | import numpy as np
+   |
+help: Import from `collections.abc`
+   |
+18 | import logging
+   - from typing import Any, Callable, Dict, List, Optional, Union
+19 + from typing import Any, Dict, List, Optional, Union
+20 + from collections.abc import Callable
+21 |
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+  --> src/modelos/fabrica_modelos.py:19:1
+   |
+18 | import logging
+19 | from typing import Any, Callable, Dict, List, Optional, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |
+21 | import numpy as np
+   |
+
+UP035 `typing.List` is deprecated, use `list` instead
+  --> src/modelos/fabrica_modelos.py:19:1
+   |
+18 | import logging
+19 | from typing import Any, Callable, Dict, List, Optional, Union
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+20 |
+21 | import numpy as np
+   |
+
+F401 [*] `typing.Union` imported but unused
+  --> src/modelos/fabrica_modelos.py:19:57
+   |
+18 | import logging
+19 | from typing import Any, Callable, Dict, List, Optional, Union
+   |                                                         ^^^^^
+20 |
+21 | import numpy as np
+   |
+help: Remove unused import: `typing.Union`
+   |
+18 | import logging
+   - from typing import Any, Callable, Dict, List, Optional, Union
+19 + from typing import Any, Callable, Dict, List, Optional
+20 |
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+   --> src/modelos/fabrica_modelos.py:258:24
+    |
+256 |     """
+257 |
+258 |     _REGISTRO_MODELOS: Dict[str, _Construtor] = {
+    |                        ^^^^
+259 |         "RegressaoLogistica": lambda: LogisticRegression(
+260 |             max_iter=500, solver="lbfgs", multi_class="auto", random_state=42
+    |
+help: Replace with `dict`
+    |
+257 |
+    -     _REGISTRO_MODELOS: Dict[str, _Construtor] = {
+258 +     _REGISTRO_MODELOS: dict[str, _Construtor] = {
+259 |         "RegressaoLogistica": lambda: LogisticRegression(
+    |
+
+RUF012 Mutable default value for class attribute
+   --> src/modelos/fabrica_modelos.py:258:49
+    |
+256 |       """
+257 |
+258 |       _REGISTRO_MODELOS: Dict[str, _Construtor] = {
+    |  _________________________________________________^
+259 | |         "RegressaoLogistica": lambda: LogisticRegression(
+260 | |             max_iter=500, solver="lbfgs", multi_class="auto", random_state=42
+261 | |         ),
+262 | |         "ArvoreDecisao": lambda: DecisionTreeClassifier(
+263 | |             max_depth=20, random_state=42
+264 | |         ),
+265 | |         "FlorestaAleatoria": lambda: RandomForestClassifier(
+266 | |             n_estimators=50, max_depth=20, n_jobs=-1, random_state=42
+267 | |         ),
+268 | |         "ImpulsionamentoGradiente": lambda: GradientBoostingClassifier(
+269 | |             n_estimators=50, learning_rate=0.1, max_depth=4, random_state=42
+270 | |         ),
+271 | |         "SVM": lambda: SVC(
+272 | |             kernel="rbf", C=10.0, gamma="scale", probability=True, random_state=42
+273 | |         ),
+274 | |         "KNN": lambda: KNeighborsClassifier(
+275 | |             n_neighbors=5, metric="euclidean", n_jobs=-1
+276 | |         ),
+277 | |         "NaiveBayes": lambda: GaussianNB(var_smoothing=1e-9),
+278 | |         "PerceptronMulticamadas": lambda: MLPClassifier(
+279 | |             hidden_layer_sizes=(256, 128),
+280 | |             activation="relu",
+281 | |             max_iter=300,
+282 | |             early_stopping=True,
+283 | |             random_state=42,
+284 | |         ),
+285 | |     }
+    | |_____^
+286 |
+287 |       # Chave especial para o ViT (importação lazy de PyTorch)
+    |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+UP006 [*] Use `list` instead of `List` for type annotation
+   --> src/modelos/fabrica_modelos.py:291:33
+    |
+290 |     @staticmethod
+291 |     def listar_disponiveis() -> List[str]:
+    |                                 ^^^^
+292 |         """Retorna a lista canônica e completa de chaves aceitas por ``criar_modelo()``.
+    |
+help: Replace with `list`
+    |
+290 |     @staticmethod
+    -     def listar_disponiveis() -> List[str]:
+291 +     def listar_disponiveis() -> list[str]:
+292 |         """Retorna a lista canônica e completa de chaves aceitas por ``criar_modelo()``.
+    |
+
+RUF100 [*] Unused `noqa` directive (non-enabled: `PLC0415`)
+   --> src/modelos/fabrica_modelos.py:344:67
+    |
+342 |         if nome_modelo == FabricaModelos._CHAVE_VIT:
+343 |             logger.info("[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch).")
+344 |             from src.modelos.vision_transformer import ModeloViT  # noqa: PLC0415
+    |                                                                   ^^^^^^^^^^^^^^^
+345 |             return ModeloViT(nome_log=nome_modelo)
+    |
+help: Remove unused `noqa` directive
+    |
+343 |             logger.info("[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch).")
+    -             from src.modelos.vision_transformer import ModeloViT  # noqa: PLC0415
+344 +             from src.modelos.vision_transformer import ModeloViT
+345 |             return ModeloViT(nome_log=nome_modelo)
+    |
+
+UP045 [*] Use `X | None` for type annotations
+   --> src/modelos/fabrica_modelos.py:348:21
+    |
+347 |         # ── Modelos Scikit-Learn ──────────────────────────────────────────────
+348 |         construtor: Optional[_Construtor] = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
+    |                     ^^^^^^^^^^^^^^^^^^^^^
+349 |
+350 |         if construtor is None:
+    |
+help: Convert to `X | None`
+    |
+347 |         # ── Modelos Scikit-Learn ──────────────────────────────────────────────
+    -         construtor: Optional[_Construtor] = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
+348 +         construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
+349 |
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/modelos/suporte_rag.py:1:1
+  |
+1 | / import hashlib
+2 | | import chromadb
+3 | | from chromadb import Documents, EmbeddingFunction, Embeddings
+4 | | from typing import List
+  | |_______________________^
+help: Organize imports
+  |
+1 | import hashlib
+2 + from typing import List
+3 +
+4 | import chromadb
+5 | from chromadb import Documents, EmbeddingFunction, Embeddings
+  - from typing import List
+6 |
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/modelos/suporte_rag.py:4:1
+  |
+2 | import chromadb
+3 | from chromadb import Documents, EmbeddingFunction, Embeddings
+4 | from typing import List
+  | ^^^^^^^^^^^^^^^^^^^^^^^
+
+ISC004 Unparenthesized implicit string concatenation in collection
+  --> src/modelos/suporte_rag.py:64:17
+   |
+62 |                   "MNIST e um dataset classico de visao computacional contendo digitos manuscritos de 0 a 9.",
+63 |                   "O tamanho padrao das imagens do MNIST e de 28x28 pixels em tons de cinza.",
+64 | /                 "Para melhorar a acuracia, e recomendavel normalizar"
+65 | |                 " as imagens dividindo os pixels por 255.",
+   | |__________________________________________________________^
+66 |                   "Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
+67 |                   " para o MNIST, superando Random Forests.",
+   |
+help: Did you forget a comma?
+help: Wrap implicitly concatenated strings in parentheses
+
+ISC004 Unparenthesized implicit string concatenation in collection
+  --> src/modelos/suporte_rag.py:66:17
+   |
+64 |                   "Para melhorar a acuracia, e recomendavel normalizar"
+65 |                   " as imagens dividindo os pixels por 255.",
+66 | /                 "Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
+67 | |                 " para o MNIST, superando Random Forests.",
+   | |__________________________________________________________^
+68 |                   "Falsa certeza ocorre quando o modelo preenche probabilidades"
+69 |                   " altas para imagens fora da distribuicao (OOD).",
+   |
+help: Did you forget a comma?
+help: Wrap implicitly concatenated strings in parentheses
+
+ISC004 Unparenthesized implicit string concatenation in collection
+  --> src/modelos/suporte_rag.py:68:17
+   |
+66 |                   "Modelos como CNN (Redes Neurais Convolucionais) sao ideais"
+67 |                   " para o MNIST, superando Random Forests.",
+68 | /                 "Falsa certeza ocorre quando o modelo preenche probabilidades"
+69 | |                 " altas para imagens fora da distribuicao (OOD).",
+   | |_________________________________________________________________^
+70 |               ]
+71 |               metadados = [
+   |
+help: Did you forget a comma?
+help: Wrap implicitly concatenated strings in parentheses
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/modelos/suporte_rag.py:81:66
+   |
+79 |             self.colecao.add(documents=documentos, metadatas=metadados, ids=ids)
+80 |
+81 |     def consultar(self, pergunta: str, n_resultados: int = 1) -> List[str]:
+   |                                                                  ^^^^
+82 |         """
+83 |         Consulta o banco vetorial e retorna os trechos mais relevantes para a pergunta.
+   |
+help: Replace with `list`
+   |
+80 |
+   -     def consultar(self, pergunta: str, n_resultados: int = 1) -> List[str]:
+81 +     def consultar(self, pergunta: str, n_resultados: int = 1) -> list[str]:
+82 |         """
+   |
+
+PLR0402 [*] Use `from torch import nn` in lieu of alias
+  --> src/modelos/vision_transformer.py:15:8
+   |
+13 | import numpy as np
+14 | import torch
+15 | import torch.nn as nn
+   |        ^^^^^^^^^^^^^^
+16 | import torch.optim as optim
+17 | from torch.utils.data import DataLoader, TensorDataset
+   |
+help: Replace with `from torch import nn`
+   |
+14 | import torch
+   - import torch.nn as nn
+15 + from torch import nn
+16 | import torch.optim as optim
+   |
+
+PLR0402 [*] Use `from torch import optim` in lieu of alias
+  --> src/modelos/vision_transformer.py:16:8
+   |
+14 | import torch
+15 | import torch.nn as nn
+16 | import torch.optim as optim
+   |        ^^^^^^^^^^^^^^^^^^^^
+17 | from torch.utils.data import DataLoader, TensorDataset
+   |
+help: Replace with `from torch import optim`
+   |
+15 | import torch.nn as nn
+   - import torch.optim as optim
+16 + from torch import optim
+17 | from torch.utils.data import DataLoader, TensorDataset
+   |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+ --> src/pre_processamento.py:1:1
+  |
+1 | from typing import Tuple
+  | ^^^^^^^^^^^^^^^^^^^^^^^^
+2 | import numpy as np
+3 | from sklearn.model_selection import train_test_split
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/pre_processamento.py:1:1
+  |
+1 | / from typing import Tuple
+2 | | import numpy as np
+3 | | from sklearn.model_selection import train_test_split
+4 | | from sklearn.preprocessing import MinMaxScaler
+  | |______________________________________________^
+help: Organize imports
+  |
+1 | from typing import Tuple
+2 +
+3 | import numpy as np
+  |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/pre_processamento.py:8:43
+   |
+ 7 | def pre_processar_dados(X: np.ndarray,
+ 8 |                         y: np.ndarray) -> Tuple[np.ndarray,
+   |                                           ^^^^^
+ 9 |                                                 np.ndarray,
+10 |                                                 np.ndarray,
+   |
+help: Replace with `tuple`
+  |
+7 | def pre_processar_dados(X: np.ndarray,
+  -                         y: np.ndarray) -> Tuple[np.ndarray,
+8 +                         y: np.ndarray) -> tuple[np.ndarray,
+9 |                                                 np.ndarray,
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> src/robustez_ood.py:1:1
+  |
+1 | / import numpy as np
+2 | | from typing import Tuple, Dict, Any, List
+3 | | from src.modelos.base_modelo import ModeloAbstratoIA
+4 | | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+5 | | import logging
+  | |______________^
+6 |
+7 |   logger = logging.getLogger(__name__)
+  |
+help: Organize imports
+  |
+1 + import logging
+2 + from typing import Any, Dict, List, Tuple
+3 +
+4 | import numpy as np
+  - from typing import Tuple, Dict, Any, List
+5 +
+6 + from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+7 | from src.modelos.base_modelo import ModeloAbstratoIA
+  - from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+  - import logging
+8 |
+  |
+
+UP035 `typing.Tuple` is deprecated, use `tuple` instead
+ --> src/robustez_ood.py:2:1
+  |
+1 | import numpy as np
+2 | from typing import Tuple, Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 | from src.modelos.base_modelo import ModeloAbstratoIA
+4 | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> src/robustez_ood.py:2:1
+  |
+1 | import numpy as np
+2 | from typing import Tuple, Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 | from src.modelos.base_modelo import ModeloAbstratoIA
+4 | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> src/robustez_ood.py:2:1
+  |
+1 | import numpy as np
+2 | from typing import Tuple, Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 | from src.modelos.base_modelo import ModeloAbstratoIA
+4 | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+  |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/robustez_ood.py:21:34
+   |
+19 |         self.validador = ValidadorFalsaCerteza(
+20 |             limiar_alerta_certeza=limiar_alerta)
+21 |         self.classes_mascaradas: List[int] = []
+   |                                  ^^^^
+22 |
+23 |     def preparar_dados_id(self,
+   |
+help: Replace with `list`
+   |
+20 |             limiar_alerta_certeza=limiar_alerta)
+   -         self.classes_mascaradas: List[int] = []
+21 +         self.classes_mascaradas: list[int] = []
+22 |
+   |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> src/robustez_ood.py:26:44
+   |
+24 |                           X: np.ndarray,
+25 |                           y: np.ndarray,
+26 |                           classes_ocultas: List[int] = [4,
+   |                                            ^^^^
+27 |                                                         7]) -> Tuple[np.ndarray,
+28 |                                                                      np.ndarray]:
+   |
+help: Replace with `list`
+   |
+25 |                           y: np.ndarray,
+   -                           classes_ocultas: List[int] = [4,
+26 +                           classes_ocultas: list[int] = [4,
+27 |                                                         7]) -> Tuple[np.ndarray,
+   |
+
+B006 Do not use mutable data structures for argument defaults
+  --> src/robustez_ood.py:26:56
+   |
+24 |                             X: np.ndarray,
+25 |                             y: np.ndarray,
+26 |                             classes_ocultas: List[int] = [4,
+   |  ________________________________________________________^
+27 | |                                                         7]) -> Tuple[np.ndarray,
+   | |__________________________________________________________^
+28 |                                                                        np.ndarray]:
+29 |           """
+   |
+help: Replace with `None`; initialize within function
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/robustez_ood.py:27:64
+   |
+25 |                           y: np.ndarray,
+26 |                           classes_ocultas: List[int] = [4,
+27 |                                                         7]) -> Tuple[np.ndarray,
+   |                                                                ^^^^^
+28 |                                                                      np.ndarray]:
+29 |         """
+   |
+help: Replace with `tuple`
+   |
+26 |                           classes_ocultas: List[int] = [4,
+   -                                                         7]) -> Tuple[np.ndarray,
+27 +                                                         7]) -> tuple[np.ndarray,
+28 |                                                                      np.ndarray]:
+   |
+
+UP006 [*] Use `tuple` instead of `Tuple` for type annotation
+  --> src/robustez_ood.py:49:44
+   |
+48 |     def isolar_dados_ood(self, X: np.ndarray,
+49 |                          y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+   |                                            ^^^^^
+50 |         """
+51 |         Isola exclusivamente as classes ocultadas (Out-Of-Distribution) para teste de estresse.
+   |
+help: Replace with `tuple`
+   |
+48 |     def isolar_dados_ood(self, X: np.ndarray,
+   -                          y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+49 +                          y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+50 |         """
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> src/robustez_ood.py:63:61
+   |
+61 |                                  modelo: ModeloAbstratoIA,
+62 |                                  X_ood: np.ndarray,
+63 |                                  y_ood_real: np.ndarray) -> Dict[str,
+   |                                                             ^^^^
+64 |                                                                  Any]:
+65 |         """
+   |
+help: Replace with `dict`
+   |
+62 |                                  X_ood: np.ndarray,
+   -                                  y_ood_real: np.ndarray) -> Dict[str,
+63 +                                  y_ood_real: np.ndarray) -> dict[str,
+64 |                                                                  Any]:
+   |
+
+PIE790 [*] Unnecessary `pass` statement
+ --> src/utilitarios/excecoes.py:5:5
+  |
+3 | class MnistException(Exception):
+4 |     """Classe base para todas as exceções da plataforma MNIST."""
+5 |     pass
+  |     ^^^^
+6 |
+7 | class ModeloNaoTreinadoError(MnistException):
+  |
+help: Remove unnecessary `pass`
+  |
+4 |     """Classe base para todas as exceções da plataforma MNIST."""
+  -     pass
+5 |
+  |
+
+PIE790 [*] Unnecessary `pass` statement
+  --> src/utilitarios/excecoes.py:9:5
+   |
+ 7 | class ModeloNaoTreinadoError(MnistException):
+ 8 |     """Lançada quando se tenta inferir algo num modelo ainda não treinado (fit)."""
+ 9 |     pass
+   |     ^^^^
+10 |
+11 | class FalsaCertezaError(MnistException):
+   |
+help: Remove unnecessary `pass`
+  |
+8 |     """Lançada quando se tenta inferir algo num modelo ainda não treinado (fit)."""
+  -     pass
+9 |
+  |
+
+PIE790 [*] Unnecessary `pass` statement
+  --> src/utilitarios/excecoes.py:13:5
+   |
+11 | class FalsaCertezaError(MnistException):
+12 |     """Lançada pelo Guardrail quando detecta Overconfidence num Input OOD."""
+13 |     pass
+   |     ^^^^
+14 |
+15 | class DataLeakageError(MnistException):
+   |
+help: Remove unnecessary `pass`
+   |
+12 |     """Lançada pelo Guardrail quando detecta Overconfidence num Input OOD."""
+   -     pass
+13 |
+   |
+
+PIE790 [*] Unnecessary `pass` statement
+  --> src/utilitarios/excecoes.py:17:5
+   |
+15 | class DataLeakageError(MnistException):
+16 |     """Lançada pelo Guardrail de pré-processamento quando há contaminação Teste-Treino."""
+17 |     pass
+   |     ^^^^
+18 |
+19 | class ModeloNaoEncontradoError(MnistException):
+   |
+help: Remove unnecessary `pass`
+   |
+16 |     """Lançada pelo Guardrail de pré-processamento quando há contaminação Teste-Treino."""
+   -     pass
+17 |
+   |
+
+PIE790 [*] Unnecessary `pass` statement
+  --> src/utilitarios/excecoes.py:21:5
+   |
+19 | class ModeloNaoEncontradoError(MnistException):
+20 |     """Lançada pela FabricaModelos quando a chave solicitada não está no registro."""
+21 |     pass
+   |     ^^^^
+help: Remove unnecessary `pass`
+   |
+20 |     """Lançada pela FabricaModelos quando a chave solicitada não está no registro."""
+   -     pass
+   |
+
+UP045 [*] Use `X | None` for type annotations
+  --> src/utilitarios/registrador_log.py:11:16
+   |
+ 9 | def configurar_registrador_log(
+10 |     nome_modulo: str = "mnist_ia",
+11 |     nivel_log: Optional[str] = None
+   |                ^^^^^^^^^^^^^
+12 | ) -> logging.Logger:
+13 |     """Configura e retorna um registrador de log padronizado para o sistema.
+   |
+help: Convert to `X | None`
+   |
+10 |     nome_modulo: str = "mnist_ia",
+   -     nivel_log: Optional[str] = None
+11 +     nivel_log: str | None = None
+12 | ) -> logging.Logger:
+   |
+
+F401 [*] `typing.Optional` imported but unused
+  --> src/visao_computacional.py:27:32
+   |
+25 | import logging
+26 | from pathlib import Path
+27 | from typing import NamedTuple, Optional, Union
+   |                                ^^^^^^^^
+28 |
+29 | import cv2
+   |
+help: Remove unused import: `typing.Optional`
+   |
+26 | from pathlib import Path
+   - from typing import NamedTuple, Optional, Union
+27 + from typing import NamedTuple, Union
+28 |
+   |
+
+UP007 Use `X | Y` for type annotations
+  --> src/visao_computacional.py:46:17
+   |
+45 | # Entrada aceita por processar_imagem_usuario / preprocessar_imagem_mnist
+46 | EntradaImagem = Union[str, Path, NDArray[np.uint8]]
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Convert to `X | Y`
+
+RUF046 Value being cast to `int` is already an integer
+   --> src/visao_computacional.py:259:27
+    |
+258 |     fator = float(tamanho_alvo) / float(max(h, w))
+259 |     nova_largura = max(1, int(round(w * fator)))
+    |                           ^^^^^^^^^^^^^^^^^^^^^
+260 |     nova_altura  = max(1, int(round(h * fator)))
+    |
+help: Remove unnecessary `int` call
+
+RUF046 Value being cast to `int` is already an integer
+   --> src/visao_computacional.py:260:27
+    |
+258 |     fator = float(tamanho_alvo) / float(max(h, w))
+259 |     nova_largura = max(1, int(round(w * fator)))
+260 |     nova_altura  = max(1, int(round(h * fator)))
+    |                           ^^^^^^^^^^^^^^^^^^^^^
+261 |
+262 |     redimensionado = cv2.resize(
+    |
+help: Remove unnecessary `int` call
+
+RUF046 Value being cast to `int` is already an integer
+   --> src/visao_computacional.py:328:18
+    |
+326 |         momentos = cv2.moments(imagem)
+327 |         if momentos["m00"] != 0:
+328 |             cx = int(round(momentos["m10"] / momentos["m00"]))
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+329 |             cy = int(round(momentos["m01"] / momentos["m00"]))
+330 |         else:
+    |
+help: Remove unnecessary `int` call
+
+RUF046 Value being cast to `int` is already an integer
+   --> src/visao_computacional.py:329:18
+    |
+327 |         if momentos["m00"] != 0:
+328 |             cx = int(round(momentos["m10"] / momentos["m00"]))
+329 |             cy = int(round(momentos["m01"] / momentos["m00"]))
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+330 |         else:
+331 |             cx, cy = w // 2, h // 2
+    |
+help: Remove unnecessary `int` call
+
+TRY203 Remove exception handler; error is immediately re-raised
+   --> src/visao_computacional.py:458:5
+    |
+456 |       try:
+457 |           gray = _carregar_imagem(entrada)
+458 | /     except (FileNotFoundError, ValueError, TypeError):
+459 | |         raise  # propaga sem silenciar
+    | |_____________^
+460 |
+461 |       # ── Etapa 1: fundo preto ───────────────────────────────────
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_banco_dados.py:1:1
+  |
+1 | / from unittest.mock import patch
+2 | | import pytest
+3 | | import json
+4 | | from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+  | |_________________________________________________________________________^
+5 |   try:
+6 |       from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+  |
+help: Organize imports
+  |
+1 + import json
+2 | from unittest.mock import patch
+3 +
+4 | import pytest
+  - import json
+5 +
+6 | from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+7 +
+8 | try:
+  |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> tests/test_banco_dados.py:8:8
+   |
+ 6 |     from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+ 7 |     _MONGO_DISPONIVEL = True
+ 8 | except Exception:
+   |        ^^^^^^^^^
+ 9 |     ConexaoMongoDB = None  # type: ignore
+10 |     _MONGO_DISPONIVEL = False
+   |
+
+SIM117 [*] Use a single `with` statement with multiple contexts instead of nested `with` statements
+  --> tests/test_banco_dados.py:77:5
+   |
+75 |       db = ConexaoPostgres(url='sqlite:///:memory:')
+76 |
+77 | /     with pytest.raises(Exception, match="Erro Forcado"):
+78 | |         with db.obter_sessao():
+   | |_______________________________^
+79 |               # O proprio context manager intercepta o erro interno, faz rollback
+80 |               # e da raise
+   |
+help: Combine `with` statements
+   |
+76 |
+   -     with pytest.raises(Exception, match="Erro Forcado"):
+   -         with db.obter_sessao():
+   -             # O proprio context manager intercepta o erro interno, faz rollback
+   -             # e da raise
+   -             raise Exception("Erro Forcado")
+77 +     with pytest.raises(Exception, match="Erro Forcado"), db.obter_sessao():
+78 +         # O proprio context manager intercepta o erro interno, faz rollback
+79 +         # e da raise
+80 +         raise Exception("Erro Forcado")
+81 |
+   |
+
+TRY002 Create your own exception
+  --> tests/test_banco_dados.py:81:19
+   |
+79 |             # O proprio context manager intercepta o erro interno, faz rollback
+80 |             # e da raise
+81 |             raise Exception("Erro Forcado")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_banco_dados.py:86:5
+   |
+84 |   def test_conexao_postgres_cria_diretorio_reports():
+85 |       """Valida a criacao do diretorio fallback do sqlite local."""
+86 | /     import os
+87 | |     from src.banco_dados.conexao_postgres import ConexaoPostgres
+   | |________________________________________________________________^
+88 |
+89 |       # Executa sem falhar, deve criar a pasta 'reports' se iniciada com o caminho relativo
+   |
+help: Organize imports
+   |
+86 |     import os
+87 +
+88 |     from src.banco_dados.conexao_postgres import ConexaoPostgres
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> tests/test_banco_dados.py:118:12
+    |
+116 |     try:
+117 |         from pymongo.errors import ServerSelectionTimeoutError
+118 |     except Exception:
+    |            ^^^^^^^^^
+119 |         pytest.skip("pymongo indisponivel")
+120 |     mock_mongo_client.side_effect = ServerSelectionTimeoutError(
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_carregador_dados.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from unittest.mock import patch
+4 | | from src.carregador_dados import carregar_dados_mnist
+  | |_____________________________________________________^
+help: Organize imports
+  |
+1 + from unittest.mock import patch
+2 +
+3 + import numpy as np
+4 | import pytest
+  - import numpy as np
+  - from unittest.mock import patch
+5 +
+6 | from src.carregador_dados import carregar_dados_mnist
+  |
+
+RUF059 Unpacked variable `y` is never used
+  --> tests/test_carregador_dados.py:92:12
+   |
+91 |     with patch('src.carregador_dados.joblib.dump'):
+92 |         X, y = carregar_dados_mnist()
+   |            ^
+93 |
+94 |     assert mock_fetch.called
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `y` is never used
+   --> tests/test_carregador_dados.py:110:12
+    |
+108 |     with patch('src.carregador_dados.joblib.dump') as mock_dump:
+109 |         mock_dump.side_effect = PermissionError("Acesso negado no diretorio data")
+110 |         X, y = carregar_dados_mnist()
+    |            ^
+111 |
+112 |     assert X.shape == (1, 784)
+    |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_estatistica.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from src.analise_estatistica import CalculadorEstatistico
+  | |_________________________________________________________^
+help: Organize imports
+  |
+1 + import numpy as np
+2 | import pytest
+  - import numpy as np
+3 +
+4 | from src.analise_estatistica import CalculadorEstatistico
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_fachada.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from unittest.mock import patch, Mock
+4 | | from src.fachada import FachadaPipelineIA
+5 | | from src.utilitarios.excecoes import ModeloNaoTreinadoError
+  | |___________________________________________________________^
+help: Organize imports
+  |
+1 + from unittest.mock import Mock, patch
+2 +
+3 + import numpy as np
+4 | import pytest
+  - import numpy as np
+  - from unittest.mock import patch, Mock
+5 +
+6 | from src.fachada import FachadaPipelineIA
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_guardrails.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from PIL import Image
+4 | | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+5 | | from guardrails.validador_vazamento_dados import ValidadorVazamentoDados
+6 | | from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
+  | |______________________________________________________________________^
+7 |
+8 |   # --- Testes para ValidadorFalsaCerteza ---
+  |
+help: Organize imports
+  |
+1 + import numpy as np
+2 | import pytest
+  - import numpy as np
+3 | from PIL import Image
+4 +
+5 | from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+6 + from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
+7 | from guardrails.validador_vazamento_dados import ValidadorVazamentoDados
+  - from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
+8 |
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_metricas.py:1:1
+  |
+1 | / import pytest
+2 | | from src.avaliacao_metricas import calcular_metricas
+  | |____________________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+2 +
+3 | from src.avaliacao_metricas import calcular_metricas
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_modelos.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
+  | |_____________________________________________________________________^
+help: Organize imports
+  |
+1 + import numpy as np
+2 | import pytest
+  - import numpy as np
+3 +
+4 | from src.modelos.fabrica_modelos import FabricaModelos, ModeloSklearn
+  |
+
+B017 Do not assert blind exception: `Exception`
+  --> tests/test_modelos.py:27:10
+   |
+26 |     # Sklearn lanca NotFittedError que herda de AttributeError ou ValueError
+27 |     with pytest.raises(Exception):
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^
+28 |         modelo.prever(X_teste)
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_pre_processamento.py:1:1
+  |
+1 | / from unittest.mock import patch
+2 | | import numpy as np
+3 | | from src.pre_processamento import pre_processar_dados
+  | |_____________________________________________________^
+help: Organize imports
+  |
+1 | from unittest.mock import patch
+2 +
+3 | import numpy as np
+4 +
+5 | from src.pre_processamento import pre_processar_dados
+  |
+
+RUF059 Unpacked variable `y_treino` is never used
+  --> tests/test_pre_processamento.py:11:34
+   |
+ 9 |     y = np.random.randint(0, 10, 100)
+10 |
+11 |     X_treino_norm, X_teste_norm, y_treino, y_teste, scaler = pre_processar_dados(
+   |                                  ^^^^^^^^
+12 |         X, y)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `y_teste` is never used
+  --> tests/test_pre_processamento.py:11:44
+   |
+ 9 |     y = np.random.randint(0, 10, 100)
+10 |
+11 |     X_treino_norm, X_teste_norm, y_treino, y_teste, scaler = pre_processar_dados(
+   |                                            ^^^^^^^
+12 |         X, y)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `scaler` is never used
+  --> tests/test_pre_processamento.py:11:53
+   |
+ 9 |     y = np.random.randint(0, 10, 100)
+10 |
+11 |     X_treino_norm, X_teste_norm, y_treino, y_teste, scaler = pre_processar_dados(
+   |                                                     ^^^^^^
+12 |         X, y)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `X_treino_norm` is never used
+  --> tests/test_pre_processamento.py:56:5
+   |
+54 |     y_fake = np.zeros(100)
+55 |
+56 |     X_treino_norm, X_teste_norm, y_t, y_te, scaler = pre_processar_dados(
+   |     ^^^^^^^^^^^^^
+57 |         X_fake, y_fake)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `y_t` is never used
+  --> tests/test_pre_processamento.py:56:34
+   |
+54 |     y_fake = np.zeros(100)
+55 |
+56 |     X_treino_norm, X_teste_norm, y_t, y_te, scaler = pre_processar_dados(
+   |                                  ^^^
+57 |         X_fake, y_fake)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `y_te` is never used
+  --> tests/test_pre_processamento.py:56:39
+   |
+54 |     y_fake = np.zeros(100)
+55 |
+56 |     X_treino_norm, X_teste_norm, y_t, y_te, scaler = pre_processar_dados(
+   |                                       ^^^^
+57 |         X_fake, y_fake)
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_rag.py:1:1
+  |
+1 | / import pytest
+2 | | from src.modelos.suporte_rag import SuporteRAG
+  | |______________________________________________^
+help: Organize imports
+  |
+1 | import pytest
+2 +
+3 | from src.modelos.suporte_rag import SuporteRAG
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_robustez_ood.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from src.robustez_ood import AnalisadorRobustezOOD
+4 | | from src.modelos.base_modelo import ModeloAbstratoIA
+  | |____________________________________________________^
+5 |
+6 |   # Mock do modelo simulando super confianca errada
+  |
+help: Organize imports
+  |
+  - import pytest
+1 | import numpy as np
+  - from src.robustez_ood import AnalisadorRobustezOOD
+2 + import pytest
+3 +
+4 | from src.modelos.base_modelo import ModeloAbstratoIA
+5 + from src.robustez_ood import AnalisadorRobustezOOD
+6 |
+  |
+
+RUF059 Unpacked variable `X_id` is never used
+  --> tests/test_robustez_ood.py:29:5
+   |
+27 |     y = np.array([2, 4, 1, 7, 9])  # Instancias das classes 4 e 7
+28 |
+29 |     X_id, y_id = analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
+   |     ^^^^
+30 |
+31 |     # 4 e 7 saem fora, restam os y: [2, 1, 9] correspondentes ao X: [[1], [3],
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+RUF059 Unpacked variable `X_ood` is never used
+  --> tests/test_robustez_ood.py:50:5
+   |
+49 |     analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
+50 |     X_ood, y_ood = analisador.isolar_dados_ood(X, y)
+   |     ^^^^^
+51 |
+52 |     assert len(y_ood) == 2
+   |
+help: Prefix it with an underscore or any other dummy variable pattern
+
+F841 Local variable `analisador` is assigned to but never used
+   --> tests/test_robustez_ood.py:107:5
+    |
+106 | def test_relatorio_overconfidence_lanca_typeerror():
+107 |     analisador = AnalisadorRobustezOOD()
+    |     ^^^^^^^^^^
+108 |
+109 |     # Criamos um modelo inválido (sem prever_probabilidades)
+    |
+help: Remove assignment to unused variable `analisador`
+
+F841 Local variable `modelo_invalido` is assigned to but never used
+   --> tests/test_robustez_ood.py:119:9
+    |
+117 |     # A linguagem Python/ABC vai lançar TypeError imediatamente ao instanciar, pois falta a implementação
+118 |     with pytest.raises(TypeError, match="Can't instantiate abstract class ModeloSemProb"):
+119 |         modelo_invalido = ModeloSemProb()
+    |         ^^^^^^^^^^^^^^^
+help: Remove assignment to unused variable `modelo_invalido`
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_utilitarios.py:1:1
+  |
+1 | / import os
+2 | | import logging
+3 | | from src.utilitarios.registrador_log import configurar_registrador_log
+  | |______________________________________________________________________^
+help: Organize imports
+  |
+1 + import logging
+2 | import os
+  - import logging
+3 +
+4 | from src.utilitarios.registrador_log import configurar_registrador_log
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_visao_computacional.py:1:1
+  |
+1 | / import numpy as np
+2 | | from src.visao_computacional import processar_imagem_usuario
+  | |____________________________________________________________^
+help: Organize imports
+  |
+1 | import numpy as np
+2 +
+3 | from src.visao_computacional import processar_imagem_usuario
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> tests/test_vision_transformer.py:1:1
+  |
+1 | / import pytest
+2 | | import numpy as np
+3 | | from src.modelos.vision_transformer import ModeloViT
+  | |____________________________________________________^
+help: Organize imports
+  |
+1 + import numpy as np
+2 | import pytest
+  - import numpy as np
+3 +
+4 | from src.modelos.vision_transformer import ModeloViT
+  |
+
+Found 233 errors.
+[*] 128 fixable with the `--fix` option (52 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Error: Process completed with exit code 1.

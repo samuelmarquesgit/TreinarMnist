@@ -18,7 +18,7 @@ class ValidadorVazamentoDados:
             conjunto_treino: Matriz de features de treino.
             conjunto_teste: Matriz de features de teste.
             tolerancia: Tolerância para comparação de ponto flutuante.
-
+ 
         Returns:
             True se a divisão for válida e limpa, levanta ValueError caso contrário.
         """

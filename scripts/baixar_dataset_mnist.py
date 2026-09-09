@@ -8,7 +8,7 @@ from sklearn.datasets import fetch_openml
 
 def baixar_e_armazenar_mnist(diretorio_destino: str = "data/raw") -> str:
     """Baixa o MNIST e salva em cache binário comprimido com joblib.
-
+ 
     Args:
         diretorio_destino: Diretório para armazenamento local do cache.
 

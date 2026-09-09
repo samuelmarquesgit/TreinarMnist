@@ -7,7 +7,7 @@ import numpy as np
 
 class ValidadorFalsaCerteza:
     """Validador de incerteza para inferências preditivas."""
-
+ 
     def __init__(self, limiar_alerta_certeza: float = 0.85,
                  limiar_entropia_baixa: float = 0.3):
         self.limiar_alerta_certeza = limiar_alerta_certeza

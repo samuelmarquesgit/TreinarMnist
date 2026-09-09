@@ -29,11 +29,14 @@ def test_preparar_dados_id_isola_ood():
 
     _X_id, y_id = analisador.preparar_dados_id(X, y, classes_ocultas=[4, 7])
 
-    # 4 e 7 saem fora, restam os y: [2, 1, 9] correspondentes ao X: [[1], [3],
-    # [5]]
+    # 4 e 7 saem fora, restam os y: [2, 1, 9] correspondentes ao X: [[1], [3], [5]]
     assert len(y_id) == 3
     assert 4 not in y_id
     assert 7 not in y_id
+
+    # classes_ocultas is None (default to [4, 7])
+    _X_id_none, y_id_none = analisador.preparar_dados_id(X, y, classes_ocultas=None)
+    assert len(y_id_none) == 3
 
 
 def test_erro_isolar_dados_ood_antes_de_preparar():
@@ -65,11 +68,11 @@ def test_relatorio_overconfidence():
     modelo = MockModeloOverconfident()
     relatorio = analisador.relatorio_overconfidence(modelo, X_ood, y_ood)
 
-    assert relatorio.total_amostras_ood == 2
+    assert relatorio["total_amostras_ood"] == 2
     # Como o modelo retorna 99% para a classe 1 e a classe 1 é CONHECIDA (não foi mascarada)
     # ISSO É a essência da Falsa Certeza. Ele está super confiante prevendo um dígito conhecido
     # para uma amostra que na verdade é OOD. O alerta DEVE disparar (2 de 2).
-    assert relatorio.total_falsa_certeza == 2
+    assert relatorio["total_falsa_certeza"] == 2
 
 
 def test_relatorio_overconfidence_predicting_unknown_class():
@@ -100,19 +103,16 @@ def test_relatorio_overconfidence_predicting_unknown_class():
     # e entropia baixa (< 0.3) disparará o alerta de overconfidence,
     # mesmo que o modelo consiga "magicamente" prever a classe OOD.
     # O mock preenche 0.99 de probabilidade, o que gera entropia quase zero.
-    assert relatorio.total_falsa_certeza == 2
-    assert relatorio.taxa_overconfidence == 1.0
+    assert relatorio["total_falsa_certeza"] == 2
+    assert relatorio["taxa_overconfidence"] == 1.0
 
 
 def test_relatorio_overconfidence_lanca_typeerror():
-    # Criamos um modelo inválido (sem prever_probabilidades)
-    class ModeloSemProb(ModeloAbstratoIA):
-        def treinar(self, X, y):
-            pass
-
-        def prever(self, X):
-            pass
-
-    # A linguagem Python/ABC vai lançar TypeError imediatamente ao instanciar, pois falta a implementação
-    with pytest.raises(TypeError, match="Can't instantiate abstract class ModeloSemProb"):
-        ModeloSemProb()
+    analisador = AnalisadorRobustezOOD()
+    
+    from unittest.mock import Mock
+    modelo_invalido = Mock()
+    del modelo_invalido.prever_probabilidades
+    
+    with pytest.raises(TypeError, match="deve implementar 'prever_probabilidades'"):
+        analisador.relatorio_overconfidence(modelo_invalido, np.array([]), np.array([]))
