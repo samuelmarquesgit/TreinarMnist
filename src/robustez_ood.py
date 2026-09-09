@@ -10,17 +10,14 @@ Nota de logging:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from src.schemas import RelatorioOOD
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
 from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
 from src.modelos.base_modelo import ModeloAbstratoIA
+from src.schemas import RelatorioOOD
 
 logger = logging.getLogger(__name__)
 
@@ -41,24 +38,8 @@ def _entropia_shannon(prob: NDArray[np.float64]) -> float:
     return float(-np.sum(p * np.log(p)))
 
 
-@dataclass
-class RelatorioOOD:  # type: ignore[no-redef]
-    """Relatório estruturado detalhando a análise Out-of-Distribution."""
-    total_amostras_ood: int
-    total_falsa_certeza: int
-    taxa_overconfidence: float
-    entropia_media: float
-    classes_ood: list[int]
-    is_ood: bool
-    score_incerteza: float
-    metrica_utilizada: str
-    alerta_disparado: bool
-
-
 def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
-    """
-    Função utilitária com Duck Typing e tolerância a falhas para extrair ou inferir probabilidades.
-    """
+    """Função utilitária com Duck Typing e tolerância a falhas para extrair ou inferir probabilidades."""
     try:
         if hasattr(modelo, "prever_probabilidades"):
             return modelo.prever_probabilidades(X)  # type: ignore[no-any-return]
@@ -181,36 +162,29 @@ class AnalisadorRobustezOOD:
 
     def relatorio_overconfidence(
         self,
-        modelo: ModeloAbstratoIA,
+        modelo: ModeloAbstratoIA | Any,
         X_ood: NDArray[np.float32],
-        y_ood_real: NDArray[np.int32],
+        y_ood_real: NDArray[np.int32] | None = None,
     ) -> RelatorioOOD:
         """Submete o modelo às instâncias OOD e mensura a taxa de Falsa Certeza.
 
         Compatível com a nova interface ``ResultadoValidacao`` (NamedTuple) do
-        ``ValidadorFalsaCerteza``. Calcula entropia de Shannon diretamente
-        sobre o vetor de probabilidades para independência de interface.
+        ``ValidadorFalsaCerteza`` e dicts legados.
+        Calcula probabilidades via ``obter_probabilidades()`` e entropia de Shannon
+        diretamente sobre a distribuição.
 
         Args:
-            modelo: ``ModeloAbstratoIA`` treinado exclusivamente nos dados ID.
+            modelo: Estimador treinado exclusivamente nos dados ID.
             X_ood: Instâncias OOD de shape ``(N, F)``.
-            y_ood_real: Rótulos originais das instâncias OOD de shape ``(N,)``.
+            y_ood_real: Rótulos originais das instâncias OOD de shape ``(N,)`` (opcional).
 
         Returns:
-            RelatorioOOD: Objeto Pydantic com o relatório.
+            RelatorioOOD: Objeto Pydantic com o relatório analítico.
 
         Raises:
-            TypeError: Se o modelo não implementar ``prever_probabilidades()``.
+            TypeError: Se o modelo não implementar métodos de predição suportados.
         """
-        from src.schemas import RelatorioOOD
-
-        if not hasattr(modelo, "prever_probabilidades"):
-            raise TypeError(
-                "O modelo deve implementar 'prever_probabilidades' "
-                "para análise de entropia OOD."
-            )
-
-        probabilidades: NDArray[np.float64] = modelo.prever_probabilidades(X_ood)
+        probabilidades: NDArray[np.float64] = obter_probabilidades(modelo, X_ood)
         total_amostras = len(X_ood)
         alertas_overconfidence = 0
         entropia_soma = 0.0
@@ -219,19 +193,19 @@ class AnalisadorRobustezOOD:
         classes_conhecidas = [c for c in range(10) if c not in self.classes_mascaradas]
 
         for prob in probabilidades:
-            # ── Interface nova: ResultadoValidacao(NamedTuple) ────────────────
+            # ── Interface: ResultadoValidacao(NamedTuple) ou dict ────────────
             resultado = self.validador.avaliar_predicao(prob, classes_conhecidas)
 
-            # Compatibilidade com NamedTuple (.alerta_falsa_certeza) e dict legado
             if hasattr(resultado, "alerta_falsa_certeza"):
                 alerta = resultado.alerta_falsa_certeza
+            elif isinstance(resultado, dict):
+                alerta = resultado.get("alerta_overconfidence", False) or resultado.get("alerta_falsa_certeza", False)
             else:
-                alerta = resultado.get("alerta_overconfidence", False)  # type: ignore[union-attr]
+                alerta = getattr(resultado, "alerta_overconfidence", False)
 
             if alerta:
                 alertas_overconfidence += 1
 
-            # Entropia calculada diretamente — independente da interface do guardrail
             entropia_soma += _entropia_shannon(prob)
 
         taxa_overconfidence = (
@@ -251,6 +225,10 @@ class AnalisadorRobustezOOD:
             taxa_overconfidence=taxa_overconfidence,
             entropia_media=entropia_media,
             classes_ood=self.classes_mascaradas,
+            is_ood=bool(taxa_overconfidence > 0.5),
+            score_incerteza=float(taxa_overconfidence),
+            metrica_utilizada="entropia_shannon_msp",
+            alerta_disparado=bool(alertas_overconfidence > 0),
         )
 
 
