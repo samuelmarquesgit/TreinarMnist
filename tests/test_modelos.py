@@ -34,8 +34,8 @@ def test_treinamento_e_predicao_multiclasse():
     modelo = FabricaModelos.criar_modelo('RegressaoLogistica')
 
     X_treino = np.random.rand(50, 20)
-    # MNIST real tem 10 classes
-    y_treino = np.random.randint(0, 10, 50)
+    # MNIST real tem 10 classes (garante todas as 10 classes presentes)
+    y_treino = np.tile(np.arange(10), 5)
     X_teste = np.random.rand(10, 20)
 
     modelo.treinar(X_treino, y_treino)
@@ -51,7 +51,7 @@ def test_treinamento_e_predicao_multiclasse():
 def test_prever_probabilidades_multiclasse():
     modelo = FabricaModelos.criar_modelo('RegressaoLogistica')
     X_treino = np.random.rand(50, 784)
-    y_treino = np.random.randint(0, 10, 50)
+    y_treino = np.tile(np.arange(10), 5)
     modelo.treinar(X_treino, y_treino)
 
     X_teste = np.random.rand(5, 784)
