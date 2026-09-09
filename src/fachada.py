@@ -339,7 +339,7 @@ class FachadaPipelineIA:
                 with torch.no_grad():
                     logits = modulo_torch(tensor)
                     probs = torch.softmax(logits, dim=-1)
-                return probs.cpu().numpy().astype(np.float64)
+                return probs.cpu().numpy().astype(np.float64)  # type: ignore[no-any-return]
             except Exception as exc:
                 logger.error(
                     "[Fachada] Falha no backend PyTorch para '%s': %s", modelo_id, exc
