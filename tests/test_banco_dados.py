@@ -90,8 +90,42 @@ def test_conexao_postgres_cria_diretorio_reports():
     from src.banco_dados.conexao_postgres import ConexaoPostgres
 
     # Executa sem falhar, deve criar a pasta 'reports' se iniciada com o caminho relativo
-    ConexaoPostgres(url='sqlite:///reports/banco_local_test.db')
+    db = ConexaoPostgres(url='sqlite:///reports/banco_local_test.db')
+    db.engine.dispose()
     assert os.path.exists('reports')
+    if os.path.exists('reports/banco_local_test.db'):
+        os.remove('reports/banco_local_test.db')
+
+
+def test_conexao_postgres_migracao_schema(tmp_path):
+    """Valida a migracao automatica de schema adicionando colunas faltantes."""
+    import sqlite3
+
+    db_path = tmp_path / "test_legacy.db"
+    conn = sqlite3.connect(db_path)
+    conn.execute("CREATE TABLE experimentos (id INTEGER PRIMARY KEY, modelo TEXT, acuracia REAL, tempo_treino REAL, data_execucao TIMESTAMP)")
+    conn.commit()
+    conn.close()
+
+    db = ConexaoPostgres(url=f"sqlite:///{db_path}")
+    with db.obter_sessao() as sessao:
+        exp = Experimento(modelo="ModelMigrated", precisao=0.95, recall=0.92, f1=0.93, hiperparametros="{}")
+        sessao.add(exp)
+    
+    with db.obter_sessao() as sessao:
+        res = sessao.query(Experimento).filter_by(modelo="ModelMigrated").first()
+        assert res is not None
+        assert res.precisao == 0.95
+        assert res.recall == 0.92
+    db.engine.dispose()
+
+
+def test_conexao_postgres_migracao_erro():
+    """Valida que erros na migracao sao capturados e registrados no log."""
+    with patch("src.banco_dados.conexao_postgres.inspect", side_effect=RuntimeError("Falha simulada no inspector")):
+        db = ConexaoPostgres(url="sqlite:///:memory:")
+        assert db is not None
+        db.engine.dispose()
 
 
 @pytest.mark.skipif(not _MONGO_DISPONIVEL, reason='pymongo indisponivel')
@@ -130,3 +164,4 @@ def test_conexao_mongodb_fallback_excecao(
 
     mongo.salvar_artefato("teste_timeout", {"dados": 123})
     assert (tmp_path / "reports" / "teste_timeout.json").exists()
+

@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
+from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine, inspect, text
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 logger = logging.getLogger(__name__)
@@ -49,9 +49,30 @@ class ConexaoPostgres:
 
         self.engine = create_engine(self.url, echo=False)  # type: ignore[arg-type]
         Base.metadata.create_all(self.engine)
+        self._migrar_schema()
         self.SessionLocal = sessionmaker(
             bind=self.engine, autocommit=False, autoflush=False)
         logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")  # type: ignore[union-attr]
+
+    def _migrar_schema(self) -> None:
+        """Garante que colunas recém-adicionadas existam na tabela experimentos."""
+        try:
+            inspector = inspect(self.engine)
+            if 'experimentos' in inspector.get_table_names():
+                colunas_existentes = {col['name'] for col in inspector.get_columns('experimentos')}
+                colunas_esperadas = {
+                    'precisao': 'FLOAT',
+                    'recall': 'FLOAT',
+                    'f1': 'FLOAT',
+                    'hiperparametros': 'VARCHAR',
+                }
+                with self.engine.connect() as conn:
+                    for col, tipo in colunas_esperadas.items():
+                        if col not in colunas_existentes:
+                            conn.execute(text(f"ALTER TABLE experimentos ADD COLUMN {col} {tipo}"))
+                    conn.commit()
+        except Exception as e:
+            logger.warning(f"Aviso ao verificar/migrar schema do banco: {e}")
 
     @contextmanager
     def obter_sessao(self) -> Generator[Session, None, None]:
