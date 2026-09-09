@@ -189,7 +189,8 @@ def _formatar_tabela(validos: dict[str, dict[str, Any]]) -> pd.DataFrame:
         .sort_values("Acurácia", ascending=False)
         .reset_index(drop=True)
     )
-    medalhas = ["🥇", "🥈", "🥉"] + [""] * max(0, len(df) - 3)
+    icones = ["🥇", "🥈", "🥉"]
+    medalhas = [icones[i] if i < len(icones) else "" for i in range(len(df))]
     df.insert(0, "🏅", medalhas)
     return df
 

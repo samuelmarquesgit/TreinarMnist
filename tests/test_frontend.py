@@ -397,6 +397,29 @@ def test_formatar_tabela_medalhas():
     assert "🥇" in df["🏅"].values
 
 
+def test_formatar_tabela_um_ou_dois_modelos():
+    um_modelo = {"M1": {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9, "tempo_treino": 1.0}}
+    df1 = _formatar_tabela(um_modelo)
+    assert len(df1) == 1
+    assert df1.iloc[0]["🏅"] == "🥇"
+
+    dois_modelos = {
+        "M1": {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9, "tempo_treino": 1.0},
+        "M2": {"acuracia": 0.8, "precisao": 0.8, "recall": 0.8, "f1": 0.8, "tempo_treino": 1.0},
+    }
+    df2 = _formatar_tabela(dois_modelos)
+    assert len(df2) == 2
+    assert list(df2["🏅"]) == ["🥇", "🥈"]
+
+    quatro_modelos = {
+        f"M{i}": {"acuracia": 0.5 + i * 0.1, "precisao": 0.8, "recall": 0.8, "f1": 0.8, "tempo_treino": 1.0}
+        for i in range(4)
+    }
+    df4 = _formatar_tabela(quatro_modelos)
+    assert len(df4) == 4
+    assert list(df4["🏅"]) == ["🥇", "🥈", "🥉", ""]
+
+
 def test_renderizar_bench_sem_modelos_nao_levanta():
     fachada = _fachada_mock()
     _mock_st.multiselect.return_value = []
