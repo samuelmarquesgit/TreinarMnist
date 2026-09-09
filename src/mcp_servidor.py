@@ -90,7 +90,7 @@ def avaliar_modelo_mnist(nome_modelo: str) -> dict[str, Any]:
         return fachada.avaliar_modelo(nome_modelo)
     except Exception as e:
         logger.error(f"[MCP] Erro ao avaliar '{nome_modelo}': {e}")
-        return {"erro": str(e)}
+        return {"erro": str(e)}  # type: ignore[dict-item]
 
 
 @mcp.tool()
@@ -121,7 +121,7 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
             return {"erro": "Imagem inválida ou formato não suportado."}
 
         # Pipeline de visão computacional
-        vetor = processar_imagem_usuario(img)
+        vetor = processar_imagem_usuario(img)  # type: ignore[arg-type]
         if np.all(vetor == 0):
             return {"erro": "Nenhum dígito detectado na imagem (canvas em branco?)."}
 
@@ -136,7 +136,7 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
         }
     except Exception as e:
         logger.error(f"[MCP] Erro na predição de imagem: {e}")
-        return {"erro": str(e)}
+        return {"erro": str(e)}  # type: ignore[dict-item]
 
 
 @mcp.tool()
@@ -155,7 +155,7 @@ def obter_estatisticas_dados(particao: str = "treino") -> dict[str, float]:
         return fachada.obter_estatisticas_dados(tipo=particao)
     except Exception as e:
         logger.error(f"[MCP] Erro ao obter estatísticas: {e}")
-        return {"erro": str(e)}
+        return {"erro": str(e)}  # type: ignore[dict-item]
 
 
 @mcp.tool()
