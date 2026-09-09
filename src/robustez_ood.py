@@ -42,7 +42,7 @@ def _entropia_shannon(prob: NDArray[np.float64]) -> float:
 
 
 @dataclass
-class RelatorioOOD:
+class RelatorioOOD:  # type: ignore[no-redef]
     """Relatório estruturado detalhando a análise Out-of-Distribution."""
     total_amostras_ood: int
     total_falsa_certeza: int
