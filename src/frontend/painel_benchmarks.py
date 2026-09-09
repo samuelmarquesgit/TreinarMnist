@@ -43,9 +43,11 @@ try:
     import plotly.express as px
     import plotly.graph_objects as go
 
-    _PLOTLY_OK = True
+    PLOTLY_OK = True
 except ImportError:  # pragma: no cover
-    _PLOTLY_OK = False
+    PLOTLY_OK = False
+
+_PLOTLY_OK = PLOTLY_OK
 
 _TEMA_PLOTLY: dict[str, Any] = {
     "paper_bgcolor": "rgba(0,0,0,0)",
@@ -253,7 +255,7 @@ def _renderizar_graficos(df_ord: pd.DataFrame) -> None:
     Args:
         df_ord: DataFrame já ordenado pela coluna escolhida pelo usuário.
     """
-    if not _PLOTLY_OK:
+    if not PLOTLY_OK:
         st.warning("Plotly não instalado — gráficos indisponíveis.")
         return
 
@@ -332,7 +334,7 @@ def _renderizar_matriz_confusao(validos: dict[str, dict[str, Any]]) -> None:
     modelo_mat = st.selectbox("Selecione o modelo", options=opcoes)
     mat = validos[modelo_mat].get("matriz_confusao")
 
-    if not _PLOTLY_OK:
+    if not PLOTLY_OK:
         st.warning("Plotly não instalado — visualização indisponível.")
         return
 
