@@ -2,7 +2,10 @@ from unittest.mock import patch
 
 import numpy as np
 
-from src.pre_processamento import pre_processar_dados
+from src.pre_processamento import (
+    pre_processar_dados,
+    pre_processar_dados_com_validacao,
+)
 
 
 def test_pre_processar_dados():
@@ -80,3 +83,70 @@ def test_estratificacao():
 
     assert np.isclose(prop_treino, 0.1, atol=0.05)
     assert np.isclose(prop_teste, 0.1, atol=0.05)
+
+
+def test_split_com_validacao_tamanhos():
+    X = np.random.rand(200, 10)
+    y = np.random.randint(0, 10, 200)
+
+    (
+        X_treino,
+        X_validacao,
+        X_teste,
+        y_treino,
+        y_validacao,
+        y_teste,
+        _scaler,
+    ) = pre_processar_dados_com_validacao(X, y)
+
+    # 70% treino / 10% validacao / 20% teste
+    assert len(X_treino) == 140
+    assert len(X_validacao) == 20
+    assert len(X_teste) == 40
+
+    # Os rotulos acompanham as features
+    assert len(y_treino) == 140
+    assert len(y_validacao) == 20
+    assert len(y_teste) == 40
+
+    # Nenhuma amostra se perde nem se duplica
+    assert len(X_treino) + len(X_validacao) + len(X_teste) == 200
+
+
+def test_split_com_validacao_estratificacao():
+    X = np.random.rand(400, 10)
+    # Desbalanceado de proposito: 90% classe 0, 10% classe 1
+    y = np.array([0] * 360 + [1] * 40)
+
+    _, _, _, y_treino, y_validacao, y_teste = pre_processar_dados_com_validacao(
+        X, y
+    )[:6]
+
+    for rotulos in (y_treino, y_validacao, y_teste):
+        proporcao = np.sum(rotulos == 1) / len(rotulos)
+        assert np.isclose(proporcao, 0.1, atol=0.05)
+
+
+def test_split_com_validacao_scaler_ajustado_so_no_treino():
+    X = np.random.rand(200, 4)
+    y = np.random.randint(0, 2, 200)
+
+    _, _, _, _, _, _, scaler = pre_processar_dados_com_validacao(X, y)
+
+    # O scaler viu 140 amostras (o treino), nao as 200
+    assert scaler.n_samples_seen_ == 140
+
+
+def test_split_com_validacao_proporcoes_invalidas():
+    import pytest
+
+    X = np.random.rand(100, 4)
+    y = np.random.randint(0, 2, 100)
+
+    with pytest.raises(ValueError, match="entre 0 e 1"):
+        pre_processar_dados_com_validacao(X, y, proporcao_teste=0.0)
+
+    with pytest.raises(ValueError, match="menor que 1"):
+        pre_processar_dados_com_validacao(
+            X, y, proporcao_teste=0.7, proporcao_validacao=0.4
+        )
