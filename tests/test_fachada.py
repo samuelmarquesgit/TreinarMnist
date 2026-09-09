@@ -168,14 +168,10 @@ def test_persistir_benchmark_cria_arquivo(tmp_path):
 
 def test_prever_probabilidades_predict_proba():
     fachada = FachadaPipelineIA()
-    mock_estimador = Mock()
-    mock_estimador.predict_proba.return_value = np.array([[0.1, 0.9]])
-    
-    # Simula wrapper
     mock_wrapper = Mock()
-    mock_wrapper.modelo = mock_estimador
+    mock_wrapper.prever_probabilidades.return_value = np.array([[0.1, 0.9]])
     fachada.modelos["TesteProba"] = mock_wrapper
-    
+
     probs = fachada.prever_probabilidades("TesteProba", np.array([[1]]))
     assert probs.shape == (1, 2)
     assert probs[0, 1] == 0.9
@@ -183,37 +179,22 @@ def test_prever_probabilidades_predict_proba():
 
 def test_prever_probabilidades_decision_function():
     fachada = FachadaPipelineIA()
-    mock_estimador = Mock()
-    # Sem predict_proba
-    del mock_estimador.predict_proba
-    mock_estimador.decision_function.return_value = np.array([2.0])
-    
     mock_wrapper = Mock()
-    mock_wrapper.modelo = mock_estimador
+    mock_wrapper.prever_probabilidades.return_value = np.array([[0.5, 0.5]])
     fachada.modelos["TesteDF"] = mock_wrapper
-    
+
     probs = fachada.prever_probabilidades("TesteDF", np.array([[1]]))
     assert probs.shape == (1, 2)
 
 
 def test_prever_probabilidades_pytorch_mock():
-    import torch
     fachada = FachadaPipelineIA()
     mock_wrapper = Mock()
-    del mock_wrapper.modelo
-    
-    mock_model_pt = Mock()
-    # Simula saida do modelo PyTorch (logits)
-    mock_model_pt.return_value = torch.tensor([[1.0, 2.0]])
-    mock_wrapper.model = mock_model_pt
-    mock_wrapper.device = "cpu"
-    
+    mock_wrapper.prever_probabilidades.return_value = np.array([[0.3, 0.7]])
     fachada.modelos["TestePT"] = mock_wrapper
-    
+
     probs = fachada.prever_probabilidades("TestePT", np.array([[1.0] * 784]))
     assert probs.shape == (1, 2)
-    # PyTorch usa reshape interno
-    mock_model_pt.assert_called_once()
 
 
 def test_prever_probabilidades_fallback():
@@ -255,19 +236,11 @@ def test_prever_probabilidades_decision_function_multiclasse(fachada_com_dados):
     assert np.allclose(probs.sum(axis=1), 1.0)
     
 def test_prever_probabilidades_pytorch_exception(fachada_com_dados):
-    # Simular modelo pytorch
-    class FakeTorchModel:
-        def __init__(self):
-            self.device = "cpu"
-            self.model = MagicMock()
-            self.model.eval = MagicMock()
-            self.model.side_effect = Exception("Mock Torch Error")
-            # Força o mock a ser callable e disparar erro
-            self.model.__call__ = MagicMock(side_effect=Exception("Mock Torch Error"))
-    
-    fachada_com_dados.modelos["FakeTorch"] = FakeTorchModel()
-    import sys
-    with patch.dict(sys.modules, {"torch": MagicMock(tensor=MagicMock(side_effect=Exception("Simulated tensor error")))}), pytest.raises(Exception, match="Simulated tensor error"):
+    mock_wrapper = MagicMock()
+    mock_wrapper.prever_probabilidades.side_effect = Exception("Simulated tensor error")
+    fachada_com_dados.modelos["FakeTorch"] = mock_wrapper
+
+    with pytest.raises(Exception, match="Simulated tensor error"):
         fachada_com_dados.prever_probabilidades("FakeTorch", fachada_com_dados.X_teste[:5])
 
 def test_prever_probabilidades_modelo_nao_treinado(fachada):
