@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 import cv2
 import numpy as np
@@ -43,7 +43,7 @@ GrayImage = NDArray[np.uint8]
 ColorImage = NDArray[np.uint8]
 
 # Entrada aceita por processar_imagem_usuario / preprocessar_imagem_mnist
-EntradaImagem = str | Path | NDArray[np.uint8]
+EntradaImagem = Union[str, Path, NDArray[np.uint8]]
 
 
 class BoundingBox(NamedTuple):
@@ -82,17 +82,13 @@ class BoundingBox(NamedTuple):
 
 def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
     """
-    Carrega e converte a entrada para uma imagem em escala de cinza uint8 com alto contraste.
+    Carrega e converte a entrada para uma imagem em escala de cinza uint8.
 
-    Aceita caminho de arquivo (str/Path), ndarray BGR/RGB (H, W, 3/4) ou ndarray
+    Aceita caminho de arquivo (str/Path), ndarray BGR (H, W, 3) ou ndarray
     já em cinza (H, W).
 
-    Para qualquer cor de traço (azul, vermelho, verde, amarelo, branco, etc.) em fundo
-    escuro (canvas) ou fundo claro (papel), extrai o sinal de maior contraste e normaliza
-    a faixa dinâmica [0, 255], garantindo compatibilidade canônica com o padrão MNIST.
-
     Args:
-        entrada: Caminho do arquivo de imagem, ndarray colorido (BGR/RGB) ou
+        entrada: Caminho do arquivo de imagem, ndarray colorido (BGR) ou
                  ndarray em escala de cinza, todos com dtype uint8.
 
     Returns:
@@ -100,7 +96,8 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
 
     Raises:
         FileNotFoundError: Se ``entrada`` for um caminho e o arquivo não existir.
-        ValueError: Se ``entrada`` for um ndarray com shape incompatível.
+        ValueError: Se ``entrada`` for um ndarray com shape incompatível (ex:
+                    mais de 3 canais ou array 1-D).
         TypeError: Se ``entrada`` não for str, Path nem ndarray.
     """
     if isinstance(entrada, (str, Path)):
@@ -110,23 +107,15 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         img_bgr = cv2.imread(str(caminho))
         if img_bgr is None:
             raise ValueError(f"OpenCV não conseguiu decodificar o arquivo: {caminho}")
-        if float(np.mean(img_bgr)) <= 127.0:
-            gray = np.max(img_bgr, axis=2).astype(np.uint8)
-        else:
-            gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        return _estirar_contraste(gray)
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
     if isinstance(entrada, np.ndarray):
         if entrada.ndim == 2:
-            return _estirar_contraste(entrada.astype(np.uint8))
-        if entrada.ndim == 3 and entrada.shape[2] in (3, 4):
-            canais = entrada[:, :, :3]
-            # Se fundo escuro (canvas): extrai a máxima ativação de cor por pixel (azul, vermelho, etc.)
-            if float(np.mean(canais)) <= 127.0:
-                gray = np.max(canais, axis=2).astype(np.uint8)
-            else:
-                gray = cv2.cvtColor(canais, cv2.COLOR_RGB2GRAY)
-            return _estirar_contraste(gray)
+            return entrada.astype(np.uint8)
+        if entrada.ndim == 3 and entrada.shape[2] == 3:
+            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)
+        if entrada.ndim == 3 and entrada.shape[2] == 4:
+            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)
         raise ValueError(
             f"ndarray com shape {entrada.shape} não suportado. "
             "Esperado (H, W) ou (H, W, 3) ou (H, W, 4)."
@@ -137,23 +126,12 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
     )
 
 
-def _estirar_contraste(gray: GrayImage) -> GrayImage:
-    """Aumenta a faixa dinâmica do traço para [0, 255] se houver sinal."""
-    max_val = int(np.max(gray))
-    min_val = int(np.min(gray))
-    if max_val > min_val and max_val < 200:
-        # Estira o contraste para garantir intensidade forte do traço
-        fator = 255.0 / float(max_val - min_val)
-        return np.clip((gray.astype(np.float32) - min_val) * fator, 0, 255).astype(np.uint8)
-    return gray
-
-
 def _garantir_fundo_preto(gray: GrayImage) -> GrayImage:
     """
     Garante convenção MNIST: dígito branco sobre fundo preto.
 
     Se a luminosidade média da imagem for maior que 127, presume-se que o
-    fundo é claro (ex: papel branco com traço escuro) e inverte os pixels.
+    fundo é claro (ex: canvas branco com traço escuro) e inverte os pixels.
 
     Args:
         gray: Imagem em escala de cinza, shape (H, W), dtype uint8.
@@ -162,8 +140,7 @@ def _garantir_fundo_preto(gray: GrayImage) -> GrayImage:
         Imagem com fundo escuro e conteúdo claro, shape (H, W), dtype uint8.
     """
     if float(np.mean(gray)) > 127.0:
-        invertida = (255 - gray).astype(np.uint8)
-        return _estirar_contraste(invertida)
+        return (255 - gray).astype(np.uint8)
     return gray
 
 
@@ -275,8 +252,8 @@ def redimensionar_com_proporcao(
         raise ValueError(f"tamanho_alvo deve ser >= 1, recebido: {tamanho_alvo}.")
 
     fator = float(tamanho_alvo) / float(max(h, w))
-    nova_largura = max(1, round(w * fator))
-    nova_altura = max(1, round(h * fator))
+    nova_largura = max(1, int(round(w * fator)))
+    nova_altura = max(1, int(round(h * fator)))
 
     redimensionado = cv2.resize(imagem, (nova_largura, nova_altura), interpolation=interpolacao)
     logger.debug(
@@ -287,7 +264,7 @@ def redimensionar_com_proporcao(
         nova_largura,
         fator,
     )
-    return redimensionado  # type: ignore[no-any-return, return-value]
+    return redimensionado
 
 
 # ──────────────────────────────────────────────────────────────
@@ -347,8 +324,8 @@ def aplicar_padding_centralizado(
     if usar_centro_massa:
         momentos = cv2.moments(imagem)
         if momentos["m00"] != 0:
-            cx = round(momentos["m10"] / momentos["m00"])
-            cy = round(momentos["m01"] / momentos["m00"])
+            cx = int(round(momentos["m10"] / momentos["m00"]))
+            cy = int(round(momentos["m01"] / momentos["m00"]))
         else:
             cx, cy = w // 2, h // 2
         shift_x = centro - cx
@@ -484,7 +461,7 @@ def preprocessar_imagem_mnist(
     # ── Etapa 0: carregamento e cinza ──────────────────────────
     try:
         gray = _carregar_imagem(entrada)
-    except (FileNotFoundError, ValueError, TypeError):  # noqa: TRY203
+    except (FileNotFoundError, ValueError, TypeError):
         raise  # propaga sem silenciar
 
     # ── Etapa 1: fundo preto ───────────────────────────────────
@@ -521,19 +498,12 @@ def preprocessar_imagem_mnist(
         logger.error("[visao] Falha no padding: %s", exc)
         return saida_vazia
 
-    # Normalização de contraste para pico canônico MNIST (255)
-    max_canvas = int(np.max(canvas))
-    if max_canvas > 0 and max_canvas < 220:
-        canvas = np.clip(canvas.astype(np.float32) * (255.0 / float(max_canvas)), 0, 255).astype(
-            np.uint8
-        )
-
     # ── Etapa 5: normalização e formato final ─────────────────
     resultado = normalizar_imagem(canvas, intervalo_float=normalizar)
 
     if retornar_achatado:
-        return resultado.flatten().reshape(1, -1)  # type: ignore[return-value]
-    return resultado  # type: ignore[return-value]
+        return resultado.flatten().reshape(1, -1)  # (1, tamanho_canvas²)
+    return resultado  # (tamanho_canvas, tamanho_canvas)
 
 
 # ──────────────────────────────────────────────────────────────
