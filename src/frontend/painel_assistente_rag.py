@@ -11,11 +11,11 @@ from src.frontend.estilos import aplicar_estilos, badge, titulo_secao
 
 def _inicializar_estado() -> None:
     if "historico_chat" not in st.session_state:
-        caminho_hist = 'reports/historico_chat.json'
+        caminho_hist = "reports/historico_chat.json"
         historico_inicial = []
         if os.path.exists(caminho_hist):
             try:
-                with open(caminho_hist, 'r', encoding='utf-8') as f:
+                with open(caminho_hist, "r", encoding="utf-8") as f:
                     historico_inicial = json.load(f)
             except Exception:  # pragma: no cover
                 pass  # pragma: no cover
@@ -27,8 +27,8 @@ def _inicializar_estado() -> None:
 
 
 def _salvar_historico() -> None:
-    os.makedirs('reports', exist_ok=True)
-    with open('reports/historico_chat.json', 'w', encoding='utf-8') as f:
+    os.makedirs("reports", exist_ok=True)
+    with open("reports/historico_chat.json", "w", encoding="utf-8") as f:
         json.dump(st.session_state.historico_chat, f, indent=4, ensure_ascii=False)
 
 
@@ -39,6 +39,7 @@ def _carregar_assistente():
     """Tenta importar e instanciar o AssistenteRAG. Retorna None se indisponível."""
     try:
         from src.rag.assistente import AssistenteRAG  # type: ignore
+
         assistente = AssistenteRAG()
         assistente.indexar_documentos()
         return assistente
@@ -87,13 +88,11 @@ def _renderizar_historico() -> None:
     blocos = []
     for msg in st.session_state.historico_chat:
         if msg["papel"] == "usuario":
-            blocos.append(
-                f'<div class="chat-bolha-usuario">🧑 {msg["conteudo"]}</div>')
+            blocos.append(f'<div class="chat-bolha-usuario">🧑 {msg["conteudo"]}</div>')
         else:
             fontes_html = ""
             if msg.get("fontes"):
-                fontes_lista = " · ".join(
-                    f'<code>{f}</code>' for f in msg["fontes"])
+                fontes_lista = " · ".join(f"<code>{f}</code>" for f in msg["fontes"])
                 fontes_html = f'<div class="chat-fonte">📎 Fontes: {fontes_lista}</div>'
             blocos.append(
                 f'<div class="chat-bolha-assistente">🤖 {msg["conteudo"]}{fontes_html}</div>'
@@ -153,15 +152,20 @@ def _resposta_fallback(pergunta: str) -> str:
 
 # ── Painel principal ───────────────────────────────────────────────────────
 
+
 def _renderizar_status_rag() -> None:
     """Exibe badge de status do RAG e botão de inicialização."""
     col_status, col_btn = st.columns([4, 1])
     with col_status:
         if st.session_state.rag_pronto:
-            st.markdown(badge("RAG Ativo", "ok") + "&nbsp; Base de conhecimento indexada.", unsafe_allow_html=True)
+            st.markdown(
+                badge("RAG Ativo", "ok") + "&nbsp; Base de conhecimento indexada.",
+                unsafe_allow_html=True,
+            )
         else:
             st.markdown(
-                badge("RAG Inativo", "aviso") + "&nbsp; Módulo RAG ainda não implementado ou ChromaDB não configurado.",
+                badge("RAG Inativo", "aviso")
+                + "&nbsp; Módulo RAG ainda não implementado ou ChromaDB não configurado.",
                 unsafe_allow_html=True,
             )
     with col_btn:
@@ -215,7 +219,9 @@ def _processar_pergunta(pergunta: str) -> None:
         if st.session_state.rag_pronto and st.session_state.assistente:
             try:
                 resultado = st.session_state.assistente.perguntar(pergunta)
-                resposta = resultado.get("resposta", "Não foi possível gerar uma resposta.")
+                resposta = resultado.get(
+                    "resposta", "Não foi possível gerar uma resposta."
+                )
                 fontes = resultado.get("fontes", [])
             except Exception as e:
                 resposta = f"Erro ao consultar o RAG: {e}"
@@ -223,7 +229,9 @@ def _processar_pergunta(pergunta: str) -> None:
         else:
             resposta = _resposta_fallback(pergunta)
             fontes = []
-    st.session_state.historico_chat.append({"papel": "assistente", "conteudo": resposta, "fontes": fontes})
+    st.session_state.historico_chat.append(
+        {"papel": "assistente", "conteudo": resposta, "fontes": fontes}
+    )
     _salvar_historico()
     st.rerun()
 
@@ -235,7 +243,9 @@ def renderizar() -> None:
     _inicializar_estado()
 
     st.markdown("## 💬 Assistente RAG")
-    st.caption("Faça perguntas em linguagem natural sobre os experimentos, métricas e análises do projeto.")
+    st.caption(
+        "Faça perguntas em linguagem natural sobre os experimentos, métricas e análises do projeto."
+    )
 
     _renderizar_status_rag()
     st.divider()

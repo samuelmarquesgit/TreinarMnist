@@ -18,21 +18,31 @@ def _obter_experimentos_postgres() -> pd.DataFrame:
     try:
         db = ConexaoPostgres()
         with db.obter_sessao() as sessao:
-            registros = sessao.query(Experimento).order_by(
-                Experimento.data_execucao.desc()
-            ).all()
+            registros = (
+                sessao.query(Experimento)
+                .order_by(Experimento.data_execucao.desc())
+                .all()
+            )
         if not registros:
             return pd.DataFrame()
-        return pd.DataFrame([{
-            "ID": r.id,
-            "Modelo": r.modelo,
-            "Acurácia": f"{r.acuracia:.4f}" if r.acuracia is not None else "—",
-            "Tempo Treino (s)": f"{r.tempo_treino:.2f}" if r.tempo_treino is not None else "—",
-            "Data de Execução": (
-                r.data_execucao.strftime("%d/%m/%Y %H:%M:%S")
-                if r.data_execucao else "—"
-            ),
-        } for r in registros])
+        return pd.DataFrame(
+            [
+                {
+                    "ID": r.id,
+                    "Modelo": r.modelo,
+                    "Acurácia": f"{r.acuracia:.4f}" if r.acuracia is not None else "—",
+                    "Tempo Treino (s)": f"{r.tempo_treino:.2f}"
+                    if r.tempo_treino is not None
+                    else "—",
+                    "Data de Execução": (
+                        r.data_execucao.strftime("%d/%m/%Y %H:%M:%S")
+                        if r.data_execucao
+                        else "—"
+                    ),
+                }
+                for r in registros
+            ]
+        )
     except Exception as erro:
         st.error(f"Erro ao consultar PostgreSQL: {erro}")
         return pd.DataFrame()
@@ -74,9 +84,7 @@ def renderizar() -> None:
         "Visualização em tempo real das tabelas PostgreSQL e documentos MongoDB/JSON."
     )
 
-    aba_pg, aba_mongo = st.tabs(
-        ["🐘 PostgreSQL / SQLite", "🍃 MongoDB / JSON Local"]
-    )
+    aba_pg, aba_mongo = st.tabs(["🐘 PostgreSQL / SQLite", "🍃 MongoDB / JSON Local"])
 
     # ── Aba PostgreSQL ────────────────────────────────────────────────────
     with aba_pg:
@@ -94,9 +102,7 @@ def renderizar() -> None:
             )
         else:
             total = len(df)
-            melhor_acc = (
-                df["Acurácia"].replace("—", None).dropna().astype(float).max()
-            )
+            melhor_acc = df["Acurácia"].replace("—", None).dropna().astype(float).max()
             k1, k2, k3 = st.columns(3)
             k1.markdown(kpi_tile(str(total), "Experimentos"), unsafe_allow_html=True)
             k2.markdown(
@@ -148,9 +154,9 @@ def renderizar() -> None:
         modo = "PostgreSQL" if "postgresql" in _url else "SQLite local"
         st.markdown(
             f'<div style="margin-top:1rem; font-size:.8rem; color:#8b949e;">'
-            f'Conexão ativa: {badge(modo, "ok")} &nbsp;·&nbsp; '
-            f'<code>{_url.split("@")[-1] if "@" in _url else _url}</code>'
-            f'</div>',
+            f"Conexão ativa: {badge(modo, 'ok')} &nbsp;·&nbsp; "
+            f"<code>{_url.split('@')[-1] if '@' in _url else _url}</code>"
+            f"</div>",
             unsafe_allow_html=True,
         )
 
@@ -164,14 +170,16 @@ def renderizar() -> None:
 
         artefatos = _obter_artefatos_mongodb()
         mongo_modo = (
-            "MongoDB Atlas" if not ConexaoMongoDB().usar_local else "JSON Local (fallback)"
+            "MongoDB Atlas"
+            if not ConexaoMongoDB().usar_local
+            else "JSON Local (fallback)"
         )
         modo_badge = "ok" if "Atlas" in mongo_modo else "aviso"
 
         st.markdown(
             f'<div style="margin-bottom:1rem; font-size:.8rem; color:#8b949e;">'
-            f'Modo: {badge(mongo_modo, modo_badge)}'
-            f'</div>',
+            f"Modo: {badge(mongo_modo, modo_badge)}"
+            f"</div>",
             unsafe_allow_html=True,
         )
 

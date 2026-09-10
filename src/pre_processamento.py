@@ -1,15 +1,11 @@
-
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 
-def pre_processar_dados(X: np.ndarray,
-                        y: np.ndarray) -> tuple[np.ndarray,
-                                                np.ndarray,
-                                                np.ndarray,
-                                                np.ndarray,
-                                                MinMaxScaler]:
+def pre_processar_dados(
+    X: np.ndarray, y: np.ndarray
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, MinMaxScaler]:
     """
     Realiza a divisão estratificada dos dados e normalização MinMax.
 
@@ -32,7 +28,9 @@ def pre_processar_dados(X: np.ndarray,
         raise ValueError("Os arrays de entrada X e y nao podem estar vazios.")
 
     if len(X) != len(y):
-        raise ValueError(f"Incompatibilidade de tamanho: X tem {len(X)} amostras e y tem {len(y)} amostras.")
+        raise ValueError(
+            f"Incompatibilidade de tamanho: X tem {len(X)} amostras e y tem {len(y)} amostras."
+        )
 
     # 1. Divisão Estratificada (Preserva a proporção das classes)
     X_treino, X_teste, y_treino, y_teste = train_test_split(
@@ -131,10 +129,7 @@ def pre_processar_dados_com_validacao(
     X_teste_norm = scaler.transform(X_teste)
 
     # 4. Verificacao de integridade da normalizacao no treino
-    if not (
-        np.min(X_treino_norm) >= -1e-7
-        and np.max(X_treino_norm) <= 1.0 + 1e-7
-    ):
+    if not (np.min(X_treino_norm) >= -1e-7 and np.max(X_treino_norm) <= 1.0 + 1e-7):
         raise ValueError("Falha na normalizacao MinMax no Treino")
 
     return (

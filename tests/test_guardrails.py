@@ -23,21 +23,26 @@ def test_entropia_shannon():
 
 
 def test_alerta_overconfidence_classe_conhecida():
-    validador = ValidadorFalsaCerteza(limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.5)
+    validador = ValidadorFalsaCerteza(
+        limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.5
+    )
     probabilidades = np.array(
-        [0.01, 0.90, 0.03, 0.05, 0.01])  # Confianca = 0.90 (>= 0.85), Entropia muito baixa
+        [0.01, 0.90, 0.03, 0.05, 0.01]
+    )  # Confianca = 0.90 (>= 0.85), Entropia muito baixa
     classes_conhecidas = [0, 1, 2, 3]  # O modelo treinou na classe 1
 
     resultado = validador.avaliar_predicao(probabilidades, classes_conhecidas)
 
-    assert resultado['classe_prevista'] == 1
+    assert resultado["classe_prevista"] == 1
     # Pela nova regra de Entropia (bugfix), como a Entropia < 0.3 e Confianca > 0.85, isso É um alerta
-    assert resultado['alerta_overconfidence'] is True
-    assert resultado['confiavel'] is False
+    assert resultado["alerta_overconfidence"] is True
+    assert resultado["confiavel"] is False
 
 
 def test_overconfidence_classe_desconhecida():
-    validador = ValidadorFalsaCerteza(limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.3)
+    validador = ValidadorFalsaCerteza(
+        limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.3
+    )
     # Probabilidades distribuidas (sem um pico > 0.85, entropia mais alta > 0.3)
     # ou pico > 0.85 mas a entropia por algum motivo nao fura o limiar (teoricamente um pico de 90%
     # vai furar o limiar). Vamos ajustar para entropia mais proxima da incerteza onde a confianca nao bate 0.85
@@ -46,8 +51,8 @@ def test_overconfidence_classe_desconhecida():
 
     resultado = validador.avaliar_predicao(probabilidades, classes_conhecidas)
 
-    assert resultado['alerta_overconfidence'] is False
-    assert resultado['confiavel'] is True
+    assert resultado["alerta_overconfidence"] is False
+    assert resultado["confiavel"] is True
 
 
 # --- Testes para ValidadorVazamentoDados ---
@@ -93,7 +98,8 @@ def test_arquivo_acima_do_limite(tmp_path, monkeypatch):
     arquivo_png.write_text("fake_data")
 
     import os
-    monkeypatch.setattr(os.path, 'getsize', lambda _: 11 * 1024 * 1024)
+
+    monkeypatch.setattr(os.path, "getsize", lambda _: 11 * 1024 * 1024)
 
     with pytest.raises(ValueError, match="Arquivo muito grande"):
         ValidadorImagemEntrada.validar_arquivo(str(arquivo_png))
@@ -102,8 +108,8 @@ def test_arquivo_acima_do_limite(tmp_path, monkeypatch):
 def test_imagem_png_valida(tmp_path):
     arquivo_valido = tmp_path / "valido.png"
     # Criar uma imagem PNG real em memoria e salvar
-    img = Image.new('RGB', (100, 100), color='blue')
-    img.save(arquivo_valido, 'PNG')
+    img = Image.new("RGB", (100, 100), color="blue")
+    img.save(arquivo_valido, "PNG")
 
     assert ValidadorImagemEntrada.validar_arquivo(str(arquivo_valido)) is True
 
@@ -111,8 +117,8 @@ def test_imagem_png_valida(tmp_path):
 def test_imagem_corrompida(tmp_path):
     arquivo_corrompido = tmp_path / "corrompido.png"
     # Salvar dados lixo em vez de uma imagem PNG
-    with open(arquivo_corrompido, 'wb') as f:
-        f.write(b'nao_sou_uma_imagem_valida')
+    with open(arquivo_corrompido, "wb") as f:
+        f.write(b"nao_sou_uma_imagem_valida")
 
     with pytest.raises(ValueError, match="Arquivo corrompido ou formato de imagem"):
         ValidadorImagemEntrada.validar_arquivo(str(arquivo_corrompido))

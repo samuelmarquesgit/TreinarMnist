@@ -26,7 +26,8 @@ class Experimento(Base):  # type: ignore[misc, valid-type]
     Mapeamento ORM (Object-Relational Mapping) da tabela de experimentos.
     Persiste resultados das avaliacoes estatisticas e de metricas de IA.
     """
-    __tablename__ = 'experimentos'
+
+    __tablename__ = "experimentos"
     id = Column(Integer, primary_key=True, autoincrement=True)
     modelo = Column(String, nullable=False)
     acuracia = Column(Float)
@@ -37,10 +38,7 @@ class Experimento(Base):  # type: ignore[misc, valid-type]
     tempo_treino = Column(Float)
 
     # datetime.utcnow() esta deprecado. Usamos timezone-aware nativo.
-    data_execucao = Column(
-        DateTime,
-        default=lambda: datetime.now(
-            timezone.utc))
+    data_execucao = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class ConexaoPostgres:
@@ -50,35 +48,48 @@ class ConexaoPostgres:
     """
 
     def __init__(self, url: str | None = None) -> None:
-        self.url: str = url or os.getenv('DATABASE_URL', 'sqlite:///reports/banco_local.db') or 'sqlite:///reports/banco_local.db'
+        self.url: str = (
+            url
+            or os.getenv("DATABASE_URL", "sqlite:///reports/banco_local.db")
+            or "sqlite:///reports/banco_local.db"
+        )
 
         # Garante que a pasta reports exista para o sqlite local
-        if self.url.startswith('sqlite:///reports/'):  # type: ignore[union-attr]
-            os.makedirs('reports', exist_ok=True)
+        if self.url.startswith("sqlite:///reports/"):  # type: ignore[union-attr]
+            os.makedirs("reports", exist_ok=True)
 
         self.engine = create_engine(self.url, echo=False)  # type: ignore[arg-type]
         Base.metadata.create_all(self.engine)
         self._migrar_schema()
         self.SessionLocal = sessionmaker(
-            bind=self.engine, autocommit=False, autoflush=False)
-        logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")  # type: ignore[union-attr]
+            bind=self.engine, autocommit=False, autoflush=False
+        )
+        logger.info(
+            f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}"
+        )  # type: ignore[union-attr]
 
     def _migrar_schema(self) -> None:
         """Garante que colunas recém-adicionadas existam na tabela experimentos."""
         try:
             inspector = inspect(self.engine)
-            if 'experimentos' in inspector.get_table_names():
-                colunas_existentes = {col['name'] for col in inspector.get_columns('experimentos')}
+            if "experimentos" in inspector.get_table_names():
+                colunas_existentes = {
+                    col["name"] for col in inspector.get_columns("experimentos")
+                }
                 colunas_esperadas = {
-                    'precisao': 'FLOAT',
-                    'recall': 'FLOAT',
-                    'f1': 'FLOAT',
-                    'hiperparametros': 'VARCHAR',
+                    "precisao": "FLOAT",
+                    "recall": "FLOAT",
+                    "f1": "FLOAT",
+                    "hiperparametros": "VARCHAR",
                 }
                 with self.engine.connect() as conn:
                     for col, tipo in colunas_esperadas.items():
                         if col not in colunas_existentes:
-                            conn.execute(text(f"ALTER TABLE experimentos ADD COLUMN {col} {tipo}"))
+                            conn.execute(
+                                text(
+                                    f"ALTER TABLE experimentos ADD COLUMN {col} {tipo}"
+                                )
+                            )
                     conn.commit()
         except Exception as e:
             logger.warning(f"Aviso ao verificar/migrar schema do banco: {e}")

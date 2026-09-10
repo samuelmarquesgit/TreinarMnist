@@ -15,10 +15,12 @@ def _mock_colecao(documentos=None):
     colecao.get.return_value = {"ids": [d["id"] for d in docs]}
     colecao.query.return_value = {
         "documents": [["conteúdo do chunk 1", "conteúdo do chunk 2"]],
-        "metadatas": [[
-            {"fonte": "src/fachada.py", "topico": "arquitetura"},
-            {"fonte": "src/modelos/", "topico": "modelos"},
-        ]],
+        "metadatas": [
+            [
+                {"fonte": "src/fachada.py", "topico": "arquitetura"},
+                {"fonte": "src/modelos/", "topico": "modelos"},
+            ]
+        ],
         "distances": [[0.1, 0.4]],
     }
     return colecao
@@ -35,7 +37,6 @@ def _mock_chromadb_cliente(colecao):
 
 
 class TestIndexadorChromaDB:
-
     def test_inicializacao_bem_sucedida(self):
         """IndexadorChromaDB deve inicializar sem erros quando chromadb OK."""
         colecao = _mock_colecao()
@@ -43,9 +44,11 @@ class TestIndexadorChromaDB:
 
         with patch.dict("sys.modules", {"chromadb": MagicMock()}):
             import chromadb as _chromadb_mock
+
             _chromadb_mock.PersistentClient.return_value = cliente
 
             from src.rag.indexador import IndexadorChromaDB
+
             indexador = IndexadorChromaDB(caminho_db="/tmp/fake_db")
 
         assert indexador.caminho_db == "/tmp/fake_db"
@@ -64,6 +67,7 @@ class TestIndexadorChromaDB:
             from importlib import reload
 
             import src.rag.indexador as idx_mod
+
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
 
@@ -90,6 +94,7 @@ class TestIndexadorChromaDB:
             from importlib import reload
 
             import src.rag.indexador as idx_mod
+
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
 
@@ -110,6 +115,7 @@ class TestIndexadorChromaDB:
             from importlib import reload
 
             import src.rag.indexador as idx_mod
+
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
 
@@ -134,6 +140,7 @@ class TestIndexadorChromaDB:
             from importlib import reload
 
             import src.rag.indexador as idx_mod
+
             reload(idx_mod)
             indexador = idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
 
@@ -142,6 +149,7 @@ class TestIndexadorChromaDB:
     def test_inicializacao_sem_chromadb_levanta_importerror(self, tmp_path):
         """Sem chromadb instalado deve levantar ImportError amigável."""
         import sys
+
         # Remove chromadb do sys.modules se existir
         modulos_backup = {k: v for k, v in sys.modules.items() if "chromadb" in k}
         for k in modulos_backup:
@@ -153,6 +161,7 @@ class TestIndexadorChromaDB:
                 from importlib import reload
 
                 import src.rag.indexador as idx_mod
+
                 with pytest.raises(ImportError, match="ChromaDB"):
                     reload(idx_mod)
                     idx_mod.IndexadorChromaDB(caminho_db=str(tmp_path))
@@ -170,8 +179,12 @@ def _criar_assistente_com_mock(tmp_path, chunks_retornados=None):
     """Cria AssistenteRAG com IndexadorChromaDB totalmente mockado."""
     if chunks_retornados is None:
         chunks_retornados = [
-            {"conteudo": "Texto relevante sobre MNIST.", "fonte": "carregador_dados.py",
-             "topico": "dataset", "distancia": 0.2},
+            {
+                "conteudo": "Texto relevante sobre MNIST.",
+                "fonte": "carregador_dados.py",
+                "topico": "dataset",
+                "distancia": 0.2,
+            },
         ]
 
     mock_indexador = MagicMock()
@@ -184,6 +197,7 @@ def _criar_assistente_com_mock(tmp_path, chunks_retornados=None):
         from importlib import reload
 
         import src.rag.assistente as assistente_mod
+
         reload(assistente_mod)
         assistente = assistente_mod.AssistenteRAG(
             caminho_db=str(tmp_path), n_chunks=3, limiar_distancia=1.5
@@ -194,7 +208,6 @@ def _criar_assistente_com_mock(tmp_path, chunks_retornados=None):
 
 
 class TestAssistenteRAG:
-
     def test_indexar_documentos_atualiza_flag(self, tmp_path):
         """Após indexar_documentos() o assistente deve estar marcado como indexado."""
         assistente = _criar_assistente_com_mock(tmp_path)
@@ -218,8 +231,14 @@ class TestAssistenteRAG:
 
     def test_perguntar_retorna_resposta_com_chunk_relevante(self, tmp_path):
         """Chunk dentro do limiar de distância deve aparecer na resposta."""
-        chunks = [{"conteudo": "MNIST tem 70k imagens.",
-                   "fonte": "dados.py", "topico": "dataset", "distancia": 0.3}]
+        chunks = [
+            {
+                "conteudo": "MNIST tem 70k imagens.",
+                "fonte": "dados.py",
+                "topico": "dataset",
+                "distancia": 0.3,
+            }
+        ]
         assistente = _criar_assistente_com_mock(tmp_path, chunks_retornados=chunks)
         assistente._indexado = True
 
@@ -231,7 +250,14 @@ class TestAssistenteRAG:
     def test_perguntar_sem_chunks_relevantes_retorna_mensagem_padrao(self, tmp_path):
         """Chunks além do limiar devem gerar resposta padrão 'não encontrei'."""
         # Distância 3.0 > limiar padrão 1.5
-        chunks = [{"conteudo": "irrelevante", "fonte": "x.py", "topico": "x", "distancia": 3.0}]
+        chunks = [
+            {
+                "conteudo": "irrelevante",
+                "fonte": "x.py",
+                "topico": "x",
+                "distancia": 3.0,
+            }
+        ]
         assistente = _criar_assistente_com_mock(tmp_path, chunks_retornados=chunks)
         assistente._indexado = True
 
@@ -243,8 +269,18 @@ class TestAssistenteRAG:
     def test_perguntar_multichunk_formata_informacao_adicional(self, tmp_path):
         """Múltiplos chunks relevantes devem gerar 'Informação adicional' na resposta."""
         chunks = [
-            {"conteudo": "Texto principal.", "fonte": "f1.py", "topico": "t1", "distancia": 0.1},
-            {"conteudo": "Texto adicional.", "fonte": "f2.py", "topico": "t2", "distancia": 0.5},
+            {
+                "conteudo": "Texto principal.",
+                "fonte": "f1.py",
+                "topico": "t1",
+                "distancia": 0.1,
+            },
+            {
+                "conteudo": "Texto adicional.",
+                "fonte": "f2.py",
+                "topico": "t2",
+                "distancia": 0.5,
+            },
         ]
         assistente = _criar_assistente_com_mock(tmp_path, chunks_retornados=chunks)
         assistente._indexado = True
@@ -255,18 +291,28 @@ class TestAssistenteRAG:
 
     def test_perguntar_um_chunk_adiciona_nota_de_confiabilidade(self, tmp_path):
         """Com apenas 1 chunk relevante deve incluir nota de confiabilidade."""
-        chunks = [{"conteudo": "Único documento.", "fonte": "f.py",
-                   "topico": "t", "distancia": 0.2}]
+        chunks = [
+            {
+                "conteudo": "Único documento.",
+                "fonte": "f.py",
+                "topico": "t",
+                "distancia": 0.2,
+            }
+        ]
         assistente = _criar_assistente_com_mock(tmp_path, chunks_retornados=chunks)
         assistente._indexado = True
 
         resultado = assistente.perguntar("pergunta")
 
-        assert "Nota:" in resultado["resposta"] or "apenas" in resultado["resposta"].lower()
+        assert (
+            "Nota:" in resultado["resposta"]
+            or "apenas" in resultado["resposta"].lower()
+        )
 
     def test_estatisticas_retorna_dict_completo(self, tmp_path):
         """estatisticas() deve retornar dict com total_documentos e indexado."""
         from src.rag.indexador import _DOCUMENTOS
+
         assistente = _criar_assistente_com_mock(tmp_path)
         assistente._indexado = True
 

@@ -48,14 +48,17 @@ def test_dados_inicializados_falso_antes_de_carregar():
     assert fachada.dados_inicializados() is False
 
 
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_dados_inicializados_verdadeiro_apos_inicializar(mock_carregar, mock_pre):
     """dados_inicializados() deve ser True após inicializar_dados()."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100))
     mock_pre.return_value = (
-        np.ones((80, 784)), np.ones((20, 784)),
-        np.zeros(80), np.zeros(20), "FakeScaler"
+        np.ones((80, 784)),
+        np.ones((20, 784)),
+        np.zeros(80),
+        np.zeros(20),
+        "FakeScaler",
     )
     fachada = FachadaPipelineIA()
     fachada.inicializar_dados()
@@ -110,19 +113,25 @@ def test_prever_probabilidades_delega_para_modelo():
 # ── obter_estatisticas_dados ───────────────────────────────────────────────
 
 
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_obter_estatisticas_dados_teste(mock_carregar, mock_pre):
     """obter_estatisticas_dados('teste') deve operar sobre X_teste."""
     X_treino = np.ones((80, 784))
     X_teste = np.zeros((20, 784))
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100))
-    mock_pre.return_value = (X_treino, X_teste, np.zeros(80), np.zeros(20), "FakeScaler")
+    mock_pre.return_value = (
+        X_treino,
+        X_teste,
+        np.zeros(80),
+        np.zeros(20),
+        "FakeScaler",
+    )
 
     fachada = FachadaPipelineIA()
     fachada.inicializar_dados()
 
-    with patch('src.fachada.CalculadorEstatistico') as mock_calc_cls:
+    with patch("src.fachada.CalculadorEstatistico") as mock_calc_cls:
         mock_inst = mock_calc_cls.return_value
         mock_inst.estatisticas_descritivas.return_value = {"media": 0.0}
         stats = fachada.obter_estatisticas_dados("teste")
@@ -134,22 +143,29 @@ def test_obter_estatisticas_dados_teste(mock_carregar, mock_pre):
 # ── executar_experimento ───────────────────────────────────────────────────
 
 
-@patch('src.fachada.calcular_metricas')
-@patch('src.fachada.FabricaModelos.criar_modelo')
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.calcular_metricas")
+@patch("src.fachada.FabricaModelos.criar_modelo")
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_executar_experimento_retorna_tempo_treino(
     mock_carregar, mock_pre, mock_criar, mock_calc
 ):
     """executar_experimento() deve incluir 'tempo_treino_segundos' nas métricas."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100, dtype=int))
     mock_pre.return_value = (
-        np.ones((80, 784)), np.ones((20, 784)),
-        np.zeros(80, dtype=int), np.zeros(20, dtype=int), "FakeScaler"
+        np.ones((80, 784)),
+        np.ones((20, 784)),
+        np.zeros(80, dtype=int),
+        np.zeros(20, dtype=int),
+        "FakeScaler",
     )
     mock_criar.return_value = Mock()
     mock_calc.return_value = {
-        "acuracia": 0.92, "precisao": 0.91, "recall": 0.91, "f1": 0.91, "matriz_confusao": []
+        "acuracia": 0.92,
+        "precisao": 0.91,
+        "recall": 0.91,
+        "f1": 0.91,
+        "matriz_confusao": [],
     }
 
     fachada = FachadaPipelineIA()
@@ -162,25 +178,31 @@ def test_executar_experimento_retorna_tempo_treino(
 # ── executar_benchmark ─────────────────────────────────────────────────────
 
 
-@patch('src.fachada.calcular_metricas')
-@patch('src.fachada.FabricaModelos.criar_modelo')
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.calcular_metricas")
+@patch("src.fachada.FabricaModelos.criar_modelo")
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_executar_benchmark_gera_arquivo_json(
     mock_carregar, mock_pre, mock_criar, mock_calc, tmp_path
 ):
     """executar_benchmark() deve criar arquivo JSON em dir_saida."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100, dtype=int))
     mock_pre.return_value = (
-        np.ones((80, 784)), np.ones((20, 784)),
-        np.zeros(80, dtype=int), np.zeros(20, dtype=int), "FakeScaler"
+        np.ones((80, 784)),
+        np.ones((20, 784)),
+        np.zeros(80, dtype=int),
+        np.zeros(20, dtype=int),
+        "FakeScaler",
     )
     mock_modelo = Mock()
     mock_modelo.prever.return_value = np.zeros(20, dtype=int)
     mock_criar.return_value = mock_modelo
     mock_calc.return_value = {
-        "acuracia": 0.90, "precisao": 0.89, "recall": 0.89, "f1": 0.89,
-        "matriz_confusao": []
+        "acuracia": 0.90,
+        "precisao": 0.89,
+        "recall": 0.89,
+        "f1": 0.89,
+        "matriz_confusao": [],
     }
 
     fachada = FachadaPipelineIA()
@@ -202,18 +224,21 @@ def test_executar_benchmark_gera_arquivo_json(
     assert "RegressaoLogistica" in dados["resultados"]
 
 
-@patch('src.fachada.calcular_metricas')
-@patch('src.fachada.FabricaModelos.criar_modelo')
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.calcular_metricas")
+@patch("src.fachada.FabricaModelos.criar_modelo")
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_executar_benchmark_modelo_que_falha_registra_erro(
     mock_carregar, mock_pre, mock_criar, mock_calc, tmp_path
 ):
     """Modelo que levanta exceção no treino deve ter status 'erro' no resultado."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100, dtype=int))
     mock_pre.return_value = (
-        np.ones((80, 784)), np.ones((20, 784)),
-        np.zeros(80, dtype=int), np.zeros(20, dtype=int), "FakeScaler"
+        np.ones((80, 784)),
+        np.ones((20, 784)),
+        np.zeros(80, dtype=int),
+        np.zeros(20, dtype=int),
+        "FakeScaler",
     )
     mock_criar.side_effect = RuntimeError("Modelo indisponível")
 
@@ -227,14 +252,17 @@ def test_executar_benchmark_modelo_que_falha_registra_erro(
     assert resultados["ModeloBroken"].erro is not None
 
 
-@patch('src.fachada.pre_processar_dados')
-@patch('src.fachada.carregar_dados_mnist')
+@patch("src.fachada.pre_processar_dados")
+@patch("src.fachada.carregar_dados_mnist")
 def test_executar_benchmark_usa_modelo_ja_treinado(mock_carregar, mock_pre, tmp_path):
     """Modelo já treinado não deve ser retreinado durante o benchmark."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100, dtype=int))
     mock_pre.return_value = (
-        np.ones((80, 784)), np.ones((20, 784)),
-        np.zeros(80, dtype=int), np.zeros(20, dtype=int), "FakeScaler"
+        np.ones((80, 784)),
+        np.ones((20, 784)),
+        np.zeros(80, dtype=int),
+        np.zeros(20, dtype=int),
+        "FakeScaler",
     )
 
     fachada = FachadaPipelineIA()
@@ -244,10 +272,16 @@ def test_executar_benchmark_usa_modelo_ja_treinado(mock_carregar, mock_pre, tmp_
     mock_modelo.prever.return_value = np.zeros(20, dtype=int)
     fachada.modelos["SVM"] = mock_modelo
 
-    with patch('src.fachada.calcular_metricas', return_value={
-        "acuracia": 0.95, "precisao": 0.94, "recall": 0.94, "f1": 0.94,
-        "matriz_confusao": []
-    }):
+    with patch(
+        "src.fachada.calcular_metricas",
+        return_value={
+            "acuracia": 0.95,
+            "precisao": 0.94,
+            "recall": 0.94,
+            "f1": 0.94,
+            "matriz_confusao": [],
+        },
+    ):
         dir_saida = str(tmp_path / "bench")
         resultados = fachada.executar_benchmark(["SVM"], dir_saida=dir_saida)
 
@@ -261,5 +295,7 @@ def test_persistir_benchmark_falha_de_io_nao_levanta_excecao(tmp_path):
     rb = ResultadoBenchmark(modelo_id="X", status="ok", metricas={"acuracia": 0.9})
 
     # Passa caminho inválido — OSError deve ser capturado internamente
-    fachada._persistir_benchmark({"X": rb}, "2024-01-01T00:00:00Z", "/raiz_invalida_xyz/abc")
+    fachada._persistir_benchmark(
+        {"X": rb}, "2024-01-01T00:00:00Z", "/raiz_invalida_xyz/abc"
+    )
     # Se chegou aqui, o erro foi tratado corretamente

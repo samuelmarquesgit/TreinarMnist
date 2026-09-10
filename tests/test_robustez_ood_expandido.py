@@ -71,11 +71,16 @@ def test_executar_experimento_ood_sem_dados_chama_inicializar():
     fachada.listar_modelos_treinados.return_value = []
 
     # FabricaModelos e pre_processar_dados são importados lazily dentro da função
-    with patch("src.modelos.fabrica_modelos.FabricaModelos") as mock_fab, \
-         patch("src.pre_processamento.pre_processar_dados") as mock_pre:
+    with (
+        patch("src.modelos.fabrica_modelos.FabricaModelos") as mock_fab,
+        patch("src.pre_processamento.pre_processar_dados") as mock_pre,
+    ):
         mock_pre.return_value = (
-            np.ones((80, 784)), np.ones((20, 784)),
-            np.zeros(80, dtype=int), np.zeros(20, dtype=int), None
+            np.ones((80, 784)),
+            np.ones((20, 784)),
+            np.zeros(80, dtype=int),
+            np.zeros(20, dtype=int),
+            None,
         )
         mock_modelo = MagicMock()
         mock_modelo.prever_probabilidades.return_value = np.ones((20, 10)) / 10
@@ -105,7 +110,9 @@ def test_executar_experimento_ood_usa_modelo_treinado():
     fachada.listar_modelos_treinados.return_value = ["FlorestaAleatoria"]
     fachada.modelos = {"FlorestaAleatoria": mock_modelo}
 
-    resultado = executar_experimento_ood(fachada, classes_mascaradas=[4, 7], n_amostras=20)
+    resultado = executar_experimento_ood(
+        fachada, classes_mascaradas=[4, 7], n_amostras=20
+    )
 
     mock_modelo.prever_probabilidades.assert_called()
     assert resultado.shape[1] == 10
@@ -115,17 +122,24 @@ def test_executar_experimento_ood_treina_regressao_logistica_se_sem_modelo():
     """Sem modelos treinados deve treinar RegressaoLogistica automaticamente."""
     fachada = _fachada_com_dados()
 
-    with patch("src.modelos.fabrica_modelos.FabricaModelos") as mock_fab, \
-         patch("src.pre_processamento.pre_processar_dados") as mock_pre:
+    with (
+        patch("src.modelos.fabrica_modelos.FabricaModelos") as mock_fab,
+        patch("src.pre_processamento.pre_processar_dados") as mock_pre,
+    ):
         mock_pre.return_value = (
-            np.ones((80, 784)), np.ones((20, 784)),
-            np.zeros(80, dtype=int), np.zeros(20, dtype=int), None
+            np.ones((80, 784)),
+            np.ones((20, 784)),
+            np.zeros(80, dtype=int),
+            np.zeros(20, dtype=int),
+            None,
         )
         mock_modelo = MagicMock()
         mock_modelo.prever_probabilidades.return_value = np.ones((20, 10)) / 10
         mock_fab.criar_modelo.return_value = mock_modelo
 
-        resultado = executar_experimento_ood(fachada, classes_mascaradas=[4, 7], n_amostras=20)
+        resultado = executar_experimento_ood(
+            fachada, classes_mascaradas=[4, 7], n_amostras=20
+        )
 
     mock_fab.criar_modelo.assert_called_once_with("RegressaoLogistica")
     assert resultado.shape[1] == 10
@@ -156,7 +170,9 @@ def test_executar_experimento_ood_retorna_shape_correto():
     fachada.listar_modelos_treinados.return_value = ["KNN"]
     fachada.modelos = {"KNN": mock_modelo}
 
-    resultado = executar_experimento_ood(fachada, classes_mascaradas=[4, 7], n_amostras=5)
+    resultado = executar_experimento_ood(
+        fachada, classes_mascaradas=[4, 7], n_amostras=5
+    )
 
     assert resultado.ndim == 2
     assert resultado.shape[1] == 10
@@ -184,7 +200,9 @@ def test_preparar_dados_id_sem_classes_ocultas_usa_padrao():
     X = np.arange(100, dtype=np.float32).reshape(10, 10)
     y = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=np.int32)
 
-    X_id, y_id = analisador.preparar_dados_id(X, y)  # classes_ocultas=None → padrão [4,7]
+    X_id, y_id = analisador.preparar_dados_id(
+        X, y
+    )  # classes_ocultas=None → padrão [4,7]
 
     assert analisador.classes_mascaradas == [4, 7]
     assert 4 not in y_id
@@ -201,7 +219,9 @@ def test_relatorio_overconfidence_lanca_typeerror_sem_metodo():
     X_ood = np.zeros((5, 10), dtype=np.float32)
     y_ood = np.zeros(5, dtype=np.int32)
 
-    with pytest.raises(TypeError, match="métodos de predição suportados|prever_probabilidades"):
+    with pytest.raises(
+        TypeError, match="métodos de predição suportados|prever_probabilidades"
+    ):
         analisador.relatorio_overconfidence(modelo_invalido, X_ood, y_ood)
 
 
@@ -209,7 +229,9 @@ def test_relatorio_overconfidence_namedtuple_interface():
     """relatorio_overconfidence deve usar .alerta_falsa_certeza quando resultado é NamedTuple (linha 174)."""
     from collections import namedtuple
 
-    ResultadoValidacao = namedtuple("ResultadoValidacao", ["alerta_falsa_certeza", "confianca"])
+    ResultadoValidacao = namedtuple(
+        "ResultadoValidacao", ["alerta_falsa_certeza", "confianca"]
+    )
 
     analisador = AnalisadorOOD()
     analisador.classes_mascaradas = [4, 7]

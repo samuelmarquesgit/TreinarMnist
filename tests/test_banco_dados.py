@@ -7,6 +7,7 @@ from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
 
 try:
     from src.banco_dados.conexao_mongodb import ConexaoMongoDB
+
     _MONGO_DISPONIVEL = True
 except Exception:
     ConexaoMongoDB = None  # type: ignore
@@ -15,18 +16,17 @@ except Exception:
 
 def test_conexao_postgres_context_manager():
     # Usamos banco em memoria para teste
-    db = ConexaoPostgres(url='sqlite:///:memory:')
+    db = ConexaoPostgres(url="sqlite:///:memory:")
     with db.obter_sessao() as sessao:
         novo_exp = Experimento(
-            modelo='Regressao Teste',
-            acuracia=0.99,
-            tempo_treino=1.5)
+            modelo="Regressao Teste", acuracia=0.99, tempo_treino=1.5
+        )
         sessao.add(novo_exp)
 
     with db.obter_sessao() as sessao2:
         exp_salvo = sessao2.query(Experimento).first()
         assert exp_salvo is not None
-        assert exp_salvo.modelo == 'Regressao Teste'
+        assert exp_salvo.modelo == "Regressao Teste"
         assert exp_salvo.acuracia == 0.99
 
 
@@ -44,25 +44,21 @@ def test_conexao_mongodb_fallback_local(tmp_path, monkeypatch):
     arquivo_salvo = tmp_path / "reports" / "teste_matriz.json"
     assert arquivo_salvo.exists()
 
-    with open(arquivo_salvo, 'r') as f:
+    with open(arquivo_salvo, "r") as f:
         carregado = json.load(f)
         assert carregado["matriz"] == [[10, 2], [3, 15]]
 
 
 def test_conexao_postgres_multiplos_experimentos_e_tipagem():
-    db = ConexaoPostgres(url='sqlite:///:memory:')
+    db = ConexaoPostgres(url="sqlite:///:memory:")
     with db.obter_sessao() as sessao:
         # Forcamos casting explicito no teste para ver se o schema converte
-        exp1 = Experimento(
-            modelo='Mod1',
-            acuracia=float("0.85"),
-            tempo_treino=1.0)
-        exp2 = Experimento(modelo='Mod2', acuracia=0.90, tempo_treino=2.0)
+        exp1 = Experimento(modelo="Mod1", acuracia=float("0.85"), tempo_treino=1.0)
+        exp2 = Experimento(modelo="Mod2", acuracia=0.90, tempo_treino=2.0)
         sessao.add_all([exp1, exp2])
 
     with db.obter_sessao() as sessao2:
-        todos = sessao2.query(Experimento).order_by(
-            Experimento.acuracia.asc()).all()
+        todos = sessao2.query(Experimento).order_by(Experimento.acuracia.asc()).all()
         assert len(todos) == 2
 
         # O SQLite/SQLAlchemy pode trazer como float, entao validamos se a
@@ -70,12 +66,12 @@ def test_conexao_postgres_multiplos_experimentos_e_tipagem():
         assert isinstance(todos[0].acuracia, float)
         assert isinstance(todos[1].acuracia, float)
 
-        assert todos[1].modelo == 'Mod2'
+        assert todos[1].modelo == "Mod2"
 
 
 def test_conexao_postgres_excecao_rollback():
     """Valida se o context manager faz o rollback adequadamente em caso de erro interno."""
-    db = ConexaoPostgres(url='sqlite:///:memory:')
+    db = ConexaoPostgres(url="sqlite:///:memory:")
 
     with pytest.raises(Exception, match="Erro Forcado"), db.obter_sessao():
         # O proprio context manager intercepta o erro interno, faz rollback
@@ -90,11 +86,11 @@ def test_conexao_postgres_cria_diretorio_reports():
     from src.banco_dados.conexao_postgres import ConexaoPostgres
 
     # Executa sem falhar, deve criar a pasta 'reports' se iniciada com o caminho relativo
-    db = ConexaoPostgres(url='sqlite:///reports/banco_local_test.db')
+    db = ConexaoPostgres(url="sqlite:///reports/banco_local_test.db")
     db.engine.dispose()
-    assert os.path.exists('reports')
-    if os.path.exists('reports/banco_local_test.db'):
-        os.remove('reports/banco_local_test.db')
+    assert os.path.exists("reports")
+    if os.path.exists("reports/banco_local_test.db"):
+        os.remove("reports/banco_local_test.db")
 
 
 def test_conexao_postgres_migracao_schema(tmp_path):
@@ -103,15 +99,23 @@ def test_conexao_postgres_migracao_schema(tmp_path):
 
     db_path = tmp_path / "test_legacy.db"
     conn = sqlite3.connect(db_path)
-    conn.execute("CREATE TABLE experimentos (id INTEGER PRIMARY KEY, modelo TEXT, acuracia REAL, tempo_treino REAL, data_execucao TIMESTAMP)")
+    conn.execute(
+        "CREATE TABLE experimentos (id INTEGER PRIMARY KEY, modelo TEXT, acuracia REAL, tempo_treino REAL, data_execucao TIMESTAMP)"
+    )
     conn.commit()
     conn.close()
 
     db = ConexaoPostgres(url=f"sqlite:///{db_path}")
     with db.obter_sessao() as sessao:
-        exp = Experimento(modelo="ModelMigrated", precisao=0.95, recall=0.92, f1=0.93, hiperparametros="{}")
+        exp = Experimento(
+            modelo="ModelMigrated",
+            precisao=0.95,
+            recall=0.92,
+            f1=0.93,
+            hiperparametros="{}",
+        )
         sessao.add(exp)
-    
+
     with db.obter_sessao() as sessao:
         res = sessao.query(Experimento).filter_by(modelo="ModelMigrated").first()
         assert res is not None
@@ -122,14 +126,17 @@ def test_conexao_postgres_migracao_schema(tmp_path):
 
 def test_conexao_postgres_migracao_erro():
     """Valida que erros na migracao sao capturados e registrados no log."""
-    with patch("src.banco_dados.conexao_postgres.inspect", side_effect=RuntimeError("Falha simulada no inspector")):
+    with patch(
+        "src.banco_dados.conexao_postgres.inspect",
+        side_effect=RuntimeError("Falha simulada no inspector"),
+    ):
         db = ConexaoPostgres(url="sqlite:///:memory:")
         assert db is not None
         db.engine.dispose()
 
 
-@pytest.mark.skipif(not _MONGO_DISPONIVEL, reason='pymongo indisponivel')
-@patch('src.banco_dados.conexao_mongodb.MongoClient')
+@pytest.mark.skipif(not _MONGO_DISPONIVEL, reason="pymongo indisponivel")
+@patch("src.banco_dados.conexao_mongodb.MongoClient")
 def test_conexao_mongodb_remoto_sucesso(mock_mongo_client):
     # Simula cliente remoto
     mongo = ConexaoMongoDB(uri="mongodb://fake:27017")
@@ -143,10 +150,9 @@ def test_conexao_mongodb_remoto_sucesso(mock_mongo_client):
     mock_mongo_client.return_value.__getitem__.return_value.__getitem__.return_value.insert_one.assert_called_once()
 
 
-@pytest.mark.skipif(not _MONGO_DISPONIVEL, reason='pymongo indisponivel')
-@patch('src.banco_dados.conexao_mongodb.MongoClient')
-def test_conexao_mongodb_fallback_excecao(
-        mock_mongo_client, tmp_path, monkeypatch):
+@pytest.mark.skipif(not _MONGO_DISPONIVEL, reason="pymongo indisponivel")
+@patch("src.banco_dados.conexao_mongodb.MongoClient")
+def test_conexao_mongodb_fallback_excecao(mock_mongo_client, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Força ServerSelectionTimeoutError no client
@@ -154,8 +160,7 @@ def test_conexao_mongodb_fallback_excecao(
         from pymongo.errors import ServerSelectionTimeoutError
     except Exception:
         pytest.skip("pymongo indisponivel")
-    mock_mongo_client.side_effect = ServerSelectionTimeoutError(
-        "Timeout simulado")
+    mock_mongo_client.side_effect = ServerSelectionTimeoutError("Timeout simulado")
 
     mongo = ConexaoMongoDB(uri="mongodb://fake:27017")
 
@@ -164,4 +169,3 @@ def test_conexao_mongodb_fallback_excecao(
 
     mongo.salvar_artefato("teste_timeout", {"dados": 123})
     assert (tmp_path / "reports" / "teste_timeout.json").exists()
-

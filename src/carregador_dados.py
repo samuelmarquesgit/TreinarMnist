@@ -42,14 +42,15 @@ _URLS_DOWNLOAD_DIRETO = [
 _ARQUIVOS_IDX = {
     "treino_imagens": "train-images-idx3-ubyte.gz",
     "treino_rotulos": "train-labels-idx1-ubyte.gz",
-    "teste_imagens":  "t10k-images-idx3-ubyte.gz",
-    "teste_rotulos":  "t10k-labels-idx1-ubyte.gz",
+    "teste_imagens": "t10k-images-idx3-ubyte.gz",
+    "teste_rotulos": "t10k-labels-idx1-ubyte.gz",
 }
 
 
 # ──────────────────────────────────────────────────────────────
 # Funções privadas — cada fonte de dados
 # ──────────────────────────────────────────────────────────────
+
 
 def _normalizar_e_consolidar(
     X_treino: np.ndarray,
@@ -96,7 +97,7 @@ def _carregar_via_sklearn() -> tuple[np.ndarray, np.ndarray]:
 
     logger.info("[MNIST] Tentando sklearn fetch_openml...")
     mnist = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
-    X = np.array(mnist["data"],   dtype=np.float32)
+    X = np.array(mnist["data"], dtype=np.float32)
     y = np.array(mnist["target"], dtype=np.int32)
 
     if X.max() > 1.0:
@@ -125,13 +126,13 @@ def _carregar_via_torchvision() -> tuple[np.ndarray, np.ndarray]:
     raiz = os.path.join("data", "torchvision_mnist")
     os.makedirs(raiz, exist_ok=True)
 
-    treino = tv_datasets.MNIST(root=raiz, train=True,  download=True)
-    teste  = tv_datasets.MNIST(root=raiz, train=False, download=True)
+    treino = tv_datasets.MNIST(root=raiz, train=True, download=True)
+    teste = tv_datasets.MNIST(root=raiz, train=False, download=True)
 
     X_treino = treino.data.numpy().reshape(-1, 784).astype(np.float32) / 255.0
     y_treino = treino.targets.numpy().astype(np.int32)
-    X_teste  = teste.data.numpy().reshape(-1, 784).astype(np.float32) / 255.0
-    y_teste  = teste.targets.numpy().astype(np.int32)
+    X_teste = teste.data.numpy().reshape(-1, 784).astype(np.float32) / 255.0
+    y_teste = teste.targets.numpy().astype(np.int32)
 
     X, y = _normalizar_e_consolidar(X_treino, y_treino, X_teste, y_teste)
     logger.info("[MNIST] torchvision OK — shape X=%s y=%s", X.shape, y.shape)
@@ -214,11 +215,13 @@ def _carregar_via_download_direto() -> tuple[np.ndarray, np.ndarray]:
 
             X_treino = _ler_idx_imagens(ti_bytes)
             y_treino = _ler_idx_rotulos(tr_bytes)
-            X_teste  = _ler_idx_imagens(ei_bytes)
-            y_teste  = _ler_idx_rotulos(er_bytes)
+            X_teste = _ler_idx_imagens(ei_bytes)
+            y_teste = _ler_idx_rotulos(er_bytes)
 
             X, y = _normalizar_e_consolidar(X_treino, y_treino, X_teste, y_teste)
-            logger.info("[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape)
+            logger.info(
+                "[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape
+            )
             return X, y
 
         except Exception as exc:
@@ -248,16 +251,16 @@ def _carregar_via_keras() -> tuple[np.ndarray, np.ndarray]:
     # Importação tardia para não impor TF como dependência obrigatória
     import tensorflow as tf
 
-    (X_treino, y_treino), (X_teste, y_teste) = (
-        tf.keras.datasets.mnist.load_data()
-    )
+    (X_treino, y_treino), (X_teste, y_teste) = tf.keras.datasets.mnist.load_data()
 
     X_treino = X_treino.reshape(-1, 784).astype(np.float32)
-    X_teste  = X_teste.reshape(-1,  784).astype(np.float32)
+    X_teste = X_teste.reshape(-1, 784).astype(np.float32)
 
     X, y = _normalizar_e_consolidar(
-        X_treino, y_treino.astype(np.int32),
-        X_teste,  y_teste.astype(np.int32),
+        X_treino,
+        y_treino.astype(np.int32),
+        X_teste,
+        y_teste.astype(np.int32),
     )
     logger.info("[MNIST] keras OK — shape X=%s y=%s", X.shape, y.shape)
     return X, y
@@ -266,6 +269,7 @@ def _carregar_via_keras() -> tuple[np.ndarray, np.ndarray]:
 # ──────────────────────────────────────────────────────────────
 # Função pública
 # ──────────────────────────────────────────────────────────────
+
 
 def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
     """
@@ -291,19 +295,17 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
         logger.info("[MNIST] Carregando do cache local: %s", _CACHE_PATH)
         try:
             X, y = joblib.load(_CACHE_PATH)
-            logger.info(
-                "[MNIST] Cache OK — shape X=%s y=%s", X.shape, y.shape
-            )
+            logger.info("[MNIST] Cache OK — shape X=%s y=%s", X.shape, y.shape)
             return X, y
         except Exception as exc:
             logger.warning("[MNIST] Cache corrompido, ignorando: %s", exc)
 
     # ── Cadeia de fallback ──────────────────────────────────────
     fontes = [
-        ("sklearn",          _carregar_via_sklearn),
-        ("torchvision",      _carregar_via_torchvision),
-        ("download_direto",  _carregar_via_download_direto),
-        ("keras",            _carregar_via_keras),
+        ("sklearn", _carregar_via_sklearn),
+        ("torchvision", _carregar_via_torchvision),
+        ("download_direto", _carregar_via_download_direto),
+        ("keras", _carregar_via_keras),
     ]
 
     ultimo_erro: Exception | None = None
@@ -322,12 +324,9 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
             return X, y
 
         except Exception as exc:
-            logger.warning(
-                "[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc
-            )
+            logger.warning("[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc)
             ultimo_erro = exc
 
     raise RuntimeError(
-        "[MNIST] Todas as fontes de dados falharam. "
-        f"Último erro: {ultimo_erro}"
+        f"[MNIST] Todas as fontes de dados falharam. Último erro: {ultimo_erro}"
     )

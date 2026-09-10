@@ -6,8 +6,7 @@ import sys
 
 
 def configurar_registrador_log(
-    nome_modulo: str = "mnist_ia",
-    nivel_log: str | None = None
+    nome_modulo: str = "mnist_ia", nivel_log: str | None = None
 ) -> logging.Logger:
     """Configura e retorna um registrador de log padronizado para o sistema.
 
@@ -34,7 +33,7 @@ def configurar_registrador_log(
 
         formato = logging.Formatter(
             fmt="%(asctime)s [%(levelname)s] [%(name)s]: %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
         manipulador_terminal.setFormatter(formato)
         registrador.addHandler(manipulador_terminal)

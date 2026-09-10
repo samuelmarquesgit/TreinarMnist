@@ -13,6 +13,7 @@ from typing import Any
 
 try:
     from pymongo import MongoClient
+
     _PYMONGO_OK = True
 except Exception:
     MongoClient = None  # type: ignore
@@ -42,7 +43,7 @@ class ConexaoMongoDB:
     """
 
     def __init__(self, uri: str | None = None) -> None:
-        self.uri: str | None = uri or os.getenv('MONGO_URI', None)
+        self.uri: str | None = uri or os.getenv("MONGO_URI", None)
         self.usar_local: bool = not bool(self.uri)
 
         if not self.usar_local:
@@ -50,8 +51,8 @@ class ConexaoMongoDB:
                 self.client: Any = MongoClient(  # type: ignore[var-annotated]
                     self.uri, serverSelectionTimeoutMS=5000
                 )
-                self.db = self.client['treinarmnist']
-                self.colecao = self.db['matrizes_confusao']
+                self.db = self.client["treinarmnist"]
+                self.colecao = self.db["matrizes_confusao"]
                 # Força erro imediato caso URI seja inválida / servidor inacessível
                 self.client.server_info()
                 logger.info("Conexão com MongoDB Cloud inicializada.")
@@ -73,15 +74,15 @@ class ConexaoMongoDB:
             dados: Dicionário serializável em JSON.
         """
         if self.usar_local:
-            os.makedirs('reports', exist_ok=True)
-            caminho_arquivo = f'reports/{nome}.json'
-            with open(caminho_arquivo, 'w', encoding='utf-8') as f:
+            os.makedirs("reports", exist_ok=True)
+            caminho_arquivo = f"reports/{nome}.json"
+            with open(caminho_arquivo, "w", encoding="utf-8") as f:
                 json.dump(dados, f, indent=4, ensure_ascii=False)
             logger.info(
                 "Artefato '%s' salvo em formato JSON local: %s", nome, caminho_arquivo
             )
         else:
-            documento = {'nome': nome, 'dados': dados}
+            documento = {"nome": nome, "dados": dados}
             self.colecao.insert_one(documento)
             logger.info("Artefato '%s' salvo no MongoDB.", nome)
 
@@ -101,33 +102,25 @@ class ConexaoMongoDB:
             Dicionário com os dados do artefato, ou ``None`` se não encontrado.
         """
         if self.usar_local:
-            caminho_arquivo = f'reports/{nome}.json'
+            caminho_arquivo = f"reports/{nome}.json"
             if not os.path.exists(caminho_arquivo):
-                logger.warning(
-                    "Artefato local não encontrado: '%s'.", caminho_arquivo
-                )
+                logger.warning("Artefato local não encontrado: '%s'.", caminho_arquivo)
                 return None
             try:
-                with open(caminho_arquivo, 'r', encoding='utf-8') as f:
+                with open(caminho_arquivo, "r", encoding="utf-8") as f:
                     dados: dict[str, Any] = json.load(f)
-                logger.info(
-                    "Artefato '%s' carregado do JSON local.", nome
-                )
+                logger.info("Artefato '%s' carregado do JSON local.", nome)
                 return dados  # type: ignore[return-value]
             except (json.JSONDecodeError, OSError) as e:
-                logger.error(
-                    "Erro ao ler artefato local '%s': %s", caminho_arquivo, e
-                )
+                logger.error("Erro ao ler artefato local '%s': %s", caminho_arquivo, e)
                 return None
         else:
-            documento = self.colecao.find_one({'nome': nome}, {'_id': 0, 'dados': 1})
+            documento = self.colecao.find_one({"nome": nome}, {"_id": 0, "dados": 1})
             if documento is None:
-                logger.warning(
-                    "Artefato '%s' não encontrado no MongoDB.", nome
-                )
+                logger.warning("Artefato '%s' não encontrado no MongoDB.", nome)
                 return None
             logger.info("Artefato '%s' recuperado do MongoDB.", nome)
-            doc: dict[str, Any] | None = documento.get('dados')  # type: ignore[assignment]
+            doc: dict[str, Any] | None = documento.get("dados")  # type: ignore[assignment]
             return doc  # type: ignore[return-value]
 
     def listar_colecao(
@@ -148,15 +141,16 @@ class ConexaoMongoDB:
         resultados: list[dict[str, Any]] = []
 
         if self.usar_local:
-            pasta = 'reports'
+            pasta = "reports"
             if not os.path.isdir(pasta):
-                logger.info("Pasta local '%s' não existe — nenhum artefato encontrado.", pasta)
+                logger.info(
+                    "Pasta local '%s' não existe — nenhum artefato encontrado.", pasta
+                )
                 return resultados
             try:
-                arquivos = [
-                    f for f in os.listdir(pasta)
-                    if f.endswith('.json')
-                ][:limite]
+                arquivos = [f for f in os.listdir(pasta) if f.endswith(".json")][
+                    :limite
+                ]
             except OSError as e:
                 logger.error("Erro ao listar pasta '%s': %s", pasta, e)
                 return resultados
@@ -164,16 +158,16 @@ class ConexaoMongoDB:
             for nome_arquivo in arquivos:
                 caminho = os.path.join(pasta, nome_arquivo)
                 try:
-                    with open(caminho, 'r', encoding='utf-8') as f:
+                    with open(caminho, "r", encoding="utf-8") as f:
                         dados = json.load(f)
-                    resultados.append({
-                        'nome': nome_arquivo.removesuffix('.json'),
-                        'dados': dados,
-                    })
-                except (json.JSONDecodeError, OSError) as e:
-                    logger.warning(
-                        "Ignorando artefato ilegível '%s': %s", caminho, e
+                    resultados.append(
+                        {
+                            "nome": nome_arquivo.removesuffix(".json"),
+                            "dados": dados,
+                        }
                     )
+                except (json.JSONDecodeError, OSError) as e:
+                    logger.warning("Ignorando artefato ilegível '%s': %s", caminho, e)
             logger.info(
                 "Listagem local: %d artefato(s) encontrado(s).", len(resultados)
             )
@@ -181,7 +175,7 @@ class ConexaoMongoDB:
             try:
                 cursor = self.colecao.find(
                     filtro or {},
-                    {'_id': 0, 'nome': 1, 'dados': 1},
+                    {"_id": 0, "nome": 1, "dados": 1},
                 ).limit(limite)
                 resultados = list(cursor)
                 logger.info(
