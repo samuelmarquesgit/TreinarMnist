@@ -61,7 +61,15 @@ class ConexaoPostgres:
         self.engine = create_engine(self.url, echo=False)  # type: ignore[arg-type]
         Base.metadata.create_all(self.engine)
         self._migrar_schema()
-        self.SessionLocal = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
+        # expire_on_commit=False → atributos NÃO expiram após commit,
+        # evitando o erro "Instance is not bound to a Session" ao acessar
+        # campos de objetos ORM fora da transação.
+        self.SessionLocal = sessionmaker(
+            bind=self.engine,
+            autocommit=False,
+            autoflush=False,
+            expire_on_commit=False,
+        )
         logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")  # type: ignore[union-attr]
 
     def _migrar_schema(self) -> None:
@@ -88,6 +96,12 @@ class ConexaoPostgres:
     def obter_sessao(self) -> Generator[Session, None, None]:
         """
         Gerenciador de contexto seguro para transacoes no banco.
+
+        Nota: a sessao é fechada no finally, portanto objetos ORM retornados
+        dentro do bloco ``with`` ficam *detached* após o bloco. Use
+        ``listar_experimentos()`` para obter dicts puros sem esse risco, ou
+        acesse todos os atributos *dentro* do bloco ``with``.
+
         Yields:
             Session: Sessao ativa do SQLAlchemy.
         """
@@ -101,3 +115,38 @@ class ConexaoPostgres:
             raise
         finally:
             sessao.close()
+
+    def listar_experimentos(self, limite: int = 200) -> list[dict]:
+        """Retorna todos os experimentos como lista de dicts puros (sem ORM detached).
+
+        Converte cada linha para dict *dentro* da sessão ativa, antes de fechá-la,
+        eliminando o risco de ``DetachedInstanceError`` / ``bhk3``.
+
+        Args:
+            limite: Número máximo de registros retornados.
+
+        Returns:
+            Lista de dicts com as colunas do modelo ``Experimento``.
+        """
+        with self.obter_sessao() as sessao:
+            registros = (
+                sessao.query(Experimento)
+                .order_by(Experimento.data_execucao.desc())
+                .limit(limite)
+                .all()
+            )
+            # Serializa DENTRO da sessão — nunca após sessao.close()
+            return [
+                {
+                    "id": r.id,
+                    "modelo": r.modelo,
+                    "acuracia": r.acuracia,
+                    "precisao": r.precisao,
+                    "recall": r.recall,
+                    "f1": r.f1,
+                    "hiperparametros": r.hiperparametros,
+                    "tempo_treino": r.tempo_treino,
+                    "data_execucao": r.data_execucao,
+                }
+                for r in registros
+            ]

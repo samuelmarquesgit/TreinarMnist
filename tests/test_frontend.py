@@ -88,6 +88,13 @@ sys.modules["streamlit"] = _mock_st
 sys.modules["plotly"] = _mock_plotly
 sys.modules["plotly.express"] = _mock_px
 sys.modules["plotly.graph_objects"] = _mock_go
+# streamlit.components.v1 usado pelo painel_assistente_rag (scroll JS)
+_mock_components = MagicMock()
+_mock_components_v1 = MagicMock()
+_mock_components_v1.html = MagicMock(return_value=None)
+sys.modules["streamlit.components"] = _mock_components
+sys.modules["streamlit.components.v1"] = _mock_components_v1
+
 sys.modules["streamlit_drawable_canvas"] = MagicMock()
 
 # Limpa cache de módulos frontend para garantir import com mock
@@ -165,14 +172,18 @@ def _fachada_mock():
     f.y_treino = np.zeros(100, dtype=np.int32)
     f.X_teste = np.ones((20, 784), dtype=np.float32)
     f.y_teste = np.zeros(20, dtype=np.int32)
-    f.avaliar_modelo.return_value = {
+    _metricas_mock = {
         "acuracia": 0.95,
         "precisao": 0.94,
         "recall": 0.94,
         "f1": 0.94,
         "tempo_treino": 0.5,
+        "tempo_treino_segundos": 0.5,
         "matriz_confusao": [[0] * 10 for _ in range(10)],
     }
+    f.avaliar_modelo.return_value = _metricas_mock
+    # executar_experimento é chamado por _executar_benchmark no painel_benchmarks
+    f.executar_experimento.return_value = dict(_metricas_mock)
     f.obter_estatisticas_dados.return_value = {
         "media": 0.1,
         "mediana": 0.0,
@@ -761,15 +772,23 @@ def test_renderizar_benchmarks_executa_quando_botao():
     _mock_st.button.return_value = True
     modelos = ["RegressaoLogistica", "FlorestaAleatoria", "SVM"]
     _mock_st.multiselect.return_value = modelos
-    _mock_st.selectbox.side_effect = iter(["Acurácia", "RegressaoLogistica"])
     _mock_st.toggle.return_value = False
     _mock_st.progress.return_value = MagicMock()
-    with patch.object(
-        pd.DataFrame, "style", new_callable=lambda: property(lambda self: MagicMock())
-    ):
-        renderizar_bench(fachada)
-    fachada.treinar_modelo.assert_called()
-    _mock_st.selectbox.side_effect = None
+    try:
+        with (
+            patch(
+                "src.frontend.painel_benchmarks.FabricaModelos.listar_disponiveis",
+                return_value=modelos,
+            ),
+            patch.object(
+                pd.DataFrame, "style", new_callable=lambda: property(lambda self: MagicMock())
+            ),
+        ):
+            _mock_st.selectbox.side_effect = iter(["Acurácia", "RegressaoLogistica"])
+            renderizar_bench(fachada)
+        fachada.executar_experimento.assert_called()
+    finally:
+        _mock_st.selectbox.side_effect = None
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1283,20 +1302,22 @@ def test_obter_experimentos_postgres_com_registros():
 
     from src.frontend.painel_bancos_dados import _obter_experimentos_postgres
 
-    registro = MagicMock()
-    registro.id = 1
-    registro.modelo = "SVM"
-    registro.acuracia = 0.97
-    registro.tempo_treino = 1.23
-    registro.data_execucao = datetime(2025, 1, 1, 10, 0, 0)
+    # A função usa db.listar_experimentos() → list[dict] já serializados
+    registro_dict = {
+        "id": 1,
+        "modelo": "SVM",
+        "acuracia": 0.97,
+        "precisao": 0.96,
+        "recall": 0.95,
+        "f1": 0.955,
+        "tempo_treino": 1.23,
+        "data_execucao": datetime(2025, 1, 1, 10, 0, 0),
+    }
 
     with patch("src.frontend.painel_bancos_dados.ConexaoPostgres") as mock_cls:
         mock_db = MagicMock()
         mock_cls.return_value = mock_db
-        mock_sessao = MagicMock()
-        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
-        mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
-        mock_sessao.query.return_value.order_by.return_value.all.return_value = [registro]
+        mock_db.listar_experimentos.return_value = [registro_dict]
 
         resultado = _obter_experimentos_postgres()
 

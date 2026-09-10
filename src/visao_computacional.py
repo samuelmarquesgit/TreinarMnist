@@ -82,13 +82,17 @@ class BoundingBox(NamedTuple):
 
 def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
     """
-    Carrega e converte a entrada para uma imagem em escala de cinza uint8.
+    Carrega e converte a entrada para uma imagem em escala de cinza uint8 com alto contraste.
 
-    Aceita caminho de arquivo (str/Path), ndarray BGR (H, W, 3) ou ndarray
+    Aceita caminho de arquivo (str/Path), ndarray BGR/RGB (H, W, 3/4) ou ndarray
     já em cinza (H, W).
 
+    Para qualquer cor de traço (azul, vermelho, verde, amarelo, branco, etc.) em fundo
+    escuro (canvas) ou fundo claro (papel), extrai o sinal de maior contraste e normaliza
+    a faixa dinâmica [0, 255], garantindo compatibilidade canônica com o padrão MNIST.
+
     Args:
-        entrada: Caminho do arquivo de imagem, ndarray colorido (BGR) ou
+        entrada: Caminho do arquivo de imagem, ndarray colorido (BGR/RGB) ou
                  ndarray em escala de cinza, todos com dtype uint8.
 
     Returns:
@@ -96,8 +100,7 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
 
     Raises:
         FileNotFoundError: Se ``entrada`` for um caminho e o arquivo não existir.
-        ValueError: Se ``entrada`` for um ndarray com shape incompatível (ex:
-                    mais de 3 canais ou array 1-D).
+        ValueError: Se ``entrada`` for um ndarray com shape incompatível.
         TypeError: Se ``entrada`` não for str, Path nem ndarray.
     """
     if isinstance(entrada, (str, Path)):
@@ -107,15 +110,23 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         img_bgr = cv2.imread(str(caminho))
         if img_bgr is None:
             raise ValueError(f"OpenCV não conseguiu decodificar o arquivo: {caminho}")
-        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return, return-value]
+        if float(np.mean(img_bgr)) <= 127.0:
+            gray = np.max(img_bgr, axis=2).astype(np.uint8)
+        else:
+            gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        return _estirar_contraste(gray)
 
     if isinstance(entrada, np.ndarray):
         if entrada.ndim == 2:
-            return entrada.astype(np.uint8)
-        if entrada.ndim == 3 and entrada.shape[2] == 3:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return, return-value]
-        if entrada.ndim == 3 and entrada.shape[2] == 4:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[no-any-return, return-value]
+            return _estirar_contraste(entrada.astype(np.uint8))
+        if entrada.ndim == 3 and entrada.shape[2] in (3, 4):
+            canais = entrada[:, :, :3]
+            # Se fundo escuro (canvas): extrai a máxima ativação de cor por pixel (azul, vermelho, etc.)
+            if float(np.mean(canais)) <= 127.0:
+                gray = np.max(canais, axis=2).astype(np.uint8)
+            else:
+                gray = cv2.cvtColor(canais, cv2.COLOR_RGB2GRAY)
+            return _estirar_contraste(gray)
         raise ValueError(
             f"ndarray com shape {entrada.shape} não suportado. "
             "Esperado (H, W) ou (H, W, 3) ou (H, W, 4)."
@@ -126,12 +137,23 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
     )
 
 
+def _estirar_contraste(gray: GrayImage) -> GrayImage:
+    """Aumenta a faixa dinâmica do traço para [0, 255] se houver sinal."""
+    max_val = int(np.max(gray))
+    min_val = int(np.min(gray))
+    if max_val > min_val and max_val < 200:
+        # Estira o contraste para garantir intensidade forte do traço
+        fator = 255.0 / float(max_val - min_val)
+        return np.clip((gray.astype(np.float32) - min_val) * fator, 0, 255).astype(np.uint8)
+    return gray
+
+
 def _garantir_fundo_preto(gray: GrayImage) -> GrayImage:
     """
     Garante convenção MNIST: dígito branco sobre fundo preto.
 
     Se a luminosidade média da imagem for maior que 127, presume-se que o
-    fundo é claro (ex: canvas branco com traço escuro) e inverte os pixels.
+    fundo é claro (ex: papel branco com traço escuro) e inverte os pixels.
 
     Args:
         gray: Imagem em escala de cinza, shape (H, W), dtype uint8.
@@ -140,7 +162,8 @@ def _garantir_fundo_preto(gray: GrayImage) -> GrayImage:
         Imagem com fundo escuro e conteúdo claro, shape (H, W), dtype uint8.
     """
     if float(np.mean(gray)) > 127.0:
-        return (255 - gray).astype(np.uint8)
+        invertida = (255 - gray).astype(np.uint8)
+        return _estirar_contraste(invertida)
     return gray
 
 
@@ -497,6 +520,13 @@ def preprocessar_imagem_mnist(
     except ValueError as exc:
         logger.error("[visao] Falha no padding: %s", exc)
         return saida_vazia
+
+    # Normalização de contraste para pico canônico MNIST (255)
+    max_canvas = int(np.max(canvas))
+    if max_canvas > 0 and max_canvas < 220:
+        canvas = np.clip(canvas.astype(np.float32) * (255.0 / float(max_canvas)), 0, 255).astype(
+            np.uint8
+        )
 
     # ── Etapa 5: normalização e formato final ─────────────────
     resultado = normalizar_imagem(canvas, intervalo_float=normalizar)
