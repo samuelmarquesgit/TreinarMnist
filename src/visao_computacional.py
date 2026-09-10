@@ -107,15 +107,15 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         img_bgr = cv2.imread(str(caminho))
         if img_bgr is None:
             raise ValueError(f"OpenCV não conseguiu decodificar o arquivo: {caminho}")
-        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
 
     if isinstance(entrada, np.ndarray):
         if entrada.ndim == 2:
             return entrada.astype(np.uint8)
         if entrada.ndim == 3 and entrada.shape[2] == 3:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)
+            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
         if entrada.ndim == 3 and entrada.shape[2] == 4:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)
+            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[return-value]
         raise ValueError(
             f"ndarray com shape {entrada.shape} não suportado. "
             "Esperado (H, W) ou (H, W, 3) ou (H, W, 4)."
@@ -264,7 +264,7 @@ def redimensionar_com_proporcao(
         nova_largura,
         fator,
     )
-    return redimensionado
+    return redimensionado  # type: ignore[return-value]
 
 
 # ──────────────────────────────────────────────────────────────
@@ -502,8 +502,8 @@ def preprocessar_imagem_mnist(
     resultado = normalizar_imagem(canvas, intervalo_float=normalizar)
 
     if retornar_achatado:
-        return resultado.flatten().reshape(1, -1)  # (1, tamanho_canvas²)
-    return resultado  # (tamanho_canvas, tamanho_canvas)
+        return resultado.flatten().reshape(1, -1)  # type: ignore[return-value]
+    return resultado  # type: ignore[return-value]
 
 
 # ──────────────────────────────────────────────────────────────
