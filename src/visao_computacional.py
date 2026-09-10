@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import NamedTuple, Union
+from typing import NamedTuple
 
 import cv2
 import numpy as np
@@ -43,7 +43,7 @@ GrayImage = NDArray[np.uint8]
 ColorImage = NDArray[np.uint8]
 
 # Entrada aceita por processar_imagem_usuario / preprocessar_imagem_mnist
-EntradaImagem = Union[str, Path, NDArray[np.uint8]]
+EntradaImagem = str | Path | NDArray[np.uint8]
 
 
 class BoundingBox(NamedTuple):
