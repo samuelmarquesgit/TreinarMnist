@@ -184,9 +184,7 @@ def _fachada_mock():
         "curtose": -0.1,
     }
     # Amostra EDA: 10 imagens
-    f.amostras_por_classe.return_value = {
-        i: np.zeros((28, 28), dtype=np.uint8) for i in range(10)
-    }
+    f.amostras_por_classe.return_value = {i: np.zeros((28, 28), dtype=np.uint8) for i in range(10)}
     return f
 
 
@@ -713,9 +711,7 @@ def test_renderizar_matriz_com_mat_sem_plotly():
     _mock_st.selectbox.return_value = "ModeloA"
     _mock_st.toggle.return_value = False
     _mock_st.reset_mock()
-    resultados = {
-        "ModeloA": {"matriz_confusao": [[i == j for j in range(10)] for i in range(10)]}
-    }
+    resultados = {"ModeloA": {"matriz_confusao": [[i == j for j in range(10)] for i in range(10)]}}
     try:
         _renderizar_matriz_confusao(resultados)
         _mock_st.plotly_chart.assert_not_called()
@@ -1083,9 +1079,7 @@ def test_renderizar_bancos_com_postgres_nao_vazio():
             "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
             return_value=df_fake,
         ),
-        patch(
-            "src.frontend.painel_bancos_dados._obter_artefatos_mongodb", return_value=[]
-        ),
+        patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb", return_value=[]),
     ):
         renderizar_bancos()
 
@@ -1223,9 +1217,7 @@ def test_obter_artefatos_mongodb_enriquece_com_timestamp(tmp_path, monkeypatch):
     with patch("src.frontend.painel_bancos_dados.ConexaoMongoDB") as mock_cls:
         mock_conn = MagicMock()
         mock_conn.usar_local = True
-        mock_conn.listar_colecao.return_value = [
-            {"nome": "artefato_ts", "dados": {"k": "v"}}
-        ]
+        mock_conn.listar_colecao.return_value = [{"nome": "artefato_ts", "dados": {"k": "v"}}]
         mock_cls.return_value = mock_conn
 
         from src.frontend.painel_bancos_dados import _obter_artefatos_mongodb
@@ -1244,9 +1236,7 @@ def test_obter_experimentos_postgres_registros_vazios():
         mock_db = MagicMock()
         mock_cls.return_value = mock_db
         mock_sessao = MagicMock()
-        mock_db.obter_sessao.return_value.__enter__ = MagicMock(
-            return_value=mock_sessao
-        )
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
         mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
         mock_sessao.query.return_value.order_by.return_value.all.return_value = []
 
@@ -1304,13 +1294,9 @@ def test_obter_experimentos_postgres_com_registros():
         mock_db = MagicMock()
         mock_cls.return_value = mock_db
         mock_sessao = MagicMock()
-        mock_db.obter_sessao.return_value.__enter__ = MagicMock(
-            return_value=mock_sessao
-        )
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
         mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
-        mock_sessao.query.return_value.order_by.return_value.all.return_value = [
-            registro
-        ]
+        mock_sessao.query.return_value.order_by.return_value.all.return_value = [registro]
 
         resultado = _obter_experimentos_postgres()
 
@@ -1342,9 +1328,7 @@ def test_renderizar_modo_canvas_com_image_data():
     img_data[100:180, 100:180, :3] = 200  # bright region
     img_data[:, :, 3] = 255  # alpha
 
-    sys.modules[
-        "streamlit_drawable_canvas"
-    ].st_canvas.return_value.image_data = img_data
+    sys.modules["streamlit_drawable_canvas"].st_canvas.return_value.image_data = img_data
     cols = _make_columns(2)
     _mock_st.columns.return_value = cols
     _mock_st.slider.return_value = 20
@@ -1486,9 +1470,7 @@ def test_renderizar_modo_upload_com_arquivo():
     fake_pil = PILImage.new("RGB", (28, 28), color=(100, 100, 100))
     try:
         with (
-            patch(
-                "guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo"
-            ),
+            patch("guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo"),
             patch(
                 "src.frontend.painel_laboratorio_visao.Image.open",
                 return_value=fake_pil,
@@ -1612,9 +1594,7 @@ def test_renderizar_eda_sem_plotly_cobre_else_branches():
     }
 
     _mock_st.slider.side_effect = [5, 0, 10]
-    _mock_st.button.return_value = (
-        True  # btn_projetar=True mas _PLOTLY_OK=False → warning
-    )
+    _mock_st.button.return_value = True  # btn_projetar=True mas _PLOTLY_OK=False → warning
     _mock_st.radio.return_value = "PCA (Rápido)"
     _mock_st.selectbox.return_value = 0
     _mock_st.reset_mock()

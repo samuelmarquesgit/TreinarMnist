@@ -48,9 +48,7 @@ def test_fachada_inicializacao(mock_carregar, mock_pre_processar):
 @patch("src.fachada.FabricaModelos.criar_modelo")
 @patch("src.fachada.pre_processar_dados")
 @patch("src.fachada.carregar_dados_mnist")
-def test_treinar_modelo_invoca_inicializacao(
-    mock_carregar, mock_pre, mock_criar_modelo
-):
+def test_treinar_modelo_invoca_inicializacao(mock_carregar, mock_pre, mock_criar_modelo):
     mock_carregar.return_value = (np.array([[1], [2]]), np.array([0, 1]))
     mock_pre.return_value = (
         np.array([[1]]),
@@ -114,9 +112,7 @@ def test_obter_estatisticas_dados(mock_calc_class):
 @patch("src.fachada.FachadaPipelineIA.treinar_modelo")
 @patch("src.fachada.FachadaPipelineIA.avaliar_modelo")
 @patch("src.fachada.FachadaPipelineIA._persistir_benchmark")
-def test_executar_benchmark_sucesso(
-    mock_persist, mock_avaliar, mock_treinar, mock_time
-):
+def test_executar_benchmark_sucesso(mock_persist, mock_avaliar, mock_treinar, mock_time):
     fachada = FachadaPipelineIA()
     fachada.X_treino = np.array([[1]])
     fachada.X_teste = np.array([[2]])
@@ -150,9 +146,7 @@ def test_executar_benchmark_falha(mock_treinar):
     fachada.X_teste = np.array([[2]])
     mock_treinar.side_effect = Exception("Falha simulada")
 
-    resultados = fachada.executar_benchmark(
-        ["RegressaoLogistica"], dir_saida="fake_dir"
-    )
+    resultados = fachada.executar_benchmark(["RegressaoLogistica"], dir_saida="fake_dir")
 
     res = resultados["RegressaoLogistica"]
     assert res.status == "erro"
@@ -259,9 +253,7 @@ def test_prever_probabilidades_decision_function_multiclasse(fachada_com_dados):
     modelo_sgd = ModeloSklearn(sgd, "SGD_Multi")
     fachada_com_dados.modelos["SGD_Multi"] = modelo_sgd
 
-    probs = fachada_com_dados.prever_probabilidades(
-        "SGD_Multi", fachada_com_dados.X_teste[:5]
-    )
+    probs = fachada_com_dados.prever_probabilidades("SGD_Multi", fachada_com_dados.X_teste[:5])
     assert probs.shape == (5, 10)
     assert np.allclose(probs.sum(axis=1), 1.0)
 
@@ -272,9 +264,7 @@ def test_prever_probabilidades_pytorch_exception(fachada_com_dados):
     fachada_com_dados.modelos["FakeTorch"] = mock_wrapper
 
     with pytest.raises(Exception, match="Simulated tensor error"):
-        fachada_com_dados.prever_probabilidades(
-            "FakeTorch", fachada_com_dados.X_teste[:5]
-        )
+        fachada_com_dados.prever_probabilidades("FakeTorch", fachada_com_dados.X_teste[:5])
 
 
 def test_prever_probabilidades_modelo_nao_treinado(fachada):

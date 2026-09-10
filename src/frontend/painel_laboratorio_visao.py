@@ -73,10 +73,7 @@ def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
     top = ranking[:k]
     rotulos = [f"Dígito {c}" for c, _ in top]
     valores = [round(p * 100, 2) for _, p in top]
-    cores = [
-        "#58a6ff" if i == 0 else "#3fb950" if i == 1 else "#8b949e"
-        for i in range(len(top))
-    ]
+    cores = ["#58a6ff" if i == 0 else "#3fb950" if i == 1 else "#8b949e" for i in range(len(top))]
 
     if PLOTLY_OK:
         fig = go.Figure(
@@ -229,20 +226,14 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
     vetor = processar_imagem_usuario(img_array)
     ranking_raw = _inferir_com_modelo(fachada, vetor)
     if ranking_raw is None:
-        st.info(
-            "Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui."
-        )
+        st.info("Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui.")
         return
 
     ranking = ordenar_probabilidades_por_bolha(ranking_raw)
     melhor_classe, melhor_prob = ranking[0]
     k1, k2 = st.columns(2)
-    k1.markdown(
-        kpi_tile(f"Dígito {melhor_classe}", "🎯 Predição"), unsafe_allow_html=True
-    )
-    k2.markdown(
-        kpi_tile(f"{melhor_prob * 100:.1f}%", "Confiança"), unsafe_allow_html=True
-    )
+    k1.markdown(kpi_tile(f"Dígito {melhor_classe}", "🎯 Predição"), unsafe_allow_html=True)
+    k2.markdown(kpi_tile(f"{melhor_prob * 100:.1f}%", "Confiança"), unsafe_allow_html=True)
 
     from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
 

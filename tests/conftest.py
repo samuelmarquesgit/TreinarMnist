@@ -41,12 +41,8 @@ def y_treino() -> np.ndarray:
     """
     rng = np.random.default_rng(_SEED)
     # Garante que todas as 10 classes apareçam pelo menos uma vez
-    base = np.repeat(
-        np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TREINO // _N_CLASSES
-    )
-    extra = rng.integers(
-        0, _N_CLASSES, size=_N_AMOSTRAS_TREINO - len(base), dtype=np.int32
-    )
+    base = np.repeat(np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TREINO // _N_CLASSES)
+    extra = rng.integers(0, _N_CLASSES, size=_N_AMOSTRAS_TREINO - len(base), dtype=np.int32)
     rotulos = np.concatenate([base, extra])
     rng.shuffle(rotulos)
     return rotulos
@@ -69,12 +65,8 @@ def y_teste() -> np.ndarray:
     Shape: (50,) — dtype int32.
     """
     rng = np.random.default_rng(_SEED + 1)
-    base = np.repeat(
-        np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TESTE // _N_CLASSES
-    )
-    extra = rng.integers(
-        0, _N_CLASSES, size=_N_AMOSTRAS_TESTE - len(base), dtype=np.int32
-    )
+    base = np.repeat(np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TESTE // _N_CLASSES)
+    extra = rng.integers(0, _N_CLASSES, size=_N_AMOSTRAS_TESTE - len(base), dtype=np.int32)
     rotulos = np.concatenate([base, extra])
     rng.shuffle(rotulos)
     return rotulos

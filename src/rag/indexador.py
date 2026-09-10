@@ -222,9 +222,7 @@ class IndexadorChromaDB:
             )
             logger.info("ChromaDB inicializado em '%s'.", self.caminho_db)
         except ImportError as exc:
-            raise ImportError(
-                "ChromaDB não instalado. Execute: pip install chromadb"
-            ) from exc
+            raise ImportError("ChromaDB não instalado. Execute: pip install chromadb") from exc
 
     def indexar(self, documentos: list[dict[str, Any]] | None = None) -> int:
         """Indexa documentos na coleção ChromaDB.
@@ -243,9 +241,7 @@ class IndexadorChromaDB:
 
         # Verifica quais já foram indexados (evita duplicatas)
         existentes = set(self._colecao.get(ids=ids)["ids"])
-        novos = [
-            (i, t, m) for i, t, m in zip(ids, textos, metadados) if i not in existentes
-        ]
+        novos = [(i, t, m) for i, t, m in zip(ids, textos, metadados) if i not in existentes]
 
         if novos:
             ids_novos, textos_novos, meta_novos = zip(*novos)

@@ -1,38 +1,575 @@
 Run ruff check src/ tests/
-  ruff check src/ tests/
-  shell: /usr/bin/bash -e {0}
-  env:
-    pythonLocation: /opt/hostedtoolcache/Python/3.10.21/x64
-    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib/pkgconfig
-    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib
 I001 [*] Import block is un-sorted or un-formatted
   --> tests/test_carregador_dados.py:11:1
    |
  9 |   """
 10 |
-11 | / import numpy as np
-12 | | import pytest
-13 | | from unittest.mock import patch
-14 | |
-15 | | from src.carregador_dados import carregar_dados_mnist
+11 | / from unittest.mock import patch
+12 | |
+13 | | import numpy as np
+14 | | import pytest
+15 | |
+16 | | from src.carregador_dados import carregar_dados_mnist
    | |_____________________________________________________^
 help: Organize imports
    |
-10 |
-11 + from unittest.mock import patch
-12 +
-13 | import numpy as np
-14 | import pytest
-   - from unittest.mock import patch
-15 |
-16 | from src.carregador_dados import carregar_dados_mnist
-   -
 17 |
+   -
+18 | # ──────────────────────────────────────────────────────────────
    |
 
 Found 1 error.
 [*] 1 fixable with the `--fix` option.
-Error: Process completed with exit code 1.
+
+
+(.venv) PS C:\Users\samuelmarques\OneDrive\Documentos\Claude\TreinarMnist> ruff check
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> agent\agente_analista_metricas.py:3:1
+  |
+1 | """Agente especialista em diagnóstico estatístico e análise comparativa de classificadores."""
+2 |  
+3 | from typing import Dict, Any
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | import pandas as pd
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> agent\agente_analista_metricas.py:3:1
+  |
+1 |   """Agente especialista em diagnóstico estatístico e análise comparativa de classificadores."""
+2 |    
+3 | / from typing import Dict, Any
+4 | | import pandas as pd
+  | |___________________^
+help: Organize imports
+  |
+2 |  
+  - from typing import Dict, Any
+3 + from typing import Any, Dict
+4 +
+5 | import pandas as pd
+  |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> agent\agente_analista_metricas.py:11:70
+   |
+10 |     @staticmethod
+11 |     def identificar_modelo_campeao(tabela_metricas: pd.DataFrame) -> Dict[str, Any]:
+   |                                                                      ^^^^
+12 |         """Avalia o melhor equilíbrio entre Acurácia, F1-Score e Custo Computacional.
+   |
+help: Replace with `dict`
+   |
+10 |     @staticmethod
+   -     def identificar_modelo_campeao(tabela_metricas: pd.DataFrame) -> Dict[str, Any]:
+11 +     def identificar_modelo_campeao(tabela_metricas: pd.DataFrame) -> dict[str, Any]:
+12 |         """Avalia o melhor equilíbrio entre Acurácia, F1-Score e Custo Computacional.
+   |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> agent\orquestrador_mnist.py:3:1
+  |
+1 | """Agente autônomo responsável pela orquestração do ciclo completo de vida do pipeline MNIST."""
+2 |
+3 | from typing import Dict, Any, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> agent\orquestrador_mnist.py:3:1
+  |
+1 | """Agente autônomo responsável pela orquestração do ciclo completo de vida do pipeline MNIST."""
+2 |
+3 | from typing import Dict, Any, Optional
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Organize imports
+  |
+2 |
+  - from typing import Dict, Any, Optional
+3 + from typing import Any, Dict, Optional
+4 |
+  |
+
+UP045 [*] Use `X | None` for type annotations
+  --> agent\orquestrador_mnist.py:9:39
+   |
+ 7 |     """Agente que executa e supervisiona as etapas do pipeline de machine learning."""
+ 8 |
+ 9 |     def __init__(self, configuracoes: Optional[Dict[str, Any]] = None):
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+10 |         self.configuracoes = configuracoes or {}
+11 |         self.estado_execucao: Dict[str, Any] = {
+   |
+help: Convert to `X | None`
+   |
+8  |
+   -     def __init__(self, configuracoes: Optional[Dict[str, Any]] = None):
+9  +     def __init__(self, configuracoes: Dict[str, Any] | None = None):
+10 |         self.configuracoes = configuracoes or {}
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> agent\orquestrador_mnist.py:9:48
+   |
+ 7 |     """Agente que executa e supervisiona as etapas do pipeline de machine learning."""
+ 8 |
+ 9 |     def __init__(self, configuracoes: Optional[Dict[str, Any]] = None):
+   |                                                ^^^^
+10 |         self.configuracoes = configuracoes or {}
+11 |         self.estado_execucao: Dict[str, Any] = {
+   |
+help: Replace with `dict`
+   |
+8  |
+   -     def __init__(self, configuracoes: Optional[Dict[str, Any]] = None):
+9  +     def __init__(self, configuracoes: Optional[dict[str, Any]] = None):
+10 |         self.configuracoes = configuracoes or {}
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> agent\orquestrador_mnist.py:11:31
+   |
+ 9 |     def __init__(self, configuracoes: Optional[Dict[str, Any]] = None):
+10 |         self.configuracoes = configuracoes or {}
+11 |         self.estado_execucao: Dict[str, Any] = {
+   |                               ^^^^
+12 |             "eda_concluido": False,
+13 |             "dados_preparados": False,
+   |
+help: Replace with `dict`
+   |
+10 |         self.configuracoes = configuracoes or {}
+   -         self.estado_execucao: Dict[str, Any] = {
+11 +         self.estado_execucao: dict[str, Any] = {
+12 |             "eda_concluido": False,
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> agent\orquestrador_mnist.py:19:42
+   |
+17 |         }
+18 |
+19 |     def executar_plano_completo(self) -> Dict[str, Any]:
+   |                                          ^^^^
+20 |         """Executa a sequência ponta a ponta planejada para o projeto."""
+21 |         return {
+   |
+help: Replace with `dict`
+   |
+18 |
+   -     def executar_plano_completo(self) -> Dict[str, Any]:
+19 +     def executar_plano_completo(self) -> dict[str, Any]:
+20 |         """Executa a sequência ponta a ponta planejada para o projeto."""
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron.ipynb:cell 2:2:1
+  |
+1 |   # Bibliotecas
+2 | / import pandas as pd
+3 | | import numpy as np
+4 | | import matplotlib.pyplot as plt
+5 | | from sklearn.model_selection import train_test_split
+6 | | from sklearn.linear_model import Perceptron
+7 | | from sklearn.metrics import confusion_matrix
+  | |____________________________________________^
+8 |
+9 |   # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Perceptron.html
+  |
+help: Organize imports
+ ::: cell 2
+  |
+1 | # Bibliotecas
+  - import pandas as pd
+2 + import matplotlib.pyplot as plt
+3 | import numpy as np
+  - import matplotlib.pyplot as plt
+  - from sklearn.model_selection import train_test_split
+4 + import pandas as pd
+5 | from sklearn.linear_model import Perceptron
+6 | from sklearn.metrics import confusion_matrix
+7 + from sklearn.model_selection import train_test_split
+8 |
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron.ipynb:cell 13:1:1
+  |
+1 | import warnings
+  | ^^^^^^^^^^^^^^^
+2 | warnings.filterwarnings('ignore')
+  |
+help: Organize imports
+ ::: cell 13
+  |
+1 | import warnings
+2 +
+3 | warnings.filterwarnings('ignore')
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron.ipynb:cell 13:4:1
+  |
+2 |   warnings.filterwarnings('ignore')
+3 |
+4 | / from tensorflow.keras.optimizers import Adam
+5 | | from tensorflow.keras.models import Sequential
+6 | | from tensorflow.keras.layers import Dense
+  | |_________________________________________^
+help: Organize imports
+ ::: cell 13
+  |
+3 |
+4 + from tensorflow.keras.layers import Dense
+5 + from tensorflow.keras.models import Sequential
+6 | from tensorflow.keras.optimizers import Adam
+  - from tensorflow.keras.models import Sequential
+  - from tensorflow.keras.layers import Dense
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron_v2.ipynb:cell 2:2:1
+  |
+1 |   # Bibliotecas
+2 | / import pandas as pd
+3 | | import numpy as np
+4 | | import matplotlib.pyplot as plt
+5 | | from sklearn.model_selection import train_test_split
+6 | | from sklearn.linear_model import Perceptron
+7 | | from sklearn.metrics import confusion_matrix
+  | |____________________________________________^
+8 |
+9 |   # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Perceptron.html
+  |
+help: Organize imports
+ ::: cell 2
+  |
+1 | # Bibliotecas
+  - import pandas as pd
+2 + import matplotlib.pyplot as plt
+3 | import numpy as np
+  - import matplotlib.pyplot as plt
+  - from sklearn.model_selection import train_test_split
+4 + import pandas as pd
+5 | from sklearn.linear_model import Perceptron
+6 | from sklearn.metrics import confusion_matrix
+7 + from sklearn.model_selection import train_test_split
+8 |
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron_v2.ipynb:cell 16:1:1
+  |
+1 | import warnings
+  | ^^^^^^^^^^^^^^^
+2 | warnings.filterwarnings('ignore')
+  |
+help: Organize imports
+ ::: cell 16
+  |
+1 | import warnings
+2 +
+3 | warnings.filterwarnings('ignore')
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\1_Perceptron_v2.ipynb:cell 16:4:1
+  |
+2 |   warnings.filterwarnings('ignore')
+3 |
+4 | / from tensorflow.keras.optimizers import Adam
+5 | | from tensorflow.keras.models import Sequential
+6 | | from tensorflow.keras.layers import Dense
+  | |_________________________________________^
+help: Organize imports
+ ::: cell 16
+  |
+3 |
+4 + from tensorflow.keras.layers import Dense
+5 + from tensorflow.keras.models import Sequential
+6 | from tensorflow.keras.optimizers import Adam
+  - from tensorflow.keras.models import Sequential
+  - from tensorflow.keras.layers import Dense
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\2_conversao_temperaturas.ipynb:cell 4:2:1
+  |
+1 |   # Bibliotecas
+2 | / import numpy as np
+3 | | import tensorflow as tf
+4 | | from tensorflow.keras.models import Sequential
+5 | | from tensorflow.keras.layers import Dense
+6 | |
+7 | | import warnings
+  | |_______________^
+8 |   warnings.filterwarnings('ignore')
+  |
+help: Organize imports
+ ::: cell 4
+  |
+1 | # Bibliotecas
+2 + import warnings
+3 +
+4 | import numpy as np
+5 | import tensorflow as tf
+  - from tensorflow.keras.models import Sequential
+6 | from tensorflow.keras.layers import Dense
+  -
+  - import warnings
+7 + from tensorflow.keras.models import Sequential
+8 +
+9 | warnings.filterwarnings('ignore')
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\3_Regressao_Linear.ipynb:cell 5:1:1
+  |
+1 | import warnings
+  | ^^^^^^^^^^^^^^^
+2 | warnings.filterwarnings('ignore')
+  |
+help: Organize imports
+ ::: cell 5
+  |
+1 | import warnings
+2 +
+3 | warnings.filterwarnings('ignore')
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs\Notebooks\3_Regressao_Linear.ipynb:cell 5:4:1
+   |
+ 2 |   warnings.filterwarnings('ignore')
+ 3 |
+ 4 | / import numpy as np
+ 5 | | import pandas as pd
+ 6 | | from sklearn.datasets import fetch_california_housing
+ 7 | | from sklearn.model_selection import train_test_split
+ 8 | | from sklearn.preprocessing import StandardScaler
+ 9 | | from sklearn.metrics import mean_absolute_error, r2_score
+10 | |
+11 | | import tensorflow as tf
+12 | | from tensorflow.keras.models import Sequential
+13 | | from tensorflow.keras.layers import Dense
+   | |_________________________________________^
+14 |
+   |
+help: Organize imports
+  ::: cell 5
+   |
+5  | import pandas as pd
+6  + import tensorflow as tf
+7  | from sklearn.datasets import fetch_california_housing
+8  + from sklearn.metrics import mean_absolute_error, r2_score
+9  | from sklearn.model_selection import train_test_split
+10 | from sklearn.preprocessing import StandardScaler
+   - from sklearn.metrics import mean_absolute_error, r2_score
+   -
+   - import tensorflow as tf
+   - from tensorflow.keras.models import Sequential
+11 | from tensorflow.keras.layers import Dense
+12 + from tensorflow.keras.models import Sequential
+13 |
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs\Notebooks\4_Classificação.ipynb:cell 4:1:1
+   |
+ 1 | / import numpy as np
+ 2 | | import pandas as pd
+ 3 | | from sklearn.datasets import load_breast_cancer
+ 4 | | from sklearn.model_selection import train_test_split
+ 5 | | from sklearn.preprocessing import StandardScaler
+ 6 | | from sklearn.metrics import confusion_matrix, classification_report
+ 7 | |
+ 8 | | import tensorflow as tf
+ 9 | | from tensorflow.keras.models import Sequential
+10 | | from tensorflow.keras.layers import Dense
+11 | |
+12 | | import warnings
+   | |_______________^
+13 |   warnings.filterwarnings('ignore')
+   |
+help: Organize imports
+  ::: cell 4
+   |
+1  + import warnings
+2  +
+3  | import numpy as np
+4  | import pandas as pd
+5  + import tensorflow as tf
+6  | from sklearn.datasets import load_breast_cancer
+7  + from sklearn.metrics import classification_report, confusion_matrix
+8  | from sklearn.model_selection import train_test_split
+9  | from sklearn.preprocessing import StandardScaler
+   - from sklearn.metrics import confusion_matrix, classification_report
+10 + from tensorflow.keras.layers import Dense
+11 + from tensorflow.keras.models import Sequential
+12 |
+   - import tensorflow as tf
+   - from tensorflow.keras.models import Sequential
+   - from tensorflow.keras.layers import Dense
+   -
+   - import warnings
+13 | warnings.filterwarnings('ignore')
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\5_HelloWorld_visao_computaciona_Classico.ipynb:cell 4:1:1
+  |
+1 | / import numpy as np
+2 | | import matplotlib.pyplot as plt
+3 | | from sklearn.datasets import fetch_openml
+  | |_________________________________________^
+help: Organize imports
+ ::: cell 4
+  |
+1 + import matplotlib.pyplot as plt
+2 | import numpy as np
+  - import matplotlib.pyplot as plt
+  - from sklearn.datasets import fetch_openml 
+3 + from sklearn.datasets import fetch_openml
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\5_HelloWorld_visao_computaciona_Classico.ipynb:cell 21:2:1
+  |
+1 |   # Biblioteca
+2 | / from sklearn.model_selection import train_test_split
+3 | | from sklearn.linear_model import SGDClassifier
+4 | | from sklearn.metrics import confusion_matrix, classification_report
+  | |___________________________________________________________________^
+help: Organize imports
+ ::: cell 21
+  |
+1 | # Biblioteca
+2 + from sklearn.linear_model import SGDClassifier
+3 + from sklearn.metrics import classification_report, confusion_matrix
+4 | from sklearn.model_selection import train_test_split
+  - from sklearn.linear_model import SGDClassifier
+  - from sklearn.metrics import confusion_matrix, classification_report
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs\Notebooks\5_HelloWorld_visao_computaciona_RN.ipynb:cell 5:1:1
+  |
+1 | / import numpy as np
+2 | | import matplotlib.pyplot as plt
+3 | | from sklearn.datasets import fetch_openml
+4 | | from sklearn.model_selection import train_test_split
+5 | | from sklearn.metrics import classification_report
+6 | |
+7 | | import tensorflow as tf
+8 | | from tensorflow.keras.models import Sequential
+9 | | from tensorflow.keras.layers import Dense
+  | |_________________________________________^
+help: Organize imports
+ ::: cell 5
+  |
+1 + import matplotlib.pyplot as plt
+2 | import numpy as np
+  - import matplotlib.pyplot as plt
+3 + import tensorflow as tf
+4 | from sklearn.datasets import fetch_openml
+  - from sklearn.model_selection import train_test_split
+5 | from sklearn.metrics import classification_report
+  -
+  - import tensorflow as tf
+6 + from sklearn.model_selection import train_test_split
+7 + from tensorflow.keras.layers import Dense
+8 | from tensorflow.keras.models import Sequential
+  - from tensorflow.keras.layers import Dense
+  |
+
+UP035 `typing.Dict` is deprecated, use `dict` instead
+ --> guardrails\validador_falsa_certeza.py:3:1
+  |
+1 | """Guardrail para detecção de anomalias OOD e alerta de Falsa Certeza (Overconfidence)."""
+2 |
+3 | from typing import Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | import numpy as np
+  |
+
+UP035 `typing.List` is deprecated, use `list` instead
+ --> guardrails\validador_falsa_certeza.py:3:1
+  |
+1 | """Guardrail para detecção de anomalias OOD e alerta de Falsa Certeza (Overconfidence)."""
+2 |
+3 | from typing import Dict, Any, List
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | import numpy as np
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> guardrails\validador_falsa_certeza.py:3:1
+  |
+1 |   """Guardrail para detecção de anomalias OOD e alerta de Falsa Certeza (Overconfidence)."""
+2 |
+3 | / from typing import Dict, Any, List
+4 | | import numpy as np
+  | |__________________^
+help: Organize imports
+  |
+2 |
+  - from typing import Dict, Any, List
+3 + from typing import Any, Dict, List
+4 +
+5 | import numpy as np
+  |
+
+UP006 [*] Use `list` instead of `List` for type annotation
+  --> guardrails\validador_falsa_certeza.py:29:63
+   |
+28 |     def avaliar_predicao(
+29 |         self, probabilidades: np.ndarray, classes_conhecidas: List[int]
+   |                                                               ^^^^
+30 |     ) -> Dict[str, Any]:
+31 |         """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
+   |
+help: Replace with `list`
+   |
+28 |     def avaliar_predicao(
+   -         self, probabilidades: np.ndarray, classes_conhecidas: List[int]
+29 +         self, probabilidades: np.ndarray, classes_conhecidas: list[int]
+30 |     ) -> Dict[str, Any]:
+   |
+
+UP006 [*] Use `dict` instead of `Dict` for type annotation
+  --> guardrails\validador_falsa_certeza.py:30:10
+   |
+28 |     def avaliar_predicao(
+29 |         self, probabilidades: np.ndarray, classes_conhecidas: List[int]
+30 |     ) -> Dict[str, Any]:
+   |          ^^^^
+31 |         """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
+   |
+help: Replace with `dict`
+   |
+29 |         self, probabilidades: np.ndarray, classes_conhecidas: List[int]
+   -     ) -> Dict[str, Any]:
+30 +     ) -> dict[str, Any]:
+31 |         """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests\test_carregador_dados.py:11:1
+   |
+ 9 |   """
+10 |
+11 | / from unittest.mock import patch
+12 | |
+13 | | import numpy as np
+14 | | import pytest
+15 | |
+16 | | from src.carregador_dados import carregar_dados_mnist
+   | |_____________________________________________________^
+help: Organize imports
+   |
+17 |
+   -
+18 | # ──────────────────────────────────────────────────────────────
+   |
+
+Found 28 errors.
+[*] 24 fixable with the `--fix` option.

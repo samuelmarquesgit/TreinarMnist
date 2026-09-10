@@ -61,21 +61,15 @@ class ConexaoPostgres:
         self.engine = create_engine(self.url, echo=False)  # type: ignore[arg-type]
         Base.metadata.create_all(self.engine)
         self._migrar_schema()
-        self.SessionLocal = sessionmaker(
-            bind=self.engine, autocommit=False, autoflush=False
-        )
-        logger.info(
-            f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}"
-        )  # type: ignore[union-attr]
+        self.SessionLocal = sessionmaker(bind=self.engine, autocommit=False, autoflush=False)
+        logger.info(f"Conexao com banco de dados inicializada: {self.url.split(chr(58))[0]}")  # type: ignore[union-attr]
 
     def _migrar_schema(self) -> None:
         """Garante que colunas recém-adicionadas existam na tabela experimentos."""
         try:
             inspector = inspect(self.engine)
             if "experimentos" in inspector.get_table_names():
-                colunas_existentes = {
-                    col["name"] for col in inspector.get_columns("experimentos")
-                }
+                colunas_existentes = {col["name"] for col in inspector.get_columns("experimentos")}
                 colunas_esperadas = {
                     "precisao": "FLOAT",
                     "recall": "FLOAT",
@@ -85,11 +79,7 @@ class ConexaoPostgres:
                 with self.engine.connect() as conn:
                     for col, tipo in colunas_esperadas.items():
                         if col not in colunas_existentes:
-                            conn.execute(
-                                text(
-                                    f"ALTER TABLE experimentos ADD COLUMN {col} {tipo}"
-                                )
-                            )
+                            conn.execute(text(f"ALTER TABLE experimentos ADD COLUMN {col} {tipo}"))
                     conn.commit()
         except Exception as e:
             logger.warning(f"Aviso ao verificar/migrar schema do banco: {e}")

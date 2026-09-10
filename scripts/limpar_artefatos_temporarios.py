@@ -12,7 +12,7 @@ def limpar_diretorios():
         ".coverage",
         "htmlcov",
         "build",
-        "dist"
+        "dist",
     ]
 
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

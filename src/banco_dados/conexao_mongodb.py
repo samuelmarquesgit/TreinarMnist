@@ -57,9 +57,7 @@ class ConexaoMongoDB:
                 self.client.server_info()
                 logger.info("Conexão com MongoDB Cloud inicializada.")
             except Exception as e:
-                logger.warning(
-                    "Falha ao conectar no MongoDB Cloud. Fazendo fallback local: %s", e
-                )
+                logger.warning("Falha ao conectar no MongoDB Cloud. Fazendo fallback local: %s", e)
                 self.usar_local = True
         else:
             logger.info("MONGO_URI não definida. Utilizando armazenamento local JSON.")
@@ -78,9 +76,7 @@ class ConexaoMongoDB:
             caminho_arquivo = f"reports/{nome}.json"
             with open(caminho_arquivo, "w", encoding="utf-8") as f:
                 json.dump(dados, f, indent=4, ensure_ascii=False)
-            logger.info(
-                "Artefato '%s' salvo em formato JSON local: %s", nome, caminho_arquivo
-            )
+            logger.info("Artefato '%s' salvo em formato JSON local: %s", nome, caminho_arquivo)
         else:
             documento = {"nome": nome, "dados": dados}
             self.colecao.insert_one(documento)
@@ -107,7 +103,7 @@ class ConexaoMongoDB:
                 logger.warning("Artefato local não encontrado: '%s'.", caminho_arquivo)
                 return None
             try:
-                with open(caminho_arquivo, "r", encoding="utf-8") as f:
+                with open(caminho_arquivo, encoding="utf-8") as f:
                     dados: dict[str, Any] = json.load(f)
                 logger.info("Artefato '%s' carregado do JSON local.", nome)
                 return dados  # type: ignore[return-value]
@@ -143,14 +139,10 @@ class ConexaoMongoDB:
         if self.usar_local:
             pasta = "reports"
             if not os.path.isdir(pasta):
-                logger.info(
-                    "Pasta local '%s' não existe — nenhum artefato encontrado.", pasta
-                )
+                logger.info("Pasta local '%s' não existe — nenhum artefato encontrado.", pasta)
                 return resultados
             try:
-                arquivos = [f for f in os.listdir(pasta) if f.endswith(".json")][
-                    :limite
-                ]
+                arquivos = [f for f in os.listdir(pasta) if f.endswith(".json")][:limite]
             except OSError as e:
                 logger.error("Erro ao listar pasta '%s': %s", pasta, e)
                 return resultados
@@ -158,7 +150,7 @@ class ConexaoMongoDB:
             for nome_arquivo in arquivos:
                 caminho = os.path.join(pasta, nome_arquivo)
                 try:
-                    with open(caminho, "r", encoding="utf-8") as f:
+                    with open(caminho, encoding="utf-8") as f:
                         dados = json.load(f)
                     resultados.append(
                         {
@@ -168,9 +160,7 @@ class ConexaoMongoDB:
                     )
                 except (json.JSONDecodeError, OSError) as e:
                     logger.warning("Ignorando artefato ilegível '%s': %s", caminho, e)
-            logger.info(
-                "Listagem local: %d artefato(s) encontrado(s).", len(resultados)
-            )
+            logger.info("Listagem local: %d artefato(s) encontrado(s).", len(resultados))
         else:
             try:
                 cursor = self.colecao.find(
@@ -178,9 +168,7 @@ class ConexaoMongoDB:
                     {"_id": 0, "nome": 1, "dados": 1},
                 ).limit(limite)
                 resultados = list(cursor)
-                logger.info(
-                    "Listagem MongoDB: %d documento(s) retornado(s).", len(resultados)
-                )
+                logger.info("Listagem MongoDB: %d documento(s) retornado(s).", len(resultados))
             except Exception as e:
                 logger.error("Erro ao listar coleção MongoDB: %s", e)
 

@@ -15,7 +15,7 @@ def _inicializar_estado() -> None:
         historico_inicial = []
         if os.path.exists(caminho_hist):
             try:
-                with open(caminho_hist, "r", encoding="utf-8") as f:
+                with open(caminho_hist, encoding="utf-8") as f:
                     historico_inicial = json.load(f)
             except Exception:  # pragma: no cover
                 pass  # pragma: no cover
@@ -219,9 +219,7 @@ def _processar_pergunta(pergunta: str) -> None:
         if st.session_state.rag_pronto and st.session_state.assistente:
             try:
                 resultado = st.session_state.assistente.perguntar(pergunta)
-                resposta = resultado.get(
-                    "resposta", "Não foi possível gerar uma resposta."
-                )
+                resposta = resultado.get("resposta", "Não foi possível gerar uma resposta.")
                 fontes = resultado.get("fontes", [])
             except Exception as e:
                 resposta = f"Erro ao consultar o RAG: {e}"

@@ -304,10 +304,7 @@ class TestAssistenteRAG:
 
         resultado = assistente.perguntar("pergunta")
 
-        assert (
-            "Nota:" in resultado["resposta"]
-            or "apenas" in resultado["resposta"].lower()
-        )
+        assert "Nota:" in resultado["resposta"] or "apenas" in resultado["resposta"].lower()
 
     def test_estatisticas_retorna_dict_completo(self, tmp_path):
         """estatisticas() deve retornar dict com total_documentos e indexado."""

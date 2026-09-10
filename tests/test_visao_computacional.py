@@ -91,9 +91,7 @@ def test_visao_computacional_todas_excecoes_e_branches(tmp_path):
 
     # aplicar_padding_centralizado erros e branches
     with pytest.raises(ValueError, match="não cabe no canvas"):
-        aplicar_padding_centralizado(
-            np.zeros((30, 30), dtype=np.uint8), tamanho_canvas=28
-        )
+        aplicar_padding_centralizado(np.zeros((30, 30), dtype=np.uint8), tamanho_canvas=28)
 
     # aplicar_padding_centralizado sem centro_massa
     canvas = aplicar_padding_centralizado(
@@ -139,9 +137,7 @@ def test_visao_computacional_todas_excecoes_e_branches(tmp_path):
         assert np.all(res == 0)
 
     # preprocessar_imagem_mnist retornar_achatado=False
-    matriz = preprocessar_imagem_mnist(
-        np.zeros((20, 20), dtype=np.uint8), retornar_achatado=False
-    )
+    matriz = preprocessar_imagem_mnist(np.zeros((20, 20), dtype=np.uint8), retornar_achatado=False)
     assert matriz.shape == (28, 28)
 
     # preprocessar_imagem_mnist load valid image path

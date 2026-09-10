@@ -7,9 +7,7 @@ import cv2
 import numpy as np
 import pytest
 
-mcp_lib = pytest.importorskip(
-    "mcp", reason="Biblioteca 'mcp' não instalada — teste pulado."
-)
+mcp_lib = pytest.importorskip("mcp", reason="Biblioteca 'mcp' não instalada — teste pulado.")
 
 
 # ── Testes das funções helper (get_fachada / get_rag) ─────────────────────
@@ -216,9 +214,7 @@ def test_obter_estatisticas_dados_erro():
     import src.mcp_servidor as srv
 
     mock_fachada = MagicMock()
-    mock_fachada.obter_estatisticas_dados.side_effect = RuntimeError(
-        "Dados indisponíveis"
-    )
+    mock_fachada.obter_estatisticas_dados.side_effect = RuntimeError("Dados indisponíveis")
 
     with patch("src.mcp_servidor.get_fachada", return_value=mock_fachada):
         resultado = srv.obter_estatisticas_dados(particao="teste")

@@ -703,15 +703,15 @@ def test_painel_analise_card_metricas_value_error():
             MagicMock() for _ in range(n if isinstance(n, int) else len(n))
         ]
         st_pa.radio.return_value = "Brutos [0–255]"
-        st_pa.toggle.return_value = False  # usar_filtro_classe=False → digito_filtro=None (selectbox irrelevante)
+        st_pa.toggle.return_value = (
+            False  # usar_filtro_classe=False → digito_filtro=None (selectbox irrelevante)
+        )
         st_pa.error.reset_mock()
         with patch(
             "src.frontend.painel_analise_estatistica.CalculadorEstatistico"
         ) as mock_calc_cls:
             mock_calc = MagicMock()
-            mock_calc.estatisticas_descritivas.side_effect = ValueError(
-                "dados inválidos"
-            )
+            mock_calc.estatisticas_descritivas.side_effect = ValueError("dados inválidos")
             mock_calc_cls.return_value = mock_calc
             pa.renderizar(fachada)
         st_pa.error.assert_called()
@@ -785,9 +785,7 @@ def test_painel_analise_ttest_branch():
             if hasattr(pa, "_renderizar_testes_estatisticos"):
                 pa._renderizar_testes_estatisticos(fachada, "Brutos [0–255]", "Treino")
             else:
-                pa._renderizar_analise_estatistica(
-                    fachada, "Brutos [0–255]", "Treino", None
-                )
+                pa._renderizar_analise_estatistica(fachada, "Brutos [0–255]", "Treino", None)
         except Exception:
             pass
         finally:
@@ -818,9 +816,7 @@ def test_painel_rag_status_ativo_e_warning():
         # Linha 176: botão clicado + _carregar_assistente retorna None → st.warning
         st_rag.button.return_value = True
         st_rag.session_state.rag_pronto = False
-        with patch(
-            "src.frontend.painel_assistente_rag._carregar_assistente", return_value=None
-        ):
+        with patch("src.frontend.painel_assistente_rag._carregar_assistente", return_value=None):
             pra._renderizar_status_rag()
         st_rag.warning.assert_called()
     finally:

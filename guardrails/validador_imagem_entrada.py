@@ -22,9 +22,7 @@ class ValidadorImagemEntrada:
             True se válido, lança exceções descritivas caso contrário.
         """
         if not os.path.exists(caminho_arquivo):
-            raise FileNotFoundError(
-                f"Arquivo de imagem não encontrado: {caminho_arquivo}"
-            )
+            raise FileNotFoundError(f"Arquivo de imagem não encontrado: {caminho_arquivo}")
 
         _, extensao = os.path.splitext(caminho_arquivo)
         if extensao.lower() not in cls.EXTENSOES_PERMITIDAS:

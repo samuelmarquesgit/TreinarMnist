@@ -18,11 +18,7 @@ def _obter_experimentos_postgres() -> pd.DataFrame:
     try:
         db = ConexaoPostgres()
         with db.obter_sessao() as sessao:
-            registros = (
-                sessao.query(Experimento)
-                .order_by(Experimento.data_execucao.desc())
-                .all()
-            )
+            registros = sessao.query(Experimento).order_by(Experimento.data_execucao.desc()).all()
         if not registros:
             return pd.DataFrame()
         return pd.DataFrame(
@@ -35,9 +31,7 @@ def _obter_experimentos_postgres() -> pd.DataFrame:
                     if r.tempo_treino is not None
                     else "—",
                     "Data de Execução": (
-                        r.data_execucao.strftime("%d/%m/%Y %H:%M:%S")
-                        if r.data_execucao
-                        else "—"
+                        r.data_execucao.strftime("%d/%m/%Y %H:%M:%S") if r.data_execucao else "—"
                     ),
                 }
                 for r in registros
@@ -80,9 +74,7 @@ def renderizar() -> None:
     aplicar_estilos()
 
     st.markdown("## 🗄️ Monitor de Bancos de Dados")
-    st.caption(
-        "Visualização em tempo real das tabelas PostgreSQL e documentos MongoDB/JSON."
-    )
+    st.caption("Visualização em tempo real das tabelas PostgreSQL e documentos MongoDB/JSON.")
 
     aba_pg, aba_mongo = st.tabs(["🐘 PostgreSQL / SQLite", "🍃 MongoDB / JSON Local"])
 
@@ -97,9 +89,7 @@ def renderizar() -> None:
         df = _obter_experimentos_postgres()
 
         if df.empty:
-            st.info(
-                "Nenhum experimento registrado ainda. Execute o pipeline para popular o banco."
-            )
+            st.info("Nenhum experimento registrado ainda. Execute o pipeline para popular o banco.")
         else:
             total = len(df)
             melhor_acc = df["Acurácia"].replace("—", None).dropna().astype(float).max()
@@ -125,9 +115,7 @@ def renderizar() -> None:
                 import plotly.express as px
 
                 df_plot = df.copy()
-                df_plot["Acurácia_num"] = pd.to_numeric(
-                    df_plot["Acurácia"], errors="coerce"
-                )
+                df_plot["Acurácia_num"] = pd.to_numeric(df_plot["Acurácia"], errors="coerce")
                 df_plot = df_plot.dropna(subset=["Acurácia_num"])
                 if not df_plot.empty:
                     titulo_secao("Evolução de Acurácia por Execução")
@@ -169,11 +157,7 @@ def renderizar() -> None:
             st.button("🔄 Atualizar", key="att_mongo")
 
         artefatos = _obter_artefatos_mongodb()
-        mongo_modo = (
-            "MongoDB Atlas"
-            if not ConexaoMongoDB().usar_local
-            else "JSON Local (fallback)"
-        )
+        mongo_modo = "MongoDB Atlas" if not ConexaoMongoDB().usar_local else "JSON Local (fallback)"
         modo_badge = "ok" if "Atlas" in mongo_modo else "aviso"
 
         st.markdown(
@@ -190,9 +174,7 @@ def renderizar() -> None:
             )
         else:
             k1, _ = st.columns(2)
-            k1.markdown(
-                kpi_tile(str(len(artefatos)), "Artefatos"), unsafe_allow_html=True
-            )
+            k1.markdown(kpi_tile(str(len(artefatos)), "Artefatos"), unsafe_allow_html=True)
 
             titulo_secao("Lista de Artefatos")
             for art in artefatos:

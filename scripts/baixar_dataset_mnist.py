@@ -8,7 +8,7 @@ from sklearn.datasets import fetch_openml
 
 def baixar_e_armazenar_mnist(diretorio_destino: str = "data/raw") -> str:
     """Baixa o MNIST e salva em cache binário comprimido com joblib.
- 
+
     Args:
         diretorio_destino: Diretório para armazenamento local do cache.
 
@@ -25,13 +25,12 @@ def baixar_e_armazenar_mnist(diretorio_destino: str = "data/raw") -> str:
     print("[DOWNLOAD] Baixando o dataset MNIST (mnist_784) via OpenML...")
     mnist = fetch_openml("mnist_784", version=1, as_frame=False, parser="auto")
 
-    dados = {
-        "X": mnist.data,
-        "y": mnist.target.astype("uint8")
-    }
+    dados = {"X": mnist.data, "y": mnist.target.astype("uint8")}
 
     joblib.dump(dados, caminho_cache, compress=3)
-    print(f"[CONCLUÍDO] Dataset salvo com sucesso em: {caminho_cache} (Shape X: {dados['X'].shape})")
+    print(
+        f"[CONCLUÍDO] Dataset salvo com sucesso em: {caminho_cache} (Shape X: {dados['X'].shape})"
+    )
     return caminho_cache
 
 

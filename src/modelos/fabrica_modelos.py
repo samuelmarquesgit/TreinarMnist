@@ -150,9 +150,7 @@ class ModeloSklearn(ModeloAbstratoIA):
             X_treino: Matriz de features de shape ``(N, F)``.
             y_treino: Vetor de rótulos de shape ``(N,)``.
         """
-        logger.info(
-            "[%s] Iniciando treinamento com %d amostras…", self.nome_log, len(X_treino)
-        )
+        logger.info("[%s] Iniciando treinamento com %d amostras…", self.nome_log, len(X_treino))
         self.modelo.fit(X_treino, y_treino)
         logger.info("[%s] Treinamento concluído.", self.nome_log)
 
@@ -168,9 +166,7 @@ class ModeloSklearn(ModeloAbstratoIA):
         logger.debug("[%s] Inferência em %d amostras…", self.nome_log, len(X_teste))
         return self.modelo.predict(X_teste)  # type: ignore[no-any-return]
 
-    def prever_probabilidades(
-        self, X_teste: NDArray[np.floating]
-    ) -> NDArray[np.float64]:
+    def prever_probabilidades(self, X_teste: NDArray[np.floating]) -> NDArray[np.float64]:
         """Retorna distribuição de probabilidade por classe para cada amostra.
 
         Inspeciona o estimador encapsulado em três níveis de fallback:
@@ -201,9 +197,7 @@ class ModeloSklearn(ModeloAbstratoIA):
 
         # Identifica o estimador final (navega por Pipeline se necessário)
         estimador_final: Any = (
-            self.modelo.steps[-1][1]
-            if isinstance(self.modelo, Pipeline)
-            else self.modelo
+            self.modelo.steps[-1][1] if isinstance(self.modelo, Pipeline) else self.modelo
         )
 
         # ── Nível 1: predict_proba ────────────────────────────────────────────
@@ -266,12 +260,8 @@ class FabricaModelos:
         "ImpulsionamentoGradiente": lambda: GradientBoostingClassifier(
             n_estimators=50, learning_rate=0.1, max_depth=4, random_state=42
         ),
-        "SVM": lambda: SVC(
-            kernel="rbf", C=10.0, gamma="scale", probability=True, random_state=42
-        ),
-        "KNN": lambda: KNeighborsClassifier(
-            n_neighbors=5, metric="euclidean", n_jobs=-1
-        ),
+        "SVM": lambda: SVC(kernel="rbf", C=10.0, gamma="scale", probability=True, random_state=42),
+        "KNN": lambda: KNeighborsClassifier(n_neighbors=5, metric="euclidean", n_jobs=-1),
         "NaiveBayes": lambda: GaussianNB(var_smoothing=1e-9),
         "PerceptronMulticamadas": lambda: MLPClassifier(
             hidden_layer_sizes=(256, 128),
@@ -297,9 +287,7 @@ class FabricaModelos:
             Lista de strings com as chaves válidas, em ordem de inserção,
             com ``"VisionTransformer"`` ao final.
         """
-        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + [
-            FabricaModelos._CHAVE_VIT
-        ]
+        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + [FabricaModelos._CHAVE_VIT]
 
     @staticmethod
     def esta_registrado(nome_modelo: str) -> bool:
@@ -343,23 +331,18 @@ class FabricaModelos:
         """
         # ── VisionTransformer (importação lazy) ───────────────────────────────
         if nome_modelo == FabricaModelos._CHAVE_VIT:
-            logger.info(
-                "[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch)."
-            )
+            logger.info("[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch).")
             from src.modelos.vision_transformer import ModeloViT
 
             return ModeloViT(nome_log=nome_modelo)
 
         # ── Modelos Scikit-Learn ──────────────────────────────────────────────
-        construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(
-            nome_modelo
-        )
+        construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
 
         if construtor is None:
             chaves_validas = FabricaModelos.listar_disponiveis()
             logger.error(
-                "[Fábrica] Tentativa de instanciar modelo não registrado: '%s'. "
-                "Chaves válidas: %s",
+                "[Fábrica] Tentativa de instanciar modelo não registrado: '%s'. Chaves válidas: %s",
                 nome_modelo,
                 chaves_validas,
             )

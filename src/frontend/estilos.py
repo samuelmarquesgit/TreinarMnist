@@ -145,9 +145,7 @@ def aplicar_estilos() -> None:
 
 def card(conteudo_html: str) -> None:
     """Renderiza um bloco de conteúdo HTML dentro de um card glassmorphism."""
-    st.markdown(
-        f'<div class="glass-card">{conteudo_html}</div>', unsafe_allow_html=True
-    )
+    st.markdown(f'<div class="glass-card">{conteudo_html}</div>', unsafe_allow_html=True)
 
 
 def kpi_tile(valor: str, label: str) -> str:
@@ -162,9 +160,7 @@ def kpi_tile(valor: str, label: str) -> str:
 
 def badge(texto: str, tipo: str = "ok") -> str:
     """Retorna HTML de um badge colorido. tipo: 'ok' | 'erro' | 'aviso'."""
-    classe = {"ok": "badge-ok", "erro": "badge-erro", "aviso": "badge-aviso"}.get(
-        tipo, "badge-ok"
-    )
+    classe = {"ok": "badge-ok", "erro": "badge-erro", "aviso": "badge-aviso"}.get(tipo, "badge-ok")
     return f'<span class="{classe}">{texto}</span>'
 
 

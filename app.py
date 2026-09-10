@@ -33,6 +33,7 @@ except ImportError as e:
 def _importar_painel(modulo: str):
     try:
         import importlib
+
         return importlib.import_module(modulo)
     except ImportError:
         return None

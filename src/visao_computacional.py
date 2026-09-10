@@ -122,8 +122,7 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         )
 
     raise TypeError(
-        f"Tipo de entrada não suportado: {type(entrada).__name__}. "
-        "Use str, Path ou np.ndarray."
+        f"Tipo de entrada não suportado: {type(entrada).__name__}. Use str, Path ou np.ndarray."
     )
 
 
@@ -185,9 +184,7 @@ def extrair_bbox(
         raise ValueError(f"Esperado array 2-D (H, W), recebido shape {gray.shape}.")
 
     _, binarizada = cv2.threshold(gray, limiar_binarizacao, 255, cv2.THRESH_BINARY)
-    contornos, _ = cv2.findContours(
-        binarizada, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
-    )
+    contornos, _ = cv2.findContours(binarizada, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if not contornos:
         logger.debug("[visao] Nenhum contorno detectado — imagem vazia.")
@@ -258,9 +255,7 @@ def redimensionar_com_proporcao(
     nova_largura = max(1, round(w * fator))
     nova_altura = max(1, round(h * fator))
 
-    redimensionado = cv2.resize(
-        imagem, (nova_largura, nova_altura), interpolation=interpolacao
-    )
+    redimensionado = cv2.resize(imagem, (nova_largura, nova_altura), interpolation=interpolacao)
     logger.debug(
         "[visao] Resize: (%d, %d) → (%d, %d) | fator=%.4f",
         h,
@@ -459,9 +454,7 @@ def preprocessar_imagem_mnist(
         (28, 28)
     """
     saida_vazia = np.zeros(
-        (1, tamanho_canvas**2)
-        if retornar_achatado
-        else (tamanho_canvas, tamanho_canvas),
+        (1, tamanho_canvas**2) if retornar_achatado else (tamanho_canvas, tamanho_canvas),
         dtype=np.float32,
     )
 
@@ -489,9 +482,7 @@ def preprocessar_imagem_mnist(
 
     # ── Etapa 3: resize proporcional ──────────────────────────
     try:
-        redimensionado = redimensionar_com_proporcao(
-            recorte, tamanho_alvo=tamanho_interno
-        )
+        redimensionado = redimensionar_com_proporcao(recorte, tamanho_alvo=tamanho_interno)
     except ValueError as exc:
         logger.error("[visao] Falha no resize: %s", exc)
         return saida_vazia
