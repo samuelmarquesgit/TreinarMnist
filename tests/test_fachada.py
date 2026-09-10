@@ -160,12 +160,7 @@ def test_executar_benchmark_falha(mock_treinar):
 def test_executar_experimento(mock_treinar, mock_avaliar, mock_run):
     fachada = FachadaPipelineIA()
     fachada.X_treino = np.array([[1]])
-    mock_avaliar.return_value = {
-        "acuracia": 0.9,
-        "precisao": 0.9,
-        "recall": 0.9,
-        "f1": 0.9,
-    }
+    mock_avaliar.return_value = {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9}
 
     metricas = fachada.executar_experimento("RegressaoLogistica")
     assert "tempo_treino_segundos" in metricas
@@ -246,7 +241,13 @@ def test_prever_probabilidades_decision_function_multiclasse(fachada_com_dados):
     from sklearn.linear_model import SGDClassifier
 
     sgd = SGDClassifier(random_state=42)
-    sgd.fit(fachada_com_dados.X_treino[:50], fachada_com_dados.y_treino[:50])
+    # partial_fit com classes explícitas garante 10 colunas em decision_function
+    # mesmo que o subset não contenha todos os dígitos 0–9
+    sgd.partial_fit(
+        fachada_com_dados.X_treino[:50],
+        fachada_com_dados.y_treino[:50],
+        classes=np.arange(10),
+    )
 
     from src.modelos.fabrica_modelos import ModeloSklearn
 
