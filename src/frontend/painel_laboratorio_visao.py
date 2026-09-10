@@ -47,29 +47,40 @@ def ordenar_probabilidades_por_bolha(probs: list[tuple]) -> list[tuple]:
     return arr
 
 
-def _inferir_com_modelo(fachada, vetor: np.ndarray) -> list[tuple] | None:
+def _inferir_com_modelo(
+    fachada, vetor: np.ndarray, nome_modelo: str | None = None
+) -> list[tuple] | None:
     """
     Tenta obter probabilidades do modelo treinado.
     Retorna lista de (classe, prob) ou None se nenhum modelo estiver treinado.
     """
-    for modelo in fachada.modelos.values():
+    if not hasattr(fachada, "modelos") or not fachada.modelos:
+        return None
+
+    modelos_a_testar = []
+    if nome_modelo and nome_modelo in fachada.modelos:
+        modelos_a_testar.append(fachada.modelos[nome_modelo])
+    else:
+        modelos_a_testar.extend(fachada.modelos.values())
+
+    for modelo in modelos_a_testar:
         try:
-            modelo_sklearn = modelo.modelo
+            modelo_sklearn = getattr(modelo, "modelo", modelo)
             if hasattr(modelo_sklearn, "predict_proba"):
                 probs = modelo_sklearn.predict_proba(vetor)[0]
                 classes = list(range(len(probs)))
-                return list(zip(classes, probs.tolist()))
+                return list(zip(classes, [float(p) for p in probs]))
             else:
-                pred = modelo.prever(vetor)[0]
+                pred = int(modelo.prever(vetor)[0])
                 probs = [0.0] * 10
-                probs[int(pred)] = 1.0
+                probs[pred] = 1.0
                 return list(enumerate(probs))
         except Exception:
             continue
     return None
 
 
-def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
+def _grafico_topk(ranking: list[tuple], k: int = 10, key: str = "grafico_topk_ranking") -> None:
     top = ranking[:k]
     rotulos = [f"Dígito {c}" for c, _ in top]
     valores = [round(p * 100, 2) for _, p in top]
@@ -93,7 +104,7 @@ def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
             xaxis_title="Probabilidade (%)",
             yaxis={"autorange": "reversed"},
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True, key=key)
     else:
         df_top = {r: v for r, v in zip(rotulos, valores)}
         st.bar_chart(df_top)
@@ -104,32 +115,26 @@ def _pipeline_visual(img_orig: np.ndarray) -> tuple:
     Executa e devolve as 4 etapas do pipeline de visão para exibição.
     Retorna: (gray, invertida, bbox_crop, final_28x28)
     """
-    import cv2
+    from src.visao_computacional import (
+        _carregar_imagem,
+        _garantir_fundo_preto,
+        aplicar_padding_centralizado,
+        extrair_bbox,
+        redimensionar_com_proporcao,
+    )
 
-    # Etapa 1: grayscale
-    if len(img_orig.shape) == 3:
-        gray = cv2.cvtColor(img_orig, cv2.COLOR_RGB2GRAY)
-    else:
-        gray = img_orig.copy()
-
-    # Etapa 2: garante fundo preto/dígito branco (igual ao pipeline canonical)
-    # Inverte apenas se o fundo for claro (média > 127); canvas já é fundo preto
-    media = float(gray.mean())
-    invertida = (255 - gray).astype("uint8") if media > 127.0 else gray.copy()
-
-    # Etapa 3: bounding box
-    _, bin_img = cv2.threshold(invertida, 30, 255, cv2.THRESH_BINARY)
-    coords = cv2.findNonZero(bin_img)
-    if coords is not None:
-        x, y, w, h = cv2.boundingRect(coords)
-        bbox_crop = invertida[y : y + h, x : x + w]
+    gray = _carregar_imagem(img_orig)
+    invertida = _garantir_fundo_preto(gray)
+    bbox = extrair_bbox(invertida, limiar_binarizacao=20)
+    if not bbox.vazia:
+        bbox_crop = invertida[bbox.min_row : bbox.max_row, bbox.min_col : bbox.max_col]
+        redimensionado = redimensionar_com_proporcao(bbox_crop, tamanho_alvo=20)
+        canvas = aplicar_padding_centralizado(
+            redimensionado, tamanho_canvas=28, usar_centro_massa=True
+        )
     else:
         bbox_crop = invertida
-
-    # Etapa 4: resize 20×20 → canvas centralizado 28×28
-    resized = cv2.resize(bbox_crop, (20, 20), interpolation=cv2.INTER_AREA)
-    canvas = np.zeros((28, 28), dtype=np.uint8)
-    canvas[4:24, 4:24] = resized
+        canvas = np.zeros((28, 28), dtype=np.uint8)
 
     return gray, invertida, bbox_crop, canvas
 
@@ -225,7 +230,7 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
 
     vetor = processar_imagem_usuario(img_array)
     ranking_raw = _inferir_com_modelo(fachada, vetor)
-    if ranking_raw is None:
+    if not ranking_raw:
         st.info("Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui.")
         return
 
@@ -261,10 +266,33 @@ def renderizar(fachada) -> None:
         "O pipeline processa e classifica em tempo real com Bubble Sort Top-K."
     )
     if not fachada.modelos:
-        st.warning(
-            "⚠️ Nenhum modelo treinado ainda. Acesse o **Painel de Benchmarks** "
-            "e treine ao menos um modelo antes de usar o Laboratório."
-        )
+        # Consulta o banco para verificar se há treinos registrados
+        _tem_treinos_no_banco = False
+        _modelos_no_banco: list[str] = []
+        try:
+            from src.banco_dados.conexao_postgres import ConexaoPostgres
+
+            _db = ConexaoPostgres()
+            _registros = _db.listar_experimentos(limite=10)
+            if _registros:
+                _tem_treinos_no_banco = True
+                _modelos_no_banco = list({r["modelo"] for r in _registros})
+        except Exception:
+            pass
+
+        if _tem_treinos_no_banco:
+            st.warning(
+                "⚠️ **Modelos não carregados em memória.** "
+                f"O banco de dados registra treinos anteriores de: **{', '.join(_modelos_no_banco)}**.\n\n"
+                "Os arquivos de modelo em `artifacts/modelos/` podem ter sido removidos. "
+                "Acesse o **Painel de Benchmarks** e execute o treinamento novamente — "
+                "desta vez os modelos serão salvos automaticamente em disco e recarregados a cada reinício."
+            )
+        else:
+            st.warning(
+                "⚠️ **Nenhum modelo treinado ainda.** "
+                "Acesse o **Painel de Benchmarks** e treine ao menos um modelo antes de usar o Laboratório."
+            )
 
     modo = st.radio(
         "Modo de entrada",

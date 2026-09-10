@@ -47,6 +47,9 @@ logger = logging.getLogger(__name__)
 # Diretório padrão para persistência de benchmarks
 _DIR_BENCHMARKS: str = os.path.join("artifacts", "benchmarks")
 
+# Diretório padrão para persistência dos modelos treinados (joblib)
+_DIR_MODELOS: str = os.path.join("artifacts", "modelos")
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Estrutura de resultado de benchmark
@@ -180,7 +183,81 @@ class FachadaPipelineIA:
         modelo.treinar(self.X_treino, self.y_treino)  # type: ignore[arg-type]
         self.modelos[nome_modelo] = modelo
         logger.info("Modelo '%s' treinado com sucesso.", nome_modelo)
+
+        # ── Persiste o modelo em disco para sobreviver ao reinício do Streamlit
+        self._persistir_modelo(nome_modelo, modelo)
+
         return modelo
+
+    def _persistir_modelo(self, nome_modelo: str, modelo: ModeloAbstratoIA) -> None:
+        """Salva o modelo treinado em disco usando joblib.
+
+        O arquivo é gravado em ``artifacts/modelos/<nome_modelo>.joblib``.
+        Se joblib não estiver disponível, usa pickle como fallback.
+
+        Args:
+            nome_modelo: Identificador do modelo (usado como nome de arquivo).
+            modelo: Instância de ``ModeloAbstratoIA`` já treinada.
+        """
+        os.makedirs(_DIR_MODELOS, exist_ok=True)
+        caminho = os.path.join(_DIR_MODELOS, f"{nome_modelo}.joblib")
+        try:
+            import joblib  # type: ignore[import-untyped]
+
+            joblib.dump(modelo, caminho)
+            logger.info("Modelo '%s' salvo em disco: %s", nome_modelo, caminho)
+        except ImportError:
+            import pickle
+
+            caminho_pkl = os.path.join(_DIR_MODELOS, f"{nome_modelo}.pkl")
+            with open(caminho_pkl, "wb") as fh:
+                pickle.dump(modelo, fh)
+            logger.info("Modelo '%s' salvo (pickle) em disco: %s", nome_modelo, caminho_pkl)
+        except Exception as exc:
+            logger.warning("Não foi possível salvar o modelo '%s' em disco: %s", nome_modelo, exc)
+
+    def recarregar_modelos_salvos(self) -> list[str]:
+        """Recarrega modelos treinados previamente salvos em disco.
+
+        Chamado automaticamente pelo ``app.py`` na inicialização para restaurar
+        o estado após reinício do Streamlit.
+
+        Returns:
+            Lista de nomes dos modelos recarregados com sucesso.
+        """
+        recarregados: list[str] = []
+        if not os.path.isdir(_DIR_MODELOS):
+            return recarregados
+
+        for arquivo in sorted(os.listdir(_DIR_MODELOS)):
+            nome_modelo: str | None = None
+            if arquivo.endswith(".joblib"):
+                nome_modelo = arquivo[: -len(".joblib")]
+            elif arquivo.endswith(".pkl"):
+                nome_modelo = arquivo[: -len(".pkl")]
+
+            if not nome_modelo:
+                continue
+
+            caminho = os.path.join(_DIR_MODELOS, arquivo)
+            try:
+                if arquivo.endswith(".joblib"):
+                    import joblib  # type: ignore[import-untyped]
+
+                    modelo = joblib.load(caminho)
+                else:
+                    import pickle
+
+                    with open(caminho, "rb") as fh:
+                        modelo = pickle.load(fh)
+
+                self.modelos[nome_modelo] = modelo
+                recarregados.append(nome_modelo)
+                logger.info("Modelo '%s' recarregado do disco.", nome_modelo)
+            except Exception as exc:
+                logger.warning("Não foi possível recarregar '%s' do disco: %s", nome_modelo, exc)
+
+        return recarregados
 
     def avaliar_modelo(self, nome_modelo: str) -> dict[str, Any]:
         """Avalia o modelo treinado sobre o conjunto de teste.
@@ -254,6 +331,24 @@ class FachadaPipelineIA:
 
         metricas = self.avaliar_modelo(nome_modelo)
         metricas["tempo_treino_segundos"] = round(tempo_treino, 4)
+
+        try:
+            from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+
+            db = ConexaoPostgres()
+            with db.obter_sessao() as sessao:
+                exp = Experimento(
+                    modelo=nome_modelo,
+                    acuracia=metricas.get("acuracia"),
+                    precisao=metricas.get("precisao"),
+                    recall=metricas.get("recall"),
+                    f1=metricas.get("f1"),
+                    tempo_treino=tempo_treino,
+                )
+                sessao.add(exp)
+            logger.info("Experimento '%s' salvo no banco de dados.", nome_modelo)
+        except Exception as e:
+            logger.error("Falha ao salvar experimento no Postgres: %s", e)
 
         if _MLFLOW_OK:
             try:

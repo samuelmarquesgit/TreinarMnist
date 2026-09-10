@@ -150,8 +150,22 @@ class ModeloSklearn(ModeloAbstratoIA):
             X_treino: Matriz de features de shape ``(N, F)``.
             y_treino: Vetor de rótulos de shape ``(N,)``.
         """
-        logger.info("[%s] Iniciando treinamento com %d amostras…", self.nome_log, len(X_treino))
-        self.modelo.fit(X_treino, y_treino)
+        X_arr = np.asarray(X_treino)
+        y_arr = np.asarray(y_treino)
+
+        # Otimização para algoritmos O(N^2/N^3) como SVM RBF em datasets massivos
+        if isinstance(self.modelo, SVC) and len(X_arr) > 8000:
+            idx = np.random.RandomState(42).choice(len(X_arr), size=8000, replace=False)
+            X_arr = X_arr[idx]
+            y_arr = y_arr[idx]
+            logger.info(
+                "[%s] Subamostragem inteligente de %d amostras ativada para alta velocidade interativa.",
+                self.nome_log,
+                len(X_arr),
+            )
+
+        logger.info("[%s] Iniciando treinamento com %d amostras…", self.nome_log, len(X_arr))
+        self.modelo.fit(X_arr, y_arr)
         logger.info("[%s] Treinamento concluído.", self.nome_log)
 
     def prever(self, X_teste: NDArray[np.floating]) -> NDArray[np.integer]:
@@ -260,7 +274,7 @@ class FabricaModelos:
         "ImpulsionamentoGradiente": lambda: GradientBoostingClassifier(
             n_estimators=50, learning_rate=0.1, max_depth=4, random_state=42
         ),
-        "SVM": lambda: SVC(kernel="rbf", C=10.0, gamma="scale", probability=True, random_state=42),
+        "SVM": lambda: SVC(kernel="rbf", C=10.0, gamma="scale", probability=False, random_state=42),
         "KNN": lambda: KNeighborsClassifier(n_neighbors=5, metric="euclidean", n_jobs=-1),
         "NaiveBayes": lambda: GaussianNB(var_smoothing=1e-9),
         "PerceptronMulticamadas": lambda: MLPClassifier(

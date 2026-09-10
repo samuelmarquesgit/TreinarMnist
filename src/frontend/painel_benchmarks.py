@@ -27,7 +27,6 @@ Contrato com a fábrica
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any
 
 import numpy as np
@@ -115,10 +114,8 @@ def _executar_benchmark(
             continue
 
         try:
-            t0 = time.perf_counter()
-            fachada.treinar_modelo(nome)
-            metricas = fachada.avaliar_modelo(nome)
-            metricas["tempo_treino"] = round(time.perf_counter() - t0, 2)
+            metricas = fachada.executar_experimento(nome)
+            metricas["tempo_treino"] = metricas.get("tempo_treino_segundos", 0.0)
             metricas[_CHAVE_FALHOU] = False
             resultados[nome] = metricas
             logger.info(

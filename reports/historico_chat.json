@@ -1,26 +1,26 @@
 [
     {
         "papel": "usuario",
-        "conteudo": "Quantas imagens tem o MNIST?"
+        "conteudo": "O que é Espaço Latente?"
     },
     {
         "papel": "assistente",
-        "conteudo": "70.000 imagens",
+        "conteudo": "Espaço Latente de Features (Redução de Dimensionalidade): Consiste na técnica de comprimir ou projetar dados complexos de muitas dimensões (ex: 784 pixels) para um espaço reduzido (como 2D ou 3D). Isso facilita a identificação visual de como as diferentes categorias se agrupam.\n\n\n**Informação adicional** (eda):\nAlgoritmo de Projeção: São algoritmos aplicados para redução de dimensionalidade, mapeando pontos para dimensões menores preservando suas estruturas. Exemplos clássicos são o PCA (Análise de Componentes Principais) e o t-SNE, usados para plotar clusters espaciais das imagens.\n\n\n**Informação adicional** (testes):\nTeste t (par de dígitos): O teste T de Student é aplicado para verificar se existe diferença estatisticamente significativa entre a média de duas categorias independentes (neste contexto, comparando as distribuições de dois dígitos diferentes). Avalia se a divergência é real ou obra do acaso.",
         "fontes": [
-            "mnist.md"
+            "conceitos_projeto"
         ]
     },
     {
         "papel": "usuario",
-        "conteudo": "Descreva o pipeline de visão computacional para imagens reais."
+        "conteudo": "O que é Vision Transformer?"
     },
     {
         "papel": "assistente",
-        "conteudo": "O pipeline de visão computacional processa imagens reais de dígitos manuscritos. Etapas: (1) Converter para escala de cinza (grayscale). (2) Detectar bounding box do dígito por limiarização de Otsu. (3) Recortar e redimensionar para 20×20 pixels preservando proporção. (4) Centralizar em canvas 28×28 (padding uniforme). (5) Normalizar pixels para [0, 1]. O canvas de desenho no frontend usa JavaScript para capturar traços e enviar ao pipeline.\n\n\n**Informação adicional** (dataset):\nO MNIST contém 70.000 imagens 28×28 pixels de dígitos manuscritos (0–9). 60.000 imagens são usadas para treino e 10.000 para teste. Cada pixel varia de 0 a 255 (escala de cinza). O dataset está perfeitamente balanceado com ~6.000–7.000 amostras por classe.\n\n\n**Informação adicional** (mcp):\nO servidor MCP (Model Context Protocol) expõe as funcionalidades do pipeline como ferramentas. Ferramentas disponíveis: treinar_modelo, avaliar_modelo, executar_benchmark, obter_estatisticas. O servidor permite que agentes de IA externos interajam com o pipeline MNIST via protocolo padronizado. Implementado com FastMCP seguindo a especificação MCP oficial da Anthropic.",
+        "conteudo": "O Vision Transformer (ViT) adapta a arquitetura Transformer original para imagens. A imagem 28×28 é dividida em patches de 7×7 pixels (16 patches). Cada patch é linearizado em um vetor de 49 dimensões. O mecanismo de atenção multi-cabeça captura relações espaciais entre patches. A implementação é educacional em NumPy puro, sem frameworks de deep learning. O ViT obtém desempenho competitivo com as CNNs tradicionais no MNIST.\n\n\n**Informação adicional** (visao_computacional):\nO pipeline de visão computacional processa imagens reais de dígitos manuscritos. Etapas: (1) Converter para escala de cinza (grayscale). (2) Detectar bounding box do dígito por limiarização de Otsu. (3) Recortar e redimensionar para 20×20 pixels preservando proporção. (4) Centralizar em canvas 28×28 (padding uniforme). (5) Normalizar pixels para [0, 1]. O canvas de desenho no frontend usa JavaScript para capturar traços e enviar ao pipeline.\n\n\n**Informação adicional** (dataset):\nO MNIST contém 70.000 imagens 28×28 pixels de dígitos manuscritos (0–9). 60.000 imagens são usadas para treino e 10.000 para teste. Cada pixel varia de 0 a 255 (escala de cinza). O dataset está perfeitamente balanceado com ~6.000–7.000 amostras por classe.",
         "fontes": [
-            "mcp_servidor.py",
             "src/visao_computacional.py",
-            "carregador_dados.py"
+            "carregador_dados.py",
+            "src/modelos/vit_modelo.py"
         ]
     }
 ]

@@ -54,6 +54,12 @@ painel_rag = _importar_painel("src.frontend.painel_assistente_rag")
 def carregar_fachada() -> FachadaPipelineIA:
     f = FachadaPipelineIA()
     f.inicializar_dados()
+    # Restaura modelos treinados anteriormente (persiste entre reinícios do Streamlit)
+    recarregados = f.recarregar_modelos_salvos()
+    if recarregados:
+        import logging
+
+        logging.getLogger(__name__).info("Modelos recarregados do disco: %s", recarregados)
     return f
 
 
@@ -91,6 +97,17 @@ with st.sidebar:
 
     st.divider()
     st.caption("Versão 1.0.0 · develop")
+    st.divider()
+    # Permite forçar o recarregamento dos modelos salvos em disco
+    if st.button(
+        "🔄 Recarregar modelos",
+        use_container_width=True,
+        help="Recarrega modelos treinados do disco (artifacts/modelos/)",
+    ):
+        if "fachada" in st.session_state:
+            # Preserva os dados MNIST mas recarrega os modelos do disco
+            st.session_state.fachada.recarregar_modelos_salvos()
+        st.rerun()
 
 # ── Carregamento da fachada com spinner ───────────────────────────────────
 # Painéis que precisam dos dados
@@ -106,6 +123,12 @@ if pagina in _REQUER_DADOS:
                 st.error(f"Falha ao carregar os dados: {e}")
                 st.stop()
     fachada = st.session_state.fachada
+
+    # Garante que modelos salvos sejam recarregados mesmo se a fachada
+    # veio do cache sem os modelos (ex.: cache criado antes do código de
+    # persistência existir, ou após reinício sem limpeza de cache).
+    if not fachada.modelos:
+        fachada.recarregar_modelos_salvos()
 else:
     fachada = None
 

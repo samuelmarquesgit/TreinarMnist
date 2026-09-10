@@ -13,7 +13,8 @@
 
 ## 📹 Link do Vídeo de Apresentação
 * 🔗 **Google Drive (Acesso Público Leitor):** `[INSERIR_LINK_DO_GOOGLE_DRIVE_AQUI]`
-* 📝 **Roteiro Estruturado do Vídeo:** [docs/ROTEIRO_GRAVACAO_VIDEO.md](docs/ROTEIRO_GRAVACAO_VIDEO.md)
+* 📝 **Roteiro Estruturado do Vídeo:** [docs/roteiro_video.md](docs/roteiro_video.md)
+* 📦 **Documento de Entrega (requisitos + checklist):** [docs/ENTREGA.md](docs/ENTREGA.md)
 
 ---
 
