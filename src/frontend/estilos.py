@@ -14,7 +14,7 @@ CSS_GLOBAL = """
     --cor-secundaria:   #3fb950;
     --cor-alerta:       #f78166;
     --cor-aviso:        #e3b341;
-    --cor-texto:        #e6edf3;
+    --cor-texto:        #c9d1d9; /* brighter for better contrast */
     --cor-texto-suave:  #8b949e;
     --raio-card:        12px;
     --sombra-card:      0 4px 24px rgba(0,0,0,0.4);
@@ -57,7 +57,7 @@ html, body, [data-testid="stAppViewContainer"] {
     transition: transform .15s ease, box-shadow .15s ease;
 }
 .kpi-tile:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-.kpi-valor { font-size: 2rem; font-weight: 700; color: var(--cor-primaria); line-height: 1.1; }
+.kpi-valor { font-size: 2rem; font-weight: 700; color: var(--cor-secundaria); line-height: 1.1; } /* use secondary (green) for stronger contrast */
 .kpi-label { font-size: .8rem; color: var(--cor-texto-suave); margin-top: .25rem; letter-spacing: .04em; text-transform: uppercase; }  # noqa: E501
 
 /* ── Badges de status ──────────────────────────────────────────── */

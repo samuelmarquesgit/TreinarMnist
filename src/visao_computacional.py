@@ -107,15 +107,15 @@ def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
         img_bgr = cv2.imread(str(caminho))
         if img_bgr is None:
             raise ValueError(f"OpenCV não conseguiu decodificar o arquivo: {caminho}")
-        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return, return-value]
+        return cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
 
     if isinstance(entrada, np.ndarray):
         if entrada.ndim == 2:
             return entrada.astype(np.uint8)
         if entrada.ndim == 3 and entrada.shape[2] == 3:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[no-any-return, return-value]
+            return cv2.cvtColor(entrada, cv2.COLOR_BGR2GRAY)  # type: ignore[return-value]
         if entrada.ndim == 3 and entrada.shape[2] == 4:
-            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[no-any-return, return-value]
+            return cv2.cvtColor(entrada, cv2.COLOR_BGRA2GRAY)  # type: ignore[return-value]
         raise ValueError(
             f"ndarray com shape {entrada.shape} não suportado. "
             "Esperado (H, W) ou (H, W, 3) ou (H, W, 4)."
@@ -252,8 +252,8 @@ def redimensionar_com_proporcao(
         raise ValueError(f"tamanho_alvo deve ser >= 1, recebido: {tamanho_alvo}.")
 
     fator = float(tamanho_alvo) / float(max(h, w))
-    nova_largura = max(1, round(w * fator))
-    nova_altura = max(1, round(h * fator))
+    nova_largura = max(1, int(round(w * fator)))
+    nova_altura = max(1, int(round(h * fator)))
 
     redimensionado = cv2.resize(imagem, (nova_largura, nova_altura), interpolation=interpolacao)
     logger.debug(
@@ -264,7 +264,7 @@ def redimensionar_com_proporcao(
         nova_largura,
         fator,
     )
-    return redimensionado  # type: ignore[no-any-return, return-value]
+    return redimensionado  # type: ignore[return-value]
 
 
 # ──────────────────────────────────────────────────────────────
@@ -324,8 +324,8 @@ def aplicar_padding_centralizado(
     if usar_centro_massa:
         momentos = cv2.moments(imagem)
         if momentos["m00"] != 0:
-            cx = round(momentos["m10"] / momentos["m00"])
-            cy = round(momentos["m01"] / momentos["m00"])
+            cx = int(round(momentos["m10"] / momentos["m00"]))
+            cy = int(round(momentos["m01"] / momentos["m00"]))
         else:
             cx, cy = w // 2, h // 2
         shift_x = centro - cx
@@ -461,7 +461,7 @@ def preprocessar_imagem_mnist(
     # ── Etapa 0: carregamento e cinza ──────────────────────────
     try:
         gray = _carregar_imagem(entrada)
-    except (FileNotFoundError, ValueError, TypeError):  # noqa: TRY203
+    except (FileNotFoundError, ValueError, TypeError):
         raise  # propaga sem silenciar
 
     # ── Etapa 1: fundo preto ───────────────────────────────────

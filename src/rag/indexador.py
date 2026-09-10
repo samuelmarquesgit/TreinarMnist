@@ -196,6 +196,146 @@ _DOCUMENTOS: list[dict[str, Any]] = [
         "fonte": "src/modelos/bubble_sort_modelo.py",
         "topico": "modelos",
     },
+    {
+        "id": "conceito_eda",
+        "conteudo": (
+            "Análise Exploratória de Dados (EDA): É uma abordagem para explorar e analisar as características "
+            "fundamentais de um dataset. Utiliza visualizações gráficas e estatísticas descritivas para "
+            "identificar padrões, detectar anomalias, observar distribuições e avaliar suposições sobre os dados."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "eda",
+    },
+    {
+        "id": "conceito_dataset",
+        "conteudo": (
+            "Dataset (Conjunto de Dados): É uma coleção estruturada de dados. Em nosso projeto, o dataset "
+            "refere-se principalmente ao MNIST, que contém as imagens de entrada (features) e os rótulos "
+            "correspondentes a cada dígito."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "eda",
+    },
+    {
+        "id": "conceito_distribuicao_classes",
+        "conteudo": (
+            "Distribuição e Balanceamento de Classes: Descreve o número de instâncias presentes em cada classe "
+            "alvo do dataset. Um dataset balanceado possui quantidades equivalentes para cada classe, enquanto "
+            "um desbalanceamento grande (ex: muitos 0s e poucos 1s) pode enviesar o treinamento do modelo."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "eda",
+    },
+    {
+        "id": "conceito_espaco_latente",
+        "conteudo": (
+            "Espaço Latente de Features (Redução de Dimensionalidade): Consiste na técnica de comprimir ou "
+            "projetar dados complexos de muitas dimensões (ex: 784 pixels) para um espaço reduzido (como 2D ou 3D). "
+            "Isso facilita a identificação visual de como as diferentes categorias se agrupam."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "eda",
+    },
+    {
+        "id": "conceito_algoritmo_projecao",
+        "conteudo": (
+            "Algoritmo de Projeção: São algoritmos aplicados para redução de dimensionalidade, mapeando pontos "
+            "para dimensões menores preservando suas estruturas. Exemplos clássicos são o PCA (Análise de "
+            "Componentes Principais) e o t-SNE, usados para plotar clusters espaciais das imagens."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "eda",
+    },
+    {
+        "id": "conceito_analise_estatistica_interativa",
+        "conteudo": (
+            "Análise Estatística Interativa: Abordagem que utiliza dashboards na web onde o usuário pode testar "
+            "dinamicamente hipóteses, alterar parâmetros, filtrar classes e visualizar resultados instantaneamente, "
+            "compreendendo a variância e distribuição sem precisar recompilar código."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_histograma_kde",
+        "conteudo": (
+            "Histograma + KDE (Kernel Density Estimation): O histograma é um gráfico de barras que divide valores em "
+            "intervalos (bins) e conta a frequência em cada intervalo. O KDE traça uma curva de densidade contínua "
+            "sobre essas barras, facilitando a visualização geral da distribuição da variável."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_boxplot",
+        "conteudo": (
+            "Boxplot por Classe: Um gráfico de caixa usado para comparar visualmente distribuições estatísticas de "
+            "diferentes classes simultaneamente. Ele ilustra quartis (25%, mediana e 75%), além das extremidades e "
+            "outliers (valores atípicos), permitindo avaliar onde há maior variação nos dados."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_qqplot",
+        "conteudo": (
+            "Q-Q Plot (Quantile-Quantile): Gráfico estatístico que permite comparar a distribuição dos seus dados "
+            "com uma distribuição teórica (geralmente a Normal/Gaussiana). Se os pontos se alinharem sobre uma "
+            "diagonal reta, os dados tendem a seguir perfeitamente a distribuição teórica."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_heatmap_espacial",
+        "conteudo": (
+            "Heatmap Espacial 28x28: Representação em formato de mapa de calor da estrutura bidimensional (matriz "
+            "de 28 linhas por 28 colunas) da imagem de um dígito, onde as cores representam a intensidade ou peso "
+            "de cada pixel. Muito utilizado para verificar pixels médios ou importâncias e pesos do modelo."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_normalidade",
+        "conteudo": (
+            "Normalidade: Propriedade estatística onde os dados se assemelham à distribuição Gaussiana clássica em "
+            "formato de sino simétrico. Diversos testes paramétricos tradicionais (como ANOVA) pressupõem que a "
+            "variável de interesse possua certa normalidade."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "estatistica",
+    },
+    {
+        "id": "conceito_testet",
+        "conteudo": (
+            "Teste t (par de dígitos): O teste T de Student é aplicado para verificar se existe diferença "
+            "estatisticamente significativa entre a média de duas categorias independentes (neste contexto, "
+            "comparando as distribuições de dois dígitos diferentes). Avalia se a divergência é real ou obra do acaso."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "testes",
+    },
+    {
+        "id": "conceito_anova",
+        "conteudo": (
+            "ANOVA (10 classes): Análise de Variância. Uma expansão analítica para além do teste t, permitindo "
+            "comparar estatisticamente as médias entre três ou mais grupos de uma só vez. Aqui, verifica simultaneamente "
+            "se as distribuições de pixels para os 10 diferentes dígitos possuem médias equivalentes ou divergentes."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "testes",
+    },
+    {
+        "id": "conceito_qui_quadrado",
+        "conteudo": (
+            "Qui-Quadrado: Teste não paramétrico destinado primariamente a investigar a dependência e associação "
+            "entre variáveis categóricas. Ele avalia o quão provável as diferenças entre distribuições de contagens "
+            "observadas num banco de dados e as distribuições esperadas acontecem por acaso."
+        ),
+        "fonte": "conceitos_projeto",
+        "topico": "testes",
+    },
 ]
 
 

@@ -7,31 +7,42 @@ import pandas as pd
 import streamlit as st
 
 from src.banco_dados.conexao_mongodb import ConexaoMongoDB
-from src.banco_dados.conexao_postgres import ConexaoPostgres, Experimento
+from src.banco_dados.conexao_postgres import ConexaoPostgres
 from src.frontend.estilos import aplicar_estilos, badge, kpi_tile, titulo_secao
 
 # ── helpers ────────────────────────────────────────────────────────────────
 
 
 def _obter_experimentos_postgres() -> pd.DataFrame:
-    """Lê todos os experimentos da tabela PostgreSQL/SQLite e devolve DataFrame."""
+    """Lê todos os experimentos via ``listar_experimentos()`` e devolve DataFrame.
+
+    Usa o método que serializa para dict *dentro* da sessão ativa, antes de
+    fechá-la — eliminando o ``DetachedInstanceError`` (bhk3) causado por
+    acessar atributos de objetos ORM após ``session.close()``.
+    """
     try:
         db = ConexaoPostgres()
-        with db.obter_sessao() as sessao:
-            registros = sessao.query(Experimento).order_by(Experimento.data_execucao.desc()).all()
+        # listar_experimentos() retorna list[dict] já serializados —
+        # nenhum objeto ORM é tocado fora da sessão.
+        registros = db.listar_experimentos()
         if not registros:
             return pd.DataFrame()
         return pd.DataFrame(
             [
                 {
-                    "ID": r.id,
-                    "Modelo": r.modelo,
-                    "Acurácia": f"{r.acuracia:.4f}" if r.acuracia is not None else "—",
-                    "Tempo Treino (s)": f"{r.tempo_treino:.2f}"
-                    if r.tempo_treino is not None
+                    "ID": r["id"],
+                    "Modelo": r["modelo"],
+                    "Acurácia": f"{r['acuracia']:.4f}" if r["acuracia"] is not None else "—",
+                    "Precisão": f"{r['precisao']:.4f}" if r["precisao"] is not None else "—",
+                    "Recall": f"{r['recall']:.4f}" if r["recall"] is not None else "—",
+                    "F1": f"{r['f1']:.4f}" if r["f1"] is not None else "—",
+                    "Tempo Treino (s)": f"{r['tempo_treino']:.2f}"
+                    if r["tempo_treino"] is not None
                     else "—",
                     "Data de Execução": (
-                        r.data_execucao.strftime("%d/%m/%Y %H:%M:%S") if r.data_execucao else "—"
+                        r["data_execucao"].strftime("%d/%m/%Y %H:%M:%S")
+                        if r["data_execucao"]
+                        else "—"
                     ),
                 }
                 for r in registros
