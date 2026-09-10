@@ -1,7 +1,5 @@
-fix: corrige test_criacao_modelo_invalido para capturar ModeloNaoEnco… #150
-
-Run mypy src/ --ignore-missing-imports
-  mypy src/ --ignore-missing-imports
+Run ruff check src/ tests/
+  ruff check src/ tests/
   shell: /usr/bin/bash -e {0}
   env:
     pythonLocation: /opt/hostedtoolcache/Python/3.10.21/x64
@@ -10,54 +8,31 @@ Run mypy src/ --ignore-missing-imports
     Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
     Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
     LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib
-src/mcp_servidor.py:4: error: Module "mcp.server.fastmcp" has no attribute "FastMCP"  [attr-defined]
-Found 1 error in 1 file (checked 31 source files)
-Error: Process completed with exit code 1.
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_carregador_dados.py:11:1
+   |
+ 9 |   """
+10 |
+11 | / import numpy as np
+12 | | import pytest
+13 | | from unittest.mock import patch
+14 | |
+15 | | from src.carregador_dados import carregar_dados_mnist
+   | |_____________________________________________________^
+help: Organize imports
+   |
+10 |
+11 + from unittest.mock import patch
+12 +
+13 | import numpy as np
+14 | import pytest
+   - from unittest.mock import patch
+15 |
+16 | from src.carregador_dados import carregar_dados_mnist
+   -
+17 |
+   |
 
-fix: corrige testes que falhavam por excecao errada e patch path inco… #149
-
-Run mypy src/ --ignore-missing-imports
-  mypy src/ --ignore-missing-imports
-  shell: /usr/bin/bash -e {0}
-  env:
-    pythonLocation: /opt/hostedtoolcache/Python/3.10.21/x64
-    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib/pkgconfig
-    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib
-src/visao_computacional.py:109: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:109: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:115: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:115: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:117: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:117: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:269: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:269: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-mypy.ini: note: unused section(s): [mypy-pytest.*]
-Found 4 errors in 1 file (checked 31 source files)
-Error: Process completed with exit code 1.
-
-fix: corrige type ignores de no-any-return para return-value em visao… #148
-
-Run mypy src/ --ignore-missing-imports
-  mypy src/ --ignore-missing-imports
-  shell: /usr/bin/bash -e {0}
-  env:
-    pythonLocation: /opt/hostedtoolcache/Python/3.10.21/x64
-    PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib/pkgconfig
-    Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.21/x64
-    LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.21/x64/lib
-src/visao_computacional.py:109: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:109: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:115: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:115: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:117: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:117: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-src/visao_computacional.py:269: error: Returning Any from function declared to return "ndarray[Any, dtype[unsignedinteger[_8Bit]]]"  [no-any-return]
-src/visao_computacional.py:269: note: Error code "no-any-return" not covered by "type: ignore[return-value]" comment
-mypy.ini: note: unused section(s): [mypy-pytest.*]
-Found 4 errors in 1 file (checked 31 source files)
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
 Error: Process completed with exit code 1.

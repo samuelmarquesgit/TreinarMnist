@@ -8,9 +8,10 @@ Estratégia de mock:
   é necessário simular falhas em múltiplas fontes.
 """
 
+from unittest.mock import patch
+
 import numpy as np
 import pytest
-from unittest.mock import patch
 
 from src.carregador_dados import carregar_dados_mnist
 
