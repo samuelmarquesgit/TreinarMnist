@@ -64,20 +64,14 @@ def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
         logger.warning(
             "Modelo suporta apenas predict(). Utilizando heurística de entropia sintética (One-Hot) para análise OOD."
         )
-        previsoes = (
-            mod_interno.predict(X)
-            if hasattr(mod_interno, "predict")
-            else modelo.prever(X)
-        )
+        previsoes = mod_interno.predict(X) if hasattr(mod_interno, "predict") else modelo.prever(X)
         n_classes = 10
         probs = np.zeros((len(X), n_classes))
         for i, pred in enumerate(previsoes):
             probs[i, int(pred)] = 1.0
         return probs
 
-    raise TypeError(
-        "O modelo fornecido não possui métodos de predição suportados para OOD."
-    )
+    raise TypeError("O modelo fornecido não possui métodos de predição suportados para OOD.")
 
 
 class AnalisadorRobustezOOD:
@@ -216,9 +210,7 @@ class AnalisadorRobustezOOD:
 
             entropia_soma += _entropia_shannon(prob)
 
-        taxa_overconfidence = (
-            alertas_overconfidence / total_amostras if total_amostras > 0 else 0.0
-        )
+        taxa_overconfidence = alertas_overconfidence / total_amostras if total_amostras > 0 else 0.0
         entropia_media = entropia_soma / total_amostras if total_amostras > 0 else 0.0
 
         logger.warning(
@@ -290,8 +282,7 @@ def executar_experimento_ood(
         logger.info("[OOD] Usando modelo '%s' para inferência.", modelos_treinados[0])
     else:
         logger.info(
-            "[OOD] Nenhum modelo treinado encontrado. "
-            "Treinando RegressaoLogistica nos dados ID..."
+            "[OOD] Nenhum modelo treinado encontrado. Treinando RegressaoLogistica nos dados ID..."
         )
         from src.modelos.fabrica_modelos import FabricaModelos
         from src.pre_processamento import pre_processar_dados

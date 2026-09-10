@@ -92,9 +92,7 @@ class ModeloViT(ModeloAbstratoIA):
         X_t = F.interpolate(X_t, size=(224, 224), mode="bilinear", align_corners=False)
         y_t = torch.tensor(y_treino, dtype=torch.long)
 
-        loader = DataLoader(
-            TensorDataset(X_t, y_t), batch_size=self.batch_size, shuffle=True
-        )
+        loader = DataLoader(TensorDataset(X_t, y_t), batch_size=self.batch_size, shuffle=True)
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.AdamW(self.model.parameters(), lr=1e-3)
 
@@ -146,9 +144,7 @@ class ModeloViT(ModeloAbstratoIA):
 
         X_t = torch.tensor(X_teste, dtype=torch.float32).view(-1, 1, 28, 28)
         X_t = F.interpolate(X_t, size=(224, 224), mode="bilinear", align_corners=False)
-        loader = DataLoader(
-            TensorDataset(X_t), batch_size=self.batch_size, shuffle=False
-        )
+        loader = DataLoader(TensorDataset(X_t), batch_size=self.batch_size, shuffle=False)
 
         self.model.eval()
         partes = []

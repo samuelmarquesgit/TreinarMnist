@@ -18,9 +18,7 @@ def test_conexao_postgres_context_manager():
     # Usamos banco em memoria para teste
     db = ConexaoPostgres(url="sqlite:///:memory:")
     with db.obter_sessao() as sessao:
-        novo_exp = Experimento(
-            modelo="Regressao Teste", acuracia=0.99, tempo_treino=1.5
-        )
+        novo_exp = Experimento(modelo="Regressao Teste", acuracia=0.99, tempo_treino=1.5)
         sessao.add(novo_exp)
 
     with db.obter_sessao() as sessao2:
@@ -44,7 +42,7 @@ def test_conexao_mongodb_fallback_local(tmp_path, monkeypatch):
     arquivo_salvo = tmp_path / "reports" / "teste_matriz.json"
     assert arquivo_salvo.exists()
 
-    with open(arquivo_salvo, "r") as f:
+    with open(arquivo_salvo) as f:
         carregado = json.load(f)
         assert carregado["matriz"] == [[10, 2], [3, 15]]
 

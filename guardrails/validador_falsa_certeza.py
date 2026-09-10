@@ -1,15 +1,14 @@
 """Guardrail para detecção de anomalias OOD e alerta de Falsa Certeza (Overconfidence)."""
 
-from typing import Dict, Any, List
+from typing import Any
+
 import numpy as np
 
 
 class ValidadorFalsaCerteza:
     """Validador de incerteza para inferências preditivas."""
 
-    def __init__(
-        self, limiar_alerta_certeza: float = 0.85, limiar_entropia_baixa: float = 0.3
-    ):
+    def __init__(self, limiar_alerta_certeza: float = 0.85, limiar_entropia_baixa: float = 0.3):
         self.limiar_alerta_certeza = limiar_alerta_certeza
         self.limiar_entropia_baixa = limiar_entropia_baixa
 
@@ -26,8 +25,8 @@ class ValidadorFalsaCerteza:
         return -float(np.sum(probs_estaveis * np.log(probs_estaveis)))
 
     def avaliar_predicao(
-        self, probabilidades: np.ndarray, classes_conhecidas: List[int]
-    ) -> Dict[str, Any]:
+        self, probabilidades: np.ndarray, classes_conhecidas: list[int]
+    ) -> dict[str, Any]:
         """Avalia se a predição apresenta risco de falsa certeza ou classe desconhecida.
 
         Args:
@@ -48,8 +47,7 @@ class ValidadorFalsaCerteza:
 
         # Overconfidence: modelo muito confiante com distribuição de probabilidade muito concentrada
         alerta_overconfidence = (
-            confianca_maxima >= self.limiar_alerta_certeza
-            and entropia < self.limiar_entropia_baixa
+            confianca_maxima >= self.limiar_alerta_certeza and entropia < self.limiar_entropia_baixa
         )
 
         return {
@@ -59,8 +57,6 @@ class ValidadorFalsaCerteza:
             "classe_fora_dominio": classe_fora_dominio,
             "alerta_overconfidence": alerta_overconfidence,
             "confiavel": (
-                not classe_fora_dominio
-                and not alerta_overconfidence
-                and confianca_maxima >= 0.5
+                not classe_fora_dominio and not alerta_overconfidence and confianca_maxima >= 0.5
             ),
         }

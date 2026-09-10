@@ -59,9 +59,7 @@ class AssistenteRAG:
         chunks = self._indexador.buscar(pergunta, n_resultados=self._n_chunks)
 
         # Filtra chunks muito distantes (sem relevância semântica)
-        chunks_relevantes = [
-            c for c in chunks if c["distancia"] <= self._limiar_distancia
-        ]
+        chunks_relevantes = [c for c in chunks if c["distancia"] <= self._limiar_distancia]
 
         if not chunks_relevantes:
             return {

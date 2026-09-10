@@ -10,9 +10,7 @@ try:
 except Exception:
     ConexaoMongoDB = None  # type: ignore
 
-pytestmark = pytest.mark.skipif(
-    ConexaoMongoDB is None, reason="ConexaoMongoDB não disponível"
-)
+pytestmark = pytest.mark.skipif(ConexaoMongoDB is None, reason="ConexaoMongoDB não disponível")
 
 
 # ── buscar_artefato (modo local) ───────────────────────────────────────────
@@ -80,9 +78,7 @@ def test_listar_colecao_ignora_arquivo_corrompido(tmp_path, monkeypatch):
     """listar_colecao deve pular arquivos JSON corrompidos e retornar os validos."""
     reports = tmp_path / "reports"
     reports.mkdir()
-    (reports / "valido.json").write_text(
-        json.dumps({"chave": "valor"}), encoding="utf-8"
-    )
+    (reports / "valido.json").write_text(json.dumps({"chave": "valor"}), encoding="utf-8")
     (reports / "corrompido.json").write_text("{nao_json!!!", encoding="utf-8")
 
     monkeypatch.chdir(tmp_path)
@@ -98,9 +94,7 @@ def test_listar_colecao_retorna_varios_artefatos(tmp_path, monkeypatch):
     reports = tmp_path / "reports"
     reports.mkdir()
     for i in range(3):
-        (reports / f"modelo_{i}.json").write_text(
-            json.dumps({"idx": i}), encoding="utf-8"
-        )
+        (reports / f"modelo_{i}.json").write_text(json.dumps({"idx": i}), encoding="utf-8")
 
     monkeypatch.chdir(tmp_path)
     conn = ConexaoMongoDB()

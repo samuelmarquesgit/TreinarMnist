@@ -92,8 +92,7 @@ def pre_processar_dados_com_validacao(
 
     if len(X) != len(y):
         raise ValueError(
-            f"Incompatibilidade de tamanho: X tem {len(X)} amostras "
-            f"e y tem {len(y)} amostras."
+            f"Incompatibilidade de tamanho: X tem {len(X)} amostras e y tem {len(y)} amostras."
         )
 
     if not 0.0 < proporcao_teste < 1.0 or not 0.0 < proporcao_validacao < 1.0:

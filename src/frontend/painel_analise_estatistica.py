@@ -72,17 +72,11 @@ def _diagnostico_assimetria(assimetria: float, curtose: float) -> str:
         )
     )
     if abs(assimetria) > 1:
-        diag_ass = "fortemente assimétrica à " + (
-            "direita" if assimetria > 0 else "esquerda"
-        )
+        diag_ass = "fortemente assimétrica à " + ("direita" if assimetria > 0 else "esquerda")
     diag_kurt = (
         "mesocúrtica (normal)"
         if abs(curtose) < 0.5
-        else (
-            "leptocúrtica (caudas pesadas)"
-            if curtose > 0
-            else "platicúrtica (caudas leves)"
-        )
+        else ("leptocúrtica (caudas pesadas)" if curtose > 0 else "platicúrtica (caudas leves)")
     )
     return f"Distribuição **{diag_ass}** · **{diag_kurt}**."
 
@@ -109,9 +103,7 @@ def renderizar(fachada) -> None:
         particao = st.radio("Partição", ["Treino", "Teste"], horizontal=True)
     with col3:
         usar_filtro_classe = st.toggle("Filtrar por dígito", value=False)
-        digito_sel = st.selectbox(
-            "Dígito", list(range(10)), disabled=not usar_filtro_classe
-        )
+        digito_sel = st.selectbox("Dígito", list(range(10)), disabled=not usar_filtro_classe)
         digito_filtro = digito_sel if usar_filtro_classe else None
 
     dados = _obter_dados(fachada, modo, particao, digito_filtro)
@@ -122,11 +114,7 @@ def renderizar(fachada) -> None:
         st.error(f"Erro ao calcular estatísticas: {e}")
         return
 
-    _classe = (
-        "Dígito " + str(digito_filtro)
-        if digito_filtro is not None
-        else "Todas as classes"
-    )
+    _classe = "Dígito " + str(digito_filtro) if digito_filtro is not None else "Todas as classes"
     label_ctx = f"{_classe} · {particao} · {modo}"
     st.caption(f"Contexto: **{label_ctx}** · {len(dados):,} valores analisados")
 
@@ -142,9 +130,7 @@ def renderizar(fachada) -> None:
     q1, q2, q3 = np.percentile(dados, [25, 50, 75])
     iqr = q3 - q1
     cv = (
-        (stats_dict["desvio_padrao"] / stats_dict["media"] * 100)
-        if stats_dict["media"] != 0
-        else 0
+        (stats_dict["desvio_padrao"] / stats_dict["media"] * 100) if stats_dict["media"] != 0 else 0
     )
     cq1, cq2, cq3, cqr, ccv = st.columns(5)
     cq1.metric("Q1 (25%)", f"{q1:.4f}")
@@ -170,9 +156,7 @@ def renderizar(fachada) -> None:
         # ── Histograma + KDE ───────────────────────────────────────────────
         with abas[0]:
             amostra = (
-                dados
-                if len(dados) <= 50_000
-                else np.random.choice(dados, 50_000, replace=False)
+                dados if len(dados) <= 50_000 else np.random.choice(dados, 50_000, replace=False)
             )
             nbins = (
                 int((max(amostra) - min(amostra)) / (25 if "Brutos" in modo else 0.02))
@@ -225,17 +209,13 @@ def renderizar(fachada) -> None:
                 template="plotly_dark",
                 color_discrete_sequence=px.colors.qualitative.Plotly,
             )
-            fig_box.update_layout(
-                **_TEMA, height=380, margin={"t": 10, "b": 40}, showlegend=False
-            )
+            fig_box.update_layout(**_TEMA, height=380, margin={"t": 10, "b": 40}, showlegend=False)
             st.plotly_chart(fig_box, use_container_width=True)
 
         # ── Q-Q Plot ───────────────────────────────────────────────────────
         with abas[2]:
             amostra_qq = (
-                dados
-                if len(dados) <= 5000
-                else np.random.choice(dados, 5000, replace=False)
+                dados if len(dados) <= 5000 else np.random.choice(dados, 5000, replace=False)
             )
             qq_teor, _qq_obs = scipy_stats.probplot(amostra_qq, dist="norm")[:2]
             fig_qq = go.Figure()
@@ -315,9 +295,7 @@ def renderizar(fachada) -> None:
 
     # ── Normalidade ────────────────────────────────────────────────────────
     with abas_testes[0]:
-        st.markdown(
-            "**Shapiro-Wilk e Kolmogorov-Smirnov** sobre intensidade média por imagem."
-        )
+        st.markdown("**Shapiro-Wilk e Kolmogorov-Smirnov** sobre intensidade média por imagem.")
         amostra_norm = X_base.mean(axis=1) * fator
         amostra_norm = (
             amostra_norm
@@ -326,9 +304,7 @@ def renderizar(fachada) -> None:
         )
 
         stat_sw, p_sw = scipy_stats.shapiro(amostra_norm[:3000])
-        amostra_padronizada = (amostra_norm - amostra_norm.mean()) / (
-            amostra_norm.std() + 1e-9
-        )
+        amostra_padronizada = (amostra_norm - amostra_norm.mean()) / (amostra_norm.std() + 1e-9)
         stat_ks, p_ks = scipy_stats.kstest(amostra_padronizada, "norm")
 
         c1, c2 = st.columns(2)
@@ -336,24 +312,18 @@ def renderizar(fachada) -> None:
             st.markdown("**Shapiro-Wilk**")
             st.metric("Estatística W", f"{stat_sw:.5f}")
             st.metric("p-valor", f"{p_sw:.5e}")
-            conclusao_sw = (
-                "✅ Normal (p > 0.05)" if p_sw > 0.05 else "❌ Não-normal (p ≤ 0.05)"
-            )
+            conclusao_sw = "✅ Normal (p > 0.05)" if p_sw > 0.05 else "❌ Não-normal (p ≤ 0.05)"
             st.markdown(f"Conclusão: {conclusao_sw}")
         with c2:
             st.markdown("**Kolmogorov-Smirnov**")
             st.metric("Estatística KS", f"{stat_ks:.5f}")
             st.metric("p-valor", f"{p_ks:.5e}")
-            conclusao_ks = (
-                "✅ Normal (p > 0.05)" if p_ks > 0.05 else "❌ Não-normal (p ≤ 0.05)"
-            )
+            conclusao_ks = "✅ Normal (p > 0.05)" if p_ks > 0.05 else "❌ Não-normal (p ≤ 0.05)"
             st.markdown(f"Conclusão: {conclusao_ks}")
 
     # ── Teste t ────────────────────────────────────────────────────────────
     with abas_testes[1]:
-        st.markdown(
-            "**Teste t de Student** comparando brilho médio entre dois dígitos."
-        )
+        st.markdown("**Teste t de Student** comparando brilho médio entre dois dígitos.")
         ct1, ct2 = st.columns(2)
         digito_a = ct1.selectbox("Dígito A", list(range(10)), index=0, key="ta")
         digito_b = ct2.selectbox("Dígito B", list(range(10)), index=1, key="tb")
@@ -377,9 +347,7 @@ def renderizar(fachada) -> None:
 
     # ── ANOVA ──────────────────────────────────────────────────────────────
     with abas_testes[2]:
-        st.markdown(
-            "**ANOVA de 1 Fator** — brilho médio entre as 10 classes de dígitos."
-        )
+        st.markdown("**ANOVA de 1 Fator** — brilho médio entre as 10 classes de dígitos.")
         grupos = [X_base[y_base == cls].mean(axis=1) * fator for cls in range(10)]
         stat_f, p_f = scipy_stats.f_oneway(*grupos)
         st.metric("Estatística F", f"{stat_f:.4f}")

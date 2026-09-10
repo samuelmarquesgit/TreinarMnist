@@ -48,25 +48,17 @@ def calcular_metricas(
 
             # Brier Score Médio Multiclasse
             brier_scores = []
-            for i in range(
-                np.shape(y_probabilidades)[1]
-            ):  # Iterar pelas classes (0 a 9)
+            for i in range(np.shape(y_probabilidades)[1]):  # Iterar pelas classes (0 a 9)
                 y_binario = (y_verd_arr == i).astype(int)
-                brier_scores.append(
-                    brier_score_loss(y_binario, np.array(y_probabilidades)[:, i])
-                )
+                brier_scores.append(brier_score_loss(y_binario, np.array(y_probabilidades)[:, i]))
             brier = float(np.mean(brier_scores))
         except Exception:
             pass  # Ignora se falhar no cálculo por falta de classes no batch
 
     return Metricas(
         acuracia=float(accuracy_score(y_verdadeiro, y_previsto)),
-        precisao=float(
-            precision_score(y_verdadeiro, y_previsto, average="macro", zero_division=0)
-        ),
-        recall=float(
-            recall_score(y_verdadeiro, y_previsto, average="macro", zero_division=0)
-        ),
+        precisao=float(precision_score(y_verdadeiro, y_previsto, average="macro", zero_division=0)),
+        recall=float(recall_score(y_verdadeiro, y_previsto, average="macro", zero_division=0)),
         f1=float(f1_score(y_verdadeiro, y_previsto, average="macro", zero_division=0)),
         matriz_confusao=confusion_matrix(y_verdadeiro, y_previsto).tolist(),
         roc_auc=roc,

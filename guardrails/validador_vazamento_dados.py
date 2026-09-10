@@ -33,9 +33,7 @@ class ValidadorVazamentoDados:
         # Amostragem de segurança para alta dimensionalidade (determinística)
         n_amostras_verificacao = min(len(conjunto_teste), 1000)
         rng = np.random.default_rng(42)
-        indices_teste = rng.choice(
-            len(conjunto_teste), n_amostras_verificacao, replace=False
-        )
+        indices_teste = rng.choice(len(conjunto_teste), n_amostras_verificacao, replace=False)
 
         amostras = conjunto_teste[indices_teste]
 

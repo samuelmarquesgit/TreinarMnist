@@ -52,22 +52,18 @@ class ModelosConfig(BaseModel):
     regressao_logistica: RegressaoLogisticaConfig = RegressaoLogisticaConfig()
     arvore_decisao: ArvoreDecisaoConfig = ArvoreDecisaoConfig()
     floresta_aleatoria: FlorestaAleatoriaConfig = FlorestaAleatoriaConfig()
-    impulsionamento_gradiente: ImpulsionamentoGradienteConfig = (
-        ImpulsionamentoGradienteConfig()
-    )
+    impulsionamento_gradiente: ImpulsionamentoGradienteConfig = ImpulsionamentoGradienteConfig()
     svm: SVMConfig = SVMConfig()
     knn: KNNConfig = KNNConfig()
     naive_bayes: NaiveBayesConfig = NaiveBayesConfig()
-    perceptron_multicamadas: PerceptronMulticamadasConfig = (
-        PerceptronMulticamadasConfig()
-    )
+    perceptron_multicamadas: PerceptronMulticamadasConfig = PerceptronMulticamadasConfig()
     vision_transformer: VisionTransformerConfig = VisionTransformerConfig()
 
 
 def load_config():
     config_path = Path("config/modelos.yaml")
     if config_path.exists():
-        with open(config_path, "r", encoding="utf-8") as f:
+        with open(config_path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
             if data and "modelos" in data:
                 return ModelosConfig(**data["modelos"])

@@ -195,12 +195,8 @@ def renderizar(fachada) -> None:
     titulo_secao(f"Resultados do Experimento ({fonte})")
     k1, k2, k3, k4 = st.columns(4)
     k1.markdown(kpi_tile(str(len(df_ood)), "Amostras OOD"), unsafe_allow_html=True)
-    k2.markdown(
-        kpi_tile(str(n_alertas), "Alertas Overconfidence"), unsafe_allow_html=True
-    )
-    k3.markdown(
-        kpi_tile(f"{taxa_overconf:.1f}%", "Taxa Falsa Certeza"), unsafe_allow_html=True
-    )
+    k2.markdown(kpi_tile(str(n_alertas), "Alertas Overconfidence"), unsafe_allow_html=True)
+    k3.markdown(kpi_tile(f"{taxa_overconf:.1f}%", "Taxa Falsa Certeza"), unsafe_allow_html=True)
     k4.markdown(
         kpi_tile(f"{df_ood['Confiança'].mean():.3f}", "Confiança Média OOD"),
         unsafe_allow_html=True,
@@ -212,9 +208,7 @@ def renderizar(fachada) -> None:
             " das amostras OOD receberam alertas de overconfidence."
         )
     elif taxa_overconf > 20:
-        st.warning(
-            f"🟡 Falsa Certeza moderada: {taxa_overconf:.1f}% das amostras OOD com alerta."
-        )
+        st.warning(f"🟡 Falsa Certeza moderada: {taxa_overconf:.1f}% das amostras OOD com alerta.")
     else:
         st.success(
             f"✅ Baixa Falsa Certeza: apenas {taxa_overconf:.1f}% das amostras OOD com alerta."
@@ -330,10 +324,6 @@ def renderizar(fachada) -> None:
     # ── Tabela detalhada ───────────────────────────────────────────────────
     st.divider()
     titulo_secao("Detalhes das Amostras OOD")
-    apenas_alertas = st.toggle(
-        "Exibir apenas amostras com alerta de overconfidence", value=False
-    )
+    apenas_alertas = st.toggle("Exibir apenas amostras com alerta de overconfidence", value=False)
     df_exib = df_ood[df_ood["Alerta OOD"] == "⚠️ Sim"] if apenas_alertas else df_ood
-    st.dataframe(
-        df_exib.drop(columns=["Confiável"]), use_container_width=True, hide_index=True
-    )
+    st.dataframe(df_exib.drop(columns=["Confiável"]), use_container_width=True, hide_index=True)

@@ -58,9 +58,7 @@ def test_calcular_metricas_com_probabilidades_roc_brier():
     # 10 classes, previsoes perfeitas
     y_verdadeiro = list(range(10))
     y_previsto = list(range(10))
-    y_proba = np.eye(
-        10, dtype=np.float64
-    )  # cada linha = probabilidade 1.0 na classe correta
+    y_proba = np.eye(10, dtype=np.float64)  # cada linha = probabilidade 1.0 na classe correta
 
     metricas = calcular_metricas(y_verdadeiro, y_previsto, y_probabilidades=y_proba)
 
@@ -80,9 +78,7 @@ def test_calcular_metricas_probabilidades_invalidas_nao_levanta():
     y_previsto = [0, 1]
     y_proba = np.array([[0.6, 0.4], [0.3, 0.7]])
 
-    with patch(
-        "src.avaliacao_metricas.roc_auc_score", side_effect=ValueError("invalido")
-    ):
+    with patch("src.avaliacao_metricas.roc_auc_score", side_effect=ValueError("invalido")):
         metricas = calcular_metricas(y_verdadeiro, y_previsto, y_probabilidades=y_proba)
 
     assert metricas.roc_auc is None

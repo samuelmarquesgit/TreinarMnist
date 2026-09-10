@@ -33,12 +33,14 @@ def criar_issue(titulo, tipo, descricao):
 
 def vincular_ao_kanban(item_url):
     print(f"Vinculando {item_url} ao Projeto Kanban {PROJECT_ID}...")
-    cmd = f'gh project item-add {PROJECT_ID} --owner {OWNER} --url {item_url}'
+    cmd = f"gh project item-add {PROJECT_ID} --owner {OWNER} --url {item_url}"
     try:
         run_cmd(cmd)
         print("Vinculado ao Kanban!")
     except Exception:
-        print("Aviso: Nao foi possivel vincular automaticamente ao Kanban. Verifique suas permissoes.")
+        print(
+            "Aviso: Nao foi possivel vincular automaticamente ao Kanban. Verifique suas permissoes."
+        )
 
 
 def criar_branch(issue_number, tipo, nome_descritivo):
@@ -54,7 +56,7 @@ def abrir_pr(issue_number, branch_name):
     print("Fazendo push e abrindo PR para a develop...")
     run_cmd(f"git push -u origin {branch_name}")
     cmd = (
-        f'gh pr create --base develop --head {branch_name}'
+        f"gh pr create --base develop --head {branch_name}"
         f' --title "Merge {branch_name}" --body "Closes #{issue_number}"'
     )
     output = run_cmd(cmd)
@@ -62,7 +64,9 @@ def abrir_pr(issue_number, branch_name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Orquestrador Semântico do GitHub e Kanban (TreinarMnist)")
+    parser = argparse.ArgumentParser(
+        description="Orquestrador Semântico do GitHub e Kanban (TreinarMnist)"
+    )
     parser.add_argument("acao", choices=["issue", "branch", "pr"], help="Ação a ser executada")
     parser.add_argument("--titulo", help="Título da Issue", default="Nova Tarefa")
     parser.add_argument("--tipo", help="Tipo semântico (feat, fix, docs, refactor)", default="feat")

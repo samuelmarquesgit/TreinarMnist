@@ -24,9 +24,7 @@ def renderizar(fachada) -> None:
     """Ponto de entrada do Painel 1 — recebe a FachadaPipelineIA já inicializada."""
     aplicar_estilos()
     st.markdown("## 📊 Análise Exploratória de Dados (EDA)")
-    st.caption(
-        "Inspeção visual e estatística do dataset MNIST (70 000 imagens, dígitos 0–9)."
-    )
+    st.caption("Inspeção visual e estatística do dataset MNIST (70 000 imagens, dígitos 0–9).")
 
     X_treino = fachada.X_treino
     X_teste = fachada.X_teste
@@ -38,9 +36,7 @@ def renderizar(fachada) -> None:
     # ── KPIs ──────────────────────────────────────────────────────────────
     titulo_secao("Visão Geral do Dataset")
     k1, k2, k3, k4 = st.columns(4)
-    k1.markdown(
-        kpi_tile(f"{len(X_full):,}", "Total de Amostras"), unsafe_allow_html=True
-    )
+    k1.markdown(kpi_tile(f"{len(X_full):,}", "Total de Amostras"), unsafe_allow_html=True)
     k2.markdown(kpi_tile(f"{len(X_treino):,}", "Treino (80%)"), unsafe_allow_html=True)
     k3.markdown(kpi_tile(f"{len(X_teste):,}", "Teste (20%)"), unsafe_allow_html=True)
     k4.markdown(kpi_tile("784", "Features (28×28px)"), unsafe_allow_html=True)
@@ -87,9 +83,7 @@ def renderizar(fachada) -> None:
 
     # ── Grade de amostras 2×5 ─────────────────────────────────────────────
     titulo_secao("Grade de Amostras (um exemplo por dígito)")
-    st.caption(
-        "Primeira amostra encontrada no conjunto de treino para cada classe 0–9."
-    )
+    st.caption("Primeira amostra encontrada no conjunto de treino para cada classe 0–9.")
 
     n_cols = st.slider("Colunas na grade", min_value=2, max_value=10, value=5, step=1)
     int(np.ceil(10 / n_cols))
@@ -113,14 +107,10 @@ def renderizar(fachada) -> None:
     titulo_secao("Inspetor de Dígito Individual")
     col_sel1, col_sel2 = st.columns(2)
     with col_sel1:
-        digito_sel = st.selectbox(
-            "Escolha o dígito (classe)", options=list(range(10)), index=0
-        )
+        digito_sel = st.selectbox("Escolha o dígito (classe)", options=list(range(10)), index=0)
     with col_sel2:
         idxs_cls = np.where(y_treino == digito_sel)[0]
-        amostra_n = st.slider(
-            "Nº da amostra dentro da classe", 0, min(len(idxs_cls) - 1, 99), 0
-        )
+        amostra_n = st.slider("Nº da amostra dentro da classe", 0, min(len(idxs_cls) - 1, 99), 0)
 
     idx_insp = idxs_cls[amostra_n]
     img_insp = X_treino[idx_insp].reshape(28, 28)
@@ -162,9 +152,7 @@ def renderizar(fachada) -> None:
                 labels={"x": "Intensidade [0,1]", "y": "Frequência"},
                 color_discrete_sequence=["#58a6ff"],
             )
-            fig_bar.update_layout(
-                **_TEMA, margin={"t": 5, "b": 5}, height=220, showlegend=False
-            )
+            fig_bar.update_layout(**_TEMA, margin={"t": 5, "b": 5}, height=220, showlegend=False)
             st.plotly_chart(fig_bar, use_container_width=True)
         else:
             st.write("Instale plotly para o histograma.")
@@ -183,13 +171,9 @@ def renderizar(fachada) -> None:
 
     col_proj1, col_proj2 = st.columns([1, 3])
     with col_proj1:
-        algoritmo = st.radio(
-            "Algoritmo de Projeção", ["PCA (Rápido)", "t-SNE (Detalhado)"]
-        )
+        algoritmo = st.radio("Algoritmo de Projeção", ["PCA (Rápido)", "t-SNE (Detalhado)"])
         n_amostras = st.slider("Amostras p/ Projeção", 500, 3000, 1000, 500)
-        btn_projetar = st.button(
-            "Gerar Projeção 2D", use_container_width=True, type="primary"
-        )
+        btn_projetar = st.button("Gerar Projeção 2D", use_container_width=True, type="primary")
 
     with col_proj2:
         if btn_projetar and PLOTLY_OK:
@@ -198,9 +182,7 @@ def renderizar(fachada) -> None:
                 from sklearn.manifold import TSNE
 
                 # Sub-amostragem aleatória para não travar o t-SNE
-                idx_sub = np.random.choice(
-                    len(X_treino), size=n_amostras, replace=False
-                )
+                idx_sub = np.random.choice(len(X_treino), size=n_amostras, replace=False)
                 X_sub = X_treino[idx_sub]
                 y_sub = y_treino[idx_sub]
 
@@ -231,13 +213,9 @@ def renderizar(fachada) -> None:
                     opacity=0.8,
                     title=f"Projeção 2D via {algoritmo}",
                 )
-                fig_scatter.update_layout(
-                    **_TEMA, height=450, margin={"t": 40, "b": 10}
-                )
+                fig_scatter.update_layout(**_TEMA, height=450, margin={"t": 40, "b": 10})
                 st.plotly_chart(fig_scatter, use_container_width=True)
         elif not PLOTLY_OK:
             st.warning("Instale Plotly para visualizar a projeção.")
         else:
-            st.info(
-                "Clique no botão para computar e visualizar a projeção no espaço 2D."
-            )
+            st.info("Clique no botão para computar e visualizar a projeção no espaço 2D.")

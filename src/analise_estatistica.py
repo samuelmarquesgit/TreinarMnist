@@ -29,9 +29,7 @@ class CalculadorEstatistico:
         arr_valido = arr[~np.isnan(arr)]
 
         if arr_valido.size == 0:
-            raise ValueError(
-                "O array de dados esta vazio ou contem apenas valores nulos (NaN)."
-            )
+            raise ValueError("O array de dados esta vazio ou contem apenas valores nulos (NaN).")
 
         return {
             "media": float(np.mean(arr_valido)),

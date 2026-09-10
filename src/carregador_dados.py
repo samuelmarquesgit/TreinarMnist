@@ -219,17 +219,14 @@ def _carregar_via_download_direto() -> tuple[np.ndarray, np.ndarray]:
             y_teste = _ler_idx_rotulos(er_bytes)
 
             X, y = _normalizar_e_consolidar(X_treino, y_treino, X_teste, y_teste)
-            logger.info(
-                "[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape
-            )
+            logger.info("[MNIST] Download direto OK — shape X=%s y=%s", X.shape, y.shape)
             return X, y
 
         except Exception as exc:
             logger.warning("[MNIST] Mirror %s falhou: %s", base_url, exc)
 
     raise ConnectionError(
-        "[MNIST] Todos os mirrors de download direto falharam. "
-        "Verifique sua conexão de rede."
+        "[MNIST] Todos os mirrors de download direto falharam. Verifique sua conexão de rede."
     )
 
 
@@ -327,6 +324,4 @@ def carregar_dados_mnist() -> tuple[np.ndarray, np.ndarray]:
             logger.warning("[MNIST] Fonte '%s' falhou: %s", nome_fonte, exc)
             ultimo_erro = exc
 
-    raise RuntimeError(
-        f"[MNIST] Todas as fontes de dados falharam. Último erro: {ultimo_erro}"
-    )
+    raise RuntimeError(f"[MNIST] Todas as fontes de dados falharam. Último erro: {ultimo_erro}")

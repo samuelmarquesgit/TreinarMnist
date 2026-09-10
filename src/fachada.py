@@ -344,9 +344,7 @@ class FachadaPipelineIA:
                 )
             except Exception as exc:
                 msg = str(exc)
-                resultados[nome] = ResultadoBenchmark(
-                    modelo_id=nome, status="erro", erro=msg
-                )
+                resultados[nome] = ResultadoBenchmark(modelo_id=nome, status="erro", erro=msg)
                 logger.warning("[Benchmark] '%s' falhou: %s", nome, msg)
 
         self._persistir_benchmark(resultados, ts_inicio, dir_saida)

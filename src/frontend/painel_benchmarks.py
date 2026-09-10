@@ -188,11 +188,7 @@ def _formatar_tabela(validos: dict[str, dict[str, Any]]) -> pd.DataFrame:
                 "Tempo (s)": round(m.get("tempo_treino", 0.0), 2),
             }
         )
-    df = (
-        pd.DataFrame(linhas)
-        .sort_values("Acurácia", ascending=False)
-        .reset_index(drop=True)
-    )
+    df = pd.DataFrame(linhas).sort_values("Acurácia", ascending=False).reset_index(drop=True)
     icones = ["🥇", "🥈", "🥉"]
     medalhas = [icones[i] if i < len(icones) else "" for i in range(len(df))]
     df.insert(0, "🏅", medalhas)
@@ -241,9 +237,7 @@ def _renderizar_kpis(df: pd.DataFrame) -> None:
     mais_rapido = df.loc[df["Tempo (s)"].idxmin()]
     k1, k2, k3 = st.columns(3)
     k1.markdown(kpi_tile(melhor["Modelo"], "🥇 Modelo Campeão"), unsafe_allow_html=True)
-    k2.markdown(
-        kpi_tile(f"{melhor['Acurácia']:.4f}", "Maior Acurácia"), unsafe_allow_html=True
-    )
+    k2.markdown(kpi_tile(f"{melhor['Acurácia']:.4f}", "Maior Acurácia"), unsafe_allow_html=True)
     k3.markdown(
         kpi_tile(
             f"{mais_rapido['Tempo (s)']}s",
@@ -346,9 +340,7 @@ def _renderizar_matriz_confusao(validos: dict[str, dict[str, Any]]) -> None:
         return
 
     mat_np = np.array(mat)
-    normalizar = st.toggle(
-        "Normalizar por linha (% por classe verdadeira)", value=False
-    )
+    normalizar = st.toggle("Normalizar por linha (% por classe verdadeira)", value=False)
 
     if normalizar:
         soma = mat_np.sum(axis=1, keepdims=True)
@@ -416,9 +408,7 @@ def renderizar(fachada: Any) -> None:
 
     with col_sel:
         padroes = [
-            m
-            for m in ["RegressaoLogistica", "FlorestaAleatoria", "SVM", "KNN"]
-            if m in catalogo
+            m for m in ["RegressaoLogistica", "FlorestaAleatoria", "SVM", "KNN"] if m in catalogo
         ]
         modelos_sel: list[str] = st.multiselect(
             "Modelos para incluir no benchmark",
@@ -429,9 +419,7 @@ def renderizar(fachada: Any) -> None:
 
     with col_btn:
         st.markdown("<br>", unsafe_allow_html=True)
-        executar = st.button(
-            "▶ Executar Benchmark", type="primary", use_container_width=True
-        )
+        executar = st.button("▶ Executar Benchmark", type="primary", use_container_width=True)
 
     if "resultados_benchmark" not in st.session_state:
         st.session_state.resultados_benchmark = {}
@@ -443,9 +431,7 @@ def renderizar(fachada: Any) -> None:
             # Limpa resultados anteriores dos modelos que serão re-executados
             for nome in modelos_sel:
                 st.session_state.resultados_benchmark.pop(nome, None)
-            _executar_benchmark(
-                fachada, modelos_sel, st.session_state.resultados_benchmark
-            )
+            _executar_benchmark(fachada, modelos_sel, st.session_state.resultados_benchmark)
 
     resultados: dict[str, dict[str, Any]] = st.session_state.resultados_benchmark
     if not resultados:
@@ -460,8 +446,7 @@ def renderizar(fachada: Any) -> None:
 
     if not validos:
         st.error(
-            "Nenhum modelo executou com sucesso. "
-            "Consulte os alertas acima e os logs do servidor.",
+            "Nenhum modelo executou com sucesso. Consulte os alertas acima e os logs do servidor.",
             icon="🚨",
         )
         return
@@ -488,9 +473,9 @@ def renderizar(fachada: Any) -> None:
             "Ordenar por", ["Acurácia", "F1-Score", "Precisão", "Recall", "Tempo (s)"]
         )
 
-    df_ord = df.sort_values(
-        coluna_ord, ascending=(coluna_ord == "Tempo (s)")
-    ).reset_index(drop=True)
+    df_ord = df.sort_values(coluna_ord, ascending=(coluna_ord == "Tempo (s)")).reset_index(
+        drop=True
+    )
 
     st.dataframe(
         df_ord.style.background_gradient(subset=["Acurácia", "F1-Score"], cmap="Blues"),

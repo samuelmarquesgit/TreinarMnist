@@ -23,9 +23,7 @@ def test_entropia_shannon():
 
 
 def test_alerta_overconfidence_classe_conhecida():
-    validador = ValidadorFalsaCerteza(
-        limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.5
-    )
+    validador = ValidadorFalsaCerteza(limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.5)
     probabilidades = np.array(
         [0.01, 0.90, 0.03, 0.05, 0.01]
     )  # Confianca = 0.90 (>= 0.85), Entropia muito baixa
@@ -40,9 +38,7 @@ def test_alerta_overconfidence_classe_conhecida():
 
 
 def test_overconfidence_classe_desconhecida():
-    validador = ValidadorFalsaCerteza(
-        limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.3
-    )
+    validador = ValidadorFalsaCerteza(limiar_alerta_certeza=0.85, limiar_entropia_baixa=0.3)
     # Probabilidades distribuidas (sem um pico > 0.85, entropia mais alta > 0.3)
     # ou pico > 0.85 mas a entropia por algum motivo nao fura o limiar (teoricamente um pico de 90%
     # vai furar o limiar). Vamos ajustar para entropia mais proxima da incerteza onde a confianca nao bate 0.85

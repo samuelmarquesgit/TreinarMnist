@@ -13,9 +13,7 @@ def test_pre_processar_dados():
     X = np.random.rand(100, 10)
     y = np.random.randint(0, 10, 100)
 
-    X_treino_norm, X_teste_norm, _y_treino, _y_teste, _scaler = pre_processar_dados(
-        X, y
-    )
+    X_treino_norm, X_teste_norm, _y_treino, _y_teste, _scaler = pre_processar_dados(X, y)
 
     # Verifica splits (80/20)
     assert len(X_treino_norm) == 80
@@ -59,9 +57,7 @@ def test_anti_leakage_scaler(mock_split):
     X_fake = np.zeros((100, 2))
     y_fake = np.zeros(100)
 
-    _X_treino_norm, X_teste_norm, _y_t, _y_te, scaler = pre_processar_dados(
-        X_fake, y_fake
-    )
+    _X_treino_norm, X_teste_norm, _y_t, _y_te, scaler = pre_processar_dados(X_fake, y_fake)
 
     # O valor maximo encontrado pelo scaler deve ser proximo a 5, nao a 10
     assert np.all(scaler.data_max_ < 6.0)
@@ -147,9 +143,7 @@ def test_split_com_validacao_estratificacao():
     # Desbalanceado de proposito: 90% classe 0, 10% classe 1
     y = np.array([0] * 360 + [1] * 40)
 
-    _, _, _, y_treino, y_validacao, y_teste = pre_processar_dados_com_validacao(X, y)[
-        :6
-    ]
+    _, _, _, y_treino, y_validacao, y_teste = pre_processar_dados_com_validacao(X, y)[:6]
 
     for rotulos in (y_treino, y_validacao, y_teste):
         proporcao = np.sum(rotulos == 1) / len(rotulos)
@@ -176,6 +170,4 @@ def test_split_com_validacao_proporcoes_invalidas():
         pre_processar_dados_com_validacao(X, y, proporcao_teste=0.0)
 
     with pytest.raises(ValueError, match="menor que 1"):
-        pre_processar_dados_com_validacao(
-            X, y, proporcao_teste=0.7, proporcao_validacao=0.4
-        )
+        pre_processar_dados_com_validacao(X, y, proporcao_teste=0.7, proporcao_validacao=0.4)

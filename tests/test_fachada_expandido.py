@@ -147,9 +147,7 @@ def test_obter_estatisticas_dados_teste(mock_carregar, mock_pre):
 @patch("src.fachada.FabricaModelos.criar_modelo")
 @patch("src.fachada.pre_processar_dados")
 @patch("src.fachada.carregar_dados_mnist")
-def test_executar_experimento_retorna_tempo_treino(
-    mock_carregar, mock_pre, mock_criar, mock_calc
-):
+def test_executar_experimento_retorna_tempo_treino(mock_carregar, mock_pre, mock_criar, mock_calc):
     """executar_experimento() deve incluir 'tempo_treino_segundos' nas métricas."""
     mock_carregar.return_value = (np.ones((100, 784)), np.zeros(100, dtype=int))
     mock_pre.return_value = (
@@ -295,7 +293,5 @@ def test_persistir_benchmark_falha_de_io_nao_levanta_excecao(tmp_path):
     rb = ResultadoBenchmark(modelo_id="X", status="ok", metricas={"acuracia": 0.9})
 
     # Passa caminho inválido — OSError deve ser capturado internamente
-    fachada._persistir_benchmark(
-        {"X": rb}, "2024-01-01T00:00:00Z", "/raiz_invalida_xyz/abc"
-    )
+    fachada._persistir_benchmark({"X": rb}, "2024-01-01T00:00:00Z", "/raiz_invalida_xyz/abc")
     # Se chegou aqui, o erro foi tratado corretamente

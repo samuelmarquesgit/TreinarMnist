@@ -15,7 +15,6 @@ import pytest
 
 from src.carregador_dados import carregar_dados_mnist
 
-
 # ──────────────────────────────────────────────────────────────
 # Auxiliares
 # ──────────────────────────────────────────────────────────────
@@ -53,9 +52,7 @@ def test_carrega_cache_com_sucesso(mock_exists, mock_load):
 @patch("src.carregador_dados._carregar_via_sklearn")
 @patch("src.carregador_dados.joblib.load")
 @patch("src.carregador_dados.os.path.exists")
-def test_cache_corrompido_faz_fallback_pro_download(
-    mock_exists, mock_load, mock_sklearn
-):
+def test_cache_corrompido_faz_fallback_pro_download(mock_exists, mock_load, mock_sklearn):
     """Cache corrompido deve silenciosamente acionar a cadeia de fallback."""
     mock_exists.return_value = True
     mock_load.side_effect = Exception("EOFError - arquivo quebrado")
@@ -157,9 +154,7 @@ def test_falha_generica_todas_fontes_levanta_runtime_error(
 @patch("src.carregador_dados._carregar_via_torchvision")
 @patch("src.carregador_dados._carregar_via_sklearn")
 @patch("src.carregador_dados.os.path.exists")
-def test_fallback_para_terceira_fonte(
-    mock_exists, mock_sklearn, mock_tv, mock_dl, mock_keras
-):
+def test_fallback_para_terceira_fonte(mock_exists, mock_sklearn, mock_tv, mock_dl, mock_keras):
     """Se sklearn e torchvision falham, deve recorrer ao download direto."""
     mock_exists.return_value = False
     mock_sklearn.side_effect = ConnectionError("sklearn falhou")
