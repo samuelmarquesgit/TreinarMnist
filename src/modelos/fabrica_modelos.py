@@ -156,9 +156,7 @@ class ModeloSklearn(ModeloAbstratoIA):
         self.modelo.fit(X_treino, y_treino)
         logger.info("[%s] Treinamento concluído.", self.nome_log)
 
-    def prever(
-        self, X_teste: NDArray[np.floating]
-    ) -> NDArray[np.integer]:
+    def prever(self, X_teste: NDArray[np.floating]) -> NDArray[np.integer]:
         """Realiza predição de classes sobre as amostras de entrada.
 
         Args:
@@ -196,7 +194,9 @@ class ModeloSklearn(ModeloAbstratoIA):
             ``[0.0, 1.0]`` somando 1.0 por linha.
         """
         logger.debug(
-            "[%s] Extraindo probabilidades para %d amostras…", self.nome_log, len(X_teste)
+            "[%s] Extraindo probabilidades para %d amostras…",
+            self.nome_log,
+            len(X_teste),
         )
 
         # Identifica o estimador final (navega por Pipeline se necessário)
@@ -259,9 +259,7 @@ class FabricaModelos:
         "RegressaoLogistica": lambda: LogisticRegression(
             max_iter=500, solver="lbfgs", random_state=42
         ),
-        "ArvoreDecisao": lambda: DecisionTreeClassifier(
-            max_depth=20, random_state=42
-        ),
+        "ArvoreDecisao": lambda: DecisionTreeClassifier(max_depth=20, random_state=42),
         "FlorestaAleatoria": lambda: RandomForestClassifier(
             n_estimators=50, max_depth=20, n_jobs=-1, random_state=42
         ),
@@ -299,7 +297,9 @@ class FabricaModelos:
             Lista de strings com as chaves válidas, em ordem de inserção,
             com ``"VisionTransformer"`` ao final.
         """
-        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + [FabricaModelos._CHAVE_VIT]
+        return list(FabricaModelos._REGISTRO_MODELOS.keys()) + [
+            FabricaModelos._CHAVE_VIT
+        ]
 
     @staticmethod
     def esta_registrado(nome_modelo: str) -> bool:
@@ -311,7 +311,10 @@ class FabricaModelos:
         Returns:
             ``True`` se ``nome_modelo`` é suportado, ``False`` caso contrário.
         """
-        return nome_modelo in FabricaModelos._REGISTRO_MODELOS or nome_modelo == FabricaModelos._CHAVE_VIT
+        return (
+            nome_modelo in FabricaModelos._REGISTRO_MODELOS
+            or nome_modelo == FabricaModelos._CHAVE_VIT
+        )
 
     @staticmethod
     def criar_modelo(nome_modelo: str) -> ModeloAbstratoIA:
@@ -340,12 +343,17 @@ class FabricaModelos:
         """
         # ── VisionTransformer (importação lazy) ───────────────────────────────
         if nome_modelo == FabricaModelos._CHAVE_VIT:
-            logger.info("[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch).")
+            logger.info(
+                "[Fábrica] Instanciando VisionTransformer (importação lazy PyTorch)."
+            )
             from src.modelos.vision_transformer import ModeloViT
+
             return ModeloViT(nome_log=nome_modelo)
 
         # ── Modelos Scikit-Learn ──────────────────────────────────────────────
-        construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(nome_modelo)
+        construtor: _Construtor | None = FabricaModelos._REGISTRO_MODELOS.get(
+            nome_modelo
+        )
 
         if construtor is None:
             chaves_validas = FabricaModelos.listar_disponiveis()

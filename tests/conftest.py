@@ -15,8 +15,8 @@ from src.modelos.fabrica_modelos import ModeloSklearn
 
 _N_AMOSTRAS_TREINO: int = 200
 _N_AMOSTRAS_TESTE: int = 50
-_N_FEATURES: int = 784        # 28×28 pixels achatados
-_N_CLASSES: int = 10          # dígitos 0–9
+_N_FEATURES: int = 784  # 28×28 pixels achatados
+_N_CLASSES: int = 10  # dígitos 0–9
 _SEED: int = 42
 
 
@@ -41,8 +41,12 @@ def y_treino() -> np.ndarray:
     """
     rng = np.random.default_rng(_SEED)
     # Garante que todas as 10 classes apareçam pelo menos uma vez
-    base = np.repeat(np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TREINO // _N_CLASSES)
-    extra = rng.integers(0, _N_CLASSES, size=_N_AMOSTRAS_TREINO - len(base), dtype=np.int32)
+    base = np.repeat(
+        np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TREINO // _N_CLASSES
+    )
+    extra = rng.integers(
+        0, _N_CLASSES, size=_N_AMOSTRAS_TREINO - len(base), dtype=np.int32
+    )
     rotulos = np.concatenate([base, extra])
     rng.shuffle(rotulos)
     return rotulos
@@ -65,8 +69,12 @@ def y_teste() -> np.ndarray:
     Shape: (50,) — dtype int32.
     """
     rng = np.random.default_rng(_SEED + 1)
-    base = np.repeat(np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TESTE // _N_CLASSES)
-    extra = rng.integers(0, _N_CLASSES, size=_N_AMOSTRAS_TESTE - len(base), dtype=np.int32)
+    base = np.repeat(
+        np.arange(_N_CLASSES, dtype=np.int32), _N_AMOSTRAS_TESTE // _N_CLASSES
+    )
+    extra = rng.integers(
+        0, _N_CLASSES, size=_N_AMOSTRAS_TESTE - len(base), dtype=np.int32
+    )
     rotulos = np.concatenate([base, extra])
     rng.shuffle(rotulos)
     return rotulos

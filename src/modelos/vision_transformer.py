@@ -16,6 +16,7 @@ try:
     import torch.nn.functional as F
     from torch import nn, optim
     from torch.utils.data import DataLoader, TensorDataset
+
     _TORCH_OK = True
 except ImportError:
     _TORCH_OK = False
@@ -23,6 +24,7 @@ except ImportError:
 # ──────────────────────────────────────────────────────────────
 # Bloco 4 — Wrapper ModeloAbstratoIA
 # ──────────────────────────────────────────────────────────────
+
 
 class ModeloViT(ModeloAbstratoIA):
     """Vision Transformer (ViT) via timm/PyTorch.
@@ -60,14 +62,12 @@ class ModeloViT(ModeloAbstratoIA):
             torch.set_num_threads(4)
             self.device = torch.device("cpu")
 
-        self.model = (
-            timm.create_model(
-                "vit_tiny_patch16_224",
-                pretrained=False,
-                num_classes=10,
-                in_chans=1,
-            ).to(self.device)
-        )
+        self.model = timm.create_model(
+            "vit_tiny_patch16_224",
+            pretrained=False,
+            num_classes=10,
+            in_chans=1,
+        ).to(self.device)
 
         self._treinado = False
 
@@ -133,9 +133,9 @@ class ModeloViT(ModeloAbstratoIA):
                 "Chame treinar() antes de prever_probabilidades()."
             )
 
-        X_tensor = torch.tensor(
-            np.array(X_teste), dtype=torch.float32
-        ).view(-1, 1, 28, 28)                    # (N, 1, 28, 28)
+        X_tensor = torch.tensor(np.array(X_teste), dtype=torch.float32).view(
+            -1, 1, 28, 28
+        )  # (N, 1, 28, 28)
 
         loader = DataLoader(
             TensorDataset(X_tensor),
@@ -146,7 +146,9 @@ class ModeloViT(ModeloAbstratoIA):
 
         X_t = torch.tensor(X_teste, dtype=torch.float32).view(-1, 1, 28, 28)
         X_t = F.interpolate(X_t, size=(224, 224), mode="bilinear", align_corners=False)
-        loader = DataLoader(TensorDataset(X_t), batch_size=self.batch_size, shuffle=False)
+        loader = DataLoader(
+            TensorDataset(X_t), batch_size=self.batch_size, shuffle=False
+        )
 
         self.model.eval()
         partes = []

@@ -36,6 +36,7 @@ from src.utilitarios.excecoes import ModeloNaoTreinadoError
 # MLflow é opcional — não deve impedir a inicialização do módulo
 try:
     import mlflow
+
     _MLFLOW_OK: bool = True  # pragma: no cover
 except ImportError:
     mlflow = None  # type: ignore[assignment]
@@ -202,7 +203,7 @@ class FachadaPipelineIA:
         modelo = self.modelos[nome_modelo]
         y_previsto = modelo.prever(self.X_teste)  # type: ignore[arg-type]
         try:
-            y_probabilidades = modelo.prever_probabilidades(self.X_teste) # type: ignore[arg-type]
+            y_probabilidades = modelo.prever_probabilidades(self.X_teste)  # type: ignore[arg-type]
         except Exception:
             y_probabilidades = None
         y_proba_safe = y_probabilidades if y_probabilidades is not None else None
@@ -227,9 +228,7 @@ class FachadaPipelineIA:
             ModeloNaoTreinadoError: Se o modelo não tiver sido treinado.
         """
         if nome_modelo not in self.modelos:
-            raise ModeloNaoTreinadoError(
-                f"Modelo '{nome_modelo}' não foi treinado."
-            )
+            raise ModeloNaoTreinadoError(f"Modelo '{nome_modelo}' não foi treinado.")
         res = self.modelos[nome_modelo].prever_probabilidades(X_entrada)
         return res  # type: ignore[no-any-return]
 
@@ -261,14 +260,16 @@ class FachadaPipelineIA:
                 with mlflow.start_run(run_name=f"Exp_{nome_modelo}"):
                     mlflow.log_param("modelo", nome_modelo)
                     mlflow.log_param("dataset", "mnist_784")
-                    mlflow.log_metrics({
-                        # Chaves pt-BR idênticas às retornadas por calcular_metricas()
-                        "acuracia": metricas["acuracia"],
-                        "precisao": metricas["precisao"],
-                        "recall": metricas["recall"],
-                        "f1": metricas["f1"],
-                        "tempo_treino": tempo_treino,
-                    })
+                    mlflow.log_metrics(
+                        {
+                            # Chaves pt-BR idênticas às retornadas por calcular_metricas()
+                            "acuracia": metricas["acuracia"],
+                            "precisao": metricas["precisao"],
+                            "recall": metricas["recall"],
+                            "f1": metricas["f1"],
+                            "tempo_treino": tempo_treino,
+                        }
+                    )
             except Exception as exc:
                 logger.warning(
                     "MLflow: falha ao registrar experimento de '%s' — %s",

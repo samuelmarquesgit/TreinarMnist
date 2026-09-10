@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel, Field
 
 
@@ -9,20 +8,37 @@ class Metricas(BaseModel):
     f1: float = Field(..., description="F1-Score macro médio do modelo (0 a 1)")
     matriz_confusao: list[list[int]] = Field(..., description="Matriz de confusão")
     roc_auc: float | None = Field(None, description="ROC-AUC Score (One-vs-Rest)")
-    brier_score: float | None = Field(None, description="Brier Score de Calibração (0 a 1)")
+    brier_score: float | None = Field(
+        None, description="Brier Score de Calibração (0 a 1)"
+    )
 
 
 class RelatorioOOD(BaseModel):
-    total_amostras_ood: int = Field(..., description="Total de amostras avaliadas como OOD")
+    total_amostras_ood: int = Field(
+        ..., description="Total de amostras avaliadas como OOD"
+    )
     total_falsa_certeza: int = Field(
         ..., description="Total de vezes que o modelo alertou falsa certeza"
     )
     taxa_overconfidence: float = Field(
-        ..., description="Proporção de falsas certezas em relação ao total de amostras OOD"
+        ...,
+        description="Proporção de falsas certezas em relação ao total de amostras OOD",
     )
-    entropia_media: float = Field(..., description="Entropia de Shannon média nas inferências OOD")
-    classes_ood: list[int] = Field(..., description="Lista de classes consideradas OOD neste relatório")
-    is_ood: bool | None = Field(None, description="Flag indicando detecção de anomalia OOD")
-    score_incerteza: float | None = Field(None, description="Score composto de incerteza")
-    metrica_utilizada: str | None = Field(None, description="Nome do método de detecção utilizado")
-    alerta_disparado: bool | None = Field(None, description="Se alerta de segurança foi emitido")
+    entropia_media: float = Field(
+        ..., description="Entropia de Shannon média nas inferências OOD"
+    )
+    classes_ood: list[int] = Field(
+        ..., description="Lista de classes consideradas OOD neste relatório"
+    )
+    is_ood: bool | None = Field(
+        None, description="Flag indicando detecção de anomalia OOD"
+    )
+    score_incerteza: float | None = Field(
+        None, description="Score composto de incerteza"
+    )
+    metrica_utilizada: str | None = Field(
+        None, description="Nome do método de detecção utilizado"
+    )
+    alerta_disparado: bool | None = Field(
+        None, description="Se alerta de segurança foi emitido"
+    )

@@ -7,7 +7,9 @@ import cv2
 import numpy as np
 import pytest
 
-mcp_lib = pytest.importorskip("mcp", reason="Biblioteca 'mcp' não instalada — teste pulado.")
+mcp_lib = pytest.importorskip(
+    "mcp", reason="Biblioteca 'mcp' não instalada — teste pulado."
+)
 
 
 # ── Testes das funções helper (get_fachada / get_rag) ─────────────────────
@@ -16,6 +18,7 @@ mcp_lib = pytest.importorskip("mcp", reason="Biblioteca 'mcp' não instalada —
 def test_get_fachada_singleton():
     """get_fachada() deve retornar sempre a mesma instância (singleton)."""
     import src.mcp_servidor as srv
+
     srv._fachada = None  # garante estado limpo
 
     with patch("src.mcp_servidor.FachadaPipelineIA") as mock_cls:
@@ -32,6 +35,7 @@ def test_get_fachada_singleton():
 def test_get_rag_singleton():
     """get_rag() deve retornar sempre a mesma instância (singleton)."""
     import src.mcp_servidor as srv
+
     srv._rag = None
 
     with patch("src.mcp_servidor.SuporteRAG") as mock_cls:
@@ -62,6 +66,7 @@ def test_listar_modelos_disponiveis():
 def test_treinar_modelo_mnist_sucesso():
     """treinar_modelo_mnist deve retornar mensagem de sucesso."""
     import src.mcp_servidor as srv
+
     srv._fachada = None
 
     mock_fachada = MagicMock()
@@ -126,7 +131,9 @@ def test_prever_imagem_usuario_sucesso():
     b64 = base64.b64encode(buffer).decode("utf-8")
 
     mock_fachada = MagicMock()
-    mock_fachada.prever_probabilidades.return_value = np.array([[0.1, 0.0, 0.0, 0.8, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0]])
+    mock_fachada.prever_probabilidades.return_value = np.array(
+        [[0.1, 0.0, 0.0, 0.8, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0]]
+    )
 
     with patch("src.mcp_servidor.get_fachada", return_value=mock_fachada):
         res = srv.prever_imagem_usuario(b64, "RegressaoLogistica")
@@ -209,7 +216,9 @@ def test_obter_estatisticas_dados_erro():
     import src.mcp_servidor as srv
 
     mock_fachada = MagicMock()
-    mock_fachada.obter_estatisticas_dados.side_effect = RuntimeError("Dados indisponíveis")
+    mock_fachada.obter_estatisticas_dados.side_effect = RuntimeError(
+        "Dados indisponíveis"
+    )
 
     with patch("src.mcp_servidor.get_fachada", return_value=mock_fachada):
         resultado = srv.obter_estatisticas_dados(particao="teste")

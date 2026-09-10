@@ -12,6 +12,7 @@ from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 try:
     import plotly.express as px
     import plotly.graph_objects as go
+
     PLOTLY_OK = True
 except ImportError:  # pragma: no cover
     PLOTLY_OK = False  # pragma: no cover
@@ -97,14 +98,16 @@ def _avaliar_lote(
         classe_prevista = int(np.argmax(p))
         entropia = _entropia_shannon(p)
 
-        linhas.append({
-            "Amostra": i,
-            "Classe Prevista": classe_prevista,
-            "Confiança": round(confianca, 4),
-            "Entropia": round(entropia, 4),
-            "Alerta OOD": "⚠️ Sim" if alerta else "✅ Não",
-            "Confiável": not alerta,
-        })
+        linhas.append(
+            {
+                "Amostra": i,
+                "Classe Prevista": classe_prevista,
+                "Confiança": round(confianca, 4),
+                "Entropia": round(entropia, 4),
+                "Alerta OOD": "⚠️ Sim" if alerta else "✅ Não",
+                "Confiável": not alerta,
+            }
+        )
     return pd.DataFrame(linhas)
 
 
@@ -150,6 +153,7 @@ def renderizar(fachada) -> None:
             fonte = "simulação"
             try:
                 from src.robustez_ood import executar_experimento_ood
+
                 probs_ood = executar_experimento_ood(
                     fachada,
                     classes_mascaradas=classes_mascaradas,
@@ -191,10 +195,14 @@ def renderizar(fachada) -> None:
     titulo_secao(f"Resultados do Experimento ({fonte})")
     k1, k2, k3, k4 = st.columns(4)
     k1.markdown(kpi_tile(str(len(df_ood)), "Amostras OOD"), unsafe_allow_html=True)
-    k2.markdown(kpi_tile(str(n_alertas), "Alertas Overconfidence"), unsafe_allow_html=True)
-    k3.markdown(kpi_tile(f"{taxa_overconf:.1f}%", "Taxa Falsa Certeza"), unsafe_allow_html=True)
+    k2.markdown(
+        kpi_tile(str(n_alertas), "Alertas Overconfidence"), unsafe_allow_html=True
+    )
+    k3.markdown(
+        kpi_tile(f"{taxa_overconf:.1f}%", "Taxa Falsa Certeza"), unsafe_allow_html=True
+    )
     k4.markdown(
-        kpi_tile(f'{df_ood["Confiança"].mean():.3f}', "Confiança Média OOD"),
+        kpi_tile(f"{df_ood['Confiança'].mean():.3f}", "Confiança Média OOD"),
         unsafe_allow_html=True,
     )
 
@@ -204,9 +212,13 @@ def renderizar(fachada) -> None:
             " das amostras OOD receberam alertas de overconfidence."
         )
     elif taxa_overconf > 20:
-        st.warning(f"🟡 Falsa Certeza moderada: {taxa_overconf:.1f}% das amostras OOD com alerta.")
+        st.warning(
+            f"🟡 Falsa Certeza moderada: {taxa_overconf:.1f}% das amostras OOD com alerta."
+        )
     else:
-        st.success(f"✅ Baixa Falsa Certeza: apenas {taxa_overconf:.1f}% das amostras OOD com alerta.")
+        st.success(
+            f"✅ Baixa Falsa Certeza: apenas {taxa_overconf:.1f}% das amostras OOD com alerta."
+        )
 
     if not PLOTLY_OK:
         st.caption("Instale plotly para ver os gráficos interativos.")
@@ -220,14 +232,24 @@ def renderizar(fachada) -> None:
         "OOD = amostras das classes mascaradas nunca vistas no treino."
     )
     fig = go.Figure()
-    fig.add_trace(go.Histogram(
-        x=df_ind["Confiança"], name="In-Distribution",
-        marker_color="#3fb950", opacity=0.7, nbinsx=30,
-    ))
-    fig.add_trace(go.Histogram(
-        x=df_ood["Confiança"], name="OOD (classes mascaradas)",
-        marker_color="#f78166", opacity=0.7, nbinsx=30,
-    ))
+    fig.add_trace(
+        go.Histogram(
+            x=df_ind["Confiança"],
+            name="In-Distribution",
+            marker_color="#3fb950",
+            opacity=0.7,
+            nbinsx=30,
+        )
+    )
+    fig.add_trace(
+        go.Histogram(
+            x=df_ood["Confiança"],
+            name="OOD (classes mascaradas)",
+            marker_color="#f78166",
+            opacity=0.7,
+            nbinsx=30,
+        )
+    )
     fig.add_vline(
         x=limiar_overconf,
         line_dash="dash",
@@ -236,7 +258,9 @@ def renderizar(fachada) -> None:
         annotation_position="top right",
     )
     fig.update_layout(
-        **_TEMA, barmode="overlay", height=350,
+        **_TEMA,
+        barmode="overlay",
+        height=350,
         xaxis_title="Confiança Máxima (Softmax)",
         yaxis_title="Nº de Amostras",
         margin={"t": 10, "b": 40},
@@ -247,16 +271,28 @@ def renderizar(fachada) -> None:
     titulo_secao("Entropia de Shannon: In-Distribution vs OOD")
     st.caption("Entropia baixa + classe desconhecida = sinal claro de Falsa Certeza.")
     fig_e = go.Figure()
-    fig_e.add_trace(go.Histogram(
-        x=df_ind["Entropia"], name="In-Distribution",
-        marker_color="#58a6ff", opacity=0.7, nbinsx=30,
-    ))
-    fig_e.add_trace(go.Histogram(
-        x=df_ood["Entropia"], name="OOD",
-        marker_color="#f78166", opacity=0.7, nbinsx=30,
-    ))
+    fig_e.add_trace(
+        go.Histogram(
+            x=df_ind["Entropia"],
+            name="In-Distribution",
+            marker_color="#58a6ff",
+            opacity=0.7,
+            nbinsx=30,
+        )
+    )
+    fig_e.add_trace(
+        go.Histogram(
+            x=df_ood["Entropia"],
+            name="OOD",
+            marker_color="#f78166",
+            opacity=0.7,
+            nbinsx=30,
+        )
+    )
     fig_e.update_layout(
-        **_TEMA, barmode="overlay", height=320,
+        **_TEMA,
+        barmode="overlay",
+        height=320,
         xaxis_title="Entropia de Shannon",
         yaxis_title="Nº de Amostras",
         margin={"t": 10, "b": 40},
@@ -279,7 +315,9 @@ def renderizar(fachada) -> None:
     )
     fig_map.update_traces(textposition="outside")
     fig_map.update_layout(
-        **_TEMA, coloraxis_showscale=False, height=320,
+        **_TEMA,
+        coloraxis_showscale=False,
+        height=320,
         margin={"t": 10, "b": 40},
         xaxis={
             "tickmode": "array",
@@ -295,7 +333,7 @@ def renderizar(fachada) -> None:
     apenas_alertas = st.toggle(
         "Exibir apenas amostras com alerta de overconfidence", value=False
     )
-    df_exib = (
-        df_ood[df_ood["Alerta OOD"] == "⚠️ Sim"] if apenas_alertas else df_ood
+    df_exib = df_ood[df_ood["Alerta OOD"] == "⚠️ Sim"] if apenas_alertas else df_ood
+    st.dataframe(
+        df_exib.drop(columns=["Confiável"]), use_container_width=True, hide_index=True
     )
-    st.dataframe(df_exib.drop(columns=["Confiável"]), use_container_width=True, hide_index=True)

@@ -79,6 +79,7 @@ class BoundingBox(NamedTuple):
 # Etapa 0 — Carregamento e conversão para escala de cinza
 # ──────────────────────────────────────────────────────────────
 
+
 def _carregar_imagem(entrada: EntradaImagem) -> GrayImage:
     """
     Carrega e converte a entrada para uma imagem em escala de cinza uint8.
@@ -148,6 +149,7 @@ def _garantir_fundo_preto(gray: GrayImage) -> GrayImage:
 # Etapa 1 — Extração da Bounding Box
 # ──────────────────────────────────────────────────────────────
 
+
 def extrair_bbox(
     gray: GrayImage,
     limiar_binarizacao: int = 20,
@@ -180,13 +182,9 @@ def extrair_bbox(
         ...                        bbox.min_col:bbox.max_col]
     """
     if gray.ndim != 2:
-        raise ValueError(
-            f"Esperado array 2-D (H, W), recebido shape {gray.shape}."
-        )
+        raise ValueError(f"Esperado array 2-D (H, W), recebido shape {gray.shape}.")
 
-    _, binarizada = cv2.threshold(
-        gray, limiar_binarizacao, 255, cv2.THRESH_BINARY
-    )
+    _, binarizada = cv2.threshold(gray, limiar_binarizacao, 255, cv2.THRESH_BINARY)
     contornos, _ = cv2.findContours(
         binarizada, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
     )
@@ -213,6 +211,7 @@ def extrair_bbox(
 # ──────────────────────────────────────────────────────────────
 # Etapa 2 — Redimensionamento proporcional para 20×20
 # ──────────────────────────────────────────────────────────────
+
 
 def redimensionar_com_proporcao(
     imagem: GrayImage,
@@ -257,14 +256,18 @@ def redimensionar_com_proporcao(
 
     fator = float(tamanho_alvo) / float(max(h, w))
     nova_largura = max(1, round(w * fator))
-    nova_altura  = max(1, round(h * fator))
+    nova_altura = max(1, round(h * fator))
 
     redimensionado = cv2.resize(
         imagem, (nova_largura, nova_altura), interpolation=interpolacao
     )
     logger.debug(
         "[visao] Resize: (%d, %d) → (%d, %d) | fator=%.4f",
-        h, w, nova_altura, nova_largura, fator,
+        h,
+        w,
+        nova_altura,
+        nova_largura,
+        fator,
     )
     return redimensionado  # type: ignore[no-any-return, return-value]
 
@@ -272,6 +275,7 @@ def redimensionar_com_proporcao(
 # ──────────────────────────────────────────────────────────────
 # Etapa 3 — Padding e centralização em canvas 28×28
 # ──────────────────────────────────────────────────────────────
+
 
 def aplicar_padding_centralizado(
     imagem: GrayImage,
@@ -353,7 +357,12 @@ def aplicar_padding_centralizado(
 
     logger.debug(
         "[visao] Padding: imagem (%d×%d) → canvas (%d×%d) | shift=(%+d, %+d)",
-        h, w, tamanho_canvas, tamanho_canvas, shift_x, shift_y,
+        h,
+        w,
+        tamanho_canvas,
+        tamanho_canvas,
+        shift_x,
+        shift_y,
     )
     return canvas
 
@@ -361,6 +370,7 @@ def aplicar_padding_centralizado(
 # ──────────────────────────────────────────────────────────────
 # Etapa 4 — Normalização numérica
 # ──────────────────────────────────────────────────────────────
+
 
 def normalizar_imagem(
     imagem: GrayImage,
@@ -379,13 +389,14 @@ def normalizar_imagem(
         - uint8  (H, W) com valores em [0, 255]  quando ``intervalo_float=False``.
     """
     if intervalo_float:
-        return (imagem.astype(np.float32) / 255.0)
+        return imagem.astype(np.float32) / 255.0
     return imagem
 
 
 # ──────────────────────────────────────────────────────────────
 # Orquestradora — pipeline completo
 # ──────────────────────────────────────────────────────────────
+
 
 def preprocessar_imagem_mnist(
     entrada: EntradaImagem,
@@ -448,7 +459,9 @@ def preprocessar_imagem_mnist(
         (28, 28)
     """
     saida_vazia = np.zeros(
-        (1, tamanho_canvas ** 2) if retornar_achatado else (tamanho_canvas, tamanho_canvas),
+        (1, tamanho_canvas**2)
+        if retornar_achatado
+        else (tamanho_canvas, tamanho_canvas),
         dtype=np.float32,
     )
 
@@ -467,7 +480,7 @@ def preprocessar_imagem_mnist(
         logger.warning("[visao] Imagem sem conteúdo detectado — retornando zeros.")
         return saida_vazia
 
-    recorte: GrayImage = gray[bbox.min_row:bbox.max_row, bbox.min_col:bbox.max_col]
+    recorte: GrayImage = gray[bbox.min_row : bbox.max_row, bbox.min_col : bbox.max_col]
 
     # Guarda para casos degenerados após o crop
     if recorte.size == 0:
@@ -505,6 +518,7 @@ def preprocessar_imagem_mnist(
 # ──────────────────────────────────────────────────────────────
 # API pública — compatibilidade com MCP server e Frontend
 # ──────────────────────────────────────────────────────────────
+
 
 def processar_imagem_usuario(
     imagem_array: NDArray[np.uint8],

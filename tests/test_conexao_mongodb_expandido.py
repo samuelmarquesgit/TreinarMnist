@@ -65,9 +65,13 @@ def test_listar_colecao_pasta_nao_existe(tmp_path, monkeypatch):
 def test_listar_colecao_oserror_no_listdir():
     """listar_colecao com OSError em os.listdir deve retornar lista vazia."""
     conn = ConexaoMongoDB()
-    with patch("src.banco_dados.conexao_mongodb.os.path.isdir", return_value=True), \
-         patch("src.banco_dados.conexao_mongodb.os.listdir",
-               side_effect=OSError("sem permissao")):
+    with (
+        patch("src.banco_dados.conexao_mongodb.os.path.isdir", return_value=True),
+        patch(
+            "src.banco_dados.conexao_mongodb.os.listdir",
+            side_effect=OSError("sem permissao"),
+        ),
+    ):
         resultado = conn.listar_colecao()
     assert resultado == []
 
@@ -76,7 +80,9 @@ def test_listar_colecao_ignora_arquivo_corrompido(tmp_path, monkeypatch):
     """listar_colecao deve pular arquivos JSON corrompidos e retornar os validos."""
     reports = tmp_path / "reports"
     reports.mkdir()
-    (reports / "valido.json").write_text(json.dumps({"chave": "valor"}), encoding="utf-8")
+    (reports / "valido.json").write_text(
+        json.dumps({"chave": "valor"}), encoding="utf-8"
+    )
     (reports / "corrompido.json").write_text("{nao_json!!!", encoding="utf-8")
 
     monkeypatch.chdir(tmp_path)

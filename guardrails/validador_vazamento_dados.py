@@ -10,7 +10,7 @@ class ValidadorVazamentoDados:
     def validar_divisao(
         conjunto_treino: np.ndarray,
         conjunto_teste: np.ndarray,
-        tolerancia: float = 1e-7
+        tolerancia: float = 1e-7,
     ) -> bool:
         """Verifica se há sobreposição idêntica de instâncias entre treino e teste.
 
@@ -18,7 +18,7 @@ class ValidadorVazamentoDados:
             conjunto_treino: Matriz de features de treino.
             conjunto_teste: Matriz de features de teste.
             tolerancia: Tolerância para comparação de ponto flutuante.
- 
+
         Returns:
             True se a divisão for válida e limpa, levanta ValueError caso contrário.
         """
@@ -34,20 +34,20 @@ class ValidadorVazamentoDados:
         n_amostras_verificacao = min(len(conjunto_teste), 1000)
         rng = np.random.default_rng(42)
         indices_teste = rng.choice(
-            len(conjunto_teste),
-            n_amostras_verificacao,
-            replace=False)
+            len(conjunto_teste), n_amostras_verificacao, replace=False
+        )
 
         amostras = conjunto_teste[indices_teste]
 
         # O(n*m) processado em C de forma muito mais rápida que o loop Python
-        distancias = cdist(amostras, conjunto_treino, metric='euclidean')
+        distancias = cdist(amostras, conjunto_treino, metric="euclidean")
         vazamentos = np.where(distancias < tolerancia)
 
         if len(vazamentos[0]) > 0:
             idx_vazamento = indices_teste[vazamentos[0][0]]
             raise ValueError(
                 f"Data Leakage detectado: instância de teste {idx_vazamento}"
-                f" encontrada no conjunto de treino!")
+                f" encontrada no conjunto de treino!"
+            )
 
         return True

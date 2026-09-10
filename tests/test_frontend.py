@@ -20,8 +20,10 @@ def _mk_ctx():
 
 # ── Mock completo do Streamlit (instalado ANTES de qualquer import frontend) ──
 
+
 class _SessionStateMock(dict):
     """Simula st.session_state como dict com acesso por atributo."""
+
     def __getattr__(self, item):
         return self.get(item)
 
@@ -82,15 +84,15 @@ _mock_go = MagicMock()
 _mock_plotly = MagicMock()
 
 # Instala mocks no sys.modules
-sys.modules['streamlit'] = _mock_st
-sys.modules['plotly'] = _mock_plotly
-sys.modules['plotly.express'] = _mock_px
-sys.modules['plotly.graph_objects'] = _mock_go
-sys.modules['streamlit_drawable_canvas'] = MagicMock()
+sys.modules["streamlit"] = _mock_st
+sys.modules["plotly"] = _mock_plotly
+sys.modules["plotly.express"] = _mock_px
+sys.modules["plotly.graph_objects"] = _mock_go
+sys.modules["streamlit_drawable_canvas"] = MagicMock()
 
 # Limpa cache de módulos frontend para garantir import com mock
 for _mod in list(sys.modules):
-    if _mod.startswith('src.frontend'):
+    if _mod.startswith("src.frontend"):
         del sys.modules[_mod]
 
 # ── Importações dos módulos frontend (agora com streamlit mockado) ─────────
@@ -164,14 +166,22 @@ def _fachada_mock():
     f.X_teste = np.ones((20, 784), dtype=np.float32)
     f.y_teste = np.zeros(20, dtype=np.int32)
     f.avaliar_modelo.return_value = {
-        "acuracia": 0.95, "precisao": 0.94, "recall": 0.94,
-        "f1": 0.94, "tempo_treino": 0.5,
+        "acuracia": 0.95,
+        "precisao": 0.94,
+        "recall": 0.94,
+        "f1": 0.94,
+        "tempo_treino": 0.5,
         "matriz_confusao": [[0] * 10 for _ in range(10)],
     }
     f.obter_estatisticas_dados.return_value = {
-        "media": 0.1, "mediana": 0.0, "desvio_padrao": 0.3,
-        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
-        "assimetria": 0.2, "curtose": -0.1,
+        "media": 0.1,
+        "mediana": 0.0,
+        "desvio_padrao": 0.3,
+        "variancia": 0.09,
+        "minimo": 0.0,
+        "maximo": 1.0,
+        "assimetria": 0.2,
+        "curtose": -0.1,
     }
     # Amostra EDA: 10 imagens
     f.amostras_por_classe.return_value = {
@@ -299,7 +309,14 @@ def test_avaliar_lote_colunas_presentes():
     probs = np.ones((2, 10)) / 10
     val = ValidadorFalsaCerteza()
     df = _avaliar_lote(probs, list(range(10)), val)
-    for col in ("Amostra", "Classe Prevista", "Confiança", "Entropia", "Alerta OOD", "Confiável"):
+    for col in (
+        "Amostra",
+        "Classe Prevista",
+        "Confiança",
+        "Entropia",
+        "Alerta OOD",
+        "Confiável",
+    ):
         assert col in df.columns
 
 
@@ -369,9 +386,27 @@ def test_renderizar_lab_nao_levanta_excecao():
 def _tres_modelos():
     """Retorna dict com 3 modelos (mínimo para as medalhas não quebrarem)."""
     return {
-        "ModeloA": {"acuracia": 0.95, "precisao": 0.94, "recall": 0.94, "f1": 0.94, "tempo_treino": 1.2},
-        "ModeloB": {"acuracia": 0.88, "precisao": 0.87, "recall": 0.87, "f1": 0.87, "tempo_treino": 0.8},
-        "ModeloC": {"acuracia": 0.82, "precisao": 0.81, "recall": 0.81, "f1": 0.81, "tempo_treino": 0.6},
+        "ModeloA": {
+            "acuracia": 0.95,
+            "precisao": 0.94,
+            "recall": 0.94,
+            "f1": 0.94,
+            "tempo_treino": 1.2,
+        },
+        "ModeloB": {
+            "acuracia": 0.88,
+            "precisao": 0.87,
+            "recall": 0.87,
+            "f1": 0.87,
+            "tempo_treino": 0.8,
+        },
+        "ModeloC": {
+            "acuracia": 0.82,
+            "precisao": 0.81,
+            "recall": 0.81,
+            "f1": 0.81,
+            "tempo_treino": 0.6,
+        },
     }
 
 
@@ -384,9 +419,27 @@ def test_formatar_tabela_retorna_dataframe():
 
 def test_formatar_tabela_ordena_por_acuracia():
     resultados = {
-        "Fraco": {"acuracia": 0.70, "precisao": 0.70, "recall": 0.70, "f1": 0.70, "tempo_treino": 0.5},
-        "Forte": {"acuracia": 0.95, "precisao": 0.95, "recall": 0.95, "f1": 0.95, "tempo_treino": 1.0},
-        "Medio": {"acuracia": 0.80, "precisao": 0.80, "recall": 0.80, "f1": 0.80, "tempo_treino": 0.7},
+        "Fraco": {
+            "acuracia": 0.70,
+            "precisao": 0.70,
+            "recall": 0.70,
+            "f1": 0.70,
+            "tempo_treino": 0.5,
+        },
+        "Forte": {
+            "acuracia": 0.95,
+            "precisao": 0.95,
+            "recall": 0.95,
+            "f1": 0.95,
+            "tempo_treino": 1.0,
+        },
+        "Medio": {
+            "acuracia": 0.80,
+            "precisao": 0.80,
+            "recall": 0.80,
+            "f1": 0.80,
+            "tempo_treino": 0.7,
+        },
     }
     df = _formatar_tabela(resultados)
     assert df.iloc[0]["Modelo"] == "Forte"
@@ -398,21 +451,47 @@ def test_formatar_tabela_medalhas():
 
 
 def test_formatar_tabela_um_ou_dois_modelos():
-    um_modelo = {"M1": {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9, "tempo_treino": 1.0}}
+    um_modelo = {
+        "M1": {
+            "acuracia": 0.9,
+            "precisao": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "tempo_treino": 1.0,
+        }
+    }
     df1 = _formatar_tabela(um_modelo)
     assert len(df1) == 1
     assert df1.iloc[0]["🏅"] == "🥇"
 
     dois_modelos = {
-        "M1": {"acuracia": 0.9, "precisao": 0.9, "recall": 0.9, "f1": 0.9, "tempo_treino": 1.0},
-        "M2": {"acuracia": 0.8, "precisao": 0.8, "recall": 0.8, "f1": 0.8, "tempo_treino": 1.0},
+        "M1": {
+            "acuracia": 0.9,
+            "precisao": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "tempo_treino": 1.0,
+        },
+        "M2": {
+            "acuracia": 0.8,
+            "precisao": 0.8,
+            "recall": 0.8,
+            "f1": 0.8,
+            "tempo_treino": 1.0,
+        },
     }
     df2 = _formatar_tabela(dois_modelos)
     assert len(df2) == 2
     assert list(df2["🏅"]) == ["🥇", "🥈"]
 
     quatro_modelos = {
-        f"M{i}": {"acuracia": 0.5 + i * 0.1, "precisao": 0.8, "recall": 0.8, "f1": 0.8, "tempo_treino": 1.0}
+        f"M{i}": {
+            "acuracia": 0.5 + i * 0.1,
+            "precisao": 0.8,
+            "recall": 0.8,
+            "f1": 0.8,
+            "tempo_treino": 1.0,
+        }
         for i in range(4)
     }
     df4 = _formatar_tabela(quatro_modelos)
@@ -431,8 +510,12 @@ def test_renderizar_bench_com_resultados_na_sessao():
     fachada = _fachada_mock()
     _mock_st.session_state["bench_resultados"] = {
         "RegressaoLogistica": {
-            "acuracia": 0.95, "precisao": 0.94, "recall": 0.94, "f1": 0.94,
-            "tempo_treino": 0.5, "matriz_confusao": [[0] * 10 for _ in range(10)],
+            "acuracia": 0.95,
+            "precisao": 0.94,
+            "recall": 0.94,
+            "f1": 0.94,
+            "tempo_treino": 0.5,
+            "matriz_confusao": [[0] * 10 for _ in range(10)],
         }
     }
     renderizar_bench(fachada)
@@ -596,6 +679,7 @@ def test_renderizar_kpis_chama_columns():
 def test_renderizar_graficos_sem_plotly_retorna():
     """_renderizar_graficos com PLOTLY_OK=False não deve chamar st.plotly_chart."""
     import src.frontend.painel_benchmarks as pb
+
     orig1, orig2 = pb.PLOTLY_OK, pb._PLOTLY_OK
     pb.PLOTLY_OK = False
     pb._PLOTLY_OK = False
@@ -622,13 +706,16 @@ def test_renderizar_matriz_sem_mat_exibe_info():
 def test_renderizar_matriz_com_mat_sem_plotly():
     """_renderizar_matriz_confusao com PLOTLY_OK=False deve sair antes de plotar."""
     import src.frontend.painel_benchmarks as pb
+
     orig1, orig2 = pb.PLOTLY_OK, pb._PLOTLY_OK
     pb.PLOTLY_OK = False
     pb._PLOTLY_OK = False
     _mock_st.selectbox.return_value = "ModeloA"
     _mock_st.toggle.return_value = False
     _mock_st.reset_mock()
-    resultados = {"ModeloA": {"matriz_confusao": [[i == j for j in range(10)] for i in range(10)]}}
+    resultados = {
+        "ModeloA": {"matriz_confusao": [[i == j for j in range(10)] for i in range(10)]}
+    }
     try:
         _renderizar_matriz_confusao(resultados)
         _mock_st.plotly_chart.assert_not_called()
@@ -640,6 +727,7 @@ def test_renderizar_matriz_com_mat_sem_plotly():
 def test_renderizar_benchmarks_com_resultados_em_session():
     """renderizar deve exibir tabela quando resultados_benchmark estiver em session_state."""
     from itertools import cycle
+
     fachada = _fachada_mock()
     _mock_st.session_state["resultados_benchmark"] = _tres_modelos()
     _mock_st.button.return_value = False
@@ -651,7 +739,9 @@ def test_renderizar_benchmarks_com_resultados_em_session():
     _mock_st.session_state["resultados_benchmark"] = _tres_modelos()
     _mock_st.selectbox.side_effect = cycle(["Acurácia", "ModeloA"])
     _mock_st.toggle.return_value = False
-    with patch.object(pd.DataFrame, 'style', new_callable=lambda: property(lambda self: MagicMock())):
+    with patch.object(
+        pd.DataFrame, "style", new_callable=lambda: property(lambda self: MagicMock())
+    ):
         renderizar_bench(fachada)
     assert _mock_st.dataframe.called
     _mock_st.selectbox.side_effect = None
@@ -678,7 +768,9 @@ def test_renderizar_benchmarks_executa_quando_botao():
     _mock_st.selectbox.side_effect = iter(["Acurácia", "RegressaoLogistica"])
     _mock_st.toggle.return_value = False
     _mock_st.progress.return_value = MagicMock()
-    with patch.object(pd.DataFrame, "style", new_callable=lambda: property(lambda self: MagicMock())):
+    with patch.object(
+        pd.DataFrame, "style", new_callable=lambda: property(lambda self: MagicMock())
+    ):
         renderizar_bench(fachada)
     fachada.treinar_modelo.assert_called()
     _mock_st.selectbox.side_effect = None
@@ -692,6 +784,7 @@ def test_renderizar_benchmarks_executa_quando_botao():
 def test_inferir_com_modelo_com_predict_proba():
     """_inferir_com_modelo deve usar predict_proba quando disponível."""
     from src.frontend.painel_laboratorio_visao import _inferir_com_modelo
+
     mock_sklearn = MagicMock()
     mock_sklearn.predict_proba.return_value = np.array([[0.1] * 10])
     mock_modelo = MagicMock()
@@ -707,6 +800,7 @@ def test_inferir_com_modelo_com_predict_proba():
 def test_inferir_com_modelo_sem_predict_proba():
     """_inferir_com_modelo usa prever() quando predict_proba não existe."""
     from src.frontend.painel_laboratorio_visao import _inferir_com_modelo
+
     mock_sklearn = MagicMock(spec=[])  # sem predict_proba
     mock_modelo = MagicMock()
     mock_modelo.modelo = mock_sklearn
@@ -721,6 +815,7 @@ def test_inferir_com_modelo_sem_predict_proba():
 def test_inferir_com_modelo_sem_modelos_retorna_none():
     """_inferir_com_modelo retorna None quando fachada.modelos está vazio."""
     from src.frontend.painel_laboratorio_visao import _inferir_com_modelo
+
     fachada = MagicMock()
     fachada.modelos = {}
     assert _inferir_com_modelo(fachada, np.zeros((1, 784))) is None
@@ -729,6 +824,7 @@ def test_inferir_com_modelo_sem_modelos_retorna_none():
 def test_inferir_com_modelo_excecao_continua():
     """_inferir_com_modelo deve tentar próximo modelo se o atual lançar exceção."""
     from src.frontend.painel_laboratorio_visao import _inferir_com_modelo
+
     mock_ruim = MagicMock()
     mock_ruim.modelo.predict_proba.side_effect = RuntimeError("erro")
     fachada = MagicMock()
@@ -739,12 +835,14 @@ def test_inferir_com_modelo_excecao_continua():
 def test_grafico_topk_sem_plotly_usa_bar_chart():
     """_grafico_topk com _PLOTLY_OK=False deve chamar st.bar_chart."""
     import src.frontend.painel_laboratorio_visao as plv
+
     original = plv.PLOTLY_OK
     plv.PLOTLY_OK = False
     _mock_st.reset_mock()
     ranking = [(i, 0.1) for i in range(10)]
     try:
         from src.frontend.painel_laboratorio_visao import _grafico_topk
+
         _grafico_topk(ranking)
         _mock_st.bar_chart.assert_called()
     finally:
@@ -782,6 +880,7 @@ def test_renderizar_lab_sem_modelos_avisa():
     _mock_st.radio.return_value = "✍️ Canvas (Desenho)"
     # canvas retorna image_data=None para que _renderizar_modo_canvas retorne None
     import sys as _sys
+
     _sys.modules["streamlit_drawable_canvas"].st_canvas.return_value.image_data = None
     _mock_st.reset_mock()
     renderizar_lab(fachada)
@@ -791,6 +890,7 @@ def test_renderizar_lab_sem_modelos_avisa():
 def test_renderizar_lab_canvas_nenhum_dado():
     """renderizar com Canvas retornando None não deve chamar _renderizar_pipeline."""
     import sys as _sys
+
     fachada = MagicMock()
     fachada.modelos = {"SVM": MagicMock()}
     _mock_st.radio.return_value = "✍️ Canvas (Desenho)"
@@ -804,6 +904,7 @@ def test_renderizar_lab_canvas_nenhum_dado():
 def test_renderizar_lab_upload_sem_arquivo():
     """renderizar com Upload retornando None (sem arquivo) não chama pipeline."""
     import sys as _sys
+
     fachada = MagicMock()
     fachada.modelos = {"SVM": MagicMock()}
     _mock_st.radio.return_value = "📷 Upload de Imagem"
@@ -818,6 +919,7 @@ def test_renderizar_lab_upload_sem_arquivo():
 # ── Testes adicionais: painel_robustez_ood.py ─────────────────────────────────
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def _resultado_ood_mock():
     """Cria resultado OOD simulado para testes do painel."""
     probs_ood = np.ones((10, 10)) / 10
@@ -827,8 +929,10 @@ def _resultado_ood_mock():
     df_ood = _avaliar_lote(probs_ood, classes, val)
     df_ind = _avaliar_lote(probs_ind, classes, val)
     return {
-        "df_ood": df_ood, "df_ind": df_ind,
-        "probs_ood": probs_ood, "probs_ind": probs_ind,
+        "df_ood": df_ood,
+        "df_ind": df_ind,
+        "probs_ood": probs_ood,
+        "probs_ind": probs_ind,
         "classes_mascaradas": [4, 7],
         "classes_conhecidas": [0, 1, 2, 3, 5, 6, 8, 9],
         "fonte": "simulação",
@@ -871,7 +975,10 @@ def test_renderizar_ood_botao_executar():
     _mock_st.toggle.return_value = False
     fachada = _fachada_mock()
     # Faz executar_experimento_ood levantar exceção → usa simulação
-    with patch("src.robustez_ood.executar_experimento_ood", side_effect=RuntimeError("sem dados")):
+    with patch(
+        "src.robustez_ood.executar_experimento_ood",
+        side_effect=RuntimeError("sem dados"),
+    ):
         renderizar_ood(fachada)
     assert "resultado_ood" in _mock_st.session_state
 
@@ -884,6 +991,7 @@ def test_renderizar_ood_botao_executar():
 def test_inicializar_estado_cria_chaves():
     """_inicializar_estado deve criar historico_chat e rag_pronto na sessão."""
     from src.frontend.painel_assistente_rag import _inicializar_estado
+
     _mock_st.session_state.pop("historico_chat", None)
     _mock_st.session_state.pop("rag_pronto", None)
     _inicializar_estado()
@@ -894,6 +1002,7 @@ def test_inicializar_estado_cria_chaves():
 def test_carregar_assistente_sem_rag_retorna_none():
     """_carregar_assistente deve retornar None se AssistenteRAG falhar."""
     from src.frontend.painel_assistente_rag import _carregar_assistente
+
     with patch("src.rag.assistente.AssistenteRAG", side_effect=ImportError("sem rag")):
         resultado = _carregar_assistente()
     assert resultado is None
@@ -902,6 +1011,7 @@ def test_carregar_assistente_sem_rag_retorna_none():
 def test_processar_pergunta_fallback():
     """_processar_pergunta sem RAG deve adicionar resposta fallback ao histórico."""
     from src.frontend.painel_assistente_rag import _processar_pergunta
+
     _mock_st.session_state["historico_chat"] = []
     _mock_st.session_state["rag_pronto"] = False
     _mock_st.session_state["assistente"] = None
@@ -916,8 +1026,12 @@ def test_processar_pergunta_fallback():
 def test_processar_pergunta_com_rag():
     """_processar_pergunta com RAG ativo deve usar assistente.perguntar()."""
     from src.frontend.painel_assistente_rag import _processar_pergunta
+
     mock_assistente = MagicMock()
-    mock_assistente.perguntar.return_value = {"resposta": "70.000 imagens", "fontes": ["mnist.md"]}
+    mock_assistente.perguntar.return_value = {
+        "resposta": "70.000 imagens",
+        "fontes": ["mnist.md"],
+    }
     _mock_st.session_state["historico_chat"] = []
     _mock_st.session_state["rag_pronto"] = True
     _mock_st.session_state["assistente"] = mock_assistente
@@ -931,6 +1045,7 @@ def test_processar_pergunta_com_rag():
 def test_renderizar_rag_inicializa_estado():
     """renderizar do assistente RAG deve chamar _inicializar_estado."""
     from src.frontend.painel_assistente_rag import renderizar as renderizar_rag2
+
     _mock_st.session_state.pop("historico_chat", None)
     _mock_st.session_state.pop("rag_pronto", None)
     _mock_st.form.return_value = _mk_ctx()
@@ -948,21 +1063,30 @@ def test_renderizar_bancos_com_postgres_nao_vazio():
     """renderizar bancos deve exibir KPIs quando postgres retorna DataFrame com linhas."""
     import pandas as pd
 
-    df_fake = pd.DataFrame([{
-        "ID": 1,
-        "Modelo": "SVM",
-        "Acurácia": "0.9700",
-        "Tempo Treino (s)": "1.23",
-        "Data de Execução": "01/01/2025 10:00:00",
-    }])
+    df_fake = pd.DataFrame(
+        [
+            {
+                "ID": 1,
+                "Modelo": "SVM",
+                "Acurácia": "0.9700",
+                "Tempo Treino (s)": "1.23",
+                "Data de Execução": "01/01/2025 10:00:00",
+            }
+        ]
+    )
 
     cols = _make_columns(3)
     _mock_st.columns.return_value = cols
 
-    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
-               return_value=df_fake), \
-         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
-               return_value=[]):
+    with (
+        patch(
+            "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+            return_value=df_fake,
+        ),
+        patch(
+            "src.frontend.painel_bancos_dados._obter_artefatos_mongodb", return_value=[]
+        ),
+    ):
         renderizar_bancos()
 
     # Com dados, st.dataframe deve ser chamado
@@ -975,12 +1099,18 @@ def test_renderizar_bancos_postgres_nao_vazio_sem_plotly():
 
     import pandas as pd
 
-    df_fake = pd.DataFrame([{
-        "ID": i, "Modelo": f"M{i}",
-        "Acurácia": f"{0.9 + i * 0.01:.4f}",
-        "Tempo Treino (s)": "1.00",
-        "Data de Execução": "01/01/2025 10:00:00",
-    } for i in range(2)])
+    df_fake = pd.DataFrame(
+        [
+            {
+                "ID": i,
+                "Modelo": f"M{i}",
+                "Acurácia": f"{0.9 + i * 0.01:.4f}",
+                "Tempo Treino (s)": "1.00",
+                "Data de Execução": "01/01/2025 10:00:00",
+            }
+            for i in range(2)
+        ]
+    )
 
     cols = _make_columns(3)
     _mock_st.columns.return_value = cols
@@ -992,10 +1122,16 @@ def test_renderizar_bancos_postgres_nao_vazio_sem_plotly():
     sys.modules["plotly.express"] = None  # type: ignore
 
     try:
-        with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
-                   return_value=df_fake), \
-             patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
-                   return_value=[]):
+        with (
+            patch(
+                "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+                return_value=df_fake,
+            ),
+            patch(
+                "src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+                return_value=[],
+            ),
+        ):
             renderizar_bancos()
     finally:
         if plotly_backup is not None:
@@ -1011,18 +1147,32 @@ def test_renderizar_bancos_postgres_nao_vazio_sem_plotly():
 def test_renderizar_bancos_com_mongodb_nao_vazio():
     """renderizar bancos deve exibir lista quando mongodb retorna artefatos."""
     artefatos_fake = [
-        {"nome": "matriz_svm", "dados": {"acuracia": 0.95}, "salvo_em": "01/01/2025 10:00:00"},
-        {"nome": "relatorio_ood", "dados": {"matriz": [[1, 0], [0, 1]]}, "salvo_em": "02/01/2025 12:00:00"},
+        {
+            "nome": "matriz_svm",
+            "dados": {"acuracia": 0.95},
+            "salvo_em": "01/01/2025 10:00:00",
+        },
+        {
+            "nome": "relatorio_ood",
+            "dados": {"matriz": [[1, 0], [0, 1]]},
+            "salvo_em": "02/01/2025 12:00:00",
+        },
     ]
 
     cols = _make_columns(2)
     _mock_st.columns.return_value = cols
     _mock_st.expander.return_value = _mk_ctx()
 
-    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
-               return_value=__import__("pandas").DataFrame()), \
-         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
-               return_value=artefatos_fake):
+    with (
+        patch(
+            "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+            return_value=__import__("pandas").DataFrame(),
+        ),
+        patch(
+            "src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+            return_value=artefatos_fake,
+        ),
+    ):
         renderizar_bancos()
 
     # Com artefatos, st.expander deve ser chamado para cada um
@@ -1034,17 +1184,27 @@ def test_renderizar_bancos_mongodb_com_matriz_confusao():
     import pandas as pd
 
     artefatos_fake = [
-        {"nome": "matriz_lr", "dados": {"matriz_confusao": [[9, 1], [2, 8]]}, "salvo_em": "—"},
+        {
+            "nome": "matriz_lr",
+            "dados": {"matriz_confusao": [[9, 1], [2, 8]]},
+            "salvo_em": "—",
+        },
     ]
 
     cols = _make_columns(2)
     _mock_st.columns.return_value = cols
     _mock_st.expander.return_value = _mk_ctx()
 
-    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
-               return_value=pd.DataFrame()), \
-         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
-               return_value=artefatos_fake):
+    with (
+        patch(
+            "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+            return_value=pd.DataFrame(),
+        ),
+        patch(
+            "src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+            return_value=artefatos_fake,
+        ),
+    ):
         renderizar_bancos()
 
     _mock_st.expander.assert_called()
@@ -1063,10 +1223,13 @@ def test_obter_artefatos_mongodb_enriquece_com_timestamp(tmp_path, monkeypatch):
     with patch("src.frontend.painel_bancos_dados.ConexaoMongoDB") as mock_cls:
         mock_conn = MagicMock()
         mock_conn.usar_local = True
-        mock_conn.listar_colecao.return_value = [{"nome": "artefato_ts", "dados": {"k": "v"}}]
+        mock_conn.listar_colecao.return_value = [
+            {"nome": "artefato_ts", "dados": {"k": "v"}}
+        ]
         mock_cls.return_value = mock_conn
 
         from src.frontend.painel_bancos_dados import _obter_artefatos_mongodb
+
         resultado = _obter_artefatos_mongodb()
 
     assert len(resultado) == 1
@@ -1081,13 +1244,16 @@ def test_obter_experimentos_postgres_registros_vazios():
         mock_db = MagicMock()
         mock_cls.return_value = mock_db
         mock_sessao = MagicMock()
-        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(
+            return_value=mock_sessao
+        )
         mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
         mock_sessao.query.return_value.order_by.return_value.all.return_value = []
 
         resultado = _obter_experimentos_postgres()
 
     import pandas as pd
+
     assert isinstance(resultado, pd.DataFrame)
     assert resultado.empty
 
@@ -1105,10 +1271,16 @@ def test_renderizar_bancos_mongodb_matriz_malformada():
     cols = _make_columns(2)
     _mock_st.columns.return_value = cols
 
-    with patch("src.frontend.painel_bancos_dados._obter_experimentos_postgres",
-               return_value=pd.DataFrame()), \
-         patch("src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
-               return_value=artefatos_fake):
+    with (
+        patch(
+            "src.frontend.painel_bancos_dados._obter_experimentos_postgres",
+            return_value=pd.DataFrame(),
+        ),
+        patch(
+            "src.frontend.painel_bancos_dados._obter_artefatos_mongodb",
+            return_value=artefatos_fake,
+        ),
+    ):
         renderizar_bancos()
 
     # st.json deve ter sido chamado no fallback
@@ -1132,9 +1304,13 @@ def test_obter_experimentos_postgres_com_registros():
         mock_db = MagicMock()
         mock_cls.return_value = mock_db
         mock_sessao = MagicMock()
-        mock_db.obter_sessao.return_value.__enter__ = MagicMock(return_value=mock_sessao)
+        mock_db.obter_sessao.return_value.__enter__ = MagicMock(
+            return_value=mock_sessao
+        )
         mock_db.obter_sessao.return_value.__exit__ = MagicMock(return_value=False)
-        mock_sessao.query.return_value.order_by.return_value.all.return_value = [registro]
+        mock_sessao.query.return_value.order_by.return_value.all.return_value = [
+            registro
+        ]
 
         resultado = _obter_experimentos_postgres()
 
@@ -1166,7 +1342,9 @@ def test_renderizar_modo_canvas_com_image_data():
     img_data[100:180, 100:180, :3] = 200  # bright region
     img_data[:, :, 3] = 255  # alpha
 
-    sys.modules['streamlit_drawable_canvas'].st_canvas.return_value.image_data = img_data
+    sys.modules[
+        "streamlit_drawable_canvas"
+    ].st_canvas.return_value.image_data = img_data
     cols = _make_columns(2)
     _mock_st.columns.return_value = cols
     _mock_st.slider.return_value = 20
@@ -1175,7 +1353,7 @@ def test_renderizar_modo_canvas_com_image_data():
     resultado = _renderizar_modo_canvas()
 
     # Restaura para None para outros testes
-    sys.modules['streamlit_drawable_canvas'].st_canvas.return_value.image_data = None
+    sys.modules["streamlit_drawable_canvas"].st_canvas.return_value.image_data = None
     assert resultado is not None
     assert resultado.shape[2] == 3  # RGB, sem alpha
 
@@ -1186,8 +1364,10 @@ def test_renderizar_pipeline_e_inferencia_pipeline_falha():
     img = np.zeros((28, 28, 3), dtype=np.uint8)
     img[10:20, 10:20] = 100
 
-    with patch("src.frontend.painel_laboratorio_visao._pipeline_visual",
-               side_effect=RuntimeError("cv2 indisponivel")):
+    with patch(
+        "src.frontend.painel_laboratorio_visao._pipeline_visual",
+        side_effect=RuntimeError("cv2 indisponivel"),
+    ):
         _renderizar_pipeline_e_inferencia(fachada, img)
 
     _mock_st.error.assert_called()
@@ -1204,9 +1384,13 @@ def test_renderizar_pipeline_e_inferencia_overconfidence():
     _mock_st.columns.return_value = cols
     _mock_st.expander.return_value = _mk_ctx()
 
-    with patch("src.frontend.painel_laboratorio_visao._inferir_com_modelo",
-               return_value=probs_mock), \
-         patch("guardrails.validador_falsa_certeza.ValidadorFalsaCerteza") as mock_val:
+    with (
+        patch(
+            "src.frontend.painel_laboratorio_visao._inferir_com_modelo",
+            return_value=probs_mock,
+        ),
+        patch("guardrails.validador_falsa_certeza.ValidadorFalsaCerteza") as mock_val,
+    ):
         mock_inst = MagicMock()
         mock_val.return_value = mock_inst
         mock_inst.avaliar_predicao.return_value = {"alerta_overconfidence": True}
@@ -1226,9 +1410,15 @@ def test_renderizar_lab_com_imagem_upload():
     _mock_st.columns.return_value = cols
     _mock_st.expander.return_value = _mk_ctx()
 
-    with patch("src.frontend.painel_laboratorio_visao._renderizar_modo_upload",
-               return_value=img_fake), \
-         patch("src.frontend.painel_laboratorio_visao._renderizar_pipeline_e_inferencia") as mock_pipe:
+    with (
+        patch(
+            "src.frontend.painel_laboratorio_visao._renderizar_modo_upload",
+            return_value=img_fake,
+        ),
+        patch(
+            "src.frontend.painel_laboratorio_visao._renderizar_pipeline_e_inferencia"
+        ) as mock_pipe,
+    ):
         renderizar_lab(fachada)
 
     mock_pipe.assert_called_once_with(fachada, img_fake)
@@ -1259,6 +1449,7 @@ def test_renderizar_modo_canvas_import_error():
     import sys
 
     from src.frontend.painel_laboratorio_visao import _renderizar_modo_canvas
+
     # Força o ImportError definindo o módulo como None
     with patch.dict(sys.modules, {"streamlit_drawable_canvas": None}):
         _mock_st.reset_mock()
@@ -1289,11 +1480,20 @@ def test_renderizar_modo_upload_com_arquivo():
     _mock_st.reset_mock()
 
     import src.frontend.painel_laboratorio_visao as plv
+
     original_pil_ok = plv.PIL_OK
     plv.PIL_OK = True
     fake_pil = PILImage.new("RGB", (28, 28), color=(100, 100, 100))
     try:
-        with patch("guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo"),              patch("src.frontend.painel_laboratorio_visao.Image.open", return_value=fake_pil):
+        with (
+            patch(
+                "guardrails.validador_imagem_entrada.ValidadorImagemEntrada.validar_arquivo"
+            ),
+            patch(
+                "src.frontend.painel_laboratorio_visao.Image.open",
+                return_value=fake_pil,
+            ),
+        ):
             resultado = _renderizar_modo_upload()
         assert resultado is not None
         assert resultado.shape == (28, 28, 3)
@@ -1323,6 +1523,7 @@ def test_renderizar_modo_upload_validador_levanta_erro():
     _mock_st.reset_mock()
 
     import src.frontend.painel_laboratorio_visao as plv
+
     original_pil_ok = plv.PIL_OK
     plv.PIL_OK = True
     try:
@@ -1353,9 +1554,14 @@ def test_renderizar_eda_projecao_pca():
     f.y_teste = np.arange(10, dtype=np.int32)
     f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
     f.obter_estatisticas_dados.return_value = {
-        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
-        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
-        "assimetria": 0.0, "curtose": 0.0,
+        "media": 0.5,
+        "mediana": 0.5,
+        "desvio_padrao": 0.3,
+        "variancia": 0.09,
+        "minimo": 0.0,
+        "maximo": 1.0,
+        "assimetria": 0.0,
+        "curtose": 0.0,
     }
 
     # slider chamado 3x: n_cols=5, amostra_n=0 (inspetor), n_amostras=10 (projeção)
@@ -1381,6 +1587,7 @@ def test_renderizar_eda_projecao_pca():
 def test_renderizar_eda_sem_plotly_cobre_else_branches():
     """renderizar_eda com _PLOTLY_OK=False deve cobrir as mensagens de fallback (linhas 74, 142, 159, 216)."""
     import src.frontend.painel_eda as peda
+
     original = peda.PLOTLY_OK
     peda.PLOTLY_OK = False
 
@@ -1394,13 +1601,20 @@ def test_renderizar_eda_sem_plotly_cobre_else_branches():
     f.y_teste = np.arange(10, dtype=np.int32)
     f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
     f.obter_estatisticas_dados.return_value = {
-        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
-        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
-        "assimetria": 0.0, "curtose": 0.0,
+        "media": 0.5,
+        "mediana": 0.5,
+        "desvio_padrao": 0.3,
+        "variancia": 0.09,
+        "minimo": 0.0,
+        "maximo": 1.0,
+        "assimetria": 0.0,
+        "curtose": 0.0,
     }
 
     _mock_st.slider.side_effect = [5, 0, 10]
-    _mock_st.button.return_value = True   # btn_projetar=True mas _PLOTLY_OK=False → warning
+    _mock_st.button.return_value = (
+        True  # btn_projetar=True mas _PLOTLY_OK=False → warning
+    )
     _mock_st.radio.return_value = "PCA (Rápido)"
     _mock_st.selectbox.return_value = 0
     _mock_st.reset_mock()
@@ -1423,7 +1637,6 @@ def test_renderizar_eda_projecao_tsne():
     """renderizar_eda com radio=t-SNE deve executar TSNE (linha 191)."""
     from unittest.mock import patch as upatch
 
-
     f = MagicMock()
     f.dados_inicializados.return_value = True
     f.listar_modelos_treinados.return_value = []
@@ -1435,9 +1648,14 @@ def test_renderizar_eda_projecao_tsne():
     f.y_teste = np.arange(10, dtype=np.int32)
     f.amostras_por_classe.return_value = {i: np.zeros((28, 28)) for i in range(10)}
     f.obter_estatisticas_dados.return_value = {
-        "media": 0.5, "mediana": 0.5, "desvio_padrao": 0.3,
-        "variancia": 0.09, "minimo": 0.0, "maximo": 1.0,
-        "assimetria": 0.0, "curtose": 0.0,
+        "media": 0.5,
+        "mediana": 0.5,
+        "desvio_padrao": 0.3,
+        "variancia": 0.09,
+        "minimo": 0.0,
+        "maximo": 1.0,
+        "assimetria": 0.0,
+        "curtose": 0.0,
     }
 
     _mock_st.slider.side_effect = [5, 0, 10]

@@ -64,14 +64,20 @@ def obter_probabilidades(modelo: Any, X: np.ndarray) -> np.ndarray:
         logger.warning(
             "Modelo suporta apenas predict(). Utilizando heurística de entropia sintética (One-Hot) para análise OOD."
         )
-        previsoes = mod_interno.predict(X) if hasattr(mod_interno, "predict") else modelo.prever(X)
+        previsoes = (
+            mod_interno.predict(X)
+            if hasattr(mod_interno, "predict")
+            else modelo.prever(X)
+        )
         n_classes = 10
         probs = np.zeros((len(X), n_classes))
         for i, pred in enumerate(previsoes):
             probs[i, int(pred)] = 1.0
         return probs
 
-    raise TypeError("O modelo fornecido não possui métodos de predição suportados para OOD.")
+    raise TypeError(
+        "O modelo fornecido não possui métodos de predição suportados para OOD."
+    )
 
 
 class AnalisadorRobustezOOD:
@@ -199,7 +205,9 @@ class AnalisadorRobustezOOD:
             if hasattr(resultado, "alerta_falsa_certeza"):
                 alerta = resultado.alerta_falsa_certeza
             elif isinstance(resultado, dict):
-                alerta = resultado.get("alerta_overconfidence", False) or resultado.get("alerta_falsa_certeza", False)
+                alerta = resultado.get("alerta_overconfidence", False) or resultado.get(
+                    "alerta_falsa_certeza", False
+                )
             else:
                 alerta = getattr(resultado, "alerta_overconfidence", False)
 
@@ -279,9 +287,7 @@ def executar_experimento_ood(
     modelos_treinados = fachada.listar_modelos_treinados()
     if modelos_treinados:
         modelo = fachada.modelos[modelos_treinados[0]]
-        logger.info(
-            "[OOD] Usando modelo '%s' para inferência.", modelos_treinados[0]
-        )
+        logger.info("[OOD] Usando modelo '%s' para inferência.", modelos_treinados[0])
     else:
         logger.info(
             "[OOD] Nenhum modelo treinado encontrado. "

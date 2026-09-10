@@ -1,4 +1,3 @@
-
 import numpy as np
 from scipy import stats
 
@@ -10,8 +9,7 @@ class CalculadorEstatistico:
     """
 
     @staticmethod
-    def estatisticas_descritivas(
-            dados: np.ndarray | list[float]) -> dict[str, float]:
+    def estatisticas_descritivas(dados: np.ndarray | list[float]) -> dict[str, float]:
         """
         Calcula as estatísticas descritivas principais de um conjunto de dados.
 
@@ -32,15 +30,16 @@ class CalculadorEstatistico:
 
         if arr_valido.size == 0:
             raise ValueError(
-                "O array de dados esta vazio ou contem apenas valores nulos (NaN).")
+                "O array de dados esta vazio ou contem apenas valores nulos (NaN)."
+            )
 
         return {
-            'media': float(np.mean(arr_valido)),
-            'mediana': float(np.median(arr_valido)),
-            'desvio_padrao': float(np.std(arr_valido)),
-            'variancia': float(np.var(arr_valido)),
-            'minimo': float(np.min(arr_valido)),
-            'maximo': float(np.max(arr_valido)),
-            'assimetria': float(stats.skew(arr_valido)),
-            'curtose': float(stats.kurtosis(arr_valido))
+            "media": float(np.mean(arr_valido)),
+            "mediana": float(np.median(arr_valido)),
+            "desvio_padrao": float(np.std(arr_valido)),
+            "variancia": float(np.var(arr_valido)),
+            "minimo": float(np.min(arr_valido)),
+            "maximo": float(np.max(arr_valido)),
+            "assimetria": float(stats.skew(arr_valido)),
+            "curtose": float(stats.kurtosis(arr_valido)),
         }

@@ -14,7 +14,8 @@ def test_pre_processar_dados():
     y = np.random.randint(0, 10, 100)
 
     X_treino_norm, X_teste_norm, _y_treino, _y_teste, _scaler = pre_processar_dados(
-        X, y)
+        X, y
+    )
 
     # Verifica splits (80/20)
     assert len(X_treino_norm) == 80
@@ -44,7 +45,7 @@ def test_pre_processamento_entradas_invalidas():
         pre_processar_dados(X_incompativel, y_incompativel)
 
 
-@patch('src.pre_processamento.train_test_split')
+@patch("src.pre_processamento.train_test_split")
 def test_anti_leakage_scaler(mock_split):
     # Mock para evitar o shuffle, assim garantimos quem vai pra treino e teste
     # Treino: valores ate 5, Teste: valores ate 10
@@ -59,7 +60,8 @@ def test_anti_leakage_scaler(mock_split):
     y_fake = np.zeros(100)
 
     _X_treino_norm, X_teste_norm, _y_t, _y_te, scaler = pre_processar_dados(
-        X_fake, y_fake)
+        X_fake, y_fake
+    )
 
     # O valor maximo encontrado pelo scaler deve ser proximo a 5, nao a 10
     assert np.all(scaler.data_max_ < 6.0)
@@ -71,18 +73,28 @@ def test_anti_leakage_scaler(mock_split):
 
 def test_anti_leakage_scaler_fail():
     import pytest
+
     # Cria uma distribuição que poderia causar leak no StandardScaler,
     # e certifica que o MinMaxScaler mantém estrito no Treino, mas permite fora no Teste.
     X = np.random.rand(10, 10)
     y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
-    
+
     # Adicionando mock para forçar o ValueError da normalização
     from unittest.mock import patch
-    with patch("src.pre_processamento.MinMaxScaler.fit_transform", return_value=np.array([[2.0], [3.0]])), \
-         patch("src.pre_processamento.MinMaxScaler.transform", return_value=np.array([[2.0]])), \
-         pytest.raises(ValueError, match="Falha na normalizacao MinMax no Treino"):
+
+    with (
+        patch(
+            "src.pre_processamento.MinMaxScaler.fit_transform",
+            return_value=np.array([[2.0], [3.0]]),
+        ),
+        patch(
+            "src.pre_processamento.MinMaxScaler.transform",
+            return_value=np.array([[2.0]]),
+        ),
+        pytest.raises(ValueError, match="Falha na normalizacao MinMax no Treino"),
+    ):
         pre_processar_dados(X, y)
-    
+
     X_tr_n, X_te_n, _, _, scaler = pre_processar_dados(X, y)
 
 
@@ -135,9 +147,9 @@ def test_split_com_validacao_estratificacao():
     # Desbalanceado de proposito: 90% classe 0, 10% classe 1
     y = np.array([0] * 360 + [1] * 40)
 
-    _, _, _, y_treino, y_validacao, y_teste = pre_processar_dados_com_validacao(
-        X, y
-    )[:6]
+    _, _, _, y_treino, y_validacao, y_teste = pre_processar_dados_com_validacao(X, y)[
+        :6
+    ]
 
     for rotulos in (y_treino, y_validacao, y_teste):
         proporcao = np.sum(rotulos == 1) / len(rotulos)

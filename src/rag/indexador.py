@@ -214,6 +214,7 @@ class IndexadorChromaDB:
         """Inicializa o cliente ChromaDB e obtém/cria a coleção."""
         try:
             import chromadb  # type: ignore
+
             self._cliente = chromadb.PersistentClient(path=self.caminho_db)
             self._colecao = self._cliente.get_or_create_collection(
                 name=self._COLECAO_NOME,
@@ -242,7 +243,9 @@ class IndexadorChromaDB:
 
         # Verifica quais já foram indexados (evita duplicatas)
         existentes = set(self._colecao.get(ids=ids)["ids"])
-        novos = [(i, t, m) for i, t, m in zip(ids, textos, metadados) if i not in existentes]
+        novos = [
+            (i, t, m) for i, t, m in zip(ids, textos, metadados) if i not in existentes
+        ]
 
         if novos:
             ids_novos, textos_novos, meta_novos = zip(*novos)
@@ -278,12 +281,14 @@ class IndexadorChromaDB:
             resultado["metadatas"][0],
             resultado["distances"][0],
         ):
-            documentos_encontrados.append({
-                "conteudo": doc,
-                "fonte": meta.get("fonte", "desconhecida"),
-                "topico": meta.get("topico", ""),
-                "distancia": round(float(dist), 4),
-            })
+            documentos_encontrados.append(
+                {
+                    "conteudo": doc,
+                    "fonte": meta.get("fonte", "desconhecida"),
+                    "topico": meta.get("topico", ""),
+                    "distancia": round(float(dist), 4),
+                }
+            )
         return documentos_encontrados
 
     def total_documentos(self) -> int:

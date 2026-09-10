@@ -28,9 +28,7 @@ class AssistenteRAG:
 
     # ── Inicialização ──────────────────────────────────────────────────────
 
-    def indexar_documentos(
-        self, documentos: list[dict[str, Any]] | None = None
-    ) -> int:
+    def indexar_documentos(self, documentos: list[dict[str, Any]] | None = None) -> int:
         """Indexa os documentos do projeto no ChromaDB.
 
         Args:
@@ -81,9 +79,7 @@ class AssistenteRAG:
 
     # ── Síntese de resposta ────────────────────────────────────────────────
 
-    def _sintetizar_resposta(
-        self, pergunta: str, chunks: list[dict[str, Any]]
-    ) -> str:
+    def _sintetizar_resposta(self, pergunta: str, chunks: list[dict[str, Any]]) -> str:
         """Sintetiza resposta concatenando os chunks mais relevantes.
 
         Combina os textos recuperados em uma resposta coesa, destacando
@@ -105,7 +101,9 @@ class AssistenteRAG:
                 partes.append(chunk["conteudo"])
             else:
                 # Chunks complementares — separados visualmente
-                partes.append(f"\n\n**Informação adicional** ({chunk['topico']}):\n{chunk['conteudo']}")
+                partes.append(
+                    f"\n\n**Informação adicional** ({chunk['topico']}):\n{chunk['conteudo']}"
+                )
 
         resposta = "\n".join(partes)
 

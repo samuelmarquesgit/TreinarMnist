@@ -7,12 +7,14 @@ from src.frontend.estilos import aplicar_estilos, kpi_tile, titulo_secao
 
 try:
     import plotly.graph_objects as go
+
     PLOTLY_OK = True
 except ImportError:
     PLOTLY_OK = False
 
 try:
     from PIL import Image
+
     PIL_OK = True
 except ImportError:
     PIL_OK = False
@@ -20,7 +22,8 @@ except ImportError:
 _TEMA = {
     "paper_bgcolor": "rgba(0,0,0,0)",
     "plot_bgcolor": "rgba(0,0,0,0)",
-    "template": "plotly_dark"}
+    "template": "plotly_dark",
+}
 
 # ── Bubble Sort (usado para ranking Top-K) ─────────────────────────────────
 
@@ -71,21 +74,27 @@ def _grafico_topk(ranking: list[tuple], k: int = 10) -> None:
     rotulos = [f"Dígito {c}" for c, _ in top]
     valores = [round(p * 100, 2) for _, p in top]
     cores = [
-        "#58a6ff" if i == 0
-        else "#3fb950" if i == 1
-        else "#8b949e"
+        "#58a6ff" if i == 0 else "#3fb950" if i == 1 else "#8b949e"
         for i in range(len(top))
     ]
 
     if PLOTLY_OK:
-        fig = go.Figure(go.Bar(
-            x=valores, y=rotulos, orientation="h",
-            marker_color=cores, text=[f"{v:.2f}%" for v in valores],
-            textposition="outside",
-        ))
+        fig = go.Figure(
+            go.Bar(
+                x=valores,
+                y=rotulos,
+                orientation="h",
+                marker_color=cores,
+                text=[f"{v:.2f}%" for v in valores],
+                textposition="outside",
+            )
+        )
         fig.update_layout(
-            **_TEMA, height=320, margin={"t": 10, "b": 10, "l": 80},
-            xaxis_title="Probabilidade (%)", yaxis={"autorange": "reversed"},
+            **_TEMA,
+            height=320,
+            margin={"t": 10, "b": 10, "l": 80},
+            xaxis_title="Probabilidade (%)",
+            yaxis={"autorange": "reversed"},
         )
         st.plotly_chart(fig, use_container_width=True)
     else:
@@ -109,14 +118,14 @@ def _pipeline_visual(img_orig: np.ndarray) -> tuple:
     # Etapa 2: garante fundo preto/dígito branco (igual ao pipeline canonical)
     # Inverte apenas se o fundo for claro (média > 127); canvas já é fundo preto
     media = float(gray.mean())
-    invertida = (255 - gray).astype('uint8') if media > 127.0 else gray.copy()
+    invertida = (255 - gray).astype("uint8") if media > 127.0 else gray.copy()
 
     # Etapa 3: bounding box
     _, bin_img = cv2.threshold(invertida, 30, 255, cv2.THRESH_BINARY)
     coords = cv2.findNonZero(bin_img)
     if coords is not None:
         x, y, w, h = cv2.boundingRect(coords)
-        bbox_crop = invertida[y:y + h, x:x + w]
+        bbox_crop = invertida[y : y + h, x : x + w]
     else:
         bbox_crop = invertida
 
@@ -130,10 +139,12 @@ def _pipeline_visual(img_orig: np.ndarray) -> tuple:
 
 # ── Painel principal ───────────────────────────────────────────────────────
 
+
 def _renderizar_modo_canvas():
     """Renderiza o canvas de desenho e retorna img_array ou None."""
     try:
         from streamlit_drawable_canvas import st_canvas  # type: ignore
+
         titulo_secao("Desenhe o dígito abaixo")
         col_canvas, col_config = st.columns([2, 1])
         with col_config:
@@ -145,7 +156,8 @@ def _renderizar_modo_canvas():
                 stroke_width=espessura,
                 stroke_color=cor_traço,
                 background_color="#000000",
-                height=280, width=280,
+                height=280,
+                width=280,
                 drawing_mode="freedraw",
                 key="canvas_digito",
                 return_image_data=True,
@@ -174,9 +186,12 @@ def _renderizar_modo_upload():
         import tempfile
 
         from guardrails.validador_imagem_entrada import ValidadorImagemEntrada
+
         tmp_path = None
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(arquivo.name)[1]) as tmp:
+            with tempfile.NamedTemporaryFile(
+                delete=False, suffix=os.path.splitext(arquivo.name)[1]
+            ) as tmp:
                 tmp.write(arquivo.getvalue())
                 tmp_path = tmp.name
             ValidadorImagemEntrada.validar_arquivo(tmp_path)
@@ -210,23 +225,33 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
     st.divider()
     titulo_secao("Inferência e Ranking Top-K (Bubble Sort)")
     from src.visao_computacional import processar_imagem_usuario
+
     vetor = processar_imagem_usuario(img_array)
     ranking_raw = _inferir_com_modelo(fachada, vetor)
     if ranking_raw is None:
-        st.info("Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui.")
+        st.info(
+            "Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui."
+        )
         return
 
     ranking = ordenar_probabilidades_por_bolha(ranking_raw)
     melhor_classe, melhor_prob = ranking[0]
     k1, k2 = st.columns(2)
-    k1.markdown(kpi_tile(f"Dígito {melhor_classe}", "🎯 Predição"), unsafe_allow_html=True)
-    k2.markdown(kpi_tile(f"{melhor_prob * 100:.1f}%", "Confiança"), unsafe_allow_html=True)
+    k1.markdown(
+        kpi_tile(f"Dígito {melhor_classe}", "🎯 Predição"), unsafe_allow_html=True
+    )
+    k2.markdown(
+        kpi_tile(f"{melhor_prob * 100:.1f}%", "Confiança"), unsafe_allow_html=True
+    )
 
     from guardrails.validador_falsa_certeza import ValidadorFalsaCerteza
+
     probs_array = np.array([p for _, p in sorted(ranking_raw, key=lambda x: x[0])])
     avaliacao = ValidadorFalsaCerteza().avaliar_predicao(probs_array, list(range(10)))
     if avaliacao["alerta_overconfidence"]:  # type: ignore[call-overload]
-        st.warning("⚠️ Alerta de Falsa Certeza: confiança alta em classe potencialmente desconhecida.")
+        st.warning(
+            "⚠️ Alerta de Falsa Certeza: confiança alta em classe potencialmente desconhecida."
+        )
 
     st.markdown("<br>", unsafe_allow_html=True)
     _grafico_topk(ranking)
@@ -247,9 +272,14 @@ def renderizar(fachada) -> None:
     if not fachada.modelos:
         st.warning(
             "⚠️ Nenhum modelo treinado ainda. Acesse o **Painel de Benchmarks** "
-            "e treine ao menos um modelo antes de usar o Laboratório.")
+            "e treine ao menos um modelo antes de usar o Laboratório."
+        )
 
-    modo = st.radio("Modo de entrada", ["✍️ Canvas (Desenho)", "📷 Upload de Imagem"], horizontal=True)
+    modo = st.radio(
+        "Modo de entrada",
+        ["✍️ Canvas (Desenho)", "📷 Upload de Imagem"],
+        horizontal=True,
+    )
 
     if "Canvas" in modo:
         img_array = _renderizar_modo_canvas()

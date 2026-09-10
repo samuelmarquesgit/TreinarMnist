@@ -146,8 +146,8 @@ def aplicar_estilos() -> None:
 def card(conteudo_html: str) -> None:
     """Renderiza um bloco de conteúdo HTML dentro de um card glassmorphism."""
     st.markdown(
-        f'<div class="glass-card">{conteudo_html}</div>',
-        unsafe_allow_html=True)
+        f'<div class="glass-card">{conteudo_html}</div>', unsafe_allow_html=True
+    )
 
 
 def kpi_tile(valor: str, label: str) -> str:
@@ -156,19 +156,18 @@ def kpi_tile(valor: str, label: str) -> str:
         f'<div class="kpi-tile">'
         f'  <div class="kpi-valor">{valor}</div>'
         f'  <div class="kpi-label">{label}</div>'
-        f'</div>'
+        f"</div>"
     )
 
 
 def badge(texto: str, tipo: str = "ok") -> str:
     """Retorna HTML de um badge colorido. tipo: 'ok' | 'erro' | 'aviso'."""
-    classe = {"ok": "badge-ok", "erro": "badge-erro",
-              "aviso": "badge-aviso"}.get(tipo, "badge-ok")
+    classe = {"ok": "badge-ok", "erro": "badge-erro", "aviso": "badge-aviso"}.get(
+        tipo, "badge-ok"
+    )
     return f'<span class="{classe}">{texto}</span>'
 
 
 def titulo_secao(texto: str) -> None:
     """Renderiza um título de seção com barra lateral colorida."""
-    st.markdown(
-        f'<div class="secao-titulo">{texto}</div>',
-        unsafe_allow_html=True)
+    st.markdown(f'<div class="secao-titulo">{texto}</div>', unsafe_allow_html=True)

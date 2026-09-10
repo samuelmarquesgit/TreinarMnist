@@ -2,6 +2,7 @@
 tests/test_cobertura_extra.py
 Cobre as linhas descobertas restantes para elevar a cobertura total.
 """
+
 import sys
 from unittest.mock import MagicMock, patch
 
@@ -11,6 +12,7 @@ import pytest
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 def _mock_torch_timm():
     """Retorna (mock_torch, mock_timm, fake_model) prontos para uso."""
@@ -60,10 +62,15 @@ def _mock_torch_timm():
 # 1. src/modelos/vision_transformer.py  (0 → ~100%)
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 def test_vit_sem_torch_levanta_import_error():
     """_TORCH_OK=False: garante que ModeloViT levanta ImportError sem alterar sys.modules."""
     import src.modelos.vision_transformer as vt
-    with patch.object(vt, "_TORCH_OK", False), pytest.raises(ImportError, match="PyTorch e timm"):
+
+    with (
+        patch.object(vt, "_TORCH_OK", False),
+        pytest.raises(ImportError, match="PyTorch e timm"),
+    ):
         vt.ModeloViT()
 
 
@@ -72,16 +79,17 @@ def test_vit_com_torch_mockado_treinar_e_prever():
     mt, timm_mock, fake_model = _mock_torch_timm()
 
     import src.modelos.vision_transformer as vt
-    
-    with patch.object(vt, "_TORCH_OK", True, create=True), \
-         patch.object(vt, "torch", mt, create=True), \
-         patch.object(vt, "timm", timm_mock, create=True), \
-         patch.object(vt, "F", mt.nn.functional, create=True), \
-         patch.object(vt, "nn", mt.nn, create=True), \
-         patch.object(vt, "optim", mt.optim, create=True), \
-         patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True), \
-         patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True):
 
+    with (
+        patch.object(vt, "_TORCH_OK", True, create=True),
+        patch.object(vt, "torch", mt, create=True),
+        patch.object(vt, "timm", timm_mock, create=True),
+        patch.object(vt, "F", mt.nn.functional, create=True),
+        patch.object(vt, "nn", mt.nn, create=True),
+        patch.object(vt, "optim", mt.optim, create=True),
+        patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True),
+        patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True),
+    ):
         modelo = vt.ModeloViT(nome_log="ViTMock", epocas=1, batch_size=2)
         assert modelo._treinado is False
         assert modelo.epocas == 1
@@ -119,15 +127,16 @@ def test_vit_cuda_disponivel():
 
     import src.modelos.vision_transformer as vt
 
-    with patch.object(vt, "_TORCH_OK", True, create=True), \
-         patch.object(vt, "torch", mt, create=True), \
-         patch.object(vt, "timm", timm_mock, create=True), \
-         patch.object(vt, "F", mt.nn.functional, create=True), \
-         patch.object(vt, "nn", mt.nn, create=True), \
-         patch.object(vt, "optim", mt.optim, create=True), \
-         patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True), \
-         patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True):
-
+    with (
+        patch.object(vt, "_TORCH_OK", True, create=True),
+        patch.object(vt, "torch", mt, create=True),
+        patch.object(vt, "timm", timm_mock, create=True),
+        patch.object(vt, "F", mt.nn.functional, create=True),
+        patch.object(vt, "nn", mt.nn, create=True),
+        patch.object(vt, "optim", mt.optim, create=True),
+        patch.object(vt, "DataLoader", mt.utils.data.DataLoader, create=True),
+        patch.object(vt, "TensorDataset", mt.utils.data.TensorDataset, create=True),
+    ):
         modelo = vt.ModeloViT()
         assert modelo is not None
 
@@ -135,6 +144,7 @@ def test_vit_cuda_disponivel():
 # ═════════════════════════════════════════════════════════════════════════════
 # 2. src/mcp_servidor.py  (0 → ~100%)
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 def _setup_mcp_mocks():
     """Instala mocks de 'mcp' em sys.modules e retorna dicionário original."""
@@ -180,6 +190,7 @@ def test_mcp_servidor_importa_e_cobre_definicoes():
     orig = _setup_mcp_mocks()
     try:
         import src.mcp_servidor as srv
+
         srv._fachada = None
         srv._rag = None
 
@@ -247,13 +258,17 @@ def test_mcp_servidor_importa_e_cobre_definicoes():
 # 3. src/fachada.py – linhas MLflow (134-137, 259-272) e linha 206-207
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 def test_fachada_mlflow_disponivel_no_init():
     """Cobre if _MLFLOW_OK: mlflow.set_experiment() no __init__ (linhas 134-137)."""
     import src.fachada as fachada_mod
+
     mock_mlflow = MagicMock()
 
-    with patch.object(fachada_mod, "_MLFLOW_OK", True), \
-         patch.object(fachada_mod, "mlflow", mock_mlflow):
+    with (
+        patch.object(fachada_mod, "_MLFLOW_OK", True),
+        patch.object(fachada_mod, "mlflow", mock_mlflow),
+    ):
         _fachada = fachada_mod.FachadaPipelineIA()
 
     mock_mlflow.set_experiment.assert_called_once_with("Treinamento_MNIST")
@@ -262,17 +277,21 @@ def test_fachada_mlflow_disponivel_no_init():
 def test_fachada_mlflow_set_experiment_falha():
     """Cobre except Exception no set_experiment (linha 137)."""
     import src.fachada as fachada_mod
+
     mock_mlflow = MagicMock()
     mock_mlflow.set_experiment.side_effect = Exception("servidor offline")
 
-    with patch.object(fachada_mod, "_MLFLOW_OK", True), \
-         patch.object(fachada_mod, "mlflow", mock_mlflow):
+    with (
+        patch.object(fachada_mod, "_MLFLOW_OK", True),
+        patch.object(fachada_mod, "mlflow", mock_mlflow),
+    ):
         _fachada = fachada_mod.FachadaPipelineIA()  # não deve propagar exceção
 
 
 def test_fachada_avaliar_modelo_sem_probabilidades():
     """Cobre y_probabilidades = None quando prever_probabilidades lança exceção (206-207)."""
     import src.fachada as fachada_mod
+
     fachada = fachada_mod.FachadaPipelineIA()
     fachada.X_teste = np.zeros((10, 784), dtype=np.float32)
     fachada.y_teste = np.zeros(10, dtype=np.int32)
@@ -289,6 +308,7 @@ def test_fachada_avaliar_modelo_sem_probabilidades():
 def test_fachada_treinar_e_avaliar_com_mlflow():
     """Cobre bloco MLflow em treinar_e_avaliar (linhas 259-272)."""
     import src.fachada as fachada_mod
+
     mock_mlflow = MagicMock()
     mock_ctx = MagicMock()
     mock_mlflow.start_run.return_value.__enter__ = MagicMock(return_value=mock_ctx)
@@ -300,8 +320,10 @@ def test_fachada_treinar_e_avaliar_com_mlflow():
     fachada.X_teste = np.zeros((10, 784), dtype=np.float32)
     fachada.y_teste = np.zeros(10, dtype=np.int32)
 
-    with patch.object(fachada_mod, "_MLFLOW_OK", True), \
-         patch.object(fachada_mod, "mlflow", mock_mlflow):
+    with (
+        patch.object(fachada_mod, "_MLFLOW_OK", True),
+        patch.object(fachada_mod, "mlflow", mock_mlflow),
+    ):
         resultado = fachada.executar_experimento("RegressaoLogistica")
 
     mock_mlflow.start_run.assert_called_once()
@@ -311,6 +333,7 @@ def test_fachada_treinar_e_avaliar_com_mlflow():
 def test_fachada_treinar_e_avaliar_mlflow_falha():
     """Cobre except em mlflow.start_run (warning, não propaga)."""
     import src.fachada as fachada_mod
+
     mock_mlflow = MagicMock()
     mock_mlflow.start_run.side_effect = Exception("MLflow down")
 
@@ -320,8 +343,10 @@ def test_fachada_treinar_e_avaliar_mlflow_falha():
     fachada.X_teste = np.zeros((10, 784), dtype=np.float32)
     fachada.y_teste = np.zeros(10, dtype=np.int32)
 
-    with patch.object(fachada_mod, "_MLFLOW_OK", True), \
-         patch.object(fachada_mod, "mlflow", mock_mlflow):
+    with (
+        patch.object(fachada_mod, "_MLFLOW_OK", True),
+        patch.object(fachada_mod, "mlflow", mock_mlflow),
+    ):
         resultado = fachada.executar_experimento("RegressaoLogistica")
 
     assert "acuracia" in resultado  # deve completar sem propagar
@@ -331,9 +356,11 @@ def test_fachada_treinar_e_avaliar_mlflow_falha():
 # 4. src/modelos/fabrica_modelos.py – linhas 53, 81, 98-100
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 def test_fabrica_listar_disponiveis_inclui_vit():
     """Cobre FabricaModelos.listar_disponiveis() (linha 53)."""
     from src.modelos.fabrica_modelos import FabricaModelos
+
     disponiveis = FabricaModelos.listar_disponiveis()
     assert "VisionTransformer" in disponiveis
     assert "RegressaoLogistica" in disponiveis
@@ -343,26 +370,31 @@ def test_fabrica_criar_vit_sem_torch_levanta_import_error():
     """Cobre FabricaModelos.criar_modelo('VisionTransformer') (linha 81)."""
     import src.modelos.vision_transformer as vt
     from src.modelos.fabrica_modelos import FabricaModelos
-    
-    with patch.object(vt, "_TORCH_OK", False), pytest.raises(ImportError, match="PyTorch e timm"):
+
+    with (
+        patch.object(vt, "_TORCH_OK", False),
+        pytest.raises(ImportError, match="PyTorch e timm"),
+    ):
         FabricaModelos.criar_modelo("VisionTransformer")
 
 
 def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
     """Cobre fallback _one_hot_a_partir_de_predict em ModeloSklearn."""
     from src.modelos.fabrica_modelos import ModeloSklearn
-    
+
     class FakeEstimatorSemProba:
         def __init__(self):
             self.classes_ = np.array([0, 1, 2])
+
         def fit(self, X, y):
             pass
+
         def predict(self, X):
             return np.array([1, 2, 0, 1, 1])
 
     modelo = ModeloSklearn(FakeEstimatorSemProba(), "Fake_semProba")
     X = np.zeros((5, 784), dtype=np.float32)
-    
+
     probs = modelo.prever_probabilidades(X)
     assert probs.shape == (5, 3)
     assert probs[0, 1] == 1.0
@@ -372,6 +404,7 @@ def test_modelo_sklearn_prever_probabilidades_sem_predict_proba():
 # ═════════════════════════════════════════════════════════════════════════════
 # 5. src/pre_processamento.py – linha 50 (ValueError leakage)
 # ═════════════════════════════════════════════════════════════════════════════
+
 
 def test_pre_processamento_falha_normalizacao():
     """Cobre raise ValueError quando MinMax retorna valores fora do intervalo (linha 50)."""
@@ -385,7 +418,7 @@ def test_pre_processamento_falha_normalizacao():
         mock_scaler = MagicMock()
         mock_scaler_cls.return_value = mock_scaler
         # fit_transform retorna valores FORA de [0,1] → dispara ValueError
-        mock_scaler.fit_transform.return_value = (X * 300.0)
+        mock_scaler.fit_transform.return_value = X * 300.0
         mock_scaler.transform.return_value = X[:20]
 
         with pytest.raises(ValueError, match="Falha na normalizacao"):
@@ -406,6 +439,7 @@ _mock_st_analise = sys.modules["streamlit"]
 def test_painel_analise_plotly_indisponivel_cobre_else():
     """Cobre PLOTLY_OK=False path e _card_metricas sem plotly (linhas 15-16, 33)."""
     import src.frontend.painel_analise_estatistica as pa
+
     # Usa o 'st' real do módulo — imune a substituições em sys.modules por outros testes
     st_pa = pa.st
     original_plotly = pa.PLOTLY_OK
@@ -414,6 +448,7 @@ def test_painel_analise_plotly_indisponivel_cobre_else():
         import numpy as np
 
         from src.analise_estatistica import CalculadorEstatistico
+
         calc = CalculadorEstatistico()
         dados = np.arange(100, dtype=float)
         stats = calc.estatisticas_descritivas(dados)
@@ -428,6 +463,7 @@ def test_painel_analise_plotly_indisponivel_cobre_else():
 def test_painel_analise_obter_dados_brutos_treino():
     """Cobre _obter_dados modo Brutos e partição Treino (linhas 39-40)."""
     import src.frontend.painel_analise_estatistica as pa
+
     fachada = MagicMock()
     fachada.X_treino = np.ones((100, 784), dtype=np.float32) * 0.5
     fachada.y_treino = np.tile(np.arange(10, dtype=np.int32), 10)
@@ -438,6 +474,7 @@ def test_painel_analise_obter_dados_brutos_treino():
 def test_painel_analise_obter_dados_com_filtro_classe():
     """Cobre _obter_dados com filtro de dígito."""
     import src.frontend.painel_analise_estatistica as pa
+
     fachada = MagicMock()
     fachada.X_treino = np.ones((100, 784), dtype=np.float32) * 0.5
     fachada.y_treino = np.tile(np.arange(10, dtype=np.int32), 10)
@@ -449,9 +486,11 @@ def test_painel_analise_obter_dados_com_filtro_classe():
 # 7. src/frontend/painel_robustez_ood.py – linhas 16-17, 90-91, 202, 207, 212-213
 # ═════════════════════════════════════════════════════════════════════════════
 
+
 def test_painel_robustez_plotly_indisponivel():
     """Cobre PLOTLY_OK=False path (linhas 16-17)."""
     import src.frontend.painel_robustez_ood as pr
+
     original = pr.PLOTLY_OK
     pr.PLOTLY_OK = False
     try:
@@ -476,21 +515,25 @@ def test_painel_robustez_alerta_interface_legada():
 def _fazer_df_ood(n_total: int, n_alertas: int):
     """Cria DataFrame de OOD com n_alertas alertas."""
     import pandas as pd
+
     alertas = ["⚠️ Sim"] * n_alertas + ["✅ Não"] * (n_total - n_alertas)
     conf = [0.95] * n_alertas + [0.3] * (n_total - n_alertas)
-    return pd.DataFrame({
-        "Amostra": range(n_total),
-        "Classe Prevista": [0] * n_total,
-        "Confiança": conf,
-        "Entropia": [0.1] * n_total,
-        "Alerta OOD": alertas,
-        "Confiável": [False] * n_alertas + [True] * (n_total - n_alertas),
-    })
+    return pd.DataFrame(
+        {
+            "Amostra": range(n_total),
+            "Classe Prevista": [0] * n_total,
+            "Confiança": conf,
+            "Entropia": [0.1] * n_total,
+            "Alerta OOD": alertas,
+            "Confiável": [False] * n_alertas + [True] * (n_total - n_alertas),
+        }
+    )
 
 
 def _renderizar_ood_com_taxa(n_alertas: int):
     """Executa renderizar() injetando resultado pré-computado com n_alertas alertas."""
     import src.frontend.painel_robustez_ood as pr
+
     pr.PLOTLY_OK = False  # retorna antes dos gráficos
 
     # Usa a referência 'st' que o próprio módulo conhece (imune a substituição em sys.modules)
@@ -510,16 +553,18 @@ def _renderizar_ood_com_taxa(n_alertas: int):
 
     # Salva estado anterior (outros testes podem ter configurado side_effects)
     _orig_columns_se = st_mod.columns.side_effect
-    _orig_slider_se  = st_mod.slider.side_effect
-    _orig_multi_rv   = st_mod.multiselect.return_value
-    _orig_button_rv  = st_mod.button.return_value
+    _orig_slider_se = st_mod.slider.side_effect
+    _orig_multi_rv = st_mod.multiselect.return_value
+    _orig_button_rv = st_mod.button.return_value
 
     # Limpa apenas o histórico de chamadas das métricas que vamos checar
     st_mod.error.reset_mock()
     st_mod.warning.reset_mock()
     st_mod.success.reset_mock()
 
-    st_mod.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
+    st_mod.columns.side_effect = lambda n: [
+        MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+    ]
     st_mod.multiselect.return_value = [4, 7]
     st_mod.slider.side_effect = [200, 0.85]
     st_mod.button.return_value = False
@@ -532,15 +577,16 @@ def _renderizar_ood_com_taxa(n_alertas: int):
     finally:
         # Restaura side_effects para não contaminar testes subsequentes
         st_mod.columns.side_effect = _orig_columns_se
-        st_mod.slider.side_effect  = _orig_slider_se
+        st_mod.slider.side_effect = _orig_slider_se
         st_mod.multiselect.return_value = _orig_multi_rv
-        st_mod.button.return_value      = _orig_button_rv
+        st_mod.button.return_value = _orig_button_rv
     return st_mod
 
 
 def test_painel_robustez_overconfidence_branch_alto():
     """taxa > 50 → st.error (linha 202-204)."""
     import src.frontend.painel_robustez_ood as pr
+
     original = pr.PLOTLY_OK
     try:
         st_m = _renderizar_ood_com_taxa(60)
@@ -552,6 +598,7 @@ def test_painel_robustez_overconfidence_branch_alto():
 def test_painel_robustez_overconfidence_branch_medio():
     """taxa > 20 → st.warning (linha 207)."""
     import src.frontend.painel_robustez_ood as pr
+
     original = pr.PLOTLY_OK
     try:
         st_m = _renderizar_ood_com_taxa(25)
@@ -563,6 +610,7 @@ def test_painel_robustez_overconfidence_branch_medio():
 def test_painel_robustez_overconfidence_branch_baixo():
     """taxa <= 20 → st.success (linhas 212-213)."""
     import src.frontend.painel_robustez_ood as pr
+
     original = pr.PLOTLY_OK
     try:
         st_m = _renderizar_ood_com_taxa(5)
@@ -576,6 +624,7 @@ def test_painel_robustez_overconfidence_branch_baixo():
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ── painel_robustez_ood: interface legada dict (linhas 90-91) ─────────────────
+
 
 def test_painel_ood_interface_legada_dict():
     """Cobre branch else (interface legada dict) em _avaliar_lote (linhas 90-91)."""
@@ -595,23 +644,28 @@ def test_painel_ood_interface_legada_dict():
 
 # ── painel_robustez_ood: fonte = "modelo real" (linha 158) ───────────────────
 
+
 def test_painel_ood_fonte_modelo_real():
     """Cobre branch onde executar_experimento_ood retorna dados reais (linha 158)."""
     import src.frontend.painel_robustez_ood as pr
 
     st_mod = pr.st
     orig_columns_se = st_mod.columns.side_effect
-    orig_slider_se  = st_mod.slider.side_effect
-    orig_button_rv  = st_mod.button.return_value
-    orig_multi_rv   = st_mod.multiselect.return_value
+    orig_slider_se = st_mod.slider.side_effect
+    orig_button_rv = st_mod.button.return_value
+    orig_multi_rv = st_mod.multiselect.return_value
 
     try:
         pr.PLOTLY_OK = False
         fake_probs = np.ones((10, 10)) / 10
         # Faz executar_experimento_ood retornar dados (não None) → fonte = "modelo real"
-        with patch("src.frontend.painel_robustez_ood.executar_experimento_ood",
-                    return_value=fake_probs):
-            st_mod.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
+        with patch(
+            "src.frontend.painel_robustez_ood.executar_experimento_ood",
+            return_value=fake_probs,
+        ):
+            st_mod.columns.side_effect = lambda n: [
+                MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+            ]
             st_mod.multiselect.return_value = [4, 7]
             st_mod.slider.side_effect = [10, 0.85]
             st_mod.button.return_value = True  # executar = True → dispara o bloco
@@ -622,12 +676,13 @@ def test_painel_ood_fonte_modelo_real():
     finally:
         pr.PLOTLY_OK = True
         st_mod.columns.side_effect = orig_columns_se
-        st_mod.slider.side_effect  = orig_slider_se
+        st_mod.slider.side_effect = orig_slider_se
         st_mod.button.return_value = orig_button_rv
         st_mod.multiselect.return_value = orig_multi_rv
 
 
 # ── painel_analise_estatistica: ValueError em _card_metricas (linhas 104-106) ─
+
 
 def test_painel_analise_card_metricas_value_error():
     """Cobre except ValueError em renderizar (linhas 104-106)."""
@@ -636,31 +691,38 @@ def test_painel_analise_card_metricas_value_error():
     fachada = MagicMock()
     fachada.X_treino = np.zeros((20, 784), dtype=np.float32)
     fachada.y_treino = np.zeros(20, dtype=np.int32)
-    fachada.X_teste  = np.zeros((10, 784), dtype=np.float32)
-    fachada.y_teste  = np.zeros(10, dtype=np.int32)
+    fachada.X_teste = np.zeros((10, 784), dtype=np.float32)
+    fachada.y_teste = np.zeros(10, dtype=np.int32)
 
     st_pa = pa.st
     orig_columns_se = st_pa.columns.side_effect
-    orig_radio      = st_pa.radio.return_value
-    orig_toggle     = st_pa.toggle.return_value
+    orig_radio = st_pa.radio.return_value
+    orig_toggle = st_pa.toggle.return_value
     try:
-        st_pa.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
-        st_pa.radio.return_value  = "Brutos [0–255]"
-        st_pa.toggle.return_value = False   # usar_filtro_classe=False → digito_filtro=None (selectbox irrelevante)
+        st_pa.columns.side_effect = lambda n: [
+            MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+        ]
+        st_pa.radio.return_value = "Brutos [0–255]"
+        st_pa.toggle.return_value = False  # usar_filtro_classe=False → digito_filtro=None (selectbox irrelevante)
         st_pa.error.reset_mock()
-        with patch("src.frontend.painel_analise_estatistica.CalculadorEstatistico") as mock_calc_cls:
+        with patch(
+            "src.frontend.painel_analise_estatistica.CalculadorEstatistico"
+        ) as mock_calc_cls:
             mock_calc = MagicMock()
-            mock_calc.estatisticas_descritivas.side_effect = ValueError("dados inválidos")
+            mock_calc.estatisticas_descritivas.side_effect = ValueError(
+                "dados inválidos"
+            )
             mock_calc_cls.return_value = mock_calc
             pa.renderizar(fachada)
         st_pa.error.assert_called()
     finally:
         st_pa.columns.side_effect = orig_columns_se
-        st_pa.radio.return_value  = orig_radio
+        st_pa.radio.return_value = orig_radio
         st_pa.toggle.return_value = orig_toggle
 
 
 # ── painel_analise_estatistica: heatmap com digito_filtro (linhas 224-227) ───
+
 
 def test_painel_analise_heatmap_com_digito_filtro():
     """Cobre branch heatmap quando digito_filtro não é None (linhas 224-227)."""
@@ -669,16 +731,19 @@ def test_painel_analise_heatmap_com_digito_filtro():
     fachada = MagicMock()
     fachada.X_treino = np.random.rand(50, 784).astype(np.float32)
     fachada.y_treino = np.tile(np.arange(10, dtype=np.int32), 5)
-    fachada.X_teste  = np.random.rand(20, 784).astype(np.float32)
-    fachada.y_teste  = np.zeros(20, dtype=np.int32)
+    fachada.X_teste = np.random.rand(20, 784).astype(np.float32)
+    fachada.y_teste = np.zeros(20, dtype=np.int32)
 
     st_pa = pa.st
     orig_columns_se = st_pa.columns.side_effect
-    orig_tabs_se    = st_pa.tabs.side_effect
+    orig_tabs_se = st_pa.tabs.side_effect
     try:
-        st_pa.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
-        st_pa.tabs.side_effect    = lambda labels: [MagicMock().__enter__.return_value or MagicMock()
-                                                    for _ in labels]
+        st_pa.columns.side_effect = lambda n: [
+            MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+        ]
+        st_pa.tabs.side_effect = lambda labels: [
+            MagicMock().__enter__.return_value or MagicMock() for _ in labels
+        ]
         pa.PLOTLY_OK = False
         # digito_filtro=3 → branch mask = y_base == digito_filtro
         pa._renderizar_analise_estatistica(fachada, "Brutos [0–255]", "Treino", 3)
@@ -687,10 +752,11 @@ def test_painel_analise_heatmap_com_digito_filtro():
     finally:
         pa.PLOTLY_OK = True
         st_pa.columns.side_effect = orig_columns_se
-        st_pa.tabs.side_effect    = orig_tabs_se
+        st_pa.tabs.side_effect = orig_tabs_se
 
 
 # ── painel_analise_estatistica: t-test (linhas 301-311) ──────────────────────
+
 
 def test_painel_analise_ttest_branch():
     """Cobre bloco t-test em abas_testes[1] quando digito_a != digito_b (linhas 301-311)."""
@@ -699,25 +765,29 @@ def test_painel_analise_ttest_branch():
     fachada = MagicMock()
     fachada.X_treino = np.random.rand(50, 784).astype(np.float32)
     fachada.y_treino = np.tile(np.arange(10, dtype=np.int32), 5)
-    fachada.X_teste  = np.random.rand(20, 784).astype(np.float32)
-    fachada.y_teste  = np.zeros(20, dtype=np.int32)
+    fachada.X_teste = np.random.rand(20, 784).astype(np.float32)
+    fachada.y_teste = np.zeros(20, dtype=np.int32)
 
     # Precisamos entrar na aba "🧪 Teste t de Student" — usamos patch direto
     with patch("src.frontend.painel_analise_estatistica.scipy_stats") as mock_scipy:
         mock_scipy.ttest_ind.return_value = (2.5, 0.01)
-        mock_scipy.shapiro.return_value   = (0.9, 0.3)
-        mock_scipy.levene.return_value    = (1.0, 0.4)
-        mock_scipy.f_oneway.return_value  = (5.0, 0.001)
+        mock_scipy.shapiro.return_value = (0.9, 0.3)
+        mock_scipy.levene.return_value = (1.0, 0.4)
+        mock_scipy.f_oneway.return_value = (5.0, 0.001)
         st_pa = pa.st
         orig_columns_se = st_pa.columns.side_effect
         try:
-            st_pa.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
+            st_pa.columns.side_effect = lambda n: [
+                MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+            ]
             pa.PLOTLY_OK = False
             # Chama _renderizar_testes_estatisticos diretamente se existir, senão via renderizar
             if hasattr(pa, "_renderizar_testes_estatisticos"):
                 pa._renderizar_testes_estatisticos(fachada, "Brutos [0–255]", "Treino")
             else:
-                pa._renderizar_analise_estatistica(fachada, "Brutos [0–255]", "Treino", None)
+                pa._renderizar_analise_estatistica(
+                    fachada, "Brutos [0–255]", "Treino", None
+                )
         except Exception:
             pass
         finally:
@@ -727,6 +797,7 @@ def test_painel_analise_ttest_branch():
 
 # ── painel_assistente_rag: badge RAG ativo + warning (linhas 161, 176) ───────
 
+
 def test_painel_rag_status_ativo_e_warning():
     """Cobre linhas 161 (badge RAG ativo) e 176 (st.warning ao falhar init)."""
     import src.frontend.painel_assistente_rag as pra
@@ -735,7 +806,9 @@ def test_painel_rag_status_ativo_e_warning():
     orig_columns_se = st_rag.columns.side_effect
     orig_button_rv_rag = st_rag.button.return_value
     try:
-        st_rag.columns.side_effect = lambda n: [MagicMock() for _ in range(n if isinstance(n, int) else len(n))]
+        st_rag.columns.side_effect = lambda n: [
+            MagicMock() for _ in range(n if isinstance(n, int) else len(n))
+        ]
 
         # Linha 161: rag_pronto = True → badge "RAG Ativo"
         st_rag.session_state.rag_pronto = True
@@ -745,7 +818,9 @@ def test_painel_rag_status_ativo_e_warning():
         # Linha 176: botão clicado + _carregar_assistente retorna None → st.warning
         st_rag.button.return_value = True
         st_rag.session_state.rag_pronto = False
-        with patch("src.frontend.painel_assistente_rag._carregar_assistente", return_value=None):
+        with patch(
+            "src.frontend.painel_assistente_rag._carregar_assistente", return_value=None
+        ):
             pra._renderizar_status_rag()
         st_rag.warning.assert_called()
     finally:
