@@ -1,166 +1,138 @@
-# 📋 Backlog de Tasks e Issues: Plataforma Empresarial MNIST
-## Desenvolvimento de IA em Português do Brasil com Machine Learning, Deep Learning, Vision Transformer, Bancos Híbridos (PostgreSQL + MongoDB), RAG, Servidor MCP e Frontend Interativo
+# Índice de Tarefas e Rastreabilidade — Plataforma Empresarial MNIST
 
-Este documento gerencia o ciclo completo de desenvolvimento do projeto, estruturado em **12 Épicos**, **23 Issues**, **Branches Git**, **Padrões de Commit** e **Critérios de Aceite**.
-
----
-
-## 🌳 Estrutura de Branches & Convenção de Commits
-
-### 📌 Padrão de Branching
-* **`main`**: Código de produção, estável, aprovado e final.
-* **`develop`**: Branch centralizadora do desenvolvimento contínuo (merges das features).
-* **`feature/<nome-da-tarefa>`**: Branches individuais criadas a partir de `develop`.
-  * *Regra do Edital:* Não excluir as branches de feature após os Pull Requests / Merges.
-
-### 📝 Padrão de Mensagens de Commit (Imperativo em Português)
-* ✅ `"implementa interface frontend interativa com dashboard e canvas de desenho"`
-* ✅ `"adiciona painel de analise exploratoria e heatmaps no frontend"`
-* ✅ `"implementa laboratorio de visao computacional e predicao em tempo real no frontend"`
-* ✅ `"conecta visualizador de bancos postgresql e mongodb ao dashboard web"`
-* ❌ Evitar: *"feito frontend"*, *"X foi adicionado"*, *"ajustes"*.
+> **Versão:** 1.0  
+> **Data:** 2026-09-11  
+> **Fonte de verdade:** `docs/BACKLOG.md` (backlog priorizado completo)  
 
 ---
 
-## 🎯 Mapa Geral dos Épicos
+## Convenções de Branching & Commits
 
-| Épico | Identificador | Módulos e Entregáveis Principais |
-| :--- | :--- | :--- |
-| **Épico 1** | `EPIC-01` | Ambiente, Docker (`docker-compose.yml`), `.env`, Logging e CI/CD |
-| **Épico 2** | `EPIC-02` | Camada de Persistência Híbrida: PostgreSQL (SQL) + MongoDB (NoSQL) |
-| **Épico 3** | `EPIC-03` | Ingestão, EDA e Estrutura Vetorial (`src/carregador_dados.py`) |
-| **Épico 4** | `EPIC-04` | Pré-processamento, Normalização e Split (`src/pre_processamento.py`) |
-| **Épico 5** | `EPIC-05` | Modelagem: Algoritmos Lineares, Árvores e Ensembles |
-| **Épico 6** | `EPIC-06` | Modelagem: SVM, KNN, Naive Bayes e K-Means Clusterização |
-| **Épico 7** | `EPIC-07` | Deep Learning: Perceptron, MLP e Vision Transformer (ViT) |
-| **Épico 8** | `EPIC-08` | Algoritmo de Ordenação: Bubble Sort para Ranking Top-K |
-| **Épico 9** | `EPIC-09` | Avaliação Comparativa, Heatmaps, Diagnóstico e Persistência |
-| **Épico 10**| `EPIC-10` | Robustez OOD, Falsa Certeza e Visão Computacional de Fotos Reais |
-| **Épico 11**| `EPIC-11` | Subsistema RAG, Servidor MCP, CLI `main.py`, Testes e Documentação |
-| **Épico 12**| `EPIC-12` | **Interface Gráfica Frontend: Dashboard Analítico, Canvas e Q&A** |
+### Branching (Git Flow)
+| Branch | Finalidade | Regras |
+|--------|------------|--------|
+| `main` | Produção, estável, protegida | Apenas via PR aprovado vindo de `develop` |
+| `develop` | Integração contínua | Base para features; CI roda a cada push |
+| `feature/tm-XXX-descricao` | Trabalho de uma task do backlog | Criada a partir de `develop`; nome `tm-XXX` obrigatório |
+| `fix/tm-XXX-descricao` | Correção de bug em `develop` ou `main` | Mesma convenção |
+| `docs/tm-XXX-descricao` | Atualização de documentação | Mesma convenção |
 
----
+> **Regra do Edital:** Branches de feature **não são excluídas** após merge.
 
-## 📂 Detalhamento do Épico de Frontend
+### Mensagens de Commit (Imperativo em Português)
+| ✅ Correto | ❌ Incorreto |
+|--------------|--------------|
+| `feat: implementa CLI alinhada à documentação` | `feat: CLI fix` |
+| `fix: corrige caminho do servidor MCP` | `fix: mcp path` |
+| `docs: atualiza README com modelos reais` | `docs: update readme` |
+| `refactor: centraliza configuração em src/config.py` | `refactor: config` |
 
-``` 
-========================================================================================
-EPIC-12: INTERFACE GRÁFICA FRONTEND (DASHBOARD ANALÍTICO, CANVAS E PAINÉIS)
-========================================================================================
-```
-
-### 🔹 Issue #17: Setup do Frontend, Layout Moderno e Navegação por Abas (`app.py` / `src/frontend/`)
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / UI
-* **Tecnologia:** Streamlit (Python Puro com CSS Customizado e Dark Mode Glassmorphism)
-* **Entregáveis:**
-  - `app.py`: Ponto de entrada do frontend web (`streamlit run app.py` ou `python main.py --modo web`).
-  - `src/frontend/estilos.py`: Injeção de CSS personalizado com tema escuro profissional, cards com efeito glassmorphism e tipografia moderna.
-  - `src/frontend/navegacao.py`: Barra lateral responsiva com seleção de 7 abas temáticas:
-    1. 📊 *Painel 1: Análise Exploratória (EDA)*
-    2. 📈 *Painel 2: Explorador Estatístico & Currículo (Bruto vs Tratado + SPA)*
-    3. 🏆 *Painel 3: Benchmarks & Comparação dos 12 Modelos*
-    4. 🧪 *Painel 4: Testes de Robustez & Generalização OOD*
-    5. ✍️ *Painel 5: Laboratório de Visão Computacional (Canvas & Upload)*
-    6. 🗄️ *Painel 6: Monitor de Bancos de Dados (PostgreSQL + MongoDB)*
-    7. 💬 *Painel 7: Chatbot Assistente RAG*
-* **Critérios de Aceite:**
-  - [ ] Interface carrega sem erros com layout responsivo e fluído.
+**Formato:** `<tipo>: <verbo imperativo> <objeto> [detalhe]`  
+**Tipos:** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `security`
 
 ---
 
-### 🔹 Issue #18: Painel de Análise Exploratória de Imagens (EDA Interativa)
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Visualização
-* **Componentes:**
-  - Visualizador interativo da grade de amostras de dígitos (0 a 9) com controle de quantidade de linhas/colunas.
-  - Gráficos interativos com contagem exata e balanceamento de classes.
-  - Inspeção visual interativa de um dígito específico: exibe a matriz $28 \times 28$, o mapa de calor de intensidades de pixel (0 a 255) e o histograma de distribuição de brilho.
-* **Critérios de Aceite:**
-  - [ ] Exibição interativa e instantânea dos dados do MNIST.
+## Mapa Épico → Tasks (Resumo)
+
+| Épico | Tasks Relacionadas (IDs) | Status Geral |
+|-------|--------------------------|--------------|
+| **EPIC-01** Infraestrutura, Docker, CI/CD | TM-007, TM-009, TM-010, TM-011, TM-012 | Backlog |
+| **EPIC-02** Persistência Híbrida | TM-008, TM-013 | Backlog |
+| **EPIC-03** Ingestão & EDA | — | Concluído |
+| **EPIC-04** Pré-processamento | TM-003, TM-005 | Parcial |
+| **EPIC-05** Classificadores Principais | TM-004, TM-006 | Parcial |
+| **EPIC-06** Distância/Probabilidade/Clustering | TM-006 | Backlog |
+| **EPIC-07** Deep Learning (MLP, ViT) | TM-014 | Backlog |
+| **EPIC-08** Bubble Sort Top-K | — | Concluído (utilitário) |
+| **EPIC-09** Avaliação & Persistência | TM-009, TM-014, TM-016 | Parcial |
+| **EPIC-10** Robustez OOD & Visão | TM-003, TM-015 | Parcial |
+| **EPIC-11** RAG, MCP, CLI, Testes | TM-001, TM-002, TM-011, TM-013, TM-018 | Backlog |
+| **EPIC-12** Frontend Streamlit | TM-011, TM-015, TM-019 | Backlog |
+| **EPIC-13** Documentação, Governança, Entrega | TM-017, TM-020 | Backlog |
 
 ---
 
-### 🔹 Issue #18.1: Painel de Análise Estatística Interativa (Dados Brutos vs Tratados) & Portal de Métricas
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Estatística Computacional & Visualização
-* **Tecnologias:** Python (`numpy`, `scipy.stats`, `pandas`, `plotly`), Streamlit e HTML5/JS (`analise_estatistica.html`).
-* **Componentes:**
-  - **Módulo de Cálculo Estatístico em Python (`src/analise_estatistica.py`):**
-    - Funções puras em `pt-BR` para cálculo de medidas de tendência central, dispersão, assimetria, curtose, matrizes de covariância, testes de normalidade e ANOVA.
-  - **Seletor de Tipo de Dados:** Alternância dinâmica entre **Dados Brutos** (pixels inteiros [0, 255]) e **Dados Tratados** (normalizados MinMax [0, 1] ou Z-Score padronizado).
-  - **Filtro de Amostragem & Classes:** Opção de calcular estatísticas para o dataset global ou segmentado por classe/dígito (0 a 9) e por partição (Treino, Validação, Teste).
-  - **Medidas Descritivas e de Posição em Tempo Real:**
-    - Média ($\mu$), Mediana, Moda, Variância ($\sigma^2$), Desvio Padrão ($\sigma$), Intervalo Interquartílico (IQR), Mínimo, Máximo, Quartis (Q1, Q2, Q3), Coeficiente de Variação (CV).
-    - Assimetria (*Skewness*) e Curtose (*Kurtosis*) com diagnóstico automatizado do formato de distribuição.
-  - **Inferência Estatística e Testes de Hipótese:**
-    - Teste de Normalidade de Shapiro-Wilk e Kolmogorov-Smirnov sobre intensidades centrais vs bordas com exibição de p-valor e conclusão automática.
-    - Teste t de Student comparando pares de dígitos (ex: dígito 0 vs dígito 1, ou 4 vs 7).
-    - Teste ANOVA de 1 Fator comparando a variância de brilho médio entre as 10 classes de dígitos.
-    - Teste Qui-Quadrado de aderência/homogeneidade entre partições.
-  - **Visualizações Gráficas Estatísticas Interativas (Plotly):**
-    - Histograma de frequência com sobreposição de Curva de Densidade KDE estimada.
-    - Boxplots múltiplos por classe com detecção visual de outliers.
-    - Gráfico Q-Q (Quantil-Quantil) para diagnóstico visual de normalidade.
-    - Matriz de Correlação e Heatmap espacial de variância dos pixels $28 \times 28$.
-  - **Menu Portal de Análise Estatística Integrado (`analise_estatistica.html`):**
-    - Servirá de menu interativo para o site onde ficarão os dados de estatística, organizando todos os tópicos de estatística aplicada ao projeto, com persistência de anotações no `localStorage` e filtros visuais.
-* **Critérios de Aceite:**
-  - [ ] Alternância instantânea entre dados brutos e tratados com recálculo estatístico reativo em Python.
-  - [ ] Todos os testes de hipótese e medidas descritivas calculados com rigor matemático.
-  - [ ] Portal/menu de análise estatística perfeitamente funcional, responsivo e integrado ao dashboard.
+## Rastreabilidade Task → Issue → Branch → PR → Commit
+
+| Task ID | Título Resumido | Prioridade | Issue GitHub | Branch | PR | Commit | Status |
+|---------|-----------------|------------|--------------|--------|----|--------|--------|
+| TM-001 | Alinhar CLI à documentação | P0 | # | `feat/tm-001-cli-align` |  |  | Backlog |
+| TM-002 | Corrigir caminho MCP | P0 | # | `feat/tm-002-mcp-path` |  |  | Backlog |
+| TM-003 | OOD mascaramento real | P0 | # | `feat/tm-003-ood-real` |  |  | Backlog |
+| TM-004 | Calibração real ou remover alegação | P0 | # | `feat/tm-004-calibration` |  |  | Backlog |
+| TM-005 | Unificar config YAML ↔ fábrica | P0 | # | `feat/tm-005-config-unify` |  |  | Backlog |
+| TM-006 | Portfólio modelos: implementar ou documentar | P1 | # | `feat/tm-006-model-portfolio` |  |  | Backlog |
+| TM-007 | Dependências fixas + matriz Python | P1 | # | `feat/tm-007-deps-lock` |  |  | Backlog |
+| TM-008 | Centralizar paths/config | P1 | # | `feat/tm-008-config-central` |  |  | Backlog |
+| TM-009 | .gitignore artefatos | P1 | # | `feat/tm-009-gitignore-artifacts` |  |  | Backlog |
+| TM-010 | CI gates cobertura/segurança | P1 | # | `feat/tm-010-ci-gates` |  |  | Backlog |
+| TM-011 | Testes frontend/MCP + cobertura | P1 | # | `feat/tm-011-test-frontend-mcp` |  |  | Backlog |
+| TM-012 | Compatibilidade sklearn/warnings | P1 | # | `feat/tm-012-sklearn-compat` |  |  | Backlog |
+| TM-013 | RAG factual + persistente | P1 | # | `feat/tm-013-rag-factual` |  |  | Backlog |
+| TM-014 | Benchmarks científicos | P1 | # | `feat/tm-014-benchmark-science` |  |  | Backlog |
+| TM-015 | Data Augmentation | P2 | # | `feat/tm-015-data-aug` |  |  | Backlog |
+| TM-016 | Segurança/versionamento modelos | P2 | # | `feat/tm-016-model-security` |  |  | Backlog |
+| TM-017 | LICENSE + docs index + links | P2 | # | `feat/tm-017-docs-license` |  |  | Backlog |
+| TM-018 | Observabilidade/logging MCP | P2 | # | `feat/tm-018-observability` |  |  | Backlog |
+| TM-019 | Acessibilidade/UX frontend | P2 | # | `feat/tm-019-a11y-ux` |  |  | Backlog |
+| TM-020 | Limpeza scripts temporários | P2 | # | `feat/tm-020-cleanup-scripts` |  |  | Backlog |
+| TM-021 | i18n UI | P3 | # | `feat/tm-021-i18n` |  |  | Backlog |
+| TM-022 | Exportação PDF/HTML relatórios | P3 | # | `feat/tm-022-export-pdf` |  |  | Backlog |
+| TM-023 | Multi-dataset (EMNIST/KMNIST) | P3 | # | `feat/tm-023-multi-dataset` |  |  | Backlog |
+
+> **Como preencher:** Ao criar a issue no GitHub, copie o número para a coluna "Issue GitHub". Ao criar a branch, use o padrão `feat/tm-XXX-descricao`. Ao abrir o PR, referencie a issue (`Closes #N`). Ao mergear, o commit de merge vai para a coluna "Commit".
 
 ---
 
-### 🔹 Issue #19: Painel de Benchmarks, Matrizes de Confusão e Métricas
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Métricas
-* **Componentes:**
-  - Tabela comparativa interativa com ordenação por coluna (Acurácia, Precisão, Recall, F1-Score, Tempo).
-  - Cards de KPIs no topo com o **Modelo Campeão**, **Maior Acurácia** e **Menor Tempo de Treino**.
-  - Seletor dinâmico para renderizar a Matriz de Confusão ($10 \times 10$) com mapa de calor interativo de qualquer um dos 12 modelos.
-  - Gráfico comparativo de Radar/Barras mostrando o trade-off Acurácia vs Tempo de Processamento.
-* **Critérios de Aceite:**
-  - [ ] Gráficos renderizados com alta performance e legibilidade.
+## Fluxo de Trabalho (Workflow)
+
+1. **Planejamento Semanal** (Segunda): Revisar backlog, mover tasks para `Planejado`, criar issues GitHub.
+2. **Início da Task**: Criar branch `feat/tm-XXX-descricao` a partir de `develop`.
+3. **Desenvolvimento**: Commits seguindo convenção; testes locais (`pytest`, `ruff`, `mypy`).
+4. **Pull Request**: Abrir PR para `develop`; preencher checklist do template; `Closes #N`.
+5. **Revisão**: Mínimo 1 aprovação; CI verde (Ruff, mypy, pytest, coverage ≥ 60%, security scans).
+6. **Merge**: Squash merge em `develop`; branch preservada (regra do edital).
+7. **Release**: Quando `develop` estável, PR `develop → main` com tag de versão.
+8. **Registro**: Atualizar tabela de rastreabilidade acima com Issue, Branch, PR, Commit.
 
 ---
 
-### 🔹 Issue #20: Painel de Robustez OOD e Falsa Certeza (Overconfidence)
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Pesquisa
-* **Componentes:**
-  - Seletor interativo de classes a serem mascaradas (ex: dígitos 4 e 7).
-  - Gráfico de histograma interativo comparando a distribuição de confiança entre dados conhecidos (In-Distribution) e dados nunca vistos (Out-of-Distribution).
-  - Indicador de alerta de **Overconfidence** com visualização de para quais dígitos conhecidos o modelo mapeou os dígitos desconhecidos.
-* **Critérios de Aceite:**
-  - [ ] Demonstração clara e visual do conceito de saturação Softmax.
+## Definição de Pronto (Definition of Done)
+
+Uma task é considerada **Concluída** quando:
+
+- [ ] Critérios de aceite da task atendidos (conforme `docs/BACKLOG.md`)
+- [ ] Testes unitários/integração passando (`pytest -v`)
+- [ ] Lint limpo (`ruff check src tests`)
+- [ ] Tipagem limpa (`mypy src --ignore-missing-imports`)
+- [ ] Cobertura ≥ 60% (`pytest --cov=src --cov-fail-under=60`)
+- [ ] Security scans sem bloqueadores (`safety`, `trivy`, `trufflehog`)
+- [ ] Documentação atualizada (README, BACKLOG, TASKS, arquivos .md afetados)
+- [ ] Revisão de código aprovada (mínimo 1 aprovação)
+- [ ] Merge em `develop` realizado
+- [ ] Tabela de rastreabilidade atualizada neste documento
 
 ---
 
-### 🔹 Issue #21: Laboratório de Visão Computacional (Canvas Interativo & Upload)
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / Visão Computacional em Tempo Real
-* **Componentes:**
-  - **Canvas de Desenho com o Mouse (`streamlit-drawable-canvas`):** Permite ao usuário desenhar um dígito na tela com o mouse ou caneta.
-  - **Upload de Imagem/Foto:** Permite carregar fotos tiradas no celular ou arquivos do computador.
-  - **Visualizador do Pipeline:** Exibe as 4 etapas de transformação em tempo real:
-    1. Imagem Original $\to$ 2. Grayscale/Invertida $\to$ 3. Bounding Box Cortado $\to$ 4. Canvas $28 \times 28$ Centralizado.
-  - **Gráfico de Probabilidades Top-K:** Gráfico de barras horizontais em tempo real com as probabilidades de 0 a 9 e destaque no dígito vencedor ordenado pelo **Bubble Sort**.
-* **Critérios de Aceite:**
-  - [ ] Desenho na tela e upload com inferência em tempo real (< 100ms).
+## Glossário de Status
+
+| Status | Significado |
+|--------|-------------|
+| `Backlog` | Priorizada, aguardando planejamento |
+| `Planejado` | Issue criada, branch a ser iniciada |
+| `Em Andamento` | Branch ativa, desenvolvimento em curso |
+| `Revisão` | PR aberto, aguardando aprovação |
+| `Concluído` | Mergeado em `develop`, DoD atendido |
+| `Bloqueado` | Dependência externa ou decisão pendente |
 
 ---
 
-### 🔹 Issue #22: Monitor de Bancos de Dados e Chatbot RAG Integrado
-* **Branch:** `feature/frontend-dashboard-interativo`
-* **Tipo:** Frontend / MLOps & GenAI
-* **Componentes:**
-  - **Aba de Bancos de Dados:**
-    - Visualizador de tabelas do **PostgreSQL** (histórico de execuções, configurações e métricas registradas).
-    - Visualizador de documentos JSON do **MongoDB** (matrizes de confusão e predições armazenadas).
-  - **Aba do Assistente RAG:**
-    - Interface de chat interativa (*Chatbot*) para fazer perguntas em linguagem natural sobre o projeto, métricas e análises estatísticas com respostas fundamentadas no ChromaDB.
-    - Implementação de embeddings semânticos reais via `sentence-transformers/all-MiniLM-L6-v2`.
-* **Critérios de Aceite:**
-  - [x] Consultas aos bancos e respostas do RAG exibidas diretamente na interface web.
-  - [x] OOD e Benchmarks completos.
+## Histórico de Versões
+
+| Versão | Data | Autor | Alterações |
+|--------|------|-------|------------|
+| 1.0 | 2026-09-11 | Engenharia de IA | Criação baseada em backlog v1.0 |
+
+---
+
+*Este documento é mantido sincronizado com `docs/BACKLOG.md`. Atualize ambos em conjunto.*
