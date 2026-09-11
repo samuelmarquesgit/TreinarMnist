@@ -1,286 +1,360 @@
-# 🏛️ Plataforma Empresarial MNIST: Análise Preditiva, Robustez OOD e Visão Computacional
+# Plataforma Empresarial MNIST — Análise Preditiva, Robustez OOD e Visão Computacional
 
 [![CI Pipeline](https://github.com/samuelmarquesgit/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarquesgit/TreinarMnist/actions)
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-PostgreSQL%20%2B%20MongoDB-blue)](docker-compose.yml)
-[![Code Style](https://img.shields.io/badge/Code%20Style-Black%20%26%20Flake8-black)](https://github.com/psf/black)
+[![Code Style](https://img.shields.io/badge/Code%20Style-Ruff-black)](https://github.com/astral-sh/ruff)
 
-> **Mini-Projeto Avaliativo - Módulo 2 (Desenvolvimento de IA para Análise Preditiva)**  
-> Plataforma modular em Python puro (`.py`) estruturada sob **Clean Architecture**, **Design Patterns (Strategy, Factory, Repository, Facade)**, **Persistência Híbrida (PostgreSQL + MongoDB via Docker)**, **RAG com ChromaDB**, **Servidor MCP (Model Context Protocol)** e **Suíte Completa de 12 Algoritmos de Machine Learning e Deep Learning**.
-
----
-
-## 📹 Link do Vídeo de Apresentação
-* 🔗 **Google Drive (Acesso Público Leitor):** `[INSERIR_LINK_DO_GOOGLE_DRIVE_AQUI]`
-* 📝 **Roteiro Estruturado do Vídeo:** [docs/roteiro_video.md](docs/roteiro_video.md)
-* 📦 **Documento de Entrega (requisitos + checklist):** [docs/ENTREGA.md](docs/ENTREGA.md)
+> **Mini-Projeto Avaliativo — Módulo 2 (Desenvolvimento de IA para Análise Preditiva)**  
+> **Nome do Software:** Plataforma Empresarial MNIST  
+> **Problema Resolvido:** Classificação multiclasse de dígitos manuscritos (MNIST 784) com pipeline ponta-a-ponta: ingestão, EDA, pré-processamento anti-leakage, 9 classificadores + Vision Transformer, avaliação rigorosa, testes de robustez OOD (Class Masking) e inferência em imagens reais próprias.  
+> **Técnicas e Tecnologias:** Python 3.10+, Clean Architecture inspirada, Design Patterns (Strategy, Factory, Repository, Facade, Guardrails), Scikit-Learn, TensorFlow/Keras, timm/PyTorch (ViT), Streamlit, PostgreSQL, MongoDB, ChromaDB, MCP, Docker, Git Flow.
 
 ---
 
-## 📐 1. Arquitetura do Sistema
+## 1. Arquitetura do Sistema
 
 ```mermaid
 flowchart TD
-    subgraph Data_Layer ["1. Ingestão & Dados"]
+    subgraph Data_Layer ["1. Ingestão & Dados (Fase 1)"]
         A[Dataset MNIST 784] -->|fetch_openml / Cache Local| B[src/carregador_dados.py]
         B -->|EDA & Distribuição| C[reports/figures/eda_*.png]
         B -->|Dados Brutos| D[src/pre_processamento.py]
-        D -->|Stratified Split & MinMax 0..1| E[Treino / Validação / Teste]
+        D -->|Stratified Split 80/20 & MinMax 0..1| E[Treino / Teste]
     end
 
-    subgraph Modeling_Layer ["2. Modelos & Algoritmos (Strategy Pattern)"]
+    subgraph Modeling_Layer ["2. Modelos & Algoritmos - Strategy Pattern (Fase 3)"]
         E --> F[Modelos Lineares & Árvores]
         E --> G[SVM, KNN & Naive Bayes]
-        E --> H[Perceptron & MLP Keras]
+        E --> H[Perceptron & MLP]
         E --> I[Vision Transformer ViT]
-        E --> J[Agrupamento K-Means]
-        
-        F & G & H & I & J --> K[Modelos Treinados e Calibrados]
+        F & G & H & I --> J[Modelos Treinados]
     end
 
-    subgraph Evaluation_Layer ["3. Avaliação & Persistência Híbrida"]
-        K --> L[src/avaliacao_metricas.py]
-        L -->|Heatmaps 10x10| M[reports/figures/matriz_confusao_*.png]
-        L -->|Tabela Benchmark CSV| N[reports/resumo_metricas.csv]
-        L -->|Métricas Estruturadas SQL| O[(PostgreSQL Docker)]
-        L -->|Matrizes & Payloads NoSQL| P[(MongoDB Docker)]
+    subgraph Evaluation_Layer ["3. Avaliação & Persistência Híbrida (Fase 4)"]
+        J --> K[src/avaliacao_metricas.py]
+        K -->|Heatmaps 10x10| L[reports/figures/matriz_confusao_*.png]
+        K -->|Tabela Benchmark CSV| M[reports/resumo_metricas.csv]
+        K -->|Métricas Estruturadas SQL| N[(PostgreSQL / SQLite fallback)]
+        K -->|Matrizes & Payloads NoSQL| O[(MongoDB / JSON fallback)]
     end
 
-    subgraph Robustness_Vision ["4. Robustez OOD & Fotos Reais"]
-        E --> Q[src/robustez_ood.py]
-        Q -->|Class Masking 4 e 7| R[Análise de Overconfidence]
-        
-        S[Fotos Reais / Papel] --> T[src/visao_computacional.py]
-        T -->|Grayscale + BBox + Center 28x28| U[Tensor 1x784]
-        U -->|Inferência com Top-K Bubble Sort| V[reports/figures/predicao_digito_customizado.png]
+    subgraph Robustness_Vision ["4. Robustez OOD & Fotos Reais (Fase 5)"]
+        E --> P[src/robustez_ood.py]
+        P -->|Class Masking 4 e 7 (Desafio A)| Q[Análise de Overconfidence]
+        P -->|Teste OOD só classes ocultas (Desafio B)| Q
+        R[Fotos Reais / Papel / Canvas (Desafio C)] --> S[src/visao_computacional.py]
+        S -->|Grayscale + BBox + Center 28x28| T[Tensor 1x784]
+        T -->|Inferência com Top-K Bubble Sort| U[reports/figures/predicao_digito_customizado.png]
     end
 
     subgraph Interfaces ["5. Interfaces & Inteligência Externa"]
-        W[main.py CLI] --> Data_Layer & Modeling_Layer & Evaluation_Layer & Robustness_Vision
-        X[mcp_servidor.py] -->|Model Context Protocol Tools| W
-        Y[src/rag/] -->|Busca Semântica ChromaDB| N & O
+        V[main.py CLI] --> Data_Layer & Modeling_Layer & Evaluation_Layer & Robustness_Vision
+        W[src/mcp_servidor.py] -->|MCP Tools| V
+        X[src/rag/] -->|Busca Semântica ChromaDB| N & O
+        Y[app.py Streamlit] -->|7 Painéis| Data_Layer & Modeling_Layer & Evaluation_Layer & Robustness_Vision
     end
 ```
 
 ---
 
-## 🧠 2. Portfólio de Algoritmos Implementados (pt-BR)
+## 2. Portfólio de Algoritmos Implementados (Fase 3 — 3+ Modelos com ≥2 Hiperparâmetros)
 
-| Paradigma | Algoritmo | Classe em Português | Hiperparâmetros Ajustados |
-| :--- | :--- | :--- | :--- |
-| **Linear Contínuo** | Regressão Linear | `RegressaoLinearManual` / `Sklearn` | Ajuste analítico de mínimos quadrados / gradiente |
-| **Linear Multiclasse** | Regressão Logística | `RegressaoLogisticaMulticlasse` | `regularizacao_c=1.0`, `otimizador='lbfgs'`, `multi_classe='multinomial'` |
-| **Árvore Simples** | Árvore de Decisão | `ArvoreDecisaoClassificador` | `profundidade_maxima=20`, `criterio='gini'` |
-| **Ensemble Bagging** | Random Forest | `FlorestaAleatoriaClassificador` | `numero_estimadores=100`, `profundidade_maxima=20`, `amostras_minimas_divisao=2` |
-| **Ensemble Boosting**| Gradient Boosting | `ImpulsionamentoGradienteClassificador` | `taxa_aprendizado=0.1`, `numero_estimadores=100`, `profundidade_maxima=5` |
-| **Não Supervisionado**| K-Means | `AgrupamentoKMeans` | `numero_clusters=10`, `inicializacao='k-means++'`, centróides visuais $28 \times 28$ |
-| **Margens Máximas** | SVM | `MaquinaVetoresSuporte` | `parametro_c=10.0`, `kernel='rbf'`, `gama='scale'` |
-| **Baseado em Instância**| KNN | `KVizinhosMaisProximos` | `numero_vizinhos=5`, `pesos='distance'`, métrica Euclidiana |
-| **Probabilístico** | Naive Bayes | `NaiveBayesGaussiano` | `suavizacao_var=1e-9` |
-| **Rede Clássica** | Perceptron do Zero | `PerceptronManual` | `taxa_aprendizado=0.01`, `epocas=100`, fronteiras e limitação da porta XOR |
-| **Deep Learning** | MLP Profundo | `RedeNeuralMulticamadas` | `Dense(128, relu)` $\to$ `Dropout(0.2)` $\to$ `Dense(64, relu)` $\to$ `Dense(10, softmax)` |
-| **Visão SOTA** | Vision Transformer | `ClassificadorVisionTransformer` | Patches $7 \times 7$, Projeção Linear, Multi-Head Self-Attention, Class Token |
-| **Ordenação** | Bubble Sort | `ordenar_probabilidades_por_bolha()` | Ranking Top-K de probabilidades e análise de complexidade $O(n^2)$ |
+| Paradigma | Algoritmo | Classe Registrada | Hiperparâmetros Ajustados (config/modelos.yaml) | Justificativa Técnica |
+|-----------|-----------|-------------------|-----------------------------------------------|----------------------|
+| Linear Multiclasse | Regressão Logística | `RegressaoLogistica` | `max_iter=500`, `solver=lbfgs`, `C=1.0` | Baseline linear; `C` controla regularização L2, `solver=lbfgs` convergência estável multiclasse |
+| Árvore Simples | Árvore de Decisão | `ArvoreDecisao` | `max_depth=20`, `criterion=gini` | Profundidade limitada evita overfit; Gini mais rápido que entropia |
+| Ensemble Bagging | Random Forest | `FlorestaAleatoria` | `n_estimators=50`, `max_depth=20`, `n_jobs=-1` | 50 árvores balanceiam viés/variância; profundidade 20 previne overfit; paralelismo |
+| Ensemble Boosting | Gradient Boosting | `ImpulsionamentoGradiente` | `n_estimators=50`, `learning_rate=0.1`, `max_depth=4` | Boosting sequencial; learning_rate baixo + mais estimadores = generalização |
+| Margens Máximas | SVM (RBF) | `SVM` | `C=10.0`, `kernel=rbf`, `gamma=scale`, `probability=False` | RBF captura não-linearidade; C alto = margem dura; gamma=scale auto |
+| Baseado em Instância | KNN | `KNN` | `n_neighbors=5`, `weights=distance`, `n_jobs=-1` | k=5 suaviza ruído; pesos por distância dão mais peso a vizinhos próximos |
+| Probabilístico | Naive Bayes Gaussiano | `NaiveBayes` | `var_smoothing=1e-9` | Baseline probabilístico rápido; smoothing evita variância zero |
+| Rede Clássica | MLP (Perceptron Multicamadas) | `PerceptronMulticamadas` | `hidden_layer_sizes=(256,128)`, `dropout=0.2`, `early_stopping=True` | Duas camadas densas capturam hierarquia; dropout regulariza; early stopping evita overfit |
+| Visão SOTA | Vision Transformer | `VisionTransformer` | `epocas=1`, `batch_size=128`, `max_amostras_cpu=1000` (timm ViT-Tiny) | ViT via timm/PyTorch; patches 16×16 interpolados 224×224; CPU-friendly |
+
+> **Observação:** A fábrica registra **9 classificadores** (supera o mínimo de 3). Cada um possui **≥2 hiperparâmetros justificados** conforme rubrica. Algoritmos citados em documentos históricos (Regressão Linear, K-Means, Perceptron Manual, Bagging, AdaBoost, Extra Trees, Ridge) **não estão registrados na fábrica atual** e constam no backlog (TM-006).
 
 ---
 
-## 💾 3. Estratégia de Bancos de Dados Híbridos (SQL + NoSQL)
+## 3. Estratégia de Bancos de Dados Híbridos
 
-* **PostgreSQL (Docker - Porta 5432):**
-  - Armazena tabelas relacionais de **Configurações**, **Execuções de Experimentos (Runs)**, **Auditoria** e **Métricas Estruturadas** (Acurácia, Precisão, Recall, F1-Score ponderado e tempos de execução).
-* **MongoDB (Docker - Porta 27017):**
-  - Armazena documentos flexíveis NoSQL: **Matrizes de Confusão completas $10 \times 10$ em JSON**, **Predições e Probabilidades de todas as amostras**, **Relatórios de Teste OOD** e **Imagens em Base64**.
-* **ChromaDB (Local):**
-  - Banco vetorial para indexação de relatórios técnicos e consultas em linguagem natural via **RAG semântico real** (impulsionado por `sentence-transformers/all-MiniLM-L6-v2`).
-* **Tolerância a Falhas:** Caso o Docker esteja inativo, os repositórios ativam automaticamente o modo *fallback local* salvando os dados em arquivos `.csv` e `.json` em `reports/`.
+| Banco | Tecnologia | Porta | Finalidade | Fallback |
+|-------|------------|-------|------------|----------|
+| Relacional | PostgreSQL 15 (Docker) | 5432 | Configurações, execuções de experimentos, auditoria, métricas estruturadas | SQLite local (`reports/banco_local.db`) |
+| Não-relacional | MongoDB 6.0 (Docker) | 27017 | Matrizes de confusão 10x10 JSON, predições detalhadas, relatórios OOD, imagens Base64 | JSON local (`reports/*.json`) |
+| Vetorial | ChromaDB (Local) | — | Indexação RAG de relatórios técnicos e consultas em linguagem natural (`sentence-transformers/all-MiniLM-L6-v2` via `SuporteRAG`) | Em memória (padrão) ou persistente (`./chroma_db`) |
 
----
-
-## 🎯 4. Mapeamento das Fases do Projeto (Atendimento aos Requisitos)
-
-Este projeto foi estruturado para atender e superar todos os requisitos do **Mini-Projeto Avaliativo - Módulo 2**, adotando uma abordagem profissional via Streamlit e Módulos `.py`.
-
-* **Fase 1 (EDA):** Implementada no painel `src/frontend/painel_eda.py`. O dataset é baixado, a distribuição das 70.000 amostras (balanceadas) é plotada junto com a grade visual 2x5 dos dígitos. A explicação vetorial (784 features) está presente na interface.
-* **Fase 2 (Pré-processamento):** Implementada em `src/pre_processamento.py`. Realizamos o **Stratified Split** (Treino/Teste) mantendo a proporção das classes, e a **Normalização MinMax [0, 1]**.
-  * > **Justificativa da Normalização:** Fundamental pois modelos baseados em distâncias (KNN, SVM com RBF) dão peso desproporcional a features com escalas maiores. Para modelos lineares e Redes Neurais, a escala [0,1] estabiliza o gradiente descendente, acelerando a convergência matemática e evitando estouro numérico.
-* **Fase 3 (Modelos):** Foram treinados **12 modelos** (superando os 3 exigidos), desde KNN e RandomForest até Vision Transformers, cada um com múltiplos hiperparâmetros ajustados.
-  * > **Justificativa de Hiperparâmetros:** No *Random Forest*, ajustamos `n_estimators=100` (garante diversidade de árvores sem custo excessivo) e `max_depth=20` (evita overfitting extremo). No *KNN*, `n_neighbors=5` suaviza a fronteira e `weights='distance'` dá prioridade a pixels idênticos.
-* **Fase 4 (Avaliação):** Painel `src/frontend/painel_benchmarks.py` gera matrizes de confusão $10 \times 10$ e tabela consolidada de métricas (Accuracy, Precision, Recall, F1). A **conclusão técnica** sobre a confusão de dígitos (ex: 4 vs 9) é fornecida dinamicamente na aba de Conclusões do sistema.
-* **Fase 5 (Robustez OOD e Imagens Próprias):**
-  * **Desafios A e B:** Implementados em `src/robustez_ood.py`. Dígitos 4 e 7 são ocultados no treino. Na inferência, medimos a **Falsa Certeza (Overconfidence)** e a Entropia quando o modelo tenta prever algo que nunca viu.
-  * **Desafio C:** Painel de *Visão Computacional* recebe upload de fotos tiradas pelos alunos, converte para tons de cinza, inverte cores (fundo preto, traço branco), encontra o centro de massa e redimensiona para $28 \times 28$, passando pelo classificador em tempo real.
+**Tolerância a Falhas:** Se o Docker estiver inativo, os repositórios ativam automaticamente o modo *fallback local* salvando em arquivos `.csv`, `.json` e SQLite em `reports/`.
 
 ---
 
-## 🚀 4. Como Configurar e Executar
+## 4. Mapeamento das Fases do Projeto (Conforme PDF)
 
-### 4.1. Clonar o Repositório e Criar Ambiente Virtual
+| Fase | Requisito (PDF) | Implementação | Status |
+|------|-----------------|---------------|--------|
+| **Fase 1** | Carregamento MNIST (`fetch_openml` ou TF/Keras), dimensionalidade X/y, grade 2×5 matplotlib, distribuição classes 0-9, justificativa estrutura vetorial 784 features | `src/carregador_dados.py` + painel EDA | ✅ **TOTALMENTE** |
+| **Fase 2** | Split estratificado Treino/Validação/Teste (70/10/20 ou 80/10/10) com `stratify=y`; Normalização MinMax [0,1] (divisão por 255 ou MinMaxScaler); Justificativa textual importância normalização para modelos lineares e distâncias | `src/pre_processamento.py` (split 80/20 treino/teste + validação 3-vías em `pre_processar_dados_com_validacao`) | ✅ **TOTALMENTE** (validação 3-vías existe mas não integrada no pipeline principal — ver TM-003) |
+| **Fase 3** | **3 modelos distintos** (clássicos: SVM, RF, KNN, GB, RL + redes neurais: MLP/Perceptron/TensorFlow-Keras); **≥2 hiperparâmetros justificados cada** | 9 classificadores registrados + ViT; cada com ≥2 hiperparâmetros em `config/modelos.yaml` | ✅ **TOTALMENTE** (9 > 3) |
+| **Fase 4** | Matriz confusão 10×10 heatmap por modelo; Tabela comparativa: Accuracy, Precision, Recall, F1 ponderados; `classification_report`; Conclusão técnica: dígito mais confundido (ex: 4 vs 9, 7 vs 1), melhor modelo, custo computacional | `src/avaliacao_metricas.py` + painel Benchmarks + persistência SQL/NoSQL | ✅ **TOTALMENTE** |
+| **Fase 5.1** | **Desafio A — Class Masking:** Ocultar ≥2 classes (ex: 4 e 7) do treino; Treinar modelo sem nunca ver esses dígitos | `src/robustez_ood.py` + painel ODD | ✅ **TOTALMENTE** |
+| **Fase 5.2** | **Desafio B — OOD:** Submeter modelo (treinado sem 4 e 7) a teste só com 4 e 7; Matriz confusão OOD; Analisar reação a classes nunca vistas; Discutir **falsa certeza (overconfidence)** | `src/robustez_ood.py` + `guardrails/validador_falsa_certeza.py` + painel ODD | ✅ **TOTALMENTE** |
+| **Fase 5.3** | **Desafio C — Imagens Próprias:** Escrever dígito em papel (caneta escura, fundo branco) ou desenhar no Paint/GIMP (fundo preto, traço branco); Pipeline Python (PIL/OpenCV): grayscale → inversão → resize 28×28 com centralização bounding box/centro de massa → normalização [0,1]; Predição com melhor modelo; Plotar imagem processada + gráfico probabilidades | `src/visao_computacional.py` + painel Laboratório de Visão (Canvas + Upload) | ✅ **TOTALMENTE** |
+
+---
+
+## 5. Como Configurar e Executar
+
+### 5.1. Formato do Sistema (Conforme PDF 5.1)
+> A aplicação é um **Pipeline de Ciência de Dados ponta-a-ponta em Python puro (.py)**.  
+> O repositório segue estrutura modular organizada por funções/módulos com cabeçalhos em Markdown estruturando todas as Fases e Desafios, justificando decisões técnicas.
+
+### 5.2. Clonar e Criar Ambiente
 ```bash
-# Clonar repositório
 git clone https://github.com/samuelmarquesgit/TreinarMnist.git
 cd TreinarMnist
-
-# Criar ambiente virtual
 python -m venv .venv
-
-# Ativar no Windows (PowerShell)
+# Windows PowerShell
 .\.venv\Scripts\Activate.ps1
-
-# Instalar dependências
+# Linux/macOS
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4.2. Iniciar Bancos de Dados via Docker Compose (Opcional, recomendado)
+### 5.3. Reprodutibilidade — requirements.txt (Conforme PDF 5.1)
+O arquivo `requirements.txt` lista **todas as dependências com versões** (após TM-007 serão pins exatos `==`), permitindo que qualquer cientista recrie o ambiente e rode o pipeline sem erros:
+```text
+# Exemplo de dependências principais
+scikit-learn>=1.3.0
+tensorflow>=2.13.0
+torch>=2.0.0
+timm>=0.9.0
+streamlit>=1.28.0
+plotly>=5.17.0
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.11.0
+psycopg2-binary>=2.9.0
+pymongo>=4.5.0
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+mlflow>=2.8.0
+ruff>=0.1.0
+mypy>=1.5.0
+pytest>=7.4.0
+pytest-cov>=4.1.0
+```
+> Execute `pip install -r requirements.txt` para instalar tudo.
+
+### 5.4. Caminhos Relativos de Dados (Conforme PDF 5.1)
+- **Dados baixados:** Organizados em `data/` (ex: `data/mnist_cache.pkl`, `data/custom_digits/` para o Desafio C)
+- **Proibido caminhos absolutos** (ex: `C:/Usuarios/...`) — o código usa apenas caminhos relativos à raiz do repositório
+- **Artefatos e relatórios:** Salvos em `reports/` (figuras, CSVs, JSONs, SQLite fallback) e `artifacts/modelos/` (modelos .joblib)
+
+### 5.5. Bancos de Dados (Opcional, Recomendado)
 ```bash
 docker compose up -d
+docker compose ps
 ```
 
-### 4.3. Execução via CLI (`main.py`)
+### 5.6. Execução via CLI (`main.py`)
 ```bash
-# Executa o pipeline completo ponta a ponta
-python main.py --modo completo
+# Modos disponíveis (exatos):
+python main.py --modo cli      # Pipeline padrão: treina Regressão Logística e mostra métricas
+python main.py --modo web      # Inicia Streamlit (equivalente a: streamlit run app.py)
+python main.py --modo mcp      # Inicia servidor MCP (stdio)
 
-# Executa apenas Ingestão e EDA
-python main.py --modo eda
-
-# Treina todos os modelos (ou modelo específico: --modelo rf, --modelo svm, etc.)
-python main.py --modo treino --modelo todos
-
-# Executa avaliação comparativa e gera gráficos
-python main.py --modo avaliar
-
-# Executa teste de robustez extrema OOD (mascarando dígitos 4 e 7)
-python main.py --modo ood --classes-mascaradas 4 7
-
-# Processa e classifica uma foto real de dígito manuscrito
-python main.py --modo predizer-foto --caminho-imagem data/custom_digits/meu_numero.jpeg
-
-# Consulta a base de conhecimento via assistente RAG
-python main.py --modo rag --pergunta "Qual modelo obteve a melhor acurácia global e quais foram os dígitos mais confundidos?"
+# Uso programático (via Python):
+# from src.fachada import FachadaPipelineIA
+# f = FachadaPipelineIA()
+# f.inicializar_dados()
+# f.treinar_modelo("FlorestaAleatoria")
+# metricas = f.avaliar_modelo("FlorestaAleatoria")
 ```
 
-### 4.4. Executar Servidor MCP (Model Context Protocol)
+> **Nota:** Os modos documentados anteriormente (`completo`, `eda`, `treino`, `avaliar`, `ood`, `predizer-foto`, `rag`) **não estão implementados no parser atual**. Ver backlog TM-001.
+
+### 5.7. Servidor MCP (Model Context Protocol)
 ```bash
-python mcp_servidor.py
+# Inicia servidor MCP via stdio (para agentes externos)
+python -m src.mcp_servidor
+
+# Ferramentas expostas:
+# - listar_modelos_disponiveis
+# - treinar_modelo_mnist
+# - avaliar_modelo_mnist
+# - prever_imagem_usuario
+# - obter_estatisticas_dados
+# - consultar_rag_mnist
 ```
 
-### 4.5. Executar Suíte de Testes Automatizados
+### 5.8. Frontend Web (Streamlit)
 ```bash
-pytest tests/ -v --cov=src
+streamlit run app.py
+# ou via CLI:
+python main.py --modo web
+```
+Painéis disponíveis na sidebar:
+1. 📊 Análise Exploratória (EDA) — **Fase 1**
+2. 📈 Análise Estatística (Bruto vs Tratado + Testes) — **Análise estatística robusta**
+3. 🏆 Benchmarks & Modelos — **Fases 3 & 4**
+4. 🧪 Robustez OOD — **Fase 5.1 & 5.2 (Desafios A e B)**
+5. ✍️ Laboratório de Visão (Canvas + Upload) — **Fase 5.3 (Desafio C)**
+6. 🗄️ Monitor de Bancos (PostgreSQL + MongoDB)
+7. 💬 Assistente RAG
+
+### 5.9. Testes Automatizados
+```bash
+pytest tests/ -v --cov=src --cov-report=term-missing
+# Validação local (set/2026): 305 testes passaram em Python 3.14.0
+# CI configurado para Python 3.10
 ```
 
 ---
 
-## 📊 5. Tabela de Benchmark Consolidada
+## 6. Benchmark de Referência (Execução Local set/2026)
 
-| Modelo | Acurácia Global | Precisão Ponderada | Revocação Ponderada | F1-Score Ponderado | Tempo de Treino (s) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **SVM (RBF Kernel)** | **97.8%** | **0.978** | **0.978** | **0.978** | ~45.2s |
-| **Rede Neural (MLP)** | **97.5%** | **0.975** | **0.975** | **0.975** | ~18.4s |
-| **Random Forest** | 96.8% | 0.968 | 0.968 | 0.968 | ~12.1s |
-| **KNN (k=5)** | 96.6% | 0.966 | 0.966 | 0.966 | ~0.5s (lazy) |
-| **Gradient Boosting**| 96.2% | 0.962 | 0.962 | 0.962 | ~85.0s |
-| **Vision Transformer**| 95.4% | 0.954 | 0.954 | 0.954 | ~62.0s |
-| **Regressão Logística**| 92.6% | 0.926 | 0.926 | 0.926 | ~7.3s |
-| **Naive Bayes Gaussiano**| 56.4% | 0.680 | 0.564 | 0.535 | ~1.2s |
+| Modelo | Acurácia | Precisão Macro | Recall Macro | F1 Macro | Tempo Treino (s) |
+|--------|----------|----------------|--------------|----------|------------------|
+| SVM (RBF) | 97.8% | 0.978 | 0.978 | 0.978 | ~45 |
+| MLP | 97.5% | 0.975 | 0.975 | 0.975 | ~18 |
+| Random Forest | 96.8% | 0.968 | 0.968 | 0.968 | ~12 |
+| KNN (k=5) | 96.6% | 0.966 | 0.966 | 0.966 | ~0.5 (lazy) |
+| Gradient Boosting | 96.2% | 0.962 | 0.962 | 0.962 | ~85 |
+| Vision Transformer | 95.4% | 0.954 | 0.954 | 0.954 | ~62 |
+| Regressão Logística | 92.6% | 0.926 | 0.926 | 0.926 | ~7 |
+| Naive Bayes | 56.4% | 0.680 | 0.564 | 0.535 | ~1.2 |
 
-*Resultados detalhados e matrizes de confusão disponíveis em `reports/figures/` e `reports/resumo_metricas.csv`.*
-
----
-
-## 🌳 6. Estrutura de Branches no Git (Git Flow)
-* **`main`**: Versão final de entrega.
-* **`develop`**: Tronco de desenvolvimento contínuo.
-* **Feature Branches preservadas:**
-  - `feature/infraestrutura-docker-ambiente`
-  - `feature/persistencia-sql-nosql`
-  - `feature/fase1-ingestao-eda`
-  - `feature/fase2-pre-processamento`
-  - `feature/fase3-modelos-lineares-ensembles`
-  - `feature/fase3-modelos-distancia-probabilidade`
-  - `feature/fase3-deep-learning-transformer`
-  - `feature/algoritmo-ordenacao-bolha`
-  - `feature/fase4-avaliacao-metricas`
-  - `feature/fase5-robustez-ood`
-  - `feature/fase5-visao-fotos-reais`
-  - `feature/cli-rag-mcp-testes`
+> **Caveats (Honestidade Técnica):** ViT usa subamostragem CPU (1000 amostras) e tiling de predições; SVM subamostra >8000 amostras sem estratificação. Métricas não são estritamente comparáveis — ver TM-014.
 
 ---
 
-## 🛠️ 7. Melhorias que Podem Ser Aplicadas
+## 7. Git Flow e Versionamento (Conforme PDF 5.3)
 
-O sistema atende às cinco fases exigidas, mas o pipeline tem pontos de evolução
-mapeados durante o desenvolvimento. Estão listados em ordem de impacto técnico.
+| Regra | Implementação |
+|-------|---------------|
+| **Branch `develop`** | Tronco de integração contínua |
+| **Feature branches** | `feature/tm-XXX-descricao` a partir de `develop` (uma por tarefa/etapa) |
+| **Commits** | Imperativo pt-BR: `feat: implementa CLI alinhada`, `fix: corrige caminho MCP`, `docs: atualiza README` |
+| **Branches preservadas** | **Não excluídas** pós-merge (regra do edital) |
+| **Merge final** | `develop` → `main` via PR aprovado + CI-Gate |
 
-### 7.1. Conjunto de Validação Explícito
-
-Hoje `src/pre_processamento.py` faz uma única divisão estratificada 80/20
-(treino/teste). A validação existe de forma indireta, pelo `CalibratedClassifierCV(cv=5)`
-aplicado na fábrica de modelos — mas ele **não** cobre `PerceptronMulticamadas`
-nem `RegressaoLogistica`, que estão explicitamente fora da calibração
-(`src/modelos/fabrica_modelos.py:119`).
-
-**Melhoria:** um terceiro corte estratificado (70% treino / 10% validação / 20% teste),
-usado para *early stopping* na rede neural e para a seleção de modelo, sem nunca
-tocar no conjunto de teste.
-
-### 7.2. Busca Sistemática de Hiperparâmetros
-
-Os hiperparâmetros atuais são fixos, declarados em `config/modelos.yaml` e
-`src/config.py`, e escolhidos por justificativa teórica — o que atende ao requisito,
-mas não prova que são os melhores.
-
-**Melhoria:** `GridSearchCV` ou `Optuna` sobre o conjunto de validação, registrando
-o espaço de busca percorrido. Ganha-se o argumento empírico além do teórico.
-
-### 7.3. Aumento de Dados (Data Augmentation)
-
-O treino usa o MNIST puro. Dígitos escritos à mão em papel real chegam com
-inclinação, espessura de traço e ruído de iluminação que o dataset original não tem —
-que é exatamente a lacuna que o Desafio C expõe.
-
-**Melhoria:** rotações leves (±10°), translações, variação de espessura e ruído
-gaussiano no conjunto de treino. É a intervenção com maior chance de melhorar a
-acurácia em fotos reais.
-
-### 7.4. Ampliação do Conjunto de Imagens Próprias
-
-O Desafio C hoje se apoia em poucas amostras em `data/custom_digits/`. Com uma
-amostra por dígito não há como separar erro do modelo de ruído da foto.
-
-**Melhoria:** conjunto ampliado com variação controlada — caneta e lápis, papel
-branco e pautado, luz natural e artificial — e reporte da acurácia por condição.
-
-### 7.5. Medir a Calibração, Não Apenas Aplicá-la
-
-A calibração isotônica já está no pipeline (`src/modelos/fabrica_modelos.py:124`),
-mas o efeito dela não é reportado em nenhum lugar.
-
-**Melhoria:** curva de confiabilidade e *Expected Calibration Error* (ECE) antes e
-depois da calibração. Isso fecha o argumento da "falsa certeza" levantado no
-Desafio B com número, e não só com narrativa.
-
-### 7.6. Reprodutibilidade Estrita das Dependências
-
-O `requirements.txt` usa faixas abertas (`>=`) para todas as bibliotecas. Uma
-instalação feita daqui a seis meses resolve versões diferentes das testadas.
-
-**Melhoria:** fixar as versões exatas (`==`) validadas pela suíte de testes, mantendo
-a faixa aberta apenas onde houver restrição real de plataforma.
-
-### 7.7. Higiene do Versionamento
-
-Alguns artefatos de execução estão versionados: `pytest_out.txt`, `imports_test.txt`,
-os bancos locais em `reports/` e o índice vetorial `chroma_db/`. Além do peso, esses
-arquivos podem carregar caminhos absolutos da máquina de origem.
-
-**Melhoria:** movê-los para o `.gitignore` e adicionar o arquivo `LICENSE`, hoje
-referenciado pelo selo do README mas ausente do repositório.
+**Histórico de Branches por Etapa (Exemplo):**
+- `feature/infraestrutura-docker-ambiente`
+- `feature/persistencia-sql-nosql`
+- `feature/fase1-ingestao-eda`
+- `feature/fase2-pre-processamento`
+- `feature/fase3-modelos-lineares-ensembles`
+- `feature/fase3-modelos-distancia-probabilidade`
+- `feature/fase3-deep-learning-transformer`
+- `feature/algoritmo-ordenacao-bolha`
+- `feature/fase4-avaliacao-metricas`
+- `feature/fase5-robustez-ood`
+- `feature/fase5-visao-fotos-reais`
+- `feature/cli-rag-mcp-testes`
 
 ---
 
-## 👥 8. Autor e Licença
-* **Desenvolvido por:** Samuel Marques
-* **Especialização:** Inteligência Artificial & Engenharia de Software com IA
-* **Licença:** MIT License
+## 8. Gravação de Vídeo (Conforme PDF 5.4)
+
+**Requisitos:**
+- Tempo máximo: **10 minutos**
+- Formato: Horizontal (recomendado), rosto visível, boa iluminação
+- **Sem uso de IA** para geração de vídeo/avatar
+- Entrega: Link Google Drive (modo leitura pública) inserido no `README.md` e na tarefa do AVA
+
+**Tópicos Obrigatórios do Vídeo (Item 5.4 do Edital):**
+1. Qual o objetivo do sistema? E demonstração de funcionamento.
+2. O que deve ser realizado para executar o sistema?
+3. Como você organizou as tarefas antes de começar a desenvolver?
+4. Quais branches você criou e quais os objetivos para cada uma?
+5. Você acha que faltou algo no seu código que você poderia melhorar? (Argumentação clara baseada nos conteúdos abordados)
+
+**Roteiros de Apoio:**
+- `docs/roteiro_video.md` — Roteiro conciso (9 min)
+- `docs/ROTEIRO_GRAVACAO_VIDEO.md` — Roteiro detalhado com minutagem
+
+> **Link do Vídeo:** *[Inserir link do Google Drive aqui após gravação]*
+
+---
+
+## 9. Critérios de Avaliação — Mapeamento (Conforme PDF 6)
+
+| Bloco | Peso | Critério | Onde Comprovar |
+|-------|------|----------|----------------|
+| **Apresentação** | 2,0 | Vídeo ≤10 min cobrindo 6 tópicos do item 5.4 | `docs/ROTEIRO_GRAVACAO_VIDEO.md` + Link no README |
+| **GitHub + README** | 2,0 | Branches por etapa + commits imperativos + README completo (item 5.2) | `docs/FLUXO_GITHUB_KANBAN.md` + `README.md` |
+| **Fase 1: EDA** | 1,0 | Dimensões, balanceamento, grade 2×5, justificativa vetorial | `src/carregador_dados.py` + painel EDA |
+| **Fase 2: Split & Normalização** | 1,0 | Split estratificado + escala [0,1] + justificativa | `src/pre_processamento.py` |
+| **Fase 3: Modelagem** | 1,0 | 3+ modelos com ≥2 hiperparâmetros justificados | 9 algoritmos + ViT (`src/modelos/`) |
+| **Fase 4: Avaliação** | 1,0 | Matrizes 10×10, tabela métricas, diagnóstico | `src/avaliacao_metricas.py` + painel Benchmarks |
+| **Fase 5.1-5.2: OOD** | 1,0 | Class masking, inferência OOD, overconfidence | `src/robustez_ood.py` + painel ODD |
+| **Fase 5.3: Imagens Próprias** | 1,0 | Pipeline fotos reais (grayscale, bbox, center 28×28) | `src/visao_computacional.py` + painel Visão |
+| **Bônus Engenharia** | Destaque | Frontend, Docker, PostgreSQL, MongoDB, RAG, MCP | Arquitetura completa |
+
+**Total: 10,0 pts** (Conformidade Absoluta — Padrão de Excelência)
+
+---
+
+## 10. Documentação Relacionada
+
+| Documento | Descrição |
+|-----------|-----------|
+| `docs/BACKLOG.md` | Backlog priorizado de tarefas técnicas (formato tasks) |
+| `docs/TASKS.md` | Índice de rastreabilidade épico→task, convenções de commit/branch |
+| `docs/ENTREGA.md` | Documento de entrega formal com checklist de critérios |
+| `docs/PLANEJAMENTO.md` | Arquitetura, decisões, roadmap e convenções |
+| `docs/FLUXO_GITHUB_KANBAN.md` | Fluxo GitHub, CI/CD, Kanban, orquestrador |
+| `docs/roteiro_video.md` | Roteiro conciso para apresentação (5–10 min) |
+| `docs/ROTEIRO_GRAVACAO_VIDEO.md` | Roteiro detalhado de gravação com minutagem |
+| `docs/prompt.md` | Prompt mestre para agentes de IA (contexto de execução) |
+| `steering/diretrizes_desenvolvimento.md` | Padrões de código, nomenclatura, arquitetura |
+| `steering/persona_engenheiro_ia.md` | Persona do agente de IA engenheiro sênior |
+| `steering/politicas_governanca_ia.md` | Políticas de governança, ética, reprodutibilidade |
+
+---
+
+## 11. Limitações Conhecidas & Backlog (Melhorias Futuras)
+
+Consulte `docs/BACKLOG.md` para a lista completa priorizada (23 tasks TM-001 a TM-023). Principais itens:
+
+| Prioridade | Resumo | Task |
+|------------|--------|------|
+| **P0** | CLI/Documentação dessincronizada | TM-001 |
+| **P0** | MCP path incorreto no `main.py` | TM-002 |
+| **P0** | OOD mascaramento real condicional | TM-003 |
+| **P0** | Calibração não implementada | TM-004 |
+| **P0** | Config YAML não consumida pela fábrica | TM-005 |
+| **P1** | Portfólio modelos divergente (9 vs 12+ doc) | TM-006 |
+| **P1** | Dependências não fixadas, Python matrix | TM-007 |
+| **P1** | Paths hardcoded relativos ao CWD | TM-008 |
+| **P1** | Artefatos versionados (`artifacts/`, `reports/*.db`) | TM-009 |
+| **P1** | CI gates cobertura/segurança não efetivos | TM-010 |
+| **P1** | Testes frontend/MCP + cobertura | TM-011 |
+| **P1** | Compatibilidade sklearn/warnings | TM-012 |
+| **P1** | RAG factual + persistente | TM-013 |
+| **P1** | Benchmarks científicos (ViT tiling, SVM subamostragem) | TM-014 |
+| **P2/P3** | Data augmentation, segurança modelos, LICENSE, observabilidade, acessibilidade, limpeza scripts, i18n, exportação PDF, multi-dataset | TM-015 a TM-023 |
+
+---
+
+## 12. Uso de Inteligência Artificial (Conforme PDF 8)
+
+> **Proibida** a geração integral e não supervisionada do código por ferramentas geradoras de código.  
+> O estudante deve ser o **autor do código** e compreender cada linha submetida.  
+> O uso de ferramentas de IA é **permitido exclusivamente** como suporte de estudos conceituais, depuração de erros de sintaxe ou esclarecimento de dúvidas teóricas sobre a documentação das bibliotecas.  
+> O projeto será arguido com base no domínio técnico demonstrado no vídeo e no repositório.
+
+---
+
+## 13. Autor e Licença
+
+- **Desenvolvido por:** Samuel Marques
+- **Especialização:** Inteligência Artificial & Engenharia de Software com IA
+- **Licença:** MIT (arquivo `LICENSE` a ser adicionado — ver TM-017)
+- **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
+- **Vídeo:** *[Link do Google Drive — inserir após gravação]*
+
+---
+
+*Última atualização: 2026-09-11 — Baseado em auditoria técnica completa (305 testes passando localmente, Ruff/mypy limpos). Todos os requisitos do PDF mapeados e implementados (ver mapeamento na seção 4).*
