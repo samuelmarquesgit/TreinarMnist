@@ -349,7 +349,7 @@ Consulte `docs/BACKLOG.md` para a lista completa priorizada (23 tasks TM-001 a T
 
 ## 13. Autor e Licença
 
-- **Desenvolvido por:** Samuel Marques
+- **Desenvolvido por:** Samuel Marques ([@samuelmarquesgit](https://github.com/samuelmarquesgit)) e Bruno Duarte da Silveira ([@bruno-d-silveira](https://github.com/bruno-d-silveira))
 - **Especialização:** Inteligência Artificial & Engenharia de Software com IA
 - **Licença:** MIT (arquivo `LICENSE` a ser adicionado — ver TM-017)
 - **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
