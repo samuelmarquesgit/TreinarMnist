@@ -62,6 +62,7 @@ data/processed/chroma_db/
 models/saved_models/*.joblib
 models/saved_models/*.keras
 models/saved_models/*.h5
+artifacts/
 
 # Volumes Docker locais (se mapeados fora do contêiner)
 postgres_data/
