@@ -17,14 +17,14 @@
 
 ```mermaid
 flowchart TD
-    subgraph Data_Layer ["1. Ingestão & Dados (Fase 1)"]
+    subgraph Data_Layer ["1. Ingestão & Dados - Fase 1"]
         A[Dataset MNIST 784] -->|fetch_openml / Cache Local| B[src/carregador_dados.py]
-        B -->|EDA & Distribuição| C[reports/figures/eda_*.png]
+        B -->|EDA & Distribuição| C[Figuras EDA]
         B -->|Dados Brutos| D[src/pre_processamento.py]
         D -->|Stratified Split 80/20 & MinMax 0..1| E[Treino / Teste]
     end
 
-    subgraph Modeling_Layer ["2. Modelos & Algoritmos - Strategy Pattern (Fase 3)"]
+    subgraph Modeling_Layer ["2. Modelos & Algoritmos - Strategy Pattern - Fase 3"]
         E --> F[Modelos Lineares & Árvores]
         E --> G[SVM, KNN & Naive Bayes]
         E --> H[Perceptron & MLP]
@@ -32,21 +32,21 @@ flowchart TD
         F & G & H & I --> J[Modelos Treinados]
     end
 
-    subgraph Evaluation_Layer ["3. Avaliação & Persistência Híbrida (Fase 4)"]
+    subgraph Evaluation_Layer ["3. Avaliação & Persistência Híbrida - Fase 4"]
         J --> K[src/avaliacao_metricas.py]
-        K -->|Heatmaps 10x10| L[reports/figures/matriz_confusao_*.png]
-        K -->|Tabela Benchmark CSV| M[reports/resumo_metricas.csv]
+        K -->|Heatmaps 10x10| L[Matrizes de Confusão 10×10]
+        K -->|Tabela Benchmark CSV| M[Resumo Métricas CSV]
         K -->|Métricas Estruturadas SQL| N[(PostgreSQL / SQLite fallback)]
         K -->|Matrizes & Payloads NoSQL| O[(MongoDB / JSON fallback)]
     end
 
-    subgraph Robustness_Vision ["4. Robustez OOD & Fotos Reais (Fase 5)"]
+    subgraph Robustness_Vision ["4. Robustez OOD & Fotos Reais - Fase 5"]
         E --> P[src/robustez_ood.py]
-        P -->|Class Masking 4 e 7 (Desafio A)| Q[Análise de Overconfidence]
-        P -->|Teste OOD só classes ocultas (Desafio B)| Q
-        R[Fotos Reais / Papel / Canvas (Desafio C)] --> S[src/visao_computacional.py]
+        P -->|Class Masking 4 e 7 - Desafio A| Q[Análise de Overconfidence]
+        P -->|Teste ODD só classes ocultas - Desafio B| Q
+        R[Fotos Reais / Papel / Canvas - Desafio C] --> S[src/visao_computacional.py]
         S -->|Grayscale + BBox + Center 28x28| T[Tensor 1x784]
-        T -->|Inferência com Top-K Bubble Sort| U[reports/figures/predicao_digito_customizado.png]
+        T -->|Inferência com Top-K Bubble Sort| U[Predição Dígito Customizado]
     end
 
     subgraph Interfaces ["5. Interfaces & Inteligência Externa"]
