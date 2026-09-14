@@ -2,8 +2,8 @@
 
 **Aluno:** Samuel Marques  
 **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist  
-**Vídeo de Apresentação:** *[Link a ser inserido no Google Drive com acesso de leitura público]*  
-**Data de Entrega:** *A definir*  
+**Vídeo de Apresentação:** https://www.youtube.com/watch?v=_m7E5uLl0XE  
+**Data de Entrega:** 2026-09-13
 **Data de Revisão:** 2026-09-11  
 
 ---

@@ -9,5 +9,25 @@
         "fontes": [
             "conceitos_projeto"
         ]
+    },
+    {
+        "papel": "usuario",
+        "conteudo": "O que é EDA?"
+    },
+    {
+        "papel": "assistente",
+        "conteudo": "💡 *Modo offline — RAG não inicializado*\n\nAnálise Exploratória de Dados: abordagem para explorar características fundamentais de um conjunto de dados antes da modelagem.",
+        "fontes": []
+    },
+    {
+        "papel": "usuario",
+        "conteudo": "O que é EDA?"
+    },
+    {
+        "papel": "assistente",
+        "conteudo": "Análise Exploratória de Dados (EDA): É uma abordagem para explorar e analisar as características fundamentais de um dataset. Utiliza visualizações gráficas e estatísticas descritivas para identificar padrões, detectar anomalias, observar distribuições e avaliar suposições sobre os dados.\n\n\n**Informação adicional** (eda):\nAlgoritmo de Projeção: São algoritmos aplicados para redução de dimensionalidade, mapeando pontos para dimensões menores preservando suas estruturas. Exemplos clássicos são o PCA (Análise de Componentes Principais) e o t-SNE, usados para plotar clusters espaciais das imagens.\n\n\n**Informação adicional** (testes):\nTeste t (par de dígitos): O teste T de Student é aplicado para verificar se existe diferença estatisticamente significativa entre a média de duas categorias independentes (neste contexto, comparando as distribuições de dois dígitos diferentes). Avalia se a divergência é real ou obra do acaso.",
+        "fontes": [
+            "conceitos_projeto"
+        ]
     }
 ]

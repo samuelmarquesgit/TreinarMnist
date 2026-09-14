@@ -353,7 +353,7 @@ Consulte `docs/BACKLOG.md` para a lista completa priorizada (23 tasks TM-001 a T
 - **Especialização:** Inteligência Artificial & Engenharia de Software com IA
 - **Licença:** MIT (arquivo `LICENSE` a ser adicionado — ver TM-017)
 - **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
-- **Vídeo:** *[Link do Google Drive — inserir após gravação]*
+- **Vídeo:** https://www.youtube.com/watch?v=_m7E5uLl0XE 
 
 ---
 
