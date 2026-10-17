@@ -64,6 +64,15 @@ def test_serializa_artefato_e_checksum(busca, metadados, tmp_path):
     assert hash_registrado == tes.calcular_sha256(caminho)
 
 
+def test_checksum_usa_formato_sha256sum_com_lf(busca, metadados, tmp_path):
+    """Formato `<hash>  <arquivo>\\n` com LF puro, aceito por `sha256sum -c` em qualquer SO."""
+    _, caminho_sha = tes.serializar_artefato(busca.pipeline, metadados, diretorio=tmp_path)
+    conteudo = caminho_sha.read_bytes()
+    assert conteudo.endswith(b".joblib\n")
+    assert b"\r" not in conteudo
+    assert len(conteudo.split(b"  ")[0]) == 64
+
+
 def test_artefato_recarregado_preve_igual_ao_original(busca, metadados, particoes, tmp_path):
     caminho, _ = tes.serializar_artefato(busca.pipeline, metadados, diretorio=tmp_path)
     artefato = joblib.load(caminho)

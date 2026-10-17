@@ -392,7 +392,10 @@ def serializar_artefato(
         )
 
     caminho_sha = caminho.with_suffix(".sha256")
-    caminho_sha.write_text(f"{calcular_sha256(caminho)}  {nome_arquivo}\n", encoding="utf-8")
+    # newline="\n": sem isso o Windows grava CRLF e o `sha256sum -c` do Linux falha
+    caminho_sha.write_text(
+        f"{calcular_sha256(caminho)}  {nome_arquivo}\n", encoding="utf-8", newline="\n"
+    )
     logger.info("Artefato salvo: %s (%.2f MB)", caminho, tamanho / 1024**2)
     return caminho, caminho_sha
 
