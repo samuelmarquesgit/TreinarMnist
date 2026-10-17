@@ -394,13 +394,13 @@ O edital (5.1) exige um `requirements.txt` com versões que permita recriar o am
 
 O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 exige **treino, validação e teste**.
 
-- [ ] Criar `pipeline_offline/preparar_dados.py` com `dividir_treino_validacao_teste(X, y, proporcoes=(0.70, 0.10, 0.20), semente=42)` usando dois `train_test_split` estratificados
-- [ ] Reutilizar `src.carregador_dados.carregar_dados_mnist()` (o offline **pode** depender de `src/`)
-- [ ] Verificar e registrar **imputação de nulos**: `np.isnan(X).sum() == 0` e o motivo (pixels não têm valores ausentes)
-- [ ] Registrar por que **não há codificação categórica**: features são intensidades numéricas; o alvo 0–9 já é inteiro
-- [ ] Registrar que o **escalonamento** fica dentro do `Pipeline` (TM-028) e é ajustado só no treino, sem vazamento
-- [ ] Verificar o balanceamento das classes nas três partições (diferença de proporção < 0,5 p.p.)
-- [ ] Cabeçalhos no estilo `# %% [markdown]` com as justificativas (edital 5.1)
+- [x] Criar `pipeline_offline/preparar_dados.py` com `dividir_treino_validacao_teste(X, y, proporcoes=(0.70, 0.10, 0.20), semente=42)` usando dois `train_test_split` estratificados
+- [x] Reutilizar `src.carregador_dados.carregar_dados_mnist()` (o offline **pode** depender de `src/`)
+- [x] Verificar e registrar **imputação de nulos**: `np.isnan(X).sum() == 0` e o motivo (pixels não têm valores ausentes)
+- [x] Registrar por que **não há codificação categórica**: features são intensidades numéricas; o alvo 0–9 já é inteiro
+- [x] Registrar que o **escalonamento** fica dentro do `Pipeline` (TM-028) e é ajustado só no treino, sem vazamento
+- [x] Verificar o balanceamento das classes nas três partições (diferença de proporção < 0,5 p.p.; no MNIST real: **0,008 p.p.**)
+- [x] Cabeçalhos no estilo `# %% [markdown]` com as justificativas (edital 5.1)
 
 **Validação:** `python -m pipeline_offline.preparar_dados` mostra 49 000 / 7 000 / 14 000 amostras e as proporções por classe; teste unitário verifica a ausência de interseção entre as partições.
 **Commits:** `feat: implementa divisão estratificada treino validação teste` · `test: verifica ausência de interseção entre partições`
@@ -812,8 +812,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 |---|---|---|---|---|---|---|---|---|
 | TM-023 | Proteger Módulo 1 + setup GitHub | 17 | P0 | S0 | #61 | `chore/tm-023-preparacao-modulo2` | #91 | Done |
 | TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | #94 | Done |
-| TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | | In review |
-| TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | | Backlog |
+| TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | #95 | Done |
+| TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | | In review |
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | Backlog |
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | Backlog |
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | Backlog |
