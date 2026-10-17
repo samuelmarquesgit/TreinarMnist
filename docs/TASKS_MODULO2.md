@@ -413,11 +413,11 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 **Modelo escolhido: `PerceptronMulticamadas` (MLPClassifier).** Ele tem 97,5% de acurácia no benchmark do Módulo 1, ocupa cerca de 2,8 MB (cabe no Git), tem `predict_proba` nativo (necessário para a confiança e o guardrail) e infere em milissegundos.
 **Alternativas descartadas:** SVM (sem `predict_proba` com `probability=False`, 20 MB), KNN (176 MB, acima do limite do GitHub, e lento na inferência), ViT (depende de PyTorch e quebraria a independência da API).
 
-- [ ] `pipeline_offline/treinar_e_serializar.py`: `Pipeline([("escalonador", MinMaxScaler()), ("classificador", MLPClassifier(...))])`
-- [ ] Busca pequena (4 a 6 combinações) avaliada **na validação**, nunca no teste: `hidden_layer_sizes` ∈ {(256,), (256, 128)}, `alpha` ∈ {1e-4, 1e-3}, `learning_rate_init` ∈ {1e-3}
-- [ ] Justificar ao menos **2 hiperparâmetros** (capacidade da rede e regularização L2)
-- [ ] Retreinar a melhor combinação em treino+validação **ou** manter só treino (documentar a escolha)
-- [ ] Fixar `random_state=42` para reprodutibilidade
+- [x] `pipeline_offline/treinar_e_serializar.py`: `Pipeline([("escalonador", MinMaxScaler()), ("classificador", MLPClassifier(...))])`
+- [x] Busca de 6 combinações avaliada **na validação**, nunca no teste: `hidden_layer_sizes` ∈ {(256,), (256, 128)}, `alpha` ∈ {1e-4, 1e-3, 1e-2}, `learning_rate_init` = 1e-3. Resultado em [`docs/resultados/busca_hiperparametros_tm027.md`](resultados/busca_hiperparametros_tm027.md): vencedora **(256, 128), alpha=0,01, validação 98,14%**
+- [x] Justificar ao menos **2 hiperparâmetros** (capacidade da rede e regularização L2)
+- [x] Retreinar a melhor combinação em treino+validação **ou** manter só treino (documentar a escolha): **só treino**, para a acurácia de validação reportada continuar honesta
+- [x] Fixar `random_state=42` para reprodutibilidade
 
 **Validação:** o log mostra a tabela de combinações × acurácia de validação e a combinação vencedora.
 **Commits:** `feat: implementa busca de hiperparâmetros do MLP na validação`
@@ -813,8 +813,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-023 | Proteger Módulo 1 + setup GitHub | 17 | P0 | S0 | #61 | `chore/tm-023-preparacao-modulo2` | #91 | Done |
 | TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | #94 | Done |
 | TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | #95 | Done |
-| TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | | In review |
-| TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | Backlog |
+| TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | #96 | Done |
+| TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | In review |
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | Backlog |
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | Backlog |
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | Backlog |
