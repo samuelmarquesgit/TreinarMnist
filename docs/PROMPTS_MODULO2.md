@@ -91,3 +91,21 @@
 - Cabeçalhos `# %% [markdown]` (células do VS Code/Jupyter) para atender ao item 5.1 com um `.py` executável.
 
 **Resultado:** MNIST real com 49 000 / 7 000 / 14 000 amostras e diferença máxima de proporção de 0,008 p.p. entre partições; 15 testes e cobertura de 97% do módulo.
+
+---
+
+## P006 — TM-027 Treino do modelo campeão (#65)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-027-treino-modelo-campeao`
+
+**Prompt (resumo):**
+> Pode continuar para o próximo PR, desde que os testes estejam sendo criados, executados e registrados em log ou arquivo.
+
+**Decisões:**
+- **Modelo: MLP** (`PerceptronMulticamadas`). Comparação no cabeçalho do módulo com os números reais do benchmark do Módulo 1 (README §6): os números iniciais escritos de memória para KNN e ViT estavam errados e foram corrigidos antes do commit.
+- **Grade de 6 combinações** (o máximo do plano), calibrada medindo antes um treino real (~1 min por combinação).
+- **Avaliação só na validação.** O teste que prova isso passa um conjunto de teste cheio de `NaN`: qualquer predição sobre ele quebraria.
+- **Treino final só no treino**, mantendo a validação como medida honesta do artefato.
+- **Ressalva estatística registrada:** as três melhores combinações diferem em ≤ 0,07 p.p., abaixo do erro-padrão da validação (~0,17 p.p.).
+
+**Resultado:** vencedora `(256, 128)`, `alpha=0.01`, validação 98,14% (Módulo 1: 97,5%). Tabela e log completos em `docs/resultados/busca_hiperparametros_tm027.md`. 10 testes novos (25 no pipeline offline), cobertura de 94% do módulo.
