@@ -374,11 +374,13 @@ O avaliador vai ver o repositório inteiro. Hoje há scripts temporários e banc
 
 O edital (5.1) exige um `requirements.txt` com versões que permita recriar o ambiente sem erros.
 
-- [ ] Instalar no venv: `pip install fastapi "uvicorn[standard]" python-multipart httpx pydantic-settings`
-- [ ] Criar `requirements-api.txt` **somente** com o necessário para a API e os testes dela, todas as versões com `==` (tiradas de `pip freeze`): `fastapi`, `uvicorn[standard]`, `pydantic`, `pydantic-settings`, `python-multipart`, `numpy`, `scikit-learn`, `joblib`, `opencv-python-headless`, `httpx`, `pytest`, `pytest-cov`
-- [ ] Adicionar os mesmos pacotes ao `requirements.txt` geral; remover as duplicatas (`pydantic` 2×, `mcp` 2×)
-- [ ] **Usar exatamente a versão de `scikit-learn` que serializou o modelo** (um `joblib` gerado numa versão pode falhar ou dar aviso em outra)
-- [ ] Documentar a versão de Python suportada: **3.11 a 3.14** (o scikit-learn 1.9 exige Python ≥ 3.11; o CI roda em **3.12**, o ambiente local em 3.14)
+- [x] Instalar no venv: `pip install fastapi "uvicorn[standard]" python-multipart httpx pydantic-settings` (já estavam instalados)
+- [x] Criar `requirements-api.txt` **somente** com o necessário para a API e os testes dela, todas as versões com `==` (tiradas de `pip freeze`): `fastapi`, `uvicorn[standard]`, `pydantic`, `pydantic-settings`, `python-multipart`, `numpy`, `scikit-learn`, `joblib`, `opencv-python-headless`, `httpx`, `pytest`, `pytest-cov`
+- [x] Adicionar os mesmos pacotes ao `requirements.txt` geral, fixar todas as versões com `==` e remover as duplicatas (`pydantic` 2×, `mcp` 2×) e o `langsmith`, que não é usado
+- [x] **Usar exatamente a versão de `scikit-learn` que serializou o modelo** (um `joblib` gerado numa versão pode falhar ou dar aviso em outra)
+- [x] Documentar a versão de Python suportada: **3.12 a 3.14** (o scikit-learn 1.9 exige ≥ 3.11, mas numpy 2.5 e scipy 1.18 exigem ≥ 3.12; CI e Docker em **3.12**, ambiente local em 3.14)
+- [x] Atualizar o job existente do CI e o `Dockerfile` de 3.10 para 3.12 (senão as versões fixadas não instalam) e incluir `chore/**` e `ci/**` nos gatilhos
+- [x] Validar as duas listas num contêiner `python:3.12-slim`: 45 pacotes (API) e 178 (completo) resolvidos sem conflito
 
 **Validação:** venv novo → `pip install -r requirements-api.txt` → `pip check` sem conflitos → `python -c "import fastapi, sklearn; print(fastapi.__version__, sklearn.__version__)"`.
 **Commits:** `chore: adiciona requirements da api com versões fixas` · `chore: remove dependências duplicadas do requirements`
@@ -809,8 +811,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | Task | Título resumido | Épico | Prior. | Sprint | Issue | Branch | PR | Status (Kanban) |
 |---|---|---|---|---|---|---|---|---|
 | TM-023 | Proteger Módulo 1 + setup GitHub | 17 | P0 | S0 | #61 | `chore/tm-023-preparacao-modulo2` | #91 | Done |
-| TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | | In review |
-| TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | | Backlog |
+| TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | #94 | Done |
+| TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | | In review |
 | TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | | Backlog |
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | Backlog |
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | Backlog |
