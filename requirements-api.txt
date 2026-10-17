@@ -1,0 +1,30 @@
+# Dependências mínimas da API de inferência MNIST (pacote api/) e da sua suíte de testes.
+# Instalação leve e independente do restante da plataforma (sem torch, streamlit, bancos ou MLflow).
+# Python suportado: 3.12 a 3.14 (numpy 2.5 e scipy 1.18 exigem >= 3.12). CI: 3.12.
+#
+#   python -m venv .venv
+#   .venv\Scripts\activate        (Windows)  |  source .venv/bin/activate  (Linux/macOS)
+#   pip install -r requirements-api.txt
+
+# Serviço web (ASGI)
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32
+
+# Validação e configuração
+pydantic==2.13.5
+pydantic-settings==2.15.0
+
+# Inferência: a versão do scikit-learn deve ser a mesma que serializou o artefato em models/
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.0
+joblib==1.6.0
+opencv-python-headless==5.0.0.93
+
+# Testes e qualidade
+httpx==0.28.1
+pytest==9.1.1
+pytest-cov==7.1.0
+ruff==0.16.6
+mypy==2.3.1

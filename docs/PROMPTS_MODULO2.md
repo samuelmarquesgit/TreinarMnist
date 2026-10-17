@@ -13,7 +13,7 @@
 > Ler o edital do Projeto Avaliativo 2 e o `docs/TASKS_MODULO2.md`, validar se falta algo para iniciar e configurar o GitHub para que cada tarefa siga automaticamente o fluxo issue → Kanban → branch → commits → PR padrão → Actions. A nota do Módulo 1 já foi publicada. Descartar os PRs #55 e #56, aproveitando o que tiver valor. CI em Python 3.12, coleção Postman com newman e rota de diagnóstico desligada por padrão para provar o 500.
 
 **Decisões:**
-- **CI em Python 3.12** (antes 3.10): o scikit-learn 1.9.0 exige Python ≥ 3.11 (verificado no PyPI). O ambiente local usa 3.14; o suporte documentado é 3.11–3.14.
+- **CI em Python 3.12** (antes 3.10): o scikit-learn 1.9.0 exige Python ≥ 3.11 (verificado no PyPI). O ambiente local usa 3.14. (Corrigido na TM-025: o suporte real é 3.12–3.14, porque numpy 2.5 e scipy 1.18 exigem ≥ 3.12.)
 - **Nova tarefa TM-052:** coleção Postman com testes `pm.test` para 200/400/422/500/503, executada pelo newman no CI.
 - **Prova do 500:** rota `GET /v1/_diagnostico/erro-interno`, registrada só com `MNIST_API_HABILITAR_DIAGNOSTICO=true` e fora do Swagger. Não existe forma legítima de provocar um 500 pela API sem ela.
 - **PRs #55 e #56 fechados:** partiam de uma base antiga do fork (~100 arquivos e binários `.joblib`/`.db` no diff). A imagem `data/custom_digits/bruno_7_com_barra.png` fica reservada para a TM-038.
@@ -57,3 +57,19 @@
 - `models/` liberada por **lista permitida**, para que só o artefato da API entre no Git e nenhum modelo pesado entre por engano.
 - **Achado:** `test_executar_benchmark_falha` gravava JSONs em `fake_dir/` na raiz a cada execução (origem das dezenas de arquivos lá); passa a usar `tmp_path`.
 - `fix_*.py` e `fake_dir/` já não eram rastreados; foram retirados da pasta local.
+
+---
+
+## P004 — TM-025 Dependências com versões fixas (#63)
+
+**Data:** 2026-10-17 · **Branch:** `chore/tm-025-dependencias-api`
+
+**Prompt (resumo):**
+> Ajustar o necessário para funcionar. Lembro que existe uma versão do Python em que as bibliotecas não funcionavam 100%. Faça o melhor.
+
+**Decisões:**
+- **Python 3.12 no CI e no Docker; suporte 3.12–3.14.** A versão problemática era a mais nova (3.14), em que bibliotecas pesadas demoraram a publicar wheels. Hoje o `.venv` local em 3.14 roda a suíte inteira (305 testes), mas o 3.12 é o mais maduro e o mínimo exigido por numpy 2.5 e scipy 1.18 (verificado no PyPI).
+- **Versões fixadas = versões instaladas no `.venv`**, que passam nos 305 testes. Validado num contêiner `python:3.12-slim` (o mesmo ambiente do CI): 45 pacotes na API e 178 no projeto completo, sem conflitos. A validação com `pip --platform` no Windows não serve, porque o pip avalia os marcadores (`sys_platform`) com a máquina local.
+- **`requirements-api.txt` separado:** a API instala sem torch, streamlit, bancos ou MLflow, o que já prova a independência exigida no plano.
+- **`langsmith` removido:** estava no requirements, mas não é importado em nenhum lugar nem estava instalado.
+- **Achado no hook local de pre-commit:** ele terminava com `git add -u` e colocava todos os arquivos modificados em todo commit, juntando tarefas diferentes num commit só. Reescrito para formatar e re-adicionar apenas os `.py` do stage e bloquear o commit se o ruff encontrar erro. O commit local afetado foi desfeito antes do push e refeito em três partes.
