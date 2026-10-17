@@ -73,3 +73,21 @@
 - **`requirements-api.txt` separado:** a API instala sem torch, streamlit, bancos ou MLflow, o que já prova a independência exigida no plano.
 - **`langsmith` removido:** estava no requirements, mas não é importado em nenhum lugar nem estava instalado.
 - **Achado no hook local de pre-commit:** ele terminava com `git add -u` e colocava todos os arquivos modificados em todo commit, juntando tarefas diferentes num commit só. Reescrito para formatar e re-adicionar apenas os `.py` do stage e bloquear o commit se o ruff encontrar erro. O commit local afetado foi desfeito antes do push e refeito em três partes.
+
+---
+
+## P005 — TM-026 Divisão treino/validação/teste (#64)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-026-split-treino-validacao-teste`
+
+**Prompt (resumo):**
+> Seguir com a TM-026 (Fase 1 do edital): divisão estratificada treino/validação/teste com as justificativas de imputação, codificação e escalonamento.
+
+**Decisões:**
+- **70/10/20 com dois `train_test_split` estratificados** (teste primeiro; validação = 0,10/0,80 do restante). O teste mantém os 20% do Módulo 1 para permitir a comparação.
+- **Divisão sobre índices**, o que permite provar por teste que nenhuma imagem aparece em duas partições.
+- **Sem imputação e sem codificação**, com justificativa no código: pixels não têm ausentes (verificado: a função falha com `NaN`/`inf`) e o alvo já é inteiro.
+- **Não reutilizar `pre_processar_dados_com_validacao` do Módulo 1:** ele ajusta o `MinMaxScaler` fora do modelo, a origem da divergência entre treino e inferência encontrada no início do projeto. O scaler vai para dentro do `Pipeline` na TM-027.
+- Cabeçalhos `# %% [markdown]` (células do VS Code/Jupyter) para atender ao item 5.1 com um `.py` executável.
+
+**Resultado:** MNIST real com 49 000 / 7 000 / 14 000 amostras e diferença máxima de proporção de 0,008 p.p. entre partições; 15 testes e cobertura de 97% do módulo.
