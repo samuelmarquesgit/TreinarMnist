@@ -2,7 +2,7 @@ name: Pipeline de CI/CD - Plataforma MNIST
  
 on:
   push:
-    branches: [ main, develop, 'feat/**', 'fix/**', 'docs/**', 'refactor/**', 'test/**' ]
+    branches: [ main, develop, 'feat/**', 'fix/**', 'docs/**', 'refactor/**', 'test/**', 'chore/**', 'ci/**' ]
   pull_request:
     branches: [ main, develop ]
 
@@ -16,10 +16,10 @@ jobs:
         with:
           fetch-depth: 0 # Necessário para SonarCloud
 
-      - name: Configurar Python 3.10
+      - name: Configurar Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Instalar Dependências
