@@ -1,14 +1,16 @@
 # %% [markdown]
-# # Fase 1 — Treino do modelo campeão (TM-027)
+# # Fase 1 — Treino e serialização do modelo campeão (TM-027 e TM-028)
 #
-# Treina um `sklearn.pipeline.Pipeline` (MinMaxScaler + MLPClassifier) e escolhe os
-# hiperparâmetros **avaliando só no conjunto de validação**. O conjunto de teste não é
-# tocado aqui: ele fica reservado para o relatório final de métricas (TM-029).
+# Treina um `sklearn.pipeline.Pipeline` (MinMaxScaler + MLPClassifier), escolhe os
+# hiperparâmetros **avaliando só no conjunto de validação** e serializa o vencedor em
+# `models/modelo_mnist_v1.joblib` com metadados e checksum SHA-256. O conjunto de teste não
+# é tocado aqui: ele fica reservado para o relatório final de métricas (TM-029).
 #
-# Execução (a partir da raiz do projeto, ~6 min em CPU):
+# Execução (a partir da raiz do projeto):
 #
 # ```bash
-# python -m pipeline_offline.treinar_e_serializar
+# python -m pipeline_offline.treinar_e_serializar            # busca completa, ~15 min em CPU
+# python -m pipeline_offline.treinar_e_serializar --rapido   # só a combinação vencedora, ~5 min
 # ```
 
 # %% [markdown]
@@ -47,13 +49,21 @@
 # %% Imports
 from __future__ import annotations
 
+import argparse
+import hashlib
 import itertools
 import logging
+import platform
 import time
 import warnings
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
+import joblib
+import numpy as np
+import sklearn
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
@@ -69,6 +79,32 @@ GRADE_HIPERPARAMETROS: dict[str, list[Any]] = {
     "hidden_layer_sizes": [(256,), (256, 128)],
     "alpha": [1e-4, 1e-3, 1e-2],
 }
+
+# Vencedora da busca registrada em docs/resultados/busca_hiperparametros_tm027.md (usada por --rapido)
+GRADE_VENCEDORA_V1: dict[str, list[Any]] = {
+    "hidden_layer_sizes": [(256, 128)],
+    "alpha": [1e-2],
+}
+
+VERSAO_MODELO = "1.0.0"
+RAIZ_PROJETO = Path(__file__).resolve().parents[1]
+DIR_MODELOS = RAIZ_PROJETO / "models"
+NOME_ARTEFATO = "modelo_mnist_v1.joblib"
+TAMANHO_MAXIMO_BYTES = 50 * 1024 * 1024
+CHAVES_METADADOS = (
+    "nome_modelo",
+    "versao_modelo",
+    "classes",
+    "n_features",
+    "versao_sklearn",
+    "versao_numpy",
+    "versao_python",
+    "data_treino",
+    "hiperparametros",
+    "semente",
+    "acuracia_validacao",
+    "amostras",
+)
 
 PARAMETROS_FIXOS: dict[str, Any] = {
     "learning_rate_init": 1e-3,
@@ -251,15 +287,129 @@ def tabela_busca(resultado: ResultadoBusca) -> str:
 
 
 # %% [markdown]
+# ## Serialização do artefato (TM-028)
+#
+# - **Um único arquivo `.joblib` com um `dict`** `{"pipeline": ..., "metadados": ...}`. O
+#   Pipeline contém só objetos do scikit-learn (nada de `src/`), então o `joblib.load`
+#   funciona na API sem o código do Módulo 1 no `PYTHONPATH`.
+# - **Metadados** registram versões (scikit-learn, NumPy, Python), hiperparâmetros, semente e
+#   tamanhos das partições: a API usa isso no `/health` e para alertar se a versão do
+#   scikit-learn em execução diferir da que serializou o modelo.
+# - **`compress=3`** reduz o arquivo sem custo perceptível no carregamento.
+# - **Checksum SHA-256** num arquivo `.sha256` no formato do `sha256sum`: o `lifespan` da API
+#   recusa um artefato corrompido ou trocado.
+# - **Limite de 50 MB:** abaixo do limite de 100 MB por arquivo do GitHub, com folga.
+
+
+# %%
+def montar_metadados(
+    busca: ResultadoBusca, particoes: ParticoesDados, semente: int = SEMENTE_PADRAO
+) -> dict[str, Any]:
+    """Monta os metadados do artefato a partir do resultado da busca.
+
+    Args:
+        busca: Resultado de :func:`buscar_hiperparametros`.
+        particoes: Partições usadas no treino e na validação.
+        semente: Semente usada na divisão e no classificador.
+
+    Returns:
+        Dicionário com as chaves de ``CHAVES_METADADOS``, todas serializáveis em JSON.
+    """
+    classificador = busca.pipeline.named_steps["classificador"]
+    hiperparametros = {**PARAMETROS_FIXOS, **busca.melhor.hiperparametros}
+    hiperparametros["hidden_layer_sizes"] = list(hiperparametros["hidden_layer_sizes"])
+    return {
+        "nome_modelo": NOME_MODELO,
+        "versao_modelo": VERSAO_MODELO,
+        "classes": [int(c) for c in classificador.classes_],
+        "n_features": int(classificador.n_features_in_),
+        "versao_sklearn": sklearn.__version__,
+        "versao_numpy": np.__version__,
+        "versao_python": platform.python_version(),
+        "data_treino": datetime.now(UTC).isoformat(timespec="seconds"),
+        "hiperparametros": hiperparametros,
+        "semente": semente,
+        "acuracia_validacao": busca.melhor.acuracia_validacao,
+        "amostras": {
+            "treino": len(particoes.y_treino),
+            "validacao": len(particoes.y_validacao),
+            "teste": len(particoes.y_teste),
+        },
+    }
+
+
+def calcular_sha256(caminho: Path) -> str:
+    """Calcula o SHA-256 de um arquivo lendo em blocos de 1 MB.
+
+    Args:
+        caminho: Arquivo a verificar.
+
+    Returns:
+        Hash hexadecimal em minúsculas (64 caracteres).
+    """
+    resumo = hashlib.sha256()
+    with caminho.open("rb") as arquivo:
+        for bloco in iter(lambda: arquivo.read(1024 * 1024), b""):
+            resumo.update(bloco)
+    return resumo.hexdigest()
+
+
+def serializar_artefato(
+    pipeline: Pipeline,
+    metadados: dict[str, Any],
+    diretorio: Path = DIR_MODELOS,
+    nome_arquivo: str = NOME_ARTEFATO,
+) -> tuple[Path, Path]:
+    """Salva o Pipeline e os metadados num ``.joblib`` e grava o checksum ao lado.
+
+    Args:
+        pipeline: Pipeline sklearn já treinado.
+        metadados: Saída de :func:`montar_metadados`.
+        diretorio: Pasta de destino (criada se não existir).
+        nome_arquivo: Nome do arquivo ``.joblib``.
+
+    Returns:
+        Caminhos do artefato e do arquivo ``.sha256``.
+
+    Raises:
+        ValueError: Se faltar alguma chave obrigatória nos metadados ou se o artefato
+            ultrapassar ``TAMANHO_MAXIMO_BYTES`` (nesse caso o arquivo é removido).
+    """
+    faltando = [chave for chave in CHAVES_METADADOS if chave not in metadados]
+    if faltando:
+        raise ValueError(f"Metadados incompletos, faltam: {faltando}")
+
+    diretorio.mkdir(parents=True, exist_ok=True)
+    caminho = diretorio / nome_arquivo
+    joblib.dump({"pipeline": pipeline, "metadados": metadados}, caminho, compress=3)
+
+    tamanho = caminho.stat().st_size
+    if tamanho > TAMANHO_MAXIMO_BYTES:
+        caminho.unlink()
+        raise ValueError(
+            f"Artefato com {tamanho / 1024**2:.1f} MB excede o limite de "
+            f"{TAMANHO_MAXIMO_BYTES / 1024**2:.0f} MB."
+        )
+
+    caminho_sha = caminho.with_suffix(".sha256")
+    caminho_sha.write_text(f"{calcular_sha256(caminho)}  {nome_arquivo}\n", encoding="utf-8")
+    logger.info("Artefato salvo: %s (%.2f MB)", caminho, tamanho / 1024**2)
+    return caminho, caminho_sha
+
+
+# %% [markdown]
 # ## Execução
 
 
 # %%
-def treinar_modelo_campeao(semente: int = SEMENTE_PADRAO) -> tuple[ParticoesDados, ResultadoBusca]:
+def treinar_modelo_campeao(
+    semente: int = SEMENTE_PADRAO, grade: dict[str, list[Any]] | None = None
+) -> tuple[ParticoesDados, ResultadoBusca]:
     """Carrega e divide o MNIST e executa a busca de hiperparâmetros.
 
     Args:
         semente: Semente usada na divisão e no classificador.
+        grade: Grade a explorar; ``None`` usa ``GRADE_HIPERPARAMETROS``.
 
     Returns:
         As partições usadas e o resultado da busca (com o Pipeline vencedor treinado).
@@ -267,13 +417,37 @@ def treinar_modelo_campeao(semente: int = SEMENTE_PADRAO) -> tuple[ParticoesDado
     from pipeline_offline.preparar_dados import carregar_e_dividir
 
     particoes = carregar_e_dividir(semente=semente)
-    return particoes, buscar_hiperparametros(particoes, semente=semente)
+    return particoes, buscar_hiperparametros(
+        particoes, grade or GRADE_HIPERPARAMETROS, semente=semente
+    )
+
+
+def main(argumentos: list[str] | None = None) -> None:
+    """Ponto de entrada: treina, imprime a tabela da busca e serializa o vencedor.
+
+    Args:
+        argumentos: Argumentos de linha de comando (``None`` usa ``sys.argv``).
+    """
+    parser = argparse.ArgumentParser(description="Treina e serializa o modelo MNIST da API.")
+    parser.add_argument(
+        "--rapido",
+        action="store_true",
+        help="treina só a combinação vencedora da TM-027, sem refazer a busca",
+    )
+    args = parser.parse_args(argumentos)
+
+    particoes, busca = treinar_modelo_campeao(grade=GRADE_VENCEDORA_V1 if args.rapido else None)
+    print(tabela_busca(busca))
+    caminho, caminho_sha = serializar_artefato(
+        busca.pipeline, montar_metadados(busca, particoes), diretorio=DIR_MODELOS
+    )
+    print(
+        f"\nVencedora: {busca.melhor.hiperparametros} "
+        f"(validação {busca.melhor.acuracia_validacao:.4f})"
+    )
+    print(f"Artefato: {caminho.relative_to(RAIZ_PROJETO)} | checksum: {caminho_sha.name}")
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    _, busca = treinar_modelo_campeao()
-    print(tabela_busca(busca))
-    print(
-        f"\nVencedora: {busca.melhor.hiperparametros} (validação {busca.melhor.acuracia_validacao:.4f})"
-    )
+    main()

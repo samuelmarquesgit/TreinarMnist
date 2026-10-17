@@ -98,7 +98,7 @@ def test_treinar_modelo_campeao_encadeia_divisao_e_busca(particoes, monkeypatch)
     monkeypatch.setattr(
         "pipeline_offline.preparar_dados.carregar_e_dividir", lambda semente: particoes
     )
-    monkeypatch.setattr(tes, "buscar_hiperparametros", lambda p, semente: ("busca", p))
+    monkeypatch.setattr(tes, "buscar_hiperparametros", lambda p, grade, semente: ("busca", p))
     usadas, (marcador, recebidas) = tes.treinar_modelo_campeao()
     assert usadas is particoes and recebidas is particoes
     assert marcador == "busca"
