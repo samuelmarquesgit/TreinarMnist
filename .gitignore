@@ -78,9 +78,10 @@ data/raw/
 chroma_db/
 
 # Bancos locais de fallback e artefatos de execucao
+# (a pasta reports/ continua versionada via .gitkeep: o SQLite de fallback precisa dela)
 reports/*.db
 reports/*.sqlite3
-*.log
+reports/*.json
 
 # Saidas de teste e diagnostico (carregam caminhos absolutos da maquina)
 pytest_out.txt
