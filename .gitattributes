@@ -1,0 +1,4 @@
+# Artefatos do modelo servido pela API: nunca converter quebras de linha nem gerar diff textual
+*.joblib binary
+*.pkl binary
+*.sha256 text eol=lf
