@@ -343,7 +343,8 @@ O edital considera como data de entrega **a última atualização do repositóri
 - [x] Criar as issues TM-023 a TM-052 como sub-issues dos épicos, com milestone, labels, prioridade e tamanho no Kanban
 - [x] Criar os templates de PR e de issue em `.github/`
 - [x] Fechar os PRs #55 e #56 (base desatualizada); a imagem `bruno_7_com_barra.png` será aproveitada na TM-038
-- [ ] Commitar este arquivo (`docs/TASKS_MODULO2.md`) e atualizar `docs/TASKS.md` com um link para ele
+- [x] Commitar este arquivo (`docs/TASKS_MODULO2.md`) e atualizar `docs/TASKS.md` com um link para ele
+- [x] Proteger `develop` e `main` (merge só com o check `CI Gate` verde, sem bypass de admin) e ligar o auto-merge; validado com um PR de falha proposital (#92/#93) que ficou bloqueado
 
 **Validação:** `git tag -l "v1*"`; a página Releases mostra a entrega do Módulo 1; o Kanban mostra EPIC-14 a EPIC-17.
 **Commits:** `docs: adiciona plano de tarefas do módulo 2` · `docs: referencia plano do módulo 2 no índice de tarefas`
@@ -355,10 +356,11 @@ O edital considera como data de entrega **a última atualização do repositóri
 
 O avaliador vai ver o repositório inteiro. Hoje há scripts temporários e bancos locais rastreados.
 
-- [ ] Remover `fix_frontend.py`, `fix_mermaid.py`, `fix_test_fachada.py`, `fix_tests.py`, `fix_tests2.py`, `out.log`, `pytest_out.txt`, `imports_test.txt`, `test_pandas.log`, `mypy_errors.txt`, `fake_dir/` (ou mover para `scripts/legado/` se tiverem valor histórico)
-- [ ] `git rm --cached mlflow.db reports/banco_local.db reports/historico_chat.json` (já estão no `.gitignore`, mas continuam rastreados)
-- [ ] Ajustar o `.gitignore`: manter `artifacts/` ignorado e **liberar `models/`** (`!models/*.joblib`, `!models/*.json`, `!models/*.sha256`)
-- [ ] Garantir que `.env` não está rastreado (`git ls-files .env` vazio)
+- [x] Remover `fix_frontend.py`, `fix_mermaid.py`, `fix_test_fachada.py`, `fix_tests.py`, `fix_tests2.py`, `out.log`, `pytest_out.txt`, `imports_test.txt`, `test_pandas.log`, `mypy_errors.txt`, `fake_dir/` (ou mover para `scripts/legado/` se tiverem valor histórico)
+- [x] `git rm --cached mlflow.db reports/banco_local.db reports/historico_chat.json` (já estão no `.gitignore`, mas continuam rastreados). Também `artifacts/modelos/RegressaoLogistica.joblib`; `reports/` mantida com `.gitkeep`
+- [x] Ajustar o `.gitignore`: manter `artifacts/` ignorado e **liberar `models/`** por lista permitida (`modelo_mnist_v*.joblib`, `.sha256`, `metricas_modelo_v*.json`, `README.md`)
+- [x] Garantir que `.env` não está rastreado (`git ls-files .env` vazio)
+- [x] Corrigir `tests/test_fachada.py`, que gravava benchmarks em `fake_dir/` na raiz a cada execução (agora usa `tmp_path`)
 
 **Validação:** `git status` limpo; `git ls-files | grep -E "fix_|\.db$|\.log$"` vazio.
 **Commits:** `chore: remove scripts temporários da raiz` · `chore: deixa de versionar bancos locais` · `chore: libera pasta models no gitignore`
@@ -806,8 +808,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 
 | Task | Título resumido | Épico | Prior. | Sprint | Issue | Branch | PR | Status (Kanban) |
 |---|---|---|---|---|---|---|---|---|
-| TM-023 | Proteger Módulo 1 + setup GitHub | 17 | P0 | S0 | #61 | `chore/tm-023-preparacao-modulo2` | | In progress |
-| TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | | Backlog |
+| TM-023 | Proteger Módulo 1 + setup GitHub | 17 | P0 | S0 | #61 | `chore/tm-023-preparacao-modulo2` | #91 | Done |
+| TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | | In review |
 | TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | | Backlog |
 | TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | | Backlog |
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | Backlog |

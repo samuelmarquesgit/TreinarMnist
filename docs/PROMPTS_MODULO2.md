@@ -26,3 +26,34 @@
 - Épicos #57–#60 e issues #61–#90 (TM-023 a TM-052) como sub-issues, com prioridade e tamanho no Kanban.
 - `docs/TASKS_MODULO2.md` v1.1 (colunas reais do Kanban, Python 3.12, TM-052, rota de diagnóstico, seção de uso de IA no README, números das issues).
 - Templates `.github/pull_request_template.md` e `.github/ISSUE_TEMPLATE/{tarefa,bug}.md`.
+
+---
+
+## P002 — Proteção de branch e auto-merge (#92)
+
+**Data:** 2026-10-17 · **Branch de teste:** `test/validacao-protecao-branch` (PR #93, fechado sem merge)
+
+**Prompt (resumo):**
+> Ligar o auto-merge e criar as proteções para que o merge só aconteça com o Actions verde; fazer um primeiro teste.
+
+**Decisões:**
+- Proteção em `develop` e `main`: check obrigatório `CI Gate (Status Check)`, branch atualizada antes do merge, PR obrigatório **sem** aprovação (autor único não consegue aprovar o próprio PR), `enforce_admins` ligado (nem o admin pula a regra), sem force push e sem exclusão.
+- Teste com falha proposital, fechado sem merge para não poluir o histórico avaliado.
+
+**Resultado:** pytest com `1 failed, 305 passed`, CI Gate `fail`, PR em estado **BLOCKED** com auto-merge armado. Nada chegou na `develop`.
+
+---
+
+## P003 — TM-024 Limpeza do repositório (#62)
+
+**Data:** 2026-10-17 · **Branch:** `chore/tm-024-limpeza-repositorio`
+
+**Prompt (resumo):**
+> Seguir com a TM-024 e realizar todas as melhorias necessárias.
+
+**Decisões:**
+- Remover do Git as saídas temporárias (`imports_test.txt`, `mypy_errors.txt`, `out.log`, `pytest_out.txt`, `test_pandas.log`), que carregavam caminhos absolutos.
+- Parar de versionar `mlflow.db`, `reports/banco_local.db`, `reports/historico_chat.json` e `artifacts/modelos/RegressaoLogistica.joblib` (já ignorados, mas rastreados). **Achado:** sem eles a pasta `reports/` sumiria num clone limpo e o fallback SQLite falharia; adicionado `reports/.gitkeep`.
+- `models/` liberada por **lista permitida**, para que só o artefato da API entre no Git e nenhum modelo pesado entre por engano.
+- **Achado:** `test_executar_benchmark_falha` gravava JSONs em `fake_dir/` na raiz a cada execução (origem das dezenas de arquivos lá); passa a usar `tmp_path`.
+- `fix_*.py` e `fake_dir/` já não eram rastreados; foram retirados da pasta local.
