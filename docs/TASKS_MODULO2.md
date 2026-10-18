@@ -683,13 +683,12 @@ Adicionar ao `.github/workflows/ci.yml` (sem alterar os jobs existentes):
 #### TM-046 Integrar a API ao `main.py` existente e corrigir o modo MCP
 **fix · P2 · EPIC-16 · `api` · `fix/tm-046-cli-modo-api` · TM-037** (resolve a TM-002)
 
-- [ ] `main.py --modo api` → `uvicorn.run("api.main:app", host="127.0.0.1", port=8000)`
-- [ ] Corrigir `--modo mcp` para `src.mcp_servidor` (hoje aponta para `src.mcp.servidor`, que não existe)
-- [ ] Atualizar o `Dockerfile` geral e o README
+- [x] `main.py --modo api` → `uvicorn.run("api.main:app", host="127.0.0.1", port=8000)`
+- [x] Corrigir `--modo mcp` para `src.mcp_servidor` (hoje aponta para `src.mcp.servidor`, que não existe)
+- [x] Atualizar o `Dockerfile` geral e o README (o Dockerfile geral segue servindo o Streamlit
 
 **Validação:** `python main.py --modo api` sobe a API; `python main.py --modo mcp` inicia o servidor MCP.
 **Commits:** `feat: adiciona modo api à cli principal` · `fix: corrige caminho do módulo do servidor mcp`
-
 ---
 
 #### TM-047 (Opcional) Fazer o painel Streamlit consumir a API
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | #112 | Done |
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | #113 | Done |
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | #114 | Done |
-| TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | In review |
-| TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | Backlog |
+| TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | #115 | Done |
+| TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | In review |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | Backlog |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | | Backlog |
