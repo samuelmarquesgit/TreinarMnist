@@ -44,8 +44,9 @@ def test_nome_malicioso_ou_desconhecido_e_recusado(pasta_modelos, nome):
 
 
 def test_persistir_com_nome_malicioso_nao_grava_nada(pasta_modelos, tmp_path):
+    fachada = FachadaPipelineIA()
     with pytest.raises(ValueError, match="não registrado"):
-        FachadaPipelineIA()._persistir_modelo("../../escapou", object())
+        fachada._persistir_modelo("../../escapou", object())
     assert not any(tmp_path.rglob("*.joblib"))
     assert not pasta_modelos.exists()
 
