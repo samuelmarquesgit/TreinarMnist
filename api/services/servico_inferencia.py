@@ -59,6 +59,7 @@ class ServicoInferencia:
         metadados: dict[str, Any],
         limiar_confianca: float = 0.85,
         limiar_entropia: float = 0.3,
+        tamanho_max_lote: int = 100,
     ) -> None:
         """Guarda o modelo em memória.
 
@@ -67,11 +68,13 @@ class ServicoInferencia:
             metadados: Metadados do artefato (nome e versão do modelo).
             limiar_confianca: Confiança mínima para uma predição confiável.
             limiar_entropia: Entropia normalizada máxima para uma predição confiável.
+            tamanho_max_lote: Número máximo de imagens por chamada de ``prever_lote``.
         """
         self._pipeline = pipeline
         self.metadados = metadados
         self.limiar_confianca = limiar_confianca
         self.limiar_entropia = limiar_entropia
+        self.tamanho_max_lote = tamanho_max_lote
 
     @property
     def nome_modelo(self) -> str:
@@ -157,7 +160,13 @@ class ServicoInferencia:
         Raises:
             ErroEntradaInvalida: Formato errado ou alguma imagem sem nenhum traço.
         """
-        return self._inferir(self._validar(pixels))
+        matriz = self._validar(pixels)
+        if matriz.shape[0] > self.tamanho_max_lote:
+            raise ErroEntradaInvalida(
+                f"O lote tem {matriz.shape[0]} imagens; o limite configurado é "
+                f"{self.tamanho_max_lote}."
+            )
+        return self._inferir(matriz)
 
     def _inferir(self, matriz: NDArray[np.float32]) -> tuple[list[ResultadoPredicao], float]:
         inicio = time.perf_counter()
