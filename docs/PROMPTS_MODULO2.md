@@ -528,3 +528,21 @@
 - O link do vídeo fica para a TM-051, depois da gravação.
 
 **Resultado:** README com 785 linhas; 272 testes da API; 656 na suíte.
+
+---
+
+## P030 — TM-050 Roteiro do vídeo (#89)
+
+**Data:** 2026-10-17 · **Branch:** `docs/tm-050-roteiro-video-modulo2`
+
+**Prompt (resumo):**
+> O vídeo farei por último; preparar o roteiro.
+
+**Decisões:**
+- **Seis blocos cronometrados até 9:45**, um para cada pergunta do edital 5.4, com margem para os 10 minutos.
+- **Demonstração ao vivo de todos os códigos:** 200, 400 e 422 no Swagger; 503 na instância sem modelo; 500 pela rota de diagnóstico, seguido do `/health` 200; e o newman com 148 asserções.
+- **Argumentação por fase**, com o arquivo e o teste a mostrar em cada uma (base para a arguição).
+- **Checklist pós-gravação:** duração, Drive em modo leitor, link no README e no AVA, congelamento do repositório.
+- A gravação, o ensaio e o upload são do autor; esses itens ficam abertos no plano.
+
+**Resultado:** `docs/ROTEIRO_VIDEO_MODULO2.md` com comandos testados (o nome do teste e a mensagem de erro citados foram conferidos).
