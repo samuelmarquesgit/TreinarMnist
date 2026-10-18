@@ -70,7 +70,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-          cache-dependency-path: requirements-api.txt
+          cache-dependency-path: requirements-api*.txt
 
       - name: Instalar somente as dependências da API (prova de independência)
         run: |
@@ -146,6 +146,30 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'treinarmnist:latest'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Construir imagem Docker da API (Dockerfile.api)
+        run: docker build -f Dockerfile.api -t mnist-api:ci .
+
+      - name: Smoke test do contêiner da API
+        run: |
+          docker run -d --name mnist-api-ci -p 8000:8000 mnist-api:ci
+          for i in $(seq 1 40); do curl -sf http://127.0.0.1:8000/health > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/health
+          echo
+          docker image inspect mnist-api:ci --format 'Tamanho da imagem: {{.Size}} bytes'
+          test "$(docker exec mnist-api-ci whoami)" = "api"
+          docker logs mnist-api-ci
+          docker rm -f mnist-api-ci
+
+      - name: Scan de Vulnerabilidades na Imagem da API (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'mnist-api:ci'
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
