@@ -241,7 +241,7 @@ def buscar_hiperparametros(
         )
         resultados.append(resultado)
         logger.info(
-            "[%d/%d] %s → validação %.4f (treino %.4f, %d épocas, %.0fs)",
+            "[%d/%d] %s -> validação %.4f (treino %.4f, %d épocas, %.0fs)",
             i,
             len(combinacoes),
             hiperparametros,
