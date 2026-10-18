@@ -118,3 +118,6 @@ data/mnist_cache.pkl
 
 # Saídas locais do assistente de IA (não fazem parte do projeto)
 Claude outputs/
+
+# Enunciado do edital (PDF): fica só na máquina do autor
+docs/pdf/
