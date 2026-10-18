@@ -17,6 +17,7 @@ from fastapi import FastAPI
 from api.core.config import Configuracoes, obter_configuracoes
 from api.core.excecoes import ErroArtefatoInvalido
 from api.core.manipuladores import registrar_manipuladores
+from api.core.middleware import registrar_middlewares
 from api.core.registrador_log import configurar_logger, obter_logger
 from api.routers import diagnostico, modelo, predicao, saude
 from api.services.carregador_artefato import carregar_artefato
@@ -116,6 +117,7 @@ def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
     )
     aplicacao.state.config = config
     registrar_manipuladores(aplicacao)
+    registrar_middlewares(aplicacao)
     aplicacao.include_router(saude.roteador)
     aplicacao.include_router(predicao.roteador)
     aplicacao.include_router(modelo.roteador)
