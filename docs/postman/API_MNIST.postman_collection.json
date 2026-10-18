@@ -1168,6 +1168,49 @@
               ]
             }
           }
+        },
+        {
+          "name": "POST /v1/predict/imagem — 400 resolução acima de 25 megapixels",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"erro ENTRADA_INVALIDA\", () => pm.expect(pm.response.json().erro).to.eql(\"ENTRADA_INVALIDA\"));",
+                  "pm.test(\"detalhe do tipo imagem_grande_demais\", () => pm.expect(pm.response.json().detalhes[0].tipo).to.eql(\"imagem_grande_demais\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/predict/imagem",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "v1",
+                "predict",
+                "imagem"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "arquivo",
+                  "type": "file",
+                  "src": "docs/exemplos_api/upload_imagem_gigante.png",
+                  "contentType": "image/png"
+                }
+              ]
+            }
+          }
         }
       ]
     },

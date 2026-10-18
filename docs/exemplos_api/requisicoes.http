@@ -111,6 +111,17 @@ Content-Type: image/png
 < ./upload_imagem_corrompida.png
 --limite--
 
+### 400 — resolução acima de 25 megapixels (poucos KB em disco)
+POST {{base}}/v1/predict/imagem
+Content-Type: multipart/form-data; boundary=limite
+
+--limite
+Content-Disposition: form-data; name="arquivo"; filename="upload_imagem_gigante.png"
+Content-Type: image/png
+
+< ./upload_imagem_gigante.png
+--limite--
+
 ### ── Erro 500 (somente com MNIST_API_HABILITAR_DIAGNOSTICO=true) ───────────
 
 ### 500 — falha proposital: corpo padronizado, sem stack trace, API continua de pé

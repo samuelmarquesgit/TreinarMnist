@@ -26,6 +26,7 @@ def test_padroes_funcionam_sem_nenhuma_variavel():
     assert config.limiar_confianca == 0.85
     assert config.tamanho_max_lote == 100
     assert config.tamanho_max_upload_bytes == 2 * 1024 * 1024
+    assert config.max_pixels_imagem == 25_000_000
     assert config.habilitar_diagnostico is False
 
 

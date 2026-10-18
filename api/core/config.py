@@ -31,6 +31,8 @@ class Configuracoes(BaseSettings):
         limiar_confianca: Probabilidade mínima para marcar uma predição como confiável.
         limiar_entropia: Entropia normalizada máxima para marcar uma predição como confiável.
         tamanho_max_upload_bytes: Tamanho máximo da imagem enviada em ``/v1/predict/imagem``.
+        max_pixels_imagem: Resolução máxima (largura × altura) da imagem enviada, conferida no
+            cabeçalho antes de decodificar, para barrar "bombas de descompressão".
         tamanho_max_lote: Número máximo de amostras em ``/v1/predict/lote``.
         habilitar_diagnostico: Registra a rota que força um erro 500 (só para testes e Postman).
         nivel_log: Nível do logger da API.
@@ -66,6 +68,12 @@ class Configuracoes(BaseSettings):
     )
     tamanho_max_upload_bytes: int = Field(
         default=2 * 1024 * 1024, gt=0, le=10 * 1024 * 1024, description="Limite do upload"
+    )
+    max_pixels_imagem: int = Field(
+        default=25_000_000,
+        ge=784,
+        le=100_000_000,
+        description="Resolução máxima da imagem enviada (largura × altura)",
     )
     tamanho_max_lote: int = Field(default=100, ge=1, le=1000, description="Limite do lote")
     habilitar_diagnostico: bool = Field(
