@@ -779,7 +779,7 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 **chore · P0 · EPIC-17 · `modulo-2` · PR `develop → main` · todas as P0**
 
 - [x] Todas as issues P0 fechadas; CI verde em `develop` (29 de 30 tarefas concluídas; EPIC-14, 15 e 16 fechados; os 6 jobs do CI verdes)
-- [ ] PR `develop → main` com o resumo das entregas e `Closes` dos épicos
+- [x] PR `develop → main` com o resumo das entregas (#123 e #126; os épicos EPIC-14, 15 e 16 foram fechados com comentário de conclusão)
 - [ ] Tag `v2.0.0` + GitHub Release "Entrega Módulo 2 — API FastAPI"
 - [x] Teste final **num clone limpo**: `git clone` → venv → `pip install -r requirements-api.txt` → `uvicorn api.main:app` → `/docs` funcionando (2026-10-18: checksum ok, 270 testes da API, `/docs` 200, predição do 7 e da imagem própria corretas)
 - [ ] Atualizar o README com o link do vídeo (último commit **antes** da submissão)
@@ -918,16 +918,16 @@ Referência: docs/TASKS_MODULO2.md#tm-0XX
 
 ## 11. Checklist final de entrega
 
-- [ ] `models/modelo_mnist_v1.joblib` versionado; métricas em JSON e em Markdown
-- [ ] `api/` com `schemas/`, `services/`, `routers/`, `main.py`
-- [ ] Modelo carregado **uma vez** no `lifespan` (provado por teste)
-- [ ] Pydantic com `Field` na entrada e na saída; 422 consistente
-- [ ] `/health` 200 com o estado do modelo; `/v1/predict` 200; 400/422/500 tratados
-- [ ] `requirements.txt` e `requirements-api.txt` com versões fixas
-- [ ] Coleção Postman em `docs/postman/` cobrindo 200/400/422/500/503, com newman verde no CI
-- [ ] Nenhum caminho absoluto; imagens próprias em `data/custom_digits/`
-- [ ] README com os 6 itens do 5.2 + link do vídeo
-- [ ] Branches `feat/*` mantidas; tudo mergeado em `main`; tag `v2.0.0`
+- [x] `models/modelo_mnist_v1.joblib` versionado; métricas em JSON e em Markdown
+- [x] `api/` com `schemas/`, `services/`, `routers/`, `main.py`
+- [x] Modelo carregado **uma vez** no `lifespan` (provado por teste)
+- [x] Pydantic com `Field` na entrada e na saída; 422 consistente
+- [x] `/health` 200 com o estado do modelo; `/v1/predict` 200; 400/422/500 tratados
+- [x] `requirements.txt` e `requirements-api.txt` com versões fixas
+- [x] Coleção Postman em `docs/postman/` cobrindo 200/400/422/500/503, com newman verde no CI
+- [x] Nenhum caminho absoluto; imagens próprias em `data/custom_digits/`
+- [ ] README com os 6 itens do 5.2 + link do vídeo (6 itens prontos; falta só o link do vídeo)
+- [ ] Branches `feat/*` mantidas; tudo mergeado em `main`; tag `v2.0.0` (branches mantidas e `main` atualizada; falta a tag)
 - [ ] Vídeo ≤ 10 min, com rosto, cobrindo as 6 perguntas; Drive em modo leitor
 - [ ] Links submetidos no AVA **até 03/11/2026 às 22h**
 - [ ] Repositório congelado até a publicação da nota
