@@ -490,3 +490,22 @@
 - **Documentação que não envelhece:** um teste envia cada exemplo para a API e confere o status e o tipo de erro prometidos.
 
 **Resultado:** 14 testes; o lote gerado é classificado como [0, 3, 9].
+
+---
+
+## P028 — TM-052 Coleção Postman completa com newman (#88)
+
+**Data:** 2026-10-17 · **Branch:** `test/tm-052-colecao-postman`
+
+**Prompt (resumo):**
+> Por final irei precisar de um arquivo preparado para o Postman completo, inclusive com os testes dos erros.
+
+**Decisões:**
+- **30 requisições em 7 pastas**, cobrindo 200, 400, 404, 405, 422, 500 e 503, com 148 asserções `pm.test` e um script de coleção que valida o contrato `SaidaErro` e o `X-Request-ID` em toda resposta.
+- **503 testável:** pasta própria usando `{{base_url_degradado}}`, uma segunda instância da API sem modelo; não dá para ter o modelo carregado e ausente na mesma instância.
+- **500 testável:** rota de diagnóstico ligada só na instância de teste.
+- **Payloads grandes via variáveis e pre-request scripts** (partindo do 7 real), para a coleção ficar legível.
+- **Gerada por script** a partir de `docs/exemplos_api`, com um teste que falha se a coleção versionada ficar diferente do gerador.
+- **Job `api-postman` no CI** com newman 6.2.3, relatório JUnit e resumo no Actions.
+
+**Resultado:** newman local: **30/30 requisições, 148/148 asserções, 0 falhas** na primeira execução.
