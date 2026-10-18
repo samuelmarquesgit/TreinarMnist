@@ -651,8 +651,8 @@ Leva para produção o conceito de *overconfidence* da Fase 5 do Módulo 1.
 
 Adicionar ao `.github/workflows/ci.yml` (sem alterar os jobs existentes):
 
-- [ ] Gatilho de push: incluir `'ci/**'` e `'chore/**'` na lista de branches
-- [ ] Novo job `api-qualidade-e-testes`:
+- [x] Gatilho de push: incluir `'ci/**'` e `'chore/**'` na lista de branches
+- [x] Novo job `api-qualidade-e-testes`:
   1. `actions/setup-python@v5` com Python **3.12** e cache de pip (os jobs existentes também migram de 3.10 para 3.12, porque o scikit-learn 1.9 não suporta 3.10; e as actions em `@main`/`@master` passam a usar versões fixas)
   2. `pip install -r requirements-api.txt ruff mypy` (**instalação leve**, o que já prova a independência)
   3. `ruff check api/ pipeline_offline/ tests/api/`
@@ -660,13 +660,12 @@ Adicionar ao `.github/workflows/ci.yml` (sem alterar os jobs existentes):
   5. Guarda da Fase 3: `! grep -rnE "joblib\.load|open\(" api/routers/` (falha se encontrar)
   6. `pytest tests/api --cov=api --cov-report=xml:coverage-api.xml --cov-fail-under=85`
   7. **Smoke test:** `uvicorn api.main:app --port 8000 &` → aguardar → `curl -f localhost:8000/health` → `curl -f -X POST .../v1/predict -d @docs/exemplos_api/predict_digito_7.json`
-- [ ] Incluir `api-qualidade-e-testes` em `needs` do `ci-gate` e na condição de sucesso
-- [ ] SonarCloud: `-Dsonar.sources=src/,api/,pipeline_offline/` e somar o relatório `coverage-api.xml`
-- [ ] Badge do workflow no README
+- [x] Incluir `api-qualidade-e-testes` em `needs` do `ci-gate` e na condição de sucesso
+- [x] SonarCloud: `-Dsonar.sources=src/,api/,pipeline_offline/` e somar o relatório `coverage-api.xml` (a cobertura da API vai no coverage.xml do job principal, que mede src, api e pipeline_offline)
+- [x] Badge do workflow no README
 
 **Validação:** PR mostra o job verde; um PR de teste com `joblib.load` numa rota faz o job falhar.
 **Commits:** `ci: adiciona job de qualidade e testes da api` · `ci: adiciona smoke test do uvicorn no pipeline` · `ci: inclui api no gate e no sonarcloud`
-
 ---
 
 #### TM-045 Containerizar a API
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | #112 | Done |
-| TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | In review |
-| TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | Backlog |
+| TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | #113 | Done |
+| TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | In review |
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | Backlog |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | Backlog |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | Backlog |
