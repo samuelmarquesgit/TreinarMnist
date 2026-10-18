@@ -226,3 +226,21 @@
 - **Ajuste durante a revisão:** `prever()` validava a entrada duas vezes (chamava `prever_lote()`); a inferência foi extraída para `_inferir()`.
 
 **Resultado:** 32 testes novos (115 em `tests/api/`), cobertura de 100% de `api/`. O artefato real de produção carrega e reconhece o exemplo do Swagger como 7 com entropia < 0,05.
+
+---
+
+## P013 — TM-035 Ciclo de vida (lifespan) (#73)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-035-lifespan`
+
+**Prompt (resumo):**
+> Continuar: carregar o modelo uma única vez com `@asynccontextmanager` + `lifespan`, sem ler o disco nas rotas (Fase 3).
+
+**Decisões:**
+- **`FastAPI(lifespan=ciclo_de_vida)`** em vez do obsoleto `@app.on_event("startup")`. O artefato e o `ServicoInferencia` ficam em `app.state` e são liberados no shutdown.
+- **Falha no carregamento não derruba a API:** artefato ausente, adulterado ou erro inesperado é registrado no log e a aplicação sobe em estado degradado (`/health` 200 "degradado", inferência 503). Um contêiner que reinicia em loop por falta de modelo é pior do que um serviço que avisa o problema.
+- **Rotas recebem o serviço por `Depends(obter_servico)`**: nunca tocam `app.state` nem o disco; sem modelo, a dependência lança `ErroModeloIndisponivel` antes de a rota rodar.
+- **Prova da Fase 3 por teste:** `joblib.load` instrumentado com contador, 20 requisições, exatamente 1 carregamento. Outro teste garante que importar `api.main` não lê o modelo.
+- **Proibição técnica verificada por AST:** um teste lê o código de `api/routers/` e falha se aparecer `load`, `open`, `read_bytes`, `read_text` ou `carregar_artefato`.
+
+**Resultado:** 13 testes novos (128 em `tests/api/`), cobertura de 100% de `api/`. A API real carrega o modelo de produção no startup.

@@ -527,15 +527,14 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-035 Implementar o ciclo de vida (lifespan)
 **feat · P0 · EPIC-15 · `api`, `fase-3` · `feat/tm-035-lifespan` · TM-033**
 
-- [ ] Em `api/main.py`: `@asynccontextmanager async def ciclo_de_vida(app: FastAPI)`. No startup: registrar `app.state.inicio`, chamar `carregar_artefato(...)` **uma única vez** e guardar `app.state.servico = ServicoInferencia(...)`. No shutdown: liberar a referência e registrar o encerramento
-- [ ] `FastAPI(lifespan=ciclo_de_vida)`. **Não usar** `@app.on_event("startup")` (obsoleto)
-- [ ] Falha no carregamento: capturar, registrar com `logger.exception`, `app.state.servico = None`, e a app **continua de pé** (estado degradado)
-- [ ] `api/dependencias.py`: `def obter_servico(request: Request) -> ServicoInferencia` que lança `ErroModeloIndisponivel` se `None`; as rotas usam `Depends(obter_servico)`
-- [ ] **Proibido** qualquer `joblib.load`/`open` dentro de `routers/` (verificado por teste e por `grep` no CI)
+- [x] Em `api/main.py`: `@asynccontextmanager async def ciclo_de_vida(app: FastAPI)`. No startup: registrar `app.state.inicio`, chamar `carregar_artefato(...)` **uma única vez** e guardar `app.state.servico = ServicoInferencia(...)`. No shutdown: liberar a referência e registrar o encerramento
+- [x] `FastAPI(lifespan=ciclo_de_vida)`. **Não usar** `@app.on_event("startup")` (obsoleto)
+- [x] Falha no carregamento: capturar, registrar com `logger.exception`, `app.state.servico = None`, e a app **continua de pé** (estado degradado)
+- [x] `api/dependencias.py`: `def obter_servico(request: Request) -> ServicoInferencia` que lança `ErroModeloIndisponivel` se `None`; as rotas usam `Depends(obter_servico)`
+- [x] **Proibido** qualquer `joblib.load`/`open` dentro de `routers/` (verificado por teste e por `grep` no CI)
 
 **Validação:** log de startup com "Modelo PerceptronMulticamadas v1.0.0 carregado em X ms"; teste de contagem (TM-043).
 **Commits:** `feat: implementa lifespan com carregamento único do modelo` · `feat: implementa dependência de injeção do serviço de inferência`
-
 ---
 
 #### TM-036 Implementar `GET /health`
@@ -822,9 +821,9 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | #100 | Done |
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | #101 | Done |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | #102 | Done |
-| TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | In review |
+| TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | #103 | Done |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
-| TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | | Backlog |
+| TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | | In review |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | | Backlog |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | Backlog |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
