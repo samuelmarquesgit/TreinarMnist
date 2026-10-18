@@ -69,7 +69,12 @@ async def ciclo_de_vida(aplicacao: FastAPI) -> AsyncIterator[None]:
             config.caminho_modelo, config.caminho_checksum, config.caminho_metricas
         )
         aplicacao.state.artefato = artefato
-        aplicacao.state.servico = ServicoInferencia(artefato.pipeline, artefato.metadados)
+        aplicacao.state.servico = ServicoInferencia(
+            artefato.pipeline,
+            artefato.metadados,
+            limiar_confianca=config.limiar_confianca,
+            limiar_entropia=config.limiar_entropia,
+        )
         logger.info(
             "Modelo %s v%s carregado em %.0f ms (sha256 %s…).",
             artefato.metadados["nome_modelo"],
