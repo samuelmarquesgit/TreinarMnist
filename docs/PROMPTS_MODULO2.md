@@ -352,3 +352,19 @@
 - **Imagem do Bruno aproveitada:** `bruno_7_com_barra.png`, do PR #56 (fechado), versionada com crédito no commit (`Co-authored-by`). Conferida byte a byte contra o original do PR.
 
 **Resultado:** na API real, `meu_numero.jpeg` → 6 e `bruno_7_com_barra.png` → 7, ambas com confiança acima de 0,9. 14 testes novos (232 em `tests/api/`), cobertura de 100%.
+
+---
+
+## P020 — TM-039 GET /v1/modelo (#77)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-039-endpoint-modelo`
+
+**Prompt (resumo):**
+> Continuar: endpoint com metadados e métricas do modelo, sem recalcular nada nem ler o disco na rota.
+
+**Decisões:**
+- **Dados do `lifespan`:** metadados e métricas vêm do `ArtefatoModelo` em memória (`Depends(obter_artefato)`). Um teste apaga o JSON depois do startup e a resposta continua 200.
+- **Sem métricas → 503**, com mensagem específica; a inferência continua funcionando.
+- **Mesmos números do relatório:** um teste compara a resposta da API real com `models/metricas_modelo_v1.json`.
+
+**Resultado:** 6 testes novos (238 em `tests/api/`), cobertura de 100%.

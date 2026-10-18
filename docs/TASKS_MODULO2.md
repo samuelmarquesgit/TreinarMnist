@@ -575,12 +575,11 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-039 Implementar `GET /v1/modelo`
 **feat · P2 · EPIC-15 · `api` · `feat/tm-039-endpoint-modelo` · TM-029, TM-035**
 
-- [ ] Devolver os metadados do artefato + o conteúdo de `metricas_modelo_v1.json`, **carregado no lifespan** junto com o modelo (nada de ler o disco na rota)
-- [ ] `SaidaModelo` com `metricas_teste: Metricas` (acurácia, F1, ROC-AUC) e `hiperparametros: dict[str, Any]`
+- [x] Devolver os metadados do artefato + o conteúdo de `metricas_modelo_v1.json`, **carregado no lifespan** junto com o modelo (nada de ler o disco na rota)
+- [x] `SaidaModelo` com `metricas_teste: Metricas` (acurácia, F1, ROC-AUC) e `hiperparametros: dict[str, Any]`
 
 **Validação:** `curl /v1/modelo` mostra as mesmas métricas do relatório da TM-029.
 **Commits:** `feat: implementa endpoint de metadados e métricas do modelo`
-
 ---
 
 #### TM-040 Implementar o tratamento centralizado de exceções
@@ -820,8 +819,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | #108 | Done |
-| TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | In review |
-| TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |
+| TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | #110 | Done |
+| TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | In review |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | Backlog |
