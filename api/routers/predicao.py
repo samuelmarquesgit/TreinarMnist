@@ -100,10 +100,10 @@ def prever_lote(entrada: EntradaLote, servico: Servico) -> SaidaLote:
     responses=RESPOSTAS_ERRO_PREDICAO,
     summary="Classifica um dígito a partir de uma imagem PNG ou JPEG",
     description=(
-        "Recebe a foto ou o desenho de **um** dígito (PNG ou JPEG, até 2 MB, fundo claro ou "
-        "escuro) e aplica o mesmo pré-processamento do MNIST: recorte do traço, redimensionamento "
-        "para 20×20 e centralização por centro de massa em 28×28. Arquivo que não é imagem, "
-        "imagem corrompida ou sem traço gera **400**."
+        "Recebe a foto ou o desenho de **um** dígito (PNG ou JPEG, até 2 MB e 25 megapixels, "
+        "fundo claro ou escuro) e aplica o mesmo pré-processamento do MNIST: recorte do traço, "
+        "redimensionamento para 20×20 e centralização por centro de massa em 28×28. Arquivo que "
+        "não é imagem, imagem corrompida, com resolução excessiva ou sem traço gera **400**."
     ),
     response_description="Predição do dígito",
 )
@@ -114,6 +114,11 @@ def prever_imagem(
 ) -> SaidaPredicao:
     """Classifica a imagem enviada."""
     conteudo = arquivo.file.read(config.tamanho_max_upload_bytes + 1)
-    vetor = preparar_upload(conteudo, arquivo.content_type, config.tamanho_max_upload_bytes)
+    vetor = preparar_upload(
+        conteudo,
+        arquivo.content_type,
+        config.tamanho_max_upload_bytes,
+        config.max_pixels_imagem,
+    )
     resultado, ms = servico.prever(vetor)
     return para_saida(resultado, ms, servico)

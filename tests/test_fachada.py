@@ -134,9 +134,12 @@ def test_executar_benchmark_sucesso(mock_persist, mock_avaliar, mock_treinar, mo
 
 
 def test_executar_benchmark_vazio():
+    """A lista vazia é recusada antes de carregar o dataset (sem download do MNIST)."""
     fachada = FachadaPipelineIA()
-    with pytest.raises(ValueError, match="não pode ser vazia"):
-        fachada.executar_benchmark([])
+    with patch("src.fachada.carregar_dados_mnist") as mock_carregar:
+        with pytest.raises(ValueError, match="não pode ser vazia"):
+            fachada.executar_benchmark([])
+    mock_carregar.assert_not_called()
 
 
 @patch("src.fachada.FachadaPipelineIA.treinar_modelo")
@@ -273,10 +276,12 @@ def test_prever_probabilidades_modelo_nao_treinado(fachada):
         fachada.prever_probabilidades("Alien", np.zeros((1, 784)))
 
 
-def test_inicializar_dados_duplicado(fachada_com_dados):
-    # Já inicializou
-    fachada_com_dados.inicializar_dados()  # Não deve fazer nada, cover line 171
-    assert len(fachada_com_dados.X_treino) > 0
+def test_garantir_dados_nao_recarrega_quando_ja_inicializado(fachada_com_dados):
+    """Com os dados já em memória, _garantir_dados() não baixa o MNIST de novo."""
+    with patch("src.fachada.carregar_dados_mnist") as mock_carregar:
+        fachada_com_dados._garantir_dados()
+    mock_carregar.assert_not_called()
+    assert len(fachada_com_dados.X_treino) == 100
 
 
 def test_executar_experimento_mlflow_desabilitado(fachada_com_dados):

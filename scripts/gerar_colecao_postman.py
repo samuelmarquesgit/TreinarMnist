@@ -362,6 +362,13 @@ pm.test("quantidade = 3", () => pm.expect(l.quantidade).to.eql(3));
             teste_erro(400, "ENTRADA_INVALIDA", "imagem_vazia"),
             arquivo=("docs/exemplos_api/upload_imagem_em_branco.png", "image/png"),
         ),
+        requisicao(
+            "POST /v1/predict/imagem — 400 resolução acima de 25 megapixels",
+            "POST",
+            "/v1/predict/imagem",
+            teste_erro(400, "ENTRADA_INVALIDA", "imagem_grande_demais"),
+            arquivo=("docs/exemplos_api/upload_imagem_gigante.png", "image/png"),
+        ),
     ]
 
     erros_http = [

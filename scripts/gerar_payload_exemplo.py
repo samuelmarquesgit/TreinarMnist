@@ -76,7 +76,10 @@ def gerar() -> list[Path]:
     branco.write_bytes(cv2.imencode(".png", np.full((64, 64), 255, dtype=np.uint8))[1].tobytes())
     corrompido = DESTINO / "upload_imagem_corrompida.png"
     corrompido.write_bytes(b"\x89PNG\r\n\x1a\n" + bytes(range(256)) * 2)
-    return [*escritos, texto, branco, corrompido]
+    # "Bomba de descompressão": poucos KB em disco, 26 megapixels se fosse decodificada
+    gigante = DESTINO / "upload_imagem_gigante.png"
+    gigante.write_bytes(cv2.imencode(".png", np.zeros((5_100, 5_100), dtype=np.uint8))[1].tobytes())
+    return [*escritos, texto, branco, corrompido, gigante]
 
 
 if __name__ == "__main__":

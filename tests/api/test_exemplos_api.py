@@ -49,6 +49,7 @@ def test_exemplo_do_7_e_classificado_como_7(cliente):
         ("upload_arquivo_texto.txt", "text/plain", 400, "tipo_invalido"),
         ("upload_imagem_em_branco.png", "image/png", 400, "imagem_vazia"),
         ("upload_imagem_corrompida.png", "image/png", 400, "imagem_corrompida"),
+        ("upload_imagem_gigante.png", "image/png", 400, "imagem_grande_demais"),
     ],
 )
 def test_arquivos_de_upload_produzem_o_erro_documentado(

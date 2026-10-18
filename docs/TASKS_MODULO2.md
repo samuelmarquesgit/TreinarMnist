@@ -631,13 +631,13 @@ Leva para produção o conceito de *overconfidence* da Fase 5 do Módulo 1.
 
 | Arquivo | Casos |
 |---|---|
-| `test_schemas.py` | Validações das TM-031/032 sem HTTP |
+| `test_schemas_entrada.py`, `test_schemas_saida.py` | Validações das TM-031/032 sem HTTP |
 | `test_saude.py` | 200 com o modelo carregado; 200 + `degradado` com caminho inválido |
 | `test_predicao.py` | 200 com payload válido; resposta respeita `SaidaPredicao`; soma das probabilidades ≈ 1; lote 200 |
 | `test_erros.py` | **422**: texto, 783 pixels, `1.5`, `NaN`, campo extra, lote vazio, lote com 101 itens · **400**: vetor zerado, upload `.txt`, imagem corrompida, imagem em branco, arquivo > 2 MB · **503**: sem modelo · **500**: exceção forçada, corpo sem stack trace |
-| `test_imagem.py` | Upload PNG/JPEG → 200; paridade com o pipeline do Módulo 1 |
+| `test_predicao_imagem.py`, `test_pre_processamento_imagem.py` | Upload PNG/JPEG → 200; paridade com o pipeline do Módulo 1 |
 | `test_lifespan.py` | **Prova da Fase 3:** `monkeypatch` em `joblib.load` com contador → `with TestClient(app)` + 20 requisições → `contador == 1` |
-| `test_independencia.py` | Subprocesso `python -c "import api.main, sys; ..."` → nenhum de {`streamlit`, `torch`, `chromadb`, `sqlalchemy`, `pymongo`, `mlflow`, `src.fachada`} em `sys.modules` |
+| `test_estrutura.py` | Subprocesso `python -c "import api.main, sys; ..."` → nenhum de {`streamlit`, `torch`, `chromadb`, `sqlalchemy`, `pymongo`, `mlflow`, `src.fachada`} em `sys.modules` |
 | `test_integracao_modelo_real.py` | `@pytest.mark.skipif` se `models/modelo_mnist_v1.joblib` não existir; acurácia ≥ 0,95 em 500 amostras de teste |
 
 - [x] Cobertura de `api/` ≥ **85%**
@@ -714,7 +714,7 @@ Nova seção principal no topo (o conteúdo do Módulo 1 vira uma seção de his
 - [x] **3. Tecnologias:** tabela com bibliotecas **e versões** (FastAPI, Uvicorn, Pydantic, pydantic-settings, scikit-learn, NumPy, OpenCV, joblib, pytest)
 - [x] **4. Instalação e execução:** `python -m venv .venv` → ativar (Windows/Linux) → `pip install -r requirements-api.txt` → (opcional) `python -m pipeline_offline.treinar_e_serializar` → `uvicorn api.main:app --reload` → abrir `http://localhost:8000/docs`; mais a alternativa Docker
 - [x] **5. Documentação da API:** tabela de endpoints, payloads JSON de exemplo (sucesso e erros 400/422/503), link `/docs` e `/redoc`, prints do Swagger em `docs/img/`
-- [ ] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0` (seção pronta
+- [ ] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0` (seção pronta; falta só o link)
 - [x] Extras: diagrama Mermaid da §3.2 (**sem parênteses nos rótulos**), métricas da TM-029, decisões técnicas (independência, 503, guardrail), limitações e melhorias futuras, instruções da coleção Postman (TM-052)
 - [x] Seção **"Uso de Inteligência Artificial"**: o edital (item 8) restringe o uso de IA; registrar que o uso como assistente de desenvolvimento foi **autorizado pelo professor**, com revisão humana de todo o código e o histórico de prompts em `docs/prompt.md`
 
@@ -790,6 +790,57 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 
 ---
 
+### Auditoria de qualidade (18/10): TM-054 a TM-057
+
+Tarefas criadas depois da revisão completa feita após o desligamento do notebook. O ID TM-053 já estava em uso no `BACKLOG.md`.
+
+#### TM-054 Limitar a resolução das imagens enviadas
+**fix · P1 · EPIC-16 · `modulo-2`, `api`, `fase-5` · `fix/tm-054-limite-resolucao-upload` · TM-038** (achado da auditoria de qualidade de 18/10)
+
+Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia cerca de 1,4 GB de RAM no `cv2.imdecode` ("bomba de descompressão"); poucas requisições assim derrubariam o contêiner.
+
+- [x] Ler largura e altura do cabeçalho (IHDR no PNG, SOF no JPEG) **antes** de decodificar
+- [x] Recusar com **400** (`imagem_grande_demais`) acima de `MNIST_API_MAX_PIXELS_IMAGEM` (padrão de 25 megapixels, folga para fotos de celular de 12 MP)
+- [x] Testes: PNG, JPEG e JPEG progressivo, cabeçalhos malformados, limite exato, recusa sem chamar o `cv2.imdecode`, endpoint
+- [x] Caso novo nos exemplos (`upload_imagem_gigante.png`, 34 KB) e na coleção Postman (31 requisições, 153 asserções)
+
+**Validação:** o mesmo PNG de 15000×15000 recebe 400 em 18 ms, sem alocar a imagem.
+
+---
+
+#### TM-055 Atualizar dependências com vulnerabilidades conhecidas
+**chore · P1 · EPIC-16 · `modulo-2` · `chore/tm-055-dependencias-vulneraveis` · TM-025**
+
+- [x] `pip-audit`: `requirements-api.txt` sem vulnerabilidades; no `requirements.txt`, `pymongo` 4.18.0 → 4.18.3 (4 alertas) e `mcp` 1.29.1 → 1.30.0 (CVE-2026-59951)
+- [x] `chromadb` 1.5.9 sem versão corrigida: registrado nas limitações do README (os alertas são do servidor HTTP do Chroma, que o projeto não usa)
+
+**Validação:** `pip-audit -r requirements.txt` só com os alertas do `chromadb`; suíte completa e mypy verdes.
+
+---
+
+#### TM-056 Eliminar a dependência de internet dos testes
+**test · P2 · EPIC-16 · `modulo-2` · `test/tm-056-testes-dependentes-de-rede` · —**
+
+18 testes do Módulo 1 falhavam sem internet. As causas eram defeitos de código:
+
+- [x] `suporte_rag.py` instanciava o `SentenceTransformer` (que baixa o modelo do HuggingFace) **no import**; agora a função de embedding é criada no primeiro uso
+- [x] `executar_benchmark([])` baixava o MNIST antes de recusar a lista vazia; `prever_imagem_usuario` carregava a fachada antes de validar a imagem
+- [x] `test_inicializar_dados_duplicado` testava uma guarda que não existe; substituído por um teste de `_garantir_dados()`
+
+**Validação:** suíte completa sem rede: 731 testes, 0 falhas (antes: 18 falhas); tempo de 130 s para 27 s.
+
+---
+
+#### TM-057 Ajustar a documentação apontada na auditoria
+**docs · P2 · EPIC-17 · `modulo-2` · `docs/tm-057-ajustes-documentacao` · TM-054, TM-055, TM-056**
+
+- [x] README: link do vídeo do Módulo 1 no lugar do marcador antigo; tabela de branches completa; contexto da amostra de 500 imagens
+- [x] Este plano: nomes reais dos arquivos de teste da TM-043; TM-054 a TM-057 e rastreabilidade da TM-051
+- [x] `steering/politicas_governanca_ia.md`: referências a arquivos que não existem marcadas como "a criar"
+- [x] `.gitignore`: `docs/pdf/ProjetoAvaliativo2.pdf` (o PDF do edital fica só na máquina do autor; os demais arquivos de `docs/pdf/` são do Módulo 1 e continuam versionados)
+
+---
+
 ## 8. Rastreabilidade Task → Issue → Branch → PR
 
 | Task | Título resumido | Épico | Prior. | Sprint | Issue | Branch | PR | Status (Kanban) |
@@ -822,8 +873,12 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | #120 | Done |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | #121 | Done |
-| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | In progress |
+| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126, #129, #133 | In progress |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
+| TM-054 | Limite de resolução do upload | 16 | P1 | — | #134 | `fix/tm-054-limite-resolucao-upload` | #138 | Done |
+| TM-055 | Dependências vulneráveis | 16 | P1 | — | #135 | `chore/tm-055-dependencias-vulneraveis` | #139 | Done |
+| TM-056 | Testes sem internet | 16 | P2 | — | #136 | `test/tm-056-testes-dependentes-de-rede` | #140 | Done |
+| TM-057 | Ajustes de documentação | 17 | P2 | — | #137 | `docs/tm-057-ajustes-documentacao` | #141 | Done |
 
 ### Grafo de dependências (caminho crítico em destaque)
 
