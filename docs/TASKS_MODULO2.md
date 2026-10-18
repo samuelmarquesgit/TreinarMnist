@@ -696,11 +696,10 @@ Adicionar ao `.github/workflows/ci.yml` (sem alterar os jobs existentes):
 
 Demonstração forte para o vídeo: o Canvas do Laboratório de Visão envia o desenho para `POST /v1/predict/imagem` via `httpx` quando a variável `MNIST_API_URL` estiver definida, com *fallback* para a inferência local.
 
-- [ ] Indicador "🟢 API online / 🔴 offline" baseado em `/health`
-- [ ] Teste com `httpx.MockTransport`
+- [x] Indicador "🟢 API online / 🔴 offline" baseado em `/health`
+- [x] Teste com `httpx.MockTransport`
 
 **Commits:** `feat: integra laboratório de visão ao endpoint de predição da api`
-
 ---
 
 ### EPIC-17 / S4–S5: Documentação, vídeo e entrega
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | #113 | Done |
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | #114 | Done |
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | #115 | Done |
-| TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | In review |
-| TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | Backlog |
+| TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | #116 | Done |
+| TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | In review |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | | Backlog |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | Backlog |

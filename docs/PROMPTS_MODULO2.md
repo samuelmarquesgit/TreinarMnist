@@ -456,3 +456,20 @@
 - **`main.py` reorganizado em funções** (`montar_parser`, `executar`, `executar_cli`) para ser testável, mantendo os modos existentes.
 
 **Resultado:** 9 testes da CLI; `python main.py --modo api` sobe a API de verdade.
+
+---
+
+## P026 — TM-047 Painel Streamlit consumindo a API (#85)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-047-streamlit-consome-api`
+
+**Prompt (resumo):**
+> Continuar (opcional): o Laboratório de Visão do Streamlit enviando o desenho para a API, com fallback local.
+
+**Decisões:**
+- **Integração opcional e segura:** só com `MNIST_API_URL` definida; se a API estiver fora do ar ou recusar a imagem, o painel volta à inferência local do Módulo 1.
+- **Cliente pequeno e testável** (`src/frontend/cliente_api.py`) com transporte HTTP injetável (`httpx.MockTransport`).
+- **Indicador no painel:** 🟢 API online (modelo, versão, latência) ou 🔴 offline; o alerta de falsa certeza vem da API.
+- **Achado:** um teste falhava só na suíte completa porque o `test_frontend` recarrega os módulos de `src.frontend`; o patch passou a usar o caminho em texto.
+
+**Resultado:** 16 testes, incluindo a conversa com a API real via `TestClient`; os 100 testes de frontend do Módulo 1 continuam passando.
