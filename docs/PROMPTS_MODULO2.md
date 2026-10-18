@@ -618,3 +618,16 @@
 
 **Resultado:** 14 testes de regressão (nomes com `../`, absolutos, separadores do Windows, desconhecidos e vazios); suíte com 702 testes.
 
+---
+
+## P035 — Sanitização reconhecida pela análise de taint (#130, reaberta)
+
+**Data:** 2026-10-18 · **Branch:** `fix/sonar-path-traversal-allowlist`
+
+**Contexto:** depois do PR #131, a análise da `develop` (que no SonarCloud é a branch principal) **continuou** acusando S2083. O rastro mostrado pelo SonarCloud ia da ferramenta MCP (`mcp_servidor.py:60`) até o `open()` passando pela concatenação do caminho: a validação com `if ...: raise` não conta como sanitização, porque o caminho ainda era montado com a string recebida.
+
+**Decisões:**
+- **Trocar o dado do usuário por um valor confiável:** o nome usado no caminho passa a ser o item correspondente de `FabricaModelos.listar_disponiveis()`, nunca a string recebida. A checagem com `realpath`/`commonpath` continua como segunda barreira.
+- **O CI espera o gate só nas execuções de PR:** no plano gratuito, a análise disparada por push numa branch de tarefa não representa o PR e bloqueava merges sem relação com a mudança (ajuste feito no PR #131).
+- **A `main` só recebe a correção depois de confirmar na API do SonarCloud** que a `develop` ficou sem a vulnerabilidade e com o Quality Gate aprovado.
+
