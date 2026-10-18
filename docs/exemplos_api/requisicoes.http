@@ -1,0 +1,117 @@
+# Requisições de exemplo da API MNIST (extensão "REST Client" do VS Code: clique em "Send Request").
+# Suba a API antes:  uvicorn api.main:app --reload
+# Para o 500, suba com:  MNIST_API_HABILITAR_DIAGNOSTICO=true uvicorn api.main:app
+# Os arquivos referenciados com "<" estão nesta mesma pasta (gerados por scripts/gerar_payload_exemplo.py).
+
+@base = http://localhost:8000
+
+### ── Monitoramento ─────────────────────────────────────────────────────────
+
+### 200 — saúde do serviço e do modelo
+GET {{base}}/health
+
+### 200 — metadados e métricas do modelo
+GET {{base}}/v1/modelo
+
+### ── Inferência (sucesso) ──────────────────────────────────────────────────
+
+### 200 — dígito 7 real do conjunto de teste
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./predict_digito_7.json
+
+### 200 — lote com os dígitos 0, 3 e 9
+POST {{base}}/v1/predict/lote
+Content-Type: application/json
+
+< ./predict_lote_0_3_9.json
+
+### 200 — upload da imagem própria (Desafio C do Módulo 1)
+POST {{base}}/v1/predict/imagem
+Content-Type: multipart/form-data; boundary=limite
+
+--limite
+Content-Disposition: form-data; name="arquivo"; filename="meu_numero.jpeg"
+Content-Type: image/jpeg
+
+< ../../data/custom_digits/meu_numero.jpeg
+--limite--
+
+### ── Erros 422 (contrato Pydantic) ─────────────────────────────────────────
+
+### 422 — pixel fora de [0, 1]
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./erro_422_pixel_fora_faixa.json
+
+### 422 — texto em campo numérico
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./erro_422_texto_no_pixel.json
+
+### 422 — 783 pixels em vez de 784
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./erro_422_tamanho_errado.json
+
+### 422 — campo não permitido
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./erro_422_campo_extra.json
+
+### 422 — lote vazio
+POST {{base}}/v1/predict/lote
+Content-Type: application/json
+
+< ./erro_422_lote_vazio.json
+
+### ── Erros 400 (entrada impossível de classificar) ─────────────────────────
+
+### 400 — imagem sem nenhum traço
+POST {{base}}/v1/predict
+Content-Type: application/json
+
+< ./erro_400_vetor_vazio.json
+
+### 400 — upload de arquivo de texto
+POST {{base}}/v1/predict/imagem
+Content-Type: multipart/form-data; boundary=limite
+
+--limite
+Content-Disposition: form-data; name="arquivo"; filename="upload_arquivo_texto.txt"
+Content-Type: text/plain
+
+< ./upload_arquivo_texto.txt
+--limite--
+
+### 400 — imagem em branco
+POST {{base}}/v1/predict/imagem
+Content-Type: multipart/form-data; boundary=limite
+
+--limite
+Content-Disposition: form-data; name="arquivo"; filename="upload_imagem_em_branco.png"
+Content-Type: image/png
+
+< ./upload_imagem_em_branco.png
+--limite--
+
+### 400 — PNG corrompido
+POST {{base}}/v1/predict/imagem
+Content-Type: multipart/form-data; boundary=limite
+
+--limite
+Content-Disposition: form-data; name="arquivo"; filename="upload_imagem_corrompida.png"
+Content-Type: image/png
+
+< ./upload_imagem_corrompida.png
+--limite--
+
+### ── Erro 500 (somente com MNIST_API_HABILITAR_DIAGNOSTICO=true) ───────────
+
+### 500 — falha proposital: corpo padronizado, sem stack trace, API continua de pé
+GET {{base}}/v1/_diagnostico/erro-interno
