@@ -280,3 +280,21 @@
 - **Rota de diagnóstico do 500** (`/v1/_diagnostico/erro-interno`): só existe com `MNIST_API_HABILITAR_DIAGNOSTICO=true`, fica fora do Swagger e emite um alerta no log ao ser habilitada. É a forma honesta de provar o 500 no Postman e no vídeo.
 
 **Resultado:** 17 testes novos (154 em `tests/api/`), cobertura de 100% de `api/`.
+
+---
+
+## P016 — TM-041 Guardrail de falsa certeza (#79)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-041-guardrail-confianca`
+
+**Prompt (resumo):**
+> Continuar: levar o guardrail de falsa certeza do Módulo 1 para a resposta da predição.
+
+**Decisões:**
+- **A regra do Módulo 1 não foi copiada literalmente.** Lá, confiança ≥ 0,85 com entropia baixa já era alerta, porque o experimento mascarava classes. Em produção, com as 10 classes conhecidas, isso marcaria como suspeita toda predição correta e segura (o 7 do exemplo seria "não confiável").
+- **Falsa certeza = certeza alta numa entrada atípica.** "Atípica" significa fração de pixels acesos, intensidade média ou deslocamento do centro de massa fora dos percentis 0,5–99,5 medidos nas 49 000 imagens de treino. As faixas viraram constantes documentadas, porque a API não carrega o dataset.
+- **`confiavel` = certeza alta numa entrada típica**; os dois campos nunca são verdadeiros ao mesmo tempo.
+- **Limiares vêm da configuração** (`MNIST_API_LIMIAR_CONFIANCA` e `MNIST_API_LIMIAR_ENTROPIA`), repassados ao serviço no `lifespan`.
+- **Antecipada em relação à TM-037**, para a rota de predição não precisar conter essa regra.
+
+**Resultado:** com o modelo real, o 7 limpo sai confiável e sem alerta, e a imagem saturada sai não confiável (atípica). 14 testes novos (168 em `tests/api/`), cobertura de 100%.
