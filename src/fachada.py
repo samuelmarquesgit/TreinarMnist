@@ -49,6 +49,8 @@ _DIR_BENCHMARKS: str = os.path.join("artifacts", "benchmarks")
 
 # Diretório padrão para persistência dos modelos treinados (joblib)
 _DIR_MODELOS: str = os.path.join("artifacts", "modelos")
+_EXTENSAO_JOBLIB = ".joblib"
+_EXTENSAO_PICKLE = ".pkl"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -228,7 +230,7 @@ class FachadaPipelineIA:
         Raises:
             ValueError: Se o nome não for um modelo registrado (proteção contra path traversal).
         """
-        caminho = self._caminho_seguro_modelo(nome_modelo, ".joblib")
+        caminho = self._caminho_seguro_modelo(nome_modelo, _EXTENSAO_JOBLIB)
         os.makedirs(_DIR_MODELOS, exist_ok=True)
         try:
             import joblib  # type: ignore[import-untyped]
@@ -238,7 +240,7 @@ class FachadaPipelineIA:
         except ImportError:
             import pickle
 
-            caminho_pkl = self._caminho_seguro_modelo(nome_modelo, ".pkl")
+            caminho_pkl = self._caminho_seguro_modelo(nome_modelo, _EXTENSAO_PICKLE)
             with open(caminho_pkl, "wb") as fh:
                 pickle.dump(modelo, fh)
             logger.info("Modelo '%s' salvo (pickle) em disco: %s", nome_modelo, caminho_pkl)
@@ -260,17 +262,17 @@ class FachadaPipelineIA:
 
         for arquivo in sorted(os.listdir(_DIR_MODELOS)):
             nome_modelo: str | None = None
-            if arquivo.endswith(".joblib"):
-                nome_modelo = arquivo[: -len(".joblib")]
-            elif arquivo.endswith(".pkl"):
-                nome_modelo = arquivo[: -len(".pkl")]
+            if arquivo.endswith(_EXTENSAO_JOBLIB):
+                nome_modelo = arquivo[: -len(_EXTENSAO_JOBLIB)]
+            elif arquivo.endswith(_EXTENSAO_PICKLE):
+                nome_modelo = arquivo[: -len(_EXTENSAO_PICKLE)]
 
             if not nome_modelo:
                 continue
 
             caminho = os.path.join(_DIR_MODELOS, arquivo)
             try:
-                if arquivo.endswith(".joblib"):
+                if arquivo.endswith(_EXTENSAO_JOBLIB):
                     import joblib  # type: ignore[import-untyped]
 
                     modelo = joblib.load(caminho)
