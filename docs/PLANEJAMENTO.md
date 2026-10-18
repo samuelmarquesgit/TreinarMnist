@@ -1,5 +1,7 @@
 # Arquitetura e Planejamento Mestre — Plataforma Empresarial MNIST
 
+> 📌 **Documento histórico da primeira entrega** (Mini-Projeto do Módulo 2 do curso, set/2026), chamada de **"Módulo 1"** neste repositório para diferenciá-la do Projeto Avaliativo atual. O estado atual (API FastAPI) está no [README](../README.md) e em [`TASKS_MODULO2.md`](TASKS_MODULO2.md); os números e comandos abaixo refletem setembro/2026.
+
 > **Versão:** 1.1  
 > **Data:** 2026-09-11  
 > **Status:** Em revisão profissional (set/2026)  

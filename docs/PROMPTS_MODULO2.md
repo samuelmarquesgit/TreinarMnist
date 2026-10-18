@@ -581,3 +581,25 @@
 
 **Defeito encontrado e corrigido:** `scripts/gerar_colecao_postman.py` quebrava com `UnicodeEncodeError` no console padrão do Windows (cp1252) ao imprimir `→`; nos testes anteriores isso ficava escondido porque os scripts rodavam com `PYTHONIOENCODING=utf-8`. Logs com a mesma seta não quebravam (o stderr usa `backslashreplace`), mas apareciam como `→`. As três mensagens passaram a usar `->`, e um teste via AST impede a volta do problema (sem a correção, falha nos 3 pontos).
 
+---
+
+## P033 — Revisão de toda a documentação Markdown (#127)
+
+**Data:** 2026-10-18 · **Branch:** `docs/revisao-documentacao`
+
+**Prompt (resumo):**
+> Revisar toda a documentação .md do projeto. O PDF do edital fica só local.
+
+**Método:**
+- **Verificação automática dos 20 arquivos `.md`:** links e âncoras locais (nenhum quebrado), caminhos e comandos inexistentes, contagens e versões desatualizadas, pendências e espaços reservados.
+- **Leitura atenta** dos documentos do Módulo 2, conferindo cada afirmação com o código e com o GitHub (os 29 números de PR da tabela §8 batem).
+
+**Correções:**
+- **README:** contagem da suíte 656 → 688; rodapé herdado do Módulo 1 deixou de parecer a data do README inteiro; link para a licença.
+- **`LICENSE` (MIT) criado:** o README declarava MIT, mas o arquivo não existia (pendência TM-017 do Módulo 1).
+- **Nomenclatura explicada:** a primeira entrega foi o *Mini-Projeto do Módulo 2* do curso e é chamada de "Módulo 1" neste repositório; a equivalência agora está explícita no README e nos documentos antigos.
+- **`TASKS_MODULO2.md`:** checklist final (§11) e TM-051 marcados conforme o que já foi feito (só o vídeo, a tag e o congelamento seguem abertos).
+- **`BACKLOG.md` (Módulo 1):** status dos itens resolvidos pelo Módulo 2 (TM-002, 007, 009 e 020 concluídos; 010, 016 e 018 parciais; 017 concluído). **Colisão de ID:** o backlog já tinha um TM-023 (múltiplos datasets), e o plano do Módulo 2 reutilizou a numeração a partir de TM-023; o item antigo foi renumerado para TM-053.
+- **Documentos do Módulo 1** (`ENTREGA`, `FLUXO_GITHUB_KANBAN`, `PLANEJAMENTO`, `ROTEIRO_GRAVACAO_VIDEO`, `roteiro_video`, `TASKS`, `prompt`) com aviso de documento histórico, sem reescrever o conteúdo original.
+- **`steering/`** (diretrizes vigentes): Python 3.12 no CI e no Docker; prefixos de branch reais; e a correção de uma afirmação falsa: `recarregar_modelos_salvos()` do Módulo 1 **não** valida hash. Quem valida o SHA-256 é o carregador da API.
+
