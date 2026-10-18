@@ -17,6 +17,7 @@ from fastapi import FastAPI
 from api.core.config import Configuracoes, obter_configuracoes
 from api.core.excecoes import ErroArtefatoInvalido
 from api.core.registrador_log import configurar_logger, obter_logger
+from api.routers import saude
 from api.services.carregador_artefato import carregar_artefato
 from api.services.servico_inferencia import ServicoInferencia
 
@@ -107,6 +108,7 @@ def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
         lifespan=ciclo_de_vida,
     )
     aplicacao.state.config = config
+    aplicacao.include_router(saude.roteador)
     return aplicacao
 
 
