@@ -10,7 +10,7 @@ if __name__ == "__main__":
     if args.modo == "web":
         subprocess.run([sys.executable, "-m", "streamlit", "run", "app.py"])
     elif args.modo == "mcp":
-        subprocess.run([sys.executable, "-m", "src.mcp.servidor"])
+        subprocess.run([sys.executable, "-m", "src.mcp_servidor"])
     else:
         from src.fachada import FachadaPipelineIA
 
