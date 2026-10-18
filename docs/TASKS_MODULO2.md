@@ -769,11 +769,10 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | 5:30–8:30 | Argumentação técnica das escolhas | Por que MLP; split 70/10/20; Pipeline sem vazamento; **lifespan + teste de contagem**; Pydantic `Field` → 422; 400 × 422 × 500 × 503; independência da API; guardrail de falsa certeza; CI verde |
 | 8:30–10:00 | O que poderia melhorar | Ex.: autenticação por API key, rate limiting, MLflow Model Registry, ONNX, monitoramento de *drift*, deploy em nuvem |
 
-- [ ] Ensaiar e cronometrar
-- [ ] Subir no Google Drive com o link "qualquer pessoa com o link: leitor"
+- [ ] Ensaiar e cronometrar (a cargo do autor)
+- [ ] Subir no Google Drive com o link "qualquer pessoa com o link: leitor" (a cargo do autor, após a gravação)
 
 **Commits:** `docs: adiciona roteiro do vídeo do módulo 2`
-
 ---
 
 #### TM-051 Fazer o release final e entregar
@@ -820,9 +819,9 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | #115 | Done |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | #116 | Done |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | #117 | Done |
-| TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | In review |
+| TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | #120 | Done |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
-| TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | Backlog |
+| TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | In review |
 | TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | Backlog |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
 
