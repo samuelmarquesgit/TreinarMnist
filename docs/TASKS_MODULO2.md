@@ -427,12 +427,14 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-028 Serializar o pacote do modelo em `models/`
 **feat · P0 · EPIC-14 · `modulo-2`, `fase-1` · `feat/tm-028-serializacao-modelo` · TM-027**
 
-- [ ] Salvar com `joblib.dump(..., compress=3)` em `models/modelo_mnist_v1.joblib` **um `dict`** com:
+- [x] Salvar com `joblib.dump(..., compress=3)` em `models/modelo_mnist_v1.joblib` **um `dict`** com:
   - `pipeline`: o `Pipeline` sklearn treinado (objetos 100% sklearn, sem classes de `src/`)
   - `metadados`: `nome_modelo`, `versao_modelo="1.0.0"`, `classes=[0..9]`, `n_features=784`, `versao_sklearn`, `versao_python`, `data_treino` (ISO-8601), `hiperparametros`, `semente`
-- [ ] Gerar `models/modelo_mnist_v1.sha256` (integridade, verificada no `lifespan`)
-- [ ] Garantir tamanho < 50 MB
-- [ ] Teste: carregar o artefato num **processo novo sem `src/` importado** e prever uma amostra
+- [x] Gerar `models/modelo_mnist_v1.sha256` (integridade, verificada no `lifespan`), no formato do `sha256sum` com LF (verificado: `sha256sum -c` → OK)
+- [x] Garantir tamanho < 50 MB (**3,3 MB**)
+- [x] Teste: carregar o artefato num **processo novo sem `src/` importado** e prever uma amostra (`python -I`, sem `src/` nem `pipeline_offline/` em `sys.modules`)
+- [x] Opção `--rapido` para retreinar só a combinação vencedora (~4 min); reproduz exatamente a validação de 0,9814
+- [x] `.gitattributes`: `.joblib` binário e `.sha256` com LF
 
 **Validação:** `python -I -c "import joblib; p=joblib.load('models/modelo_mnist_v1.joblib'); print(p['metadados'])"` funciona; `sha256sum -c` (Linux) ou `Get-FileHash` (Windows) confere.
 **Commits:** `feat: implementa serialização do pipeline com metadados` · `feat: adiciona checksum sha256 do artefato`
@@ -814,8 +816,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-024 | Limpar raiz do repositório | 17 | P1 | S0 | #62 | `chore/tm-024-limpeza-repositorio` | #94 | Done |
 | TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | #95 | Done |
 | TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | #96 | Done |
-| TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | | In review |
-| TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | Backlog |
+| TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | #97 | Done |
+| TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | In review |
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | Backlog |
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | Backlog |
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | Backlog |

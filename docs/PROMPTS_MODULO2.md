@@ -109,3 +109,25 @@
 - **Ressalva estatística registrada:** as três melhores combinações diferem em ≤ 0,07 p.p., abaixo do erro-padrão da validação (~0,17 p.p.).
 
 **Resultado:** vencedora `(256, 128)`, `alpha=0.01`, validação 98,14% (Módulo 1: 97,5%). Tabela e log completos em `docs/resultados/busca_hiperparametros_tm027.md`. 10 testes novos (25 no pipeline offline), cobertura de 94% do módulo.
+
+---
+
+## P007 — TM-028 Serialização do modelo (#66)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-028-serializacao-modelo`
+
+**Prompt (resumo):**
+> Seguir para a TM-028: serializar o Pipeline vencedor em `models/` com metadados e checksum.
+
+**Decisões:**
+- **Um `.joblib` com `{"pipeline", "metadados"}`**, só com objetos do scikit-learn. Testado num processo `python -I` sem `src/` nem `pipeline_offline/`: é o que garante que a API carrega o modelo de forma independente.
+- **Metadados** com versões de scikit-learn, NumPy e Python, hiperparâmetros, semente e tamanhos das partições, para a API exibir no `/health` e alertar sobre diferença de versão.
+- **Checksum SHA-256 no formato do `sha256sum`**, validado pelo `lifespan` da API (TM-035).
+- **`--rapido`**: o avaliador reproduz o artefato em ~4 min sem refazer a busca de ~15 min.
+- **Teste de integridade do artefato real** roda no CI, já que o arquivo está versionado.
+- **Achado 1:** no Windows, `Path.write_text` gravava o `.sha256` com CRLF, e o `sha256sum -c` do Linux falharia. Corrigido com `newline="\n"` e coberto por teste.
+- **Achado 2:** sem `.gitattributes`, o `autocrlf` do Git poderia converter o `.sha256`; adicionado `*.joblib binary` e `*.sha256 text eol=lf`.
+- Corrigido o tempo de execução no cabeçalho do módulo (a busca leva ~15 min, não ~6).
+
+**Resultado:** `models/modelo_mnist_v1.joblib` com 3,3 MB, SHA-256 `19df9501…043eb50b`, validação 0,9814 (idêntica à da busca, então o treino é determinístico). 12 testes novos de serialização (31 no pipeline offline), cobertura de 98% do módulo.
+
