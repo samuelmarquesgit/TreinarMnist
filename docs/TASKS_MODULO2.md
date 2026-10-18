@@ -551,15 +551,14 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-037 Implementar `POST /v1/predict` e `POST /v1/predict/lote`
 **feat · P0 · EPIC-15 · `api`, `fase-5` · `feat/tm-037-endpoint-predict` · TM-035, TM-032**
 
-- [ ] `api/routers/predicao.py` com `APIRouter(prefix="/v1", tags=["Inferência"])`
-- [ ] `POST /predict`: recebe `EntradaPixels`, converte para `np.ndarray (1, 784) float32`, chama `servico.prever`, devolve `SaidaPredicao` com **200**
-- [ ] `POST /predict/lote`: até 100 amostras numa única chamada vetorizada a `predict_proba`
-- [ ] Rotas **finas**: sem lógica de ML, só conversão + chamada ao serviço
-- [ ] `summary`, `description` e `response_description` em pt-BR; exemplos no Swagger
+- [x] `api/routers/predicao.py` com `APIRouter(prefix="/v1", tags=["Inferência"])`
+- [x] `POST /predict`: recebe `EntradaPixels`, converte para `np.ndarray (1, 784) float32`, chama `servico.prever`, devolve `SaidaPredicao` com **200**
+- [x] `POST /predict/lote`: até 100 amostras numa única chamada vetorizada a `predict_proba`
+- [x] Rotas **finas**: sem lógica de ML, só conversão + chamada ao serviço
+- [x] `summary`, `description` e `response_description` em pt-BR; exemplos no Swagger
 
 **Validação:** no `/docs`, "Try it out" com o exemplo → 200 e classe correta.
 **Commits:** `feat: implementa endpoint de predição por pixels` · `feat: implementa endpoint de predição em lote`
-
 ---
 
 #### TM-038 Implementar `POST /v1/predict/imagem`
@@ -822,11 +821,11 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
-| TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | Backlog |
+| TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | In review |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
-| TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | | In review |
+| TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | Backlog |
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | Backlog |
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | Backlog |
