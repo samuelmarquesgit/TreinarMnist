@@ -110,7 +110,6 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
     Returns:
         Dicionário com 'classe_prevista', 'probabilidades' e 'nome_modelo'.
     """
-    fachada = get_fachada()
     try:
         # Decodificar Base64 → numpy array
         img_bytes = base64.b64decode(imagem_base64)
@@ -124,8 +123,8 @@ def prever_imagem_usuario(imagem_base64: str, nome_modelo: str) -> dict[str, Any
         if np.all(vetor == 0):
             return {"erro": "Nenhum dígito detectado na imagem (canvas em branco?)."}
 
-        # Inferência
-        probabilidades = fachada.prever_probabilidades(nome_modelo, vetor)
+        # Inferência: a fachada (e o dataset) só é carregada depois de validar a imagem
+        probabilidades = get_fachada().prever_probabilidades(nome_modelo, vetor)
         classe_prevista = int(np.argmax(probabilidades[0]))
 
         return {

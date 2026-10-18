@@ -433,9 +433,9 @@ class FachadaPipelineIA:
         Returns:
             Dicionário ``{nome_modelo: ResultadoBenchmark}``.
         """
-        self._garantir_dados()
         if modelos_ids is not None and len(modelos_ids) == 0:
             raise ValueError("A lista de modelos não pode ser vazia.")
+        self._garantir_dados()
         ids = modelos_ids or FabricaModelos.listar_disponiveis()
         resultados: dict[str, ResultadoBenchmark] = {}
         ts_inicio = datetime.now(tz=timezone.utc).isoformat()
