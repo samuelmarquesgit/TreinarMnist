@@ -133,7 +133,7 @@ def test_painel_usa_a_api_quando_configurada(monkeypatch):
     ]
     monkeypatch.setattr(painel, "st", st)
     monkeypatch.setenv(cliente_api.VARIAVEL_URL, "http://api")
-    monkeypatch.setattr(cliente_api, "prever_via_api", lambda img, url: PREDICAO)
+    monkeypatch.setattr("src.frontend.cliente_api.prever_via_api", lambda img, url: PREDICAO)
     chamadas_locais = []
     monkeypatch.setattr(painel, "_inferir_com_modelo", lambda *a: chamadas_locais.append(1))
 
@@ -155,7 +155,7 @@ def test_painel_volta_ao_modelo_local_se_api_falhar(monkeypatch):
     ]
     monkeypatch.setattr(painel, "st", st)
     monkeypatch.setenv(cliente_api.VARIAVEL_URL, "http://api")
-    monkeypatch.setattr(cliente_api, "prever_via_api", lambda img, url: None)
+    monkeypatch.setattr("src.frontend.cliente_api.prever_via_api", lambda img, url: None)
     chamadas_locais = []
     monkeypatch.setattr(painel, "_inferir_com_modelo", lambda *a: chamadas_locais.append(1) or [])
 
