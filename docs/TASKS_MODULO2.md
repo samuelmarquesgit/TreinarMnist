@@ -514,14 +514,13 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 
 Para manter a independência, a API ganha **sua própria versão enxuta** do pipeline de `src/visao_computacional.py` (que só usa `cv2` + `numpy`).
 
-- [ ] `api/services/pre_processamento_imagem.py`: `bytes_para_vetor_mnist(conteudo: bytes) -> np.ndarray` com decodificação (`cv2.imdecode`), escala de cinza, inversão automática para fundo preto, binarização, bounding box, redimensionamento para 20×20 preservando a proporção, centralização em 28×28 por centro de massa e normalização [0, 1] → shape `(1, 784)`
-- [ ] Validar a assinatura do arquivo (*magic bytes* PNG/JPEG), além do `content_type` declarado
-- [ ] Erros → `ErroEntradaInvalida` (imagem corrompida, sem dígito, formato não suportado)
-- [ ] Teste de **paridade**: para `data/custom_digits/meu_numero.jpeg`, o vetor da API é igual (`np.allclose`) ao de `src.visao_computacional.processar_imagem_usuario` (só o teste importa `src/`)
+- [x] `api/services/pre_processamento_imagem.py`: `bytes_para_vetor_mnist(conteudo: bytes) -> np.ndarray` com decodificação (`cv2.imdecode`), escala de cinza, inversão automática para fundo preto, binarização, bounding box, redimensionamento para 20×20 preservando a proporção, centralização em 28×28 por centro de massa e normalização [0, 1] → shape `(1, 784)`
+- [x] Validar a assinatura do arquivo (*magic bytes* PNG/JPEG), além do `content_type` declarado
+- [x] Erros → `ErroEntradaInvalida` (imagem corrompida, sem dígito, formato não suportado)
+- [x] Teste de **paridade**: para `data/custom_digits/meu_numero.jpeg`, o vetor da API é igual (`np.allclose`) ao de `src.visao_computacional.processar_imagem_usuario` (só o teste importa `src/`)
 
 **Validação:** teste de paridade verde; teste com bytes aleatórios → `ErroEntradaInvalida`.
 **Commits:** `feat: implementa pré-processamento de imagem independente na api` · `test: verifica paridade com pipeline de visão do módulo 1`
-
 ---
 
 #### TM-035 Implementar o ciclo de vida (lifespan)
@@ -818,10 +817,10 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | #101 | Done |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | #102 | Done |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | #103 | Done |
-| TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
+| TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | In review |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
-| TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | In review |
+| TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | #108 | Done |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
