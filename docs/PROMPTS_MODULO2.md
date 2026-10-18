@@ -244,3 +244,20 @@
 - **Proibição técnica verificada por AST:** um teste lê o código de `api/routers/` e falha se aparecer `load`, `open`, `read_bytes`, `read_text` ou `carregar_artefato`.
 
 **Resultado:** 13 testes novos (128 em `tests/api/`), cobertura de 100% de `api/`. A API real carrega o modelo de produção no startup.
+
+---
+
+## P014 — TM-036 GET /health (#74)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-036-endpoint-health`
+
+**Prompt (resumo):**
+> Continuar: endpoint de monitoramento que responde 200 informando se o serviço está ativo e se o modelo está na RAM (Fase 5).
+
+**Decisões:**
+- **Sempre 200**, inclusive sem modelo: o serviço está de pé e o corpo diz se está apto (`"ok"`) ou não (`"degradado"`). É a convenção que Docker e Kubernetes usam para separar *liveness* de *readiness*.
+- **Coerência garantida pelo schema:** `SaidaSaude` recusa `status="ok"` com `modelo_carregado=False`.
+- **Sem inferência e sem disco:** o estado vem de dependências (`obter_servico_opcional`, `obter_tempo_atividade`, `obter_config`), não de `app.state` acessado na rota.
+- **`/` redireciona para `/docs`**, fora do Swagger: quem abre a URL base no navegador cai direto na documentação.
+
+**Resultado:** 9 testes novos (137 em `tests/api/`), cobertura de 100% de `api/`.
