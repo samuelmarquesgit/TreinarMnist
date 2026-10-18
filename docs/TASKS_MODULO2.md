@@ -640,11 +640,10 @@ Leva para produção o conceito de *overconfidence* da Fase 5 do Módulo 1.
 | `test_independencia.py` | Subprocesso `python -c "import api.main, sys; ..."` → nenhum de {`streamlit`, `torch`, `chromadb`, `sqlalchemy`, `pymongo`, `mlflow`, `src.fachada`} em `sys.modules` |
 | `test_integracao_modelo_real.py` | `@pytest.mark.skipif` se `models/modelo_mnist_v1.joblib` não existir; acurácia ≥ 0,95 em 500 amostras de teste |
 
-- [ ] Cobertura de `api/` ≥ **85%**
+- [x] Cobertura de `api/` ≥ **85%**
 
 **Validação:** `pytest tests/api --cov=api --cov-fail-under=85 -v` verde.
 **Commits:** `test: adiciona testes dos schemas da api` · `test: adiciona testes de códigos http da api` · `test: verifica carregamento único do modelo no lifespan` · `test: verifica independência de imports da api`
-
 ---
 
 #### TM-044 Criar o job de CI da API no GitHub Actions
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | #111 | Done |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
-| TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | In review |
-| TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | Backlog |
+| TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | #112 | Done |
+| TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | In review |
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | Backlog |
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | Backlog |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | Backlog |
