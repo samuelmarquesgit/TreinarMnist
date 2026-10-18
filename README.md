@@ -3,7 +3,7 @@
 [![CI Pipeline](https://github.com/samuelmarquesgit/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarquesgit/TreinarMnist/actions)
 [![Python](https://img.shields.io/badge/Python-3.12%E2%80%933.14-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688.svg)](https://fastapi.tiangolo.com/)
-[![Testes](https://img.shields.io/badge/testes-656%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
+[![Testes](https://img.shields.io/badge/testes-688%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
 [![Cobertura da API](https://img.shields.io/badge/cobertura%20api%2F-100%25-brightgreen.svg)](#9-testes-e-qualidade)
 [![Postman](https://img.shields.io/badge/Postman-30%20requisi%C3%A7%C3%B5es-orange.svg)](docs/postman/)
 
@@ -341,7 +341,7 @@ Relatório completo, métricas por dígito e matriz de confusão: [`docs/RELATOR
 
 ```bash
 pytest tests/api --cov=api                 # 272 testes da API, cobertura de 100%
-pytest tests/                              # 656 testes da plataforma inteira
+pytest tests/                              # 688 testes da plataforma inteira
 ruff check api/ pipeline_offline/ tests/   # lint
 mypy api/ --ignore-missing-imports         # tipagem
 ```
@@ -349,7 +349,7 @@ mypy api/ --ignore-missing-imports         # tipagem
 | Item | Resultado |
 |---|---|
 | Testes da API (`tests/api/`) | 272, **100% de cobertura** de `api/` (mínimo exigido no CI: 85%) |
-| Suíte completa | 656 testes (Módulo 1 + pipeline offline + API + CLI) |
+| Suíte completa | 688 testes (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
 | Integração com dados reais | API real acerta 97,2% de 500 imagens de teste (roda quando o cache do MNIST existe) |
 | Coleção Postman | 30 requisições, 148 asserções, 0 falhas |
 
@@ -424,13 +424,15 @@ O item 8 do edital restringe o uso de ferramentas de IA. Neste Módulo 2, o uso 
 - cada tarefa tem o pedido feito à IA, as decisões tomadas e o resultado registrados em [`docs/PROMPTS_MODULO2.md`](docs/PROMPTS_MODULO2.md);
 - os commits gerados com apoio da IA trazem o rodapé `Co-Authored-By`, deixando a autoria transparente no histórico.
 
-**Autor:** Samuel Marques · **Licença:** MIT · **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
+**Autor:** Samuel Marques · **Licença:** [MIT](LICENSE) · **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
 
 ---
 
 # Parte II — Módulo 1: Plataforma Empresarial MNIST (histórico)
 
-> Conteúdo entregue no Projeto Avaliativo do Módulo 1, preservado como referência da origem do modelo.
+> Conteúdo da primeira entrega, preservado como referência da origem do modelo. No curso, ela foi o
+> **Mini-Projeto do Módulo 2**; neste repositório é chamada de **"Módulo 1"** para diferenciá-la do
+> Projeto Avaliativo atual (Parte I).
 > O estado exato daquela entrega está na [Release `v1.0.0-modulo1`](https://github.com/samuelmarquesgit/TreinarMnist/releases/tag/v1.0.0-modulo1).
 
 > **Mini-Projeto Avaliativo — Módulo 2 (Desenvolvimento de IA para Análise Preditiva)**  
@@ -776,10 +778,10 @@ Consulte `docs/BACKLOG.md` para a lista completa priorizada (23 tasks TM-001 a T
 
 - **Desenvolvido por:** Samuel Marques
 - **Especialização:** Inteligência Artificial & Engenharia de Software com IA
-- **Licença:** MIT (arquivo `LICENSE` a ser adicionado — ver TM-017)
+- **Licença:** MIT (arquivo [`LICENSE`](LICENSE), adicionado na revisão final do Módulo 2)
 - **Repositório:** https://github.com/samuelmarquesgit/TreinarMnist
 - **Vídeo do Módulo 1:** https://www.youtube.com/watch?v=_m7E5uLl0XE 
 
 ---
 
-*Última atualização: 2026-09-11 — Baseado em auditoria técnica completa (305 testes passando localmente, Ruff/mypy limpos). Todos os requisitos do PDF mapeados e implementados (ver mapeamento na seção 4).*
+*Parte II (Módulo 1) — última atualização do conteúdo original: 2026-09-11. Baseado em auditoria técnica completa (305 testes passando localmente, Ruff/mypy limpos). Todos os requisitos do PDF mapeados e implementados (ver mapeamento na seção 4).*
