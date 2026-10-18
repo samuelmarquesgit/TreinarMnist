@@ -422,3 +422,21 @@
 - **Achado:** um `sed` converteu o `ci.yml` para LF e o commit apareceu como arquivo inteiro alterado; refeito com CRLF antes do push.
 
 **Resultado:** Pipeline com 5 jobs (completo, API, segurança, SonarCloud e gate); o novo job entra no CI Gate obrigatório.
+
+---
+
+## P024 — TM-045 Docker da API (#83)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-045-docker-api`
+
+**Prompt (resumo):**
+> Continuar: imagem Docker enxuta da API, serviço no compose e verificação no CI.
+
+**Decisões:**
+- **Separação das dependências:** `requirements-api-execucao.txt` (só o necessário para rodar, usado pela imagem) e `requirements-api.txt`, que o inclui com `-r` e acrescenta pytest, ruff e mypy.
+- **`Dockerfile.api` multi-stage** em `python:3.12-slim`: só `api/`, `models/` e as dependências de execução; usuário sem privilégios (uid 10001); `HEALTHCHECK` que só fica saudável com o modelo em memória.
+- **Achado de segurança:** não havia `.dockerignore`, e o `COPY . .` do Dockerfile do Módulo 1 colocava o **`.env` com senhas** dentro da imagem. Criado o `.dockerignore`.
+- **`docker compose up api`** sobe só a API (sem `depends_on` dos bancos); removido o atributo `version`, obsoleto.
+- **CI:** build, teste do contêiner (`/health`, usuário não-root, tamanho) e Trivy na imagem da API.
+
+**Resultado:** Imagem de **204 MB** (limite do plano: 600 MB); modelo carregado em 63 ms; Docker reporta *healthy*.
