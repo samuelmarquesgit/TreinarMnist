@@ -1,5 +1,7 @@
 # Prompt Mestre de Construção e Evolução — Plataforma Empresarial MNIST
 
+> 📌 **Documento histórico da primeira entrega** (Mini-Projeto do Módulo 2 do curso, set/2026), chamada de **"Módulo 1"** neste repositório para diferenciá-la do Projeto Avaliativo atual. O estado atual (API FastAPI) está no [README](../README.md) e em [`TASKS_MODULO2.md`](TASKS_MODULO2.md); os números e comandos abaixo refletem setembro/2026.
+
 > **Finalidade:** arquivo central de prompts para construir, manter e evoluir este projeto com apoio de IA, preservando autoria, revisão humana, segurança e reprodutibilidade.
 >
 > **Escopo:** prompts factuais baseados na inspeção do repositório em 2026-09-11. Não substitui a revisão humana nem autoriza geração cega de código.

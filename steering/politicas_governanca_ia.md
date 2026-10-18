@@ -7,9 +7,9 @@
 ## 1. Reprodutibilidade e Determinismo
 
 - **Semente Fixa Universal:** Todas as inicializações aleatórias devem utilizar `SEMENTE_ALEATORIA = 42` (`random_state=42`, `tf.random.set_seed(42)`, `torch.manual_seed(42)`).
-- **Versões Fixadas:** Todos os pacotes devem estar versionados com pins exatos (`==`) em `requirements.txt` (após TM-007). Faixas abertas (`>=`) proibidas em produção.
+- **Versões Fixadas:** Todos os pacotes devem estar versionados com pins exatos (`==`) em `requirements.txt` (feito no Módulo 2, TM-025). Faixas abertas (`>=`) proibidas em produção.
 - **Split Estratificado Obrigatório:** Toda divisão de dados deve usar `stratify=y` para garantir equilíbrio entre as 10 classes do MNIST.
-- **Ambiente Controlado:** CI/CD roda em Python 3.10 (definido em `.github/workflows/ci.yml`); desenvolvimento local alinhado via `pyenv`/`conda` (TM-007).
+- **Ambiente Controlado:** CI/CD e Docker rodam em Python 3.12 (definido em `.github/workflows/ci.yml` e `Dockerfile.api`; numpy 2.5, scipy 1.18 e scikit-learn 1.9 exigem ≥ 3.12); suporte local de 3.12 a 3.14; desenvolvimento local alinhado via `pyenv`/`conda` (TM-007).
 
 ---
 
@@ -35,9 +35,9 @@
 - **Destinos:** PostgreSQL (tabela `experimentos`), MongoDB (coleção `execucoes`), MLflow (opcional), CSV (`reports/resumo_metricas.csv`).
 
 ### 3.2. Versionamento de Modelos e Artefatos
-- **Serialização:** `joblib` (padrão) com fallback `pickle` — arquivos em `artifacts/modelos/<nome>.joblib`.
-- **Integridade:** Hash SHA-256 armazenado junto ao modelo (TM-016).
-- **Carregamento Seguro:** `recarregar_modelos_salvos()` valida hash antes de desserializar (TM-016).
+- **Serialização:** `joblib` — o modelo da API fica em `models/modelo_mnist_v1.joblib` (versionado, `Pipeline` + metadados); os modelos do painel do Módulo 1 ficam em `artifacts/modelos/<nome>.joblib` (fora do Git).
+- **Integridade:** Hash SHA-256 em `models/modelo_mnist_v1.sha256`, gerado pelo pipeline offline (TM-028).
+- **Carregamento Seguro:** `api/services/carregador_artefato.py` valida o SHA-256, o formato e os metadados antes de usar o modelo (TM-033). O `recarregar_modelos_salvos()` do Módulo 1 **ainda não** valida hash (TM-016 parcial).
 - **Rastreabilidade:** Cada modelo salvo vinculado ao `experimento_id` correspondente no PostgreSQL.
 
 ### 3.3. Logs Estruturados

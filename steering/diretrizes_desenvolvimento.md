@@ -91,7 +91,7 @@
 
 ## 7. Git e Commits
 
-- **Git Flow:** `feature/tm-XXX-descricao` → PR → `develop` → PR → `main`.
+- **Git Flow:** `<tipo>/tm-XXX-descricao` (tipos: `feat`, `fix`, `docs`, `test`, `ci`, `chore`) → PR → `develop` → PR → `main`; `develop` e `main` só aceitam merge com o check **CI Gate** verde.
 - **Branches de Feature:** Preservadas pós-merge (regra do edital).
 - **Commits:** Imperativo pt-BR (`feat: implementa...`, `fix: corrige...`, `docs: atualiza...`).
 - **PR Template:** Checklist DoD (testes, lint, mypy, coverage ≥ 60%, security, docs).
