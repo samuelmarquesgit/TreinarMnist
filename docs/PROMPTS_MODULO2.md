@@ -368,3 +368,20 @@
 - **Mesmos números do relatório:** um teste compara a resposta da API real com `models/metricas_modelo_v1.json`.
 
 **Resultado:** 6 testes novos (238 em `tests/api/`), cobertura de 100%.
+
+---
+
+## P021 — TM-042 Middleware de rastreabilidade (#80)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-042-middleware-observabilidade`
+
+**Prompt (resumo):**
+> Continuar: middleware que gera `X-Request-ID`, mede o tempo de resposta e registra uma linha de log por requisição, sem nunca registrar os pixels.
+
+**Decisões:**
+- **Um id por requisição, compartilhado:** o middleware grava o id em `request.state`, e o handler de 500 (TM-040) usa o mesmo. O id do corpo do erro, do cabeçalho e da linha de log é sempre o mesmo, inclusive no 500.
+- **Log de acesso só com metadados** (método, rota, status, latência e id). Um teste envia pixels e confirma que nada do corpo aparece no log, por privacidade e para não inflar o log.
+- **`X-Tempo-Processamento-ms`** em toda resposta, útil para o Postman e para monitoramento.
+- **CORS restrito** ao painel Streamlit local (`localhost:8501`), preparando a TM-047; origens desconhecidas não recebem o cabeçalho.
+
+**Resultado:** 9 testes novos (247 em `tests/api/`), cobertura de 100% de `api/`.
