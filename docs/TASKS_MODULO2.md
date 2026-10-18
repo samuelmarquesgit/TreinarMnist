@@ -726,13 +726,12 @@ Nova seção principal no topo (o conteúdo do Módulo 1 vira uma seção de his
 #### TM-049 Criar exemplos executáveis da API
 **docs · P1 · EPIC-17 · `modulo-2`, `api` · `docs/tm-049-exemplos-api` · TM-037**
 
-- [ ] `docs/exemplos_api/predict_digito_7.json` (gerado a partir de uma amostra real de teste)
-- [ ] `docs/exemplos_api/erro_422_pixel_fora_faixa.json`, `erro_422_tamanho_errado.json`, `erro_400_vetor_vazio.json`
-- [ ] `docs/exemplos_api/requisicoes.http` (extensão REST Client do VS Code) com todas as chamadas
-- [ ] `scripts/gerar_payload_exemplo.py` para regenerar os JSON
+- [x] `docs/exemplos_api/predict_digito_7.json` (gerado a partir de uma amostra real de teste)
+- [x] `docs/exemplos_api/erro_422_pixel_fora_faixa.json`, `erro_422_tamanho_errado.json`, `erro_400_vetor_vazio.json`
+- [x] `docs/exemplos_api/requisicoes.http` (extensão REST Client do VS Code) com todas as chamadas
+- [x] `scripts/gerar_payload_exemplo.py` para regenerar os JSON
 
 **Commits:** `docs: adiciona payloads de exemplo da api` · `feat: adiciona script gerador de payload de exemplo`
-
 ---
 
 #### TM-052 Criar a coleção Postman completa com testes automatizados
@@ -822,9 +821,9 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | #114 | Done |
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | #115 | Done |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | #116 | Done |
-| TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | In review |
+| TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | #117 | Done |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |
-| TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | | Backlog |
+| TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | | In review |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | Backlog |
 | TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | Backlog |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | | Backlog |
