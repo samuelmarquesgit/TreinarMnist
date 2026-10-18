@@ -29,7 +29,7 @@ SQLAlchemy==2.0.52
 psycopg2-binary==2.9.12
 
 # Banco de Dados Não-Relacional (MongoDB)
-pymongo==4.18.0
+pymongo==4.18.3
 
 # Banco de Dados Vetorial & RAG
 chromadb==1.5.9
@@ -41,7 +41,7 @@ pydantic==2.13.5
 pydantic-settings==2.15.0
 
 # Protocolo MCP (Model Context Protocol) & Utilidades
-mcp==1.29.1
+mcp==1.30.0
 python-dotenv==1.2.3
 pyyaml==6.0.3
 
