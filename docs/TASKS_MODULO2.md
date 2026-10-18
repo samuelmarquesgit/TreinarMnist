@@ -614,13 +614,12 @@ Leva para produção o conceito de *overconfidence* da Fase 5 do Módulo 1.
 #### TM-042 Adicionar middleware de rastreabilidade e logging
 **feat · P2 · EPIC-15 · `api` · `feat/tm-042-middleware-observabilidade` · TM-040** (relaciona-se à TM-018)
 
-- [ ] Middleware HTTP: gera `X-Request-ID` (ou reaproveita o recebido), mede o tempo e devolve `X-Tempo-Processamento-ms`
-- [ ] Log estruturado por requisição: método, rota, status, latência, `id_requisicao`. **Nunca registrar os pixels**
-- [ ] Opcional: `CORSMiddleware` liberando `http://localhost:8501` (Streamlit)
+- [x] Middleware HTTP: gera `X-Request-ID` (ou reaproveita o recebido), mede o tempo e devolve `X-Tempo-Processamento-ms`
+- [x] Log estruturado por requisição: método, rota, status, latência, `id_requisicao`. **Nunca registrar os pixels**
+- [x] Opcional: `CORSMiddleware` liberando `http://localhost:8501` (Streamlit)
 
 **Validação:** os headers aparecem na resposta; o log tem uma linha por requisição.
 **Commits:** `feat: implementa middleware de id de requisição e tempo de resposta`
-
 ---
 
 ### EPIC-16 / S3: Qualidade, CI/CD e Docker
@@ -820,10 +819,10 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | #108 | Done |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | #110 | Done |
-| TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | In review |
+| TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | #111 | Done |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
-| TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | Backlog |
+| TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | In review |
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | Backlog |
 | TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | Backlog |
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | Backlog |
