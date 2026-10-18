@@ -473,3 +473,20 @@
 - **Achado:** um teste falhava só na suíte completa porque o `test_frontend` recarrega os módulos de `src.frontend`; o patch passou a usar o caminho em texto.
 
 **Resultado:** 16 testes, incluindo a conversa com a API real via `TestClient`; os 100 testes de frontend do Módulo 1 continuam passando.
+
+---
+
+## P027 — TM-049 Exemplos executáveis da API (#87)
+
+**Data:** 2026-10-17 · **Branch:** `docs/tm-049-exemplos-api`
+
+**Prompt (resumo):**
+> Continuar: payloads JSON de exemplo, arquivos de upload e requisições prontas, gerados por script.
+
+**Decisões:**
+- **Gerados por script** (`scripts/gerar_payload_exemplo.py`), de forma determinística; o lote usa dígitos reais do teste (0, 3, 9) quando o cache do MNIST existe.
+- **Cobrem sucesso e erro:** 7 e lote (200), cinco casos de 422, vetor vazio (400) e três arquivos de upload inválidos.
+- **`requisicoes.http`** para a extensão REST Client do VS Code, incluindo o 500 com a rota de diagnóstico.
+- **Documentação que não envelhece:** um teste envia cada exemplo para a API e confere o status e o tipo de erro prometidos.
+
+**Resultado:** 14 testes; o lote gerado é classificado como [0, 3, 9].
