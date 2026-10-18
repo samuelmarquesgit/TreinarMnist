@@ -475,10 +475,10 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-031 Definir os schemas Pydantic de entrada
 **feat · P0 · EPIC-15 · `api`, `fase-4` · `feat/tm-031-schemas-entrada` · TM-030**
 
-- [ ] `api/schemas/entrada.py`: `EntradaPixels` e `EntradaLote` conforme §4.3
-- [ ] Cada pixel com `Annotated[float, Field(ge=0.0, le=1.0, allow_inf_nan=False)]`; lista com `min_length=784`, `max_length=784`
-- [ ] `model_config = ConfigDict(extra="forbid", json_schema_extra={"examples": [...]})`: campos desconhecidos → 422; exemplo visível no Swagger
-- [ ] `description` em pt-BR em todos os campos
+- [x] `api/schemas/entrada.py`: `EntradaPixels` e `EntradaLote` conforme §4.3, com `para_matriz()` para o formato `(n, 784) float32`
+- [x] Cada pixel com `Annotated[float, Field(ge=0.0, le=1.0, allow_inf_nan=False)]`; lista com `min_length=784`, `max_length=784`. Acrescentado **`strict=True`**: sem ele o Pydantic converteria `"0.5"` (texto) em número
+- [x] `model_config = ConfigDict(extra="forbid", json_schema_extra={"examples": [...]})`: campos desconhecidos → 422; exemplo visível no Swagger (**dígito 7 real** do teste, em `api/schemas/exemplos.py`, classificado como 7 pelo modelo)
+- [x] `description` em pt-BR em todos os campos
 
 **Validação:** testes unitários dos schemas (sem subir a API): texto → `ValidationError`; 783 itens → erro; `1.01` → erro; `NaN` → erro; campo extra → erro.
 **Commits:** `feat: implementa schema EntradaPixels com restrições de faixa` · `feat: implementa schema EntradaLote com limite de tamanho`
@@ -821,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | #97 | Done |
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | #98 | Done |
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | #99 | Done |
-| TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | In review |
-| TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | Backlog |
+| TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | #100 | Done |
+| TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | In review |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | Backlog |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | Backlog |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |

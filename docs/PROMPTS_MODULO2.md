@@ -168,3 +168,21 @@
 
 **Resultado:** `uvicorn api.main:app` sobe; `/docs`, `/redoc` e `/openapi.json` respondem 200. 24 testes novos em `tests/api/` (383 na suíte), **cobertura de 100% de `api/`**.
 
+---
+
+## P010 — TM-031 Schemas de entrada (#69)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-031-schemas-entrada`
+
+**Prompt (resumo):**
+> Seguir: schemas Pydantic de entrada com `Field` (faixas e tamanhos), gerando 422 automático para dados inválidos (Fase 4).
+
+**Decisões:**
+- **`strict=True` nos pixels.** No modo padrão, o Pydantic converte a string `"0.5"` em `0.5` e `true` em `1.0`. O edital exige que texto em campo numérico seja recusado; o modo estrito faz isso e continua aceitando os inteiros `0` e `1` do JSON.
+- **`allow_inf_nan=False`** para recusar `NaN` e `Infinity`, inclusive quando chegam como literais no JSON.
+- **`extra="forbid"`**: `{"pixel": [...]}` (nome errado) gera 422 em vez de ser ignorado.
+- **Exemplo do Swagger é um dígito real** (primeira imagem de teste, rótulo 7), disposto em 28 linhas no código. O "Try it out" já devolve uma predição correta na demonstração; um teste garante que o modelo real o classifica como 7.
+- **Ajuste de tipagem:** `list` é invariante no mypy (`list[float]` ≠ `list[JsonValue]`); o exemplo foi tipado como `JsonDict`.
+
+**Resultado:** 27 testes de schema sem subir a API, cobrindo todos os casos de 422 do edital (texto, string numérica, booleano, nulo, fora da faixa, NaN/Infinity, 783/785 pixels, campo extra, lote vazio ou com 101 itens). 51 testes em `tests/api/`, cobertura de 100% de `api/`.
+
