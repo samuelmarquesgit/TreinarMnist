@@ -671,14 +671,13 @@ Adicionar ao `.github/workflows/ci.yml` (sem alterar os jobs existentes):
 #### TM-045 Containerizar a API
 **feat · P2 · EPIC-16 · `api` · `feat/tm-045-docker-api` · TM-037**
 
-- [ ] `Dockerfile.api` multi-stage, `python:3.12-slim`, usuário não-root, instala **apenas** `requirements-api.txt`, copia `api/` e `models/`, `EXPOSE 8000`, `HEALTHCHECK` via `/health`, `CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]`
-- [ ] `.dockerignore` (excluir `data/`, `.venv/`, `htmlcov/`, `chroma_db/`, `artifacts/`, `docs/diversos/`)
-- [ ] Serviço `api` no `docker-compose.yml` (sem `depends_on` dos bancos, já que a API é independente)
-- [ ] CI: `docker build -f Dockerfile.api .` no job de segurança (Trivy)
+- [x] `Dockerfile.api` multi-stage, `python:3.12-slim`, usuário não-root, instala **apenas** `requirements-api.txt`, copia `api/` e `models/`, `EXPOSE 8000`, `HEALTHCHECK` via `/health`, `CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]`
+- [x] `.dockerignore` (excluir `data/`, `.venv/`, `htmlcov/`, `chroma_db/`, `artifacts/`, `docs/diversos/`)
+- [x] Serviço `api` no `docker-compose.yml` (sem `depends_on` dos bancos, já que a API é independente)
+- [x] CI: `docker build -f Dockerfile.api .` no job de segurança (Trivy)
 
 **Validação:** `docker compose up api` → `curl localhost:8000/health` 200; imagem < 600 MB.
 **Commits:** `feat: adiciona dockerfile enxuto da api` · `chore: adiciona serviço api ao docker-compose`
-
 ---
 
 #### TM-046 Integrar a API ao `main.py` existente e corrigir o modo MCP
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | #112 | Done |
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | #113 | Done |
-| TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | | In review |
-| TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | Backlog |
+| TM-044 | CI da API | 16 | P0 | S3 | #82 | `ci/tm-044-ci-api` | #114 | Done |
+| TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | | In review |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | | Backlog |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | | Backlog |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |

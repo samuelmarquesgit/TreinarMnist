@@ -6,21 +6,8 @@
 #   .venv\Scripts\activate        (Windows)  |  source .venv/bin/activate  (Linux/macOS)
 #   pip install -r requirements-api.txt
 
-# Serviço web (ASGI)
-fastapi==0.141.1
-uvicorn[standard]==0.52.4
-python-multipart==0.0.32
-
-# Validação e configuração
-pydantic==2.13.5
-pydantic-settings==2.15.0
-
-# Inferência: a versão do scikit-learn deve ser a mesma que serializou o artefato em models/
-numpy==2.5.3
-scipy==1.18.1
-scikit-learn==1.9.0
-joblib==1.6.0
-opencv-python-headless==5.0.0.93
+# Execução da API (FastAPI, Uvicorn, Pydantic, scikit-learn, NumPy, OpenCV...)
+-r requirements-api-execucao.txt
 
 # Testes e qualidade
 httpx==0.28.1

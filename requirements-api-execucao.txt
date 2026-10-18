@@ -1,0 +1,19 @@
+# Dependências de EXECUÇÃO da API de inferência MNIST (usadas pela imagem Docker Dockerfile.api).
+# Para desenvolver e rodar os testes, instale requirements-api.txt (que inclui este arquivo).
+# Python suportado: 3.12 a 3.14 (numpy 2.5 e scipy 1.18 exigem >= 3.12).
+
+# Serviço web (ASGI)
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32
+
+# Validação e configuração
+pydantic==2.13.5
+pydantic-settings==2.15.0
+
+# Inferência: a versão do scikit-learn deve ser a mesma que serializou o artefato em models/
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.0
+joblib==1.6.0
+opencv-python-headless==5.0.0.93

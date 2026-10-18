@@ -1,0 +1,36 @@
+# Imagem enxuta e independente da API de inferência MNIST (Módulo 2).
+# Contém só o pacote api/, o artefato em models/ e as dependências de execução:
+# sem torch, streamlit, bancos de dados ou MLflow.
+#
+#   docker build -f Dockerfile.api -t mnist-api .
+#   docker run --rm -p 8000:8000 mnist-api        →  http://localhost:8000/docs
+
+# ── Estágio 1: instala as dependências num prefixo isolado ─────────────────────
+FROM python:3.12-slim AS construcao
+
+WORKDIR /construcao
+COPY requirements-api-execucao.txt .
+RUN pip install --no-cache-dir --prefix=/instalacao -r requirements-api-execucao.txt
+
+# ── Estágio 2: imagem final, sem ferramentas de build ──────────────────────────
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Usuário sem privilégios (boa prática de segurança)
+RUN useradd --create-home --uid 10001 api
+
+WORKDIR /app
+COPY --from=construcao /instalacao /usr/local
+COPY --chown=api:api api/ ./api/
+COPY --chown=api:api models/ ./models/
+
+USER api
+EXPOSE 8000
+
+# Saudável só quando o modelo está em memória (status "ok"); usa Python porque a imagem slim não tem curl
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import json, sys, urllib.request; d = json.load(urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)); sys.exit(0 if d['modelo_carregado'] else 1)"
+
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
