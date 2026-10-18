@@ -335,3 +335,20 @@
 - **Ajuste de tipagem:** os stubs do OpenCV devolvem tipos genéricos; `.astype(np.uint8, copy=False)` deixa o tipo explícito sem custo.
 
 **Resultado:** **paridade numérica exata** (diferença máxima 0,0) com o Módulo 1 na imagem própria e numa imagem sintética. O modelo real reconhece `meu_numero.jpeg` como 6 (confiança 0,986), conferido visualmente. 19 testes novos (218 em `tests/api/`), cobertura de 100%. O teste de paridade só depende de `cv2` e `numpy`, então roda também no job enxuto do CI.
+
+---
+
+## P019 — TM-038 POST /v1/predict/imagem (#76)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-038-endpoint-predict-imagem`
+
+**Prompt (resumo):**
+> Continuar: inferência a partir de uma imagem enviada pelo usuário (Desafio C do Módulo 1 como endpoint).
+
+**Decisões:**
+- **Upload `multipart/form-data`** com `UploadFile`; a rota lê no máximo `limite + 1` bytes, então um arquivo gigante é recusado sem ser carregado inteiro na memória.
+- **Validação no serviço** (`preparar_upload`), não na rota: arquivo vazio, acima do limite (`MNIST_API_TAMANHO_MAX_UPLOAD_BYTES`), `Content-Type` não suportado e, por fim, a assinatura real do arquivo. Um `.txt` renomeado para `.png` é recusado.
+- **Todos esses casos são 400** com um `tipo` específico no detalhe (`arquivo_vazio`, `arquivo_grande`, `tipo_invalido`, `formato_invalido`, `imagem_corrompida`, `imagem_vazia`); sem o campo `arquivo`, o FastAPI devolve 422.
+- **Imagem do Bruno aproveitada:** `bruno_7_com_barra.png`, do PR #56 (fechado), versionada com crédito no commit (`Co-authored-by`). Conferida byte a byte contra o original do PR.
+
+**Resultado:** na API real, `meu_numero.jpeg` → 6 e `bruno_7_com_barra.png` → 7, ambas com confiança acima de 0,9. 14 testes novos (232 em `tests/api/`), cobertura de 100%.

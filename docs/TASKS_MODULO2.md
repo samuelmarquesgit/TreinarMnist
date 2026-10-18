@@ -563,14 +563,13 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-038 Implementar `POST /v1/predict/imagem`
 **feat · P1 · EPIC-15 · `api`, `fase-5` · `feat/tm-038-endpoint-predict-imagem` · TM-034, TM-037**
 
-- [ ] `arquivo: UploadFile = File(..., description="Imagem PNG ou JPEG de um dígito")`
-- [ ] Validar o `content_type` ∈ {`image/png`, `image/jpeg`} e o tamanho ≤ `tamanho_max_upload_bytes` → senão **400**
-- [ ] `await arquivo.read()` → `bytes_para_vetor_mnist` → `servico.prever`
-- [ ] Usar como exemplo de demonstração a imagem própria do Módulo 1 (`data/custom_digits/meu_numero.jpeg`) e incluir 2 ou 3 novas (ex.: `digito_3_caneta.jpg`, `digito_7_papel.png`)
+- [x] `arquivo: UploadFile = File(..., description="Imagem PNG ou JPEG de um dígito")`
+- [x] Validar o `content_type` ∈ {`image/png`, `image/jpeg`} e o tamanho ≤ `tamanho_max_upload_bytes` → senão **400**
+- [x] `await arquivo.read()` → `bytes_para_vetor_mnist` → `servico.prever`
+- [x] Usar como exemplo de demonstração a imagem própria do Módulo 1 (`data/custom_digits/meu_numero.jpeg`) e incluir 2 ou 3 novas (ex.: `digito_3_caneta.jpg`, `digito_7_papel.png`) (incluída `bruno_7_com_barra.png`, aproveitada do PR #56; fotos novas do autor podem ser acrescentadas antes do vídeo)
 
 **Validação:** upload pelo Swagger → 200; upload de `.txt` → 400; upload de imagem em branco → 400.
 **Commits:** `feat: implementa endpoint de predição por upload de imagem` · `chore: adiciona imagens próprias de exemplo para a api`
-
 ---
 
 #### TM-039 Implementar `GET /v1/modelo`
@@ -817,11 +816,11 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | #101 | Done |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | #102 | Done |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | #103 | Done |
-| TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | In review |
+| TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | #109 | Done |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | #108 | Done |
-| TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
+| TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | In review |
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |
 | TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | #106 | Done |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | #107 | Done |
