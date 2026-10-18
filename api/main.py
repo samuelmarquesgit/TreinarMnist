@@ -8,10 +8,19 @@ Execução (a partir da raiz do projeto)::
 
 from __future__ import annotations
 
+import time
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 
 from api.core.config import Configuracoes, obter_configuracoes
-from api.core.registrador_log import configurar_logger
+from api.core.excecoes import ErroArtefatoInvalido
+from api.core.registrador_log import configurar_logger, obter_logger
+from api.services.carregador_artefato import carregar_artefato
+from api.services.servico_inferencia import ServicoInferencia
+
+logger = obter_logger("main")
 
 DESCRICAO = """
 API REST de **classificação de dígitos manuscritos (0–9)** treinada no MNIST.
@@ -33,6 +42,51 @@ TAGS_OPENAPI = [
 ]
 
 
+@asynccontextmanager
+async def ciclo_de_vida(aplicacao: FastAPI) -> AsyncIterator[None]:
+    """Carrega o modelo **uma única vez** na inicialização e o libera no encerramento (Fase 3).
+
+    O artefato vai para ``app.state`` e toda requisição reutiliza o mesmo objeto em memória:
+    nenhuma rota lê o disco. Se o carregamento falhar, a API **continua de pé** em estado
+    degradado: ``/health`` responde 200 com ``"status": "degradado"`` e as rotas de inferência
+    respondem 503.
+
+    Args:
+        aplicacao: A aplicação que está iniciando.
+
+    Yields:
+        Controle de volta ao Uvicorn enquanto a aplicação atende requisições.
+    """
+    config: Configuracoes = aplicacao.state.config
+    aplicacao.state.inicio = time.monotonic()
+    aplicacao.state.artefato = None
+    aplicacao.state.servico = None
+    inicio = time.perf_counter()
+    try:
+        artefato = carregar_artefato(
+            config.caminho_modelo, config.caminho_checksum, config.caminho_metricas
+        )
+        aplicacao.state.artefato = artefato
+        aplicacao.state.servico = ServicoInferencia(artefato.pipeline, artefato.metadados)
+        logger.info(
+            "Modelo %s v%s carregado em %.0f ms (sha256 %s…).",
+            artefato.metadados["nome_modelo"],
+            artefato.metadados["versao_modelo"],
+            (time.perf_counter() - inicio) * 1000,
+            artefato.sha256[:12],
+        )
+    except ErroArtefatoInvalido as exc:
+        logger.error("Modelo NÃO carregado (%s). API em estado degradado.", exc.mensagem)
+    except Exception:  # falha inesperada: registra e mantém a API no ar
+        logger.exception("Falha inesperada ao carregar o modelo. API em estado degradado.")
+
+    yield
+
+    aplicacao.state.servico = None
+    aplicacao.state.artefato = None
+    logger.info("API encerrada; modelo liberado da memória.")
+
+
 def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
     """Monta a aplicação FastAPI (fábrica usada pelo Uvicorn e pelos testes).
 
@@ -50,6 +104,7 @@ def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
         description=DESCRICAO,
         openapi_tags=TAGS_OPENAPI,
         license_info={"name": "MIT"},
+        lifespan=ciclo_de_vida,
     )
     aplicacao.state.config = config
     return aplicacao
