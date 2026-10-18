@@ -488,14 +488,13 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-032 Definir os schemas de saída e de erro
 **feat · P0 · EPIC-15 · `api`, `fase-4` · `feat/tm-032-schemas-saida` · TM-031**
 
-- [ ] `api/schemas/saida.py`: `SaidaPredicao`, `SaidaLote`, `SaidaSaude`, `SaidaModelo` (§4.3) com `Field` em **todos** os campos (o edital pune Pydantic usado só na entrada)
-- [ ] `@model_validator` em `SaidaPredicao`: `probabilidades` com 10 itens e soma ∈ [0,99; 1,01]; `classe_prevista` igual ao argmax
-- [ ] `api/schemas/erro.py`: `SaidaErro`
-- [ ] Usar `response_model=` em todas as rotas e `responses={400: {"model": SaidaErro}, ...}` para documentar os erros no Swagger
+- [x] `api/schemas/saida.py`: `SaidaPredicao`, `SaidaLote`, `SaidaSaude`, `SaidaModelo` (§4.3) com `Field` em **todos** os campos (o edital pune Pydantic usado só na entrada)
+- [x] `@model_validator` em `SaidaPredicao`: `probabilidades` com 10 itens e soma ∈ [0,99; 1,01]; `classe_prevista` igual ao argmax
+- [x] `api/schemas/erro.py`: `SaidaErro`
+- [ ] Usar `response_model=` em todas as rotas e `responses={400: {"model": SaidaErro}, ...}` para documentar os erros no Swagger (preparado: `RESPOSTAS_ERRO_PREDICAO` em `api/schemas/erro.py`; aplicado nas rotas da TM-036/037)
 
 **Validação:** o `/docs` mostra os schemas de resposta, inclusive os de erro; teste unitário do validador de soma.
 **Commits:** `feat: implementa schemas de saída da predição e saúde` · `feat: implementa contrato único de erro da api`
-
 ---
 
 #### TM-033 Implementar o serviço de inferência
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | #98 | Done |
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | #99 | Done |
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | #100 | Done |
-| TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | In review |
-| TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | Backlog |
+| TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | #101 | Done |
+| TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | In review |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | Backlog |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | | Backlog |

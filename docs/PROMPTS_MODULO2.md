@@ -186,3 +186,21 @@
 
 **Resultado:** 27 testes de schema sem subir a API, cobrindo todos os casos de 422 do edital (texto, string numérica, booleano, nulo, fora da faixa, NaN/Infinity, 783/785 pixels, campo extra, lote vazio ou com 101 itens). 51 testes em `tests/api/`, cobertura de 100% de `api/`.
 
+---
+
+## P011 — TM-032 Schemas de saída e contrato de erro (#70)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-032-schemas-saida`
+
+**Prompt (resumo):**
+> Continuar todas as tarefas até o fim. TM-032: schemas de saída com `Field` em todos os campos e contrato único de erro.
+
+**Decisões:**
+- **Schemas de saída também validam.** `SaidaPredicao` recusa probabilidades que não somam 1 (±0,01) e classe ou confiança que não batem com o argmax; `SaidaSaude` recusa `status="ok"` sem modelo. Se o serviço produzir algo incoerente, a API falha em vez de responder errado.
+- **Probabilidades como lista de 10 posições** (índice = dígito), com `min_length`/`max_length` e cada valor em [0, 1].
+- **Entropia normalizada em [0, 1]**, para o limiar da configuração ter o mesmo significado em qualquer número de classes.
+- **Contrato único de erro** (`SaidaErro` + `DetalheErro` tipado, em vez de `list[dict]`), com código estável em MAIÚSCULAS e `id_requisicao`. `RESPOSTAS_ERRO_PREDICAO` já documenta 400/422/500/503 para as rotas.
+- **Exemplos do Swagger testados contra o próprio schema**, para evitar documentação com exemplo inválido.
+- **Falha de fixture corrigida:** `0,01×9 + 0,9 = 0,99` estourava a tolerância por erro de ponto flutuante; a base do teste passou a somar exatamente 1.
+
+**Resultado:** 32 testes novos; 83 em `tests/api/`, cobertura de 100% de `api/`. `SaidaModelo` validado com o JSON real de métricas da TM-029.
