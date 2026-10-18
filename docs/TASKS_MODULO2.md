@@ -709,18 +709,17 @@ Demonstração forte para o vídeo: o Canvas do Laboratório de Visão envia o d
 
 Nova seção principal no topo (o conteúdo do Módulo 1 vira uma seção de histórico), cobrindo **os 6 itens do edital 5.2**:
 
-- [ ] **1. Nome e resumo:** o problema de negócio (digitalização automática de dígitos manuscritos: formulários, CEPs, cheques)
-- [ ] **2. Origem do modelo:** Opção A, MLP do projeto *Plataforma Empresarial MNIST* (Módulo 1), aprimorado com split de validação e serialização em Pipeline
-- [ ] **3. Tecnologias:** tabela com bibliotecas **e versões** (FastAPI, Uvicorn, Pydantic, pydantic-settings, scikit-learn, NumPy, OpenCV, joblib, pytest)
-- [ ] **4. Instalação e execução:** `python -m venv .venv` → ativar (Windows/Linux) → `pip install -r requirements-api.txt` → (opcional) `python -m pipeline_offline.treinar_e_serializar` → `uvicorn api.main:app --reload` → abrir `http://localhost:8000/docs`; mais a alternativa Docker
-- [ ] **5. Documentação da API:** tabela de endpoints, payloads JSON de exemplo (sucesso e erros 400/422/503), link `/docs` e `/redoc`, prints do Swagger em `docs/img/`
-- [ ] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0`
-- [ ] Extras: diagrama Mermaid da §3.2 (**sem parênteses nos rótulos**), métricas da TM-029, decisões técnicas (independência, 503, guardrail), limitações e melhorias futuras, instruções da coleção Postman (TM-052)
-- [ ] Seção **"Uso de Inteligência Artificial"**: o edital (item 8) restringe o uso de IA; registrar que o uso como assistente de desenvolvimento foi **autorizado pelo professor**, com revisão humana de todo o código e o histórico de prompts em `docs/prompt.md`
+- [x] **1. Nome e resumo:** o problema de negócio (digitalização automática de dígitos manuscritos: formulários, CEPs, cheques)
+- [x] **2. Origem do modelo:** Opção A, MLP do projeto *Plataforma Empresarial MNIST* (Módulo 1), aprimorado com split de validação e serialização em Pipeline
+- [x] **3. Tecnologias:** tabela com bibliotecas **e versões** (FastAPI, Uvicorn, Pydantic, pydantic-settings, scikit-learn, NumPy, OpenCV, joblib, pytest)
+- [x] **4. Instalação e execução:** `python -m venv .venv` → ativar (Windows/Linux) → `pip install -r requirements-api.txt` → (opcional) `python -m pipeline_offline.treinar_e_serializar` → `uvicorn api.main:app --reload` → abrir `http://localhost:8000/docs`; mais a alternativa Docker
+- [x] **5. Documentação da API:** tabela de endpoints, payloads JSON de exemplo (sucesso e erros 400/422/503), link `/docs` e `/redoc`, prints do Swagger em `docs/img/`
+- [ ] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0` (seção pronta
+- [x] Extras: diagrama Mermaid da §3.2 (**sem parênteses nos rótulos**), métricas da TM-029, decisões técnicas (independência, 503, guardrail), limitações e melhorias futuras, instruções da coleção Postman (TM-052)
+- [x] Seção **"Uso de Inteligência Artificial"**: o edital (item 8) restringe o uso de IA; registrar que o uso como assistente de desenvolvimento foi **autorizado pelo professor**, com revisão humana de todo o código e o histórico de prompts em `docs/prompt.md`
 
 **Validação:** revisão contra o checklist 5.2; os diagramas Mermaid renderizam no GitHub.
 **Commits:** `docs: adiciona seção da api fastapi ao readme` · `docs: adiciona exemplos de payload e prints do swagger`
-
 ---
 
 #### TM-049 Criar exemplos executáveis da API
@@ -821,11 +820,11 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-045 | Docker da API | 16 | P2 | S3 | #83 | `feat/tm-045-docker-api` | #115 | Done |
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | #116 | Done |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | #117 | Done |
-| TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |
+| TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | In review |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | Backlog |
 | TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | Backlog |
-| TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | | In review |
+| TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
 
 ### Grafo de dependências (caminho crítico em destaque)
 

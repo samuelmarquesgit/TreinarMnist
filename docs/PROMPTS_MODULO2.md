@@ -509,3 +509,22 @@
 - **Job `api-postman` no CI** com newman 6.2.3, relatório JUnit e resumo no Actions.
 
 **Resultado:** newman local: **30/30 requisições, 148/148 asserções, 0 falhas** na primeira execução.
+
+---
+
+## P029 — TM-048 README do Módulo 2 (#86)
+
+**Data:** 2026-10-17 · **Branch:** `docs/tm-048-readme-modulo2`
+
+**Prompt (resumo):**
+> Continuar: README com os 6 itens do edital 5.2, exemplos de JSON, link do /docs e espaço para o link do vídeo.
+
+**Decisões:**
+- **Parte I nova (Módulo 2)** com os 6 itens obrigatórios e extras (arquitetura com Mermaid, decisões por fase com a forma de comprovação, métricas, testes e CI, Postman, Git Flow, limitações e uso de IA autorizado). **Parte II** preserva o README do Módulo 1 como histórico, com títulos rebaixados e informações desatualizadas corrigidas.
+- **Números reais:** a resposta de exemplo e o tempo de inferência (mediana de 0,31 ms) foram medidos na API, e não estimados.
+- **Prints reais do Swagger** gerados com o Edge em modo headless.
+- **Achado ao gerar os prints:** o Swagger mostrava o exemplo de erro 422 também na resposta 400 (o `SaidaErro` tinha um único exemplo). Corrigido com um exemplo por status e um teste de regressão.
+- **Verificações:** 21 links locais sem quebra e os dois diagramas Mermaid renderizados com o `mermaid-cli`.
+- O link do vídeo fica para a TM-051, depois da gravação.
+
+**Resultado:** README com 785 linhas; 272 testes da API; 656 na suíte.
