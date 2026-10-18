@@ -444,10 +444,11 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-029 Gerar o relatório de métricas do modelo
 **feat · P0 · EPIC-14 · `modulo-2`, `fase-1` · `feat/tm-029-relatorio-metricas` · TM-028**
 
-- [ ] `pipeline_offline/relatorio_metricas.py` calcula **na validação e no teste**: acurácia, precisão/recall/**F1 macro**, **ROC-AUC OvR macro**, log-loss e matriz de confusão 10×10
-- [ ] Salvar `models/metricas_modelo_v1.json` (lido pelo `GET /v1/modelo`, sem recalcular nada na API)
-- [ ] Gerar `docs/RELATORIO_METRICAS_MODULO2.md` com tabela, matriz de confusão (imagem em `docs/img/`), análise dos pares mais confundidos (ex.: 4↔9, 3↔5) e comparação com o Módulo 1
-- [ ] Reaproveitar `src/avaliacao_metricas.calcular_metricas` **no offline** para manter consistência com o Módulo 1
+- [x] `pipeline_offline/relatorio_metricas.py` calcula **na validação e no teste**: acurácia, precisão/recall/**F1 macro**, **ROC-AUC OvR macro**, log-loss e matriz de confusão 10×10
+- [x] Salvar `models/metricas_modelo_v1.json` (lido pelo `GET /v1/modelo`, sem recalcular nada na API)
+- [x] Gerar [`docs/RELATORIO_METRICAS_MODULO2.md`](RELATORIO_METRICAS_MODULO2.md) com tabela, matriz de confusão (imagem em `docs/img/`), análise dos pares mais confundidos (no teste real: 4 → 9 com 29 de 266 erros) e comparação com o Módulo 1 (**98,10% × 97,5%, +0,60 p.p.**, no mesmo conjunto de teste)
+- [x] Reaproveitar `src/avaliacao_metricas.calcular_metricas` **no offline** para manter consistência com o Módulo 1
+- [x] Verificar (por teste) que o conjunto de teste é idêntico ao do Módulo 1, o que torna a comparação direta
 
 **Validação:** o JSON contém as chaves `validacao` e `teste`, cada uma com `acuracia`, `f1_macro`, `roc_auc_ovr` e `matriz_confusao`; o Markdown renderiza no GitHub.
 **Commits:** `feat: implementa relatório de métricas de validação e teste` · `docs: adiciona relatório de métricas do módulo 2`
@@ -817,8 +818,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-025 | Fixar dependências da API | 16 | P0 | S0 | #63 | `chore/tm-025-dependencias-api` | #95 | Done |
 | TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | #96 | Done |
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | #97 | Done |
-| TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | | In review |
-| TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | Backlog |
+| TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | #98 | Done |
+| TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | In review |
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | Backlog |
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | Backlog |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | Backlog |

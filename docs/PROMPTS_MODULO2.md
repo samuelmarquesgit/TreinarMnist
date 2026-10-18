@@ -131,3 +131,21 @@
 
 **Resultado:** `models/modelo_mnist_v1.joblib` com 3,3 MB, SHA-256 `19df9501…043eb50b`, validação 0,9814 (idêntica à da busca, então o treino é determinístico). 12 testes novos de serialização (31 no pipeline offline), cobertura de 98% do módulo.
 
+---
+
+## P008 — TM-029 Relatório de métricas (#67)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-029-relatorio-metricas`
+
+**Prompt (resumo):**
+> Seguir para o próximo: relatório de métricas na validação e no teste, com JSON para a API e Markdown com comparação com o Módulo 1.
+
+**Decisões:**
+- **Primeira avaliação no teste.** A seleção (TM-027) usou só a validação, então o resultado no teste é uma estimativa honesta.
+- **Teste idêntico ao do Módulo 1.** O `train_test_split` embaralha posições, não conteúdo; com a mesma semente, estratificação e 20% de teste, as 14 000 imagens são as mesmas. Verificado na base real e garantido por teste no CI. A comparação com os 97,5% do Módulo 1 é, portanto, direta.
+- **Artefato verificado antes de avaliar:** SHA-256 e tamanhos das partições conferidos contra os metadados.
+- **Textos do Markdown derivados dos dados.** Uma frase escrita antes de ver os resultados ("7 lido como 2") estava errada (são só 4 casos) e foi substituída por texto gerado a partir da matriz, com ramos para par dominante, sem par dominante e zero erros.
+- **Achado pelos testes:** com acurácia de 100% o erro-padrão é zero e a razão ganho/erro dividia por zero. Corrigido com uma frase alternativa.
+
+**Resultado (teste, 14 000 imagens):** acurácia 0,9810 · F1 macro 0,9809 · ROC-AUC 0,9997 · log-loss 0,0782. Ganho de **+0,60 p.p.** sobre o Módulo 1, cerca de 5× o erro-padrão. Validação × teste: +0,04 p.p. (sem otimismo da seleção). Principal erro: 4 → 9 (29 de 266). 17 testes novos (359 na suíte), cobertura de 98% do módulo.
+
