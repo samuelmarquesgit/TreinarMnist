@@ -199,3 +199,14 @@ def test_erro_invalido_e_recusado(alteracao):
 def test_respostas_documentadas_cobrem_400_422_500_503():
     assert set(RESPOSTAS_ERRO_PREDICAO) == {400, 422, 500, 503}
     assert all(r["model"] is SaidaErro for r in RESPOSTAS_ERRO_PREDICAO.values())
+
+
+def test_cada_status_de_erro_tem_exemplo_proprio_e_valido():
+    """Regressão: o Swagger mostrava o exemplo de 422 também na resposta 400."""
+    from api.core.config import Configuracoes
+    from api.main import criar_aplicacao
+
+    operacao = criar_aplicacao(Configuracoes()).openapi()["paths"]["/v1/predict"]["post"]
+    for status in ("400", "422", "500", "503"):
+        exemplo = operacao["responses"][status]["content"]["application/json"]["example"]
+        assert SaidaErro.model_validate(exemplo).codigo == int(status)

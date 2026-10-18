@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends
 
 from api.core.excecoes import ErroModeloIndisponivel
 from api.dependencias import obter_artefato
-from api.schemas.erro import SaidaErro
+from api.schemas.erro import resposta_erro
 from api.schemas.saida import MetricasResumo, SaidaModelo
 from api.services.carregador_artefato import ArtefatoModelo
 
@@ -55,7 +55,7 @@ def montar_saida_modelo(artefato: ArtefatoModelo) -> SaidaModelo:
 @roteador.get(
     "/modelo",
     response_model=SaidaModelo,
-    responses={503: {"model": SaidaErro, "description": "Modelo ou métricas indisponíveis"}},
+    responses={503: resposta_erro(503, "Modelo ou métricas indisponíveis")},
     summary="Consulta metadados e métricas do modelo em produção",
     description=(
         "Nome, versão, hiperparâmetros, tamanho das partições e métricas de validação e teste "
