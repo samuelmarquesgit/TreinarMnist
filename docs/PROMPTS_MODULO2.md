@@ -440,3 +440,19 @@
 - **CI:** build, teste do contêiner (`/health`, usuário não-root, tamanho) e Trivy na imagem da API.
 
 **Resultado:** Imagem de **204 MB** (limite do plano: 600 MB); modelo carregado em 63 ms; Docker reporta *healthy*.
+
+---
+
+## P025 — TM-046 Modo api na CLI e correção do MCP (#84)
+
+**Data:** 2026-10-17 · **Branch:** `fix/tm-046-cli-modo-api`
+
+**Prompt (resumo):**
+> Continuar: `python main.py --modo api` e correção do caminho do servidor MCP.
+
+**Decisões:**
+- **Defeito antigo corrigido:** `--modo mcp` chamava `src.mcp.servidor`, que nunca existiu; o servidor é `src/mcp_servidor.py`. Commit `fix:` separado, de uma linha.
+- **`--modo api [--host] [--porta]`** chama `uvicorn.run('api.main:app')`.
+- **`main.py` reorganizado em funções** (`montar_parser`, `executar`, `executar_cli`) para ser testável, mantendo os modos existentes.
+
+**Resultado:** 9 testes da CLI; `python main.py --modo api` sobe a API de verdade.
