@@ -3,9 +3,9 @@
 [![CI Pipeline](https://github.com/samuelmarquesgit/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarquesgit/TreinarMnist/actions)
 [![Python](https://img.shields.io/badge/Python-3.12%E2%80%933.14-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688.svg)](https://fastapi.tiangolo.com/)
-[![Testes](https://img.shields.io/badge/testes-688%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
+[![Testes](https://img.shields.io/badge/testes-727%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
 [![Cobertura da API](https://img.shields.io/badge/cobertura%20api%2F-100%25-brightgreen.svg)](#9-testes-e-qualidade)
-[![Postman](https://img.shields.io/badge/Postman-30%20requisi%C3%A7%C3%B5es-orange.svg)](docs/postman/)
+[![Postman](https://img.shields.io/badge/Postman-31%20requisi%C3%A7%C3%B5es-orange.svg)](docs/postman/)
 
 > **Projeto Avaliativo — Módulo 2 · Desenvolvimento de IA para Análise Preditiva [T1 e T2]**
 > Microsserviço REST que coloca em produção o classificador de dígitos do Módulo 1:
@@ -140,6 +140,7 @@ Todas as variáveis têm padrão funcional; veja [`.env.exemplo`](.env.exemplo).
 | `MNIST_API_LIMIAR_ENTROPIA` | `0.3` | entropia normalizada máxima de uma predição confiável |
 | `MNIST_API_TAMANHO_MAX_LOTE` | `100` | imagens por chamada em `/v1/predict/lote` |
 | `MNIST_API_TAMANHO_MAX_UPLOAD_BYTES` | `2097152` | tamanho máximo do upload (2 MB) |
+| `MNIST_API_MAX_PIXELS_IMAGEM` | `25000000` | resolução máxima da imagem (25 megapixels), conferida no cabeçalho antes de decodificar |
 | `MNIST_API_HABILITAR_DIAGNOSTICO` | `false` | expõe a rota que força um 500 (só para testes) |
 | `MNIST_API_CAMINHO_MODELO` | `models/modelo_mnist_v1.joblib` | artefato do modelo |
 
@@ -228,7 +229,7 @@ Todos os erros seguem o mesmo contrato `SaidaErro` e devolvem o `X-Request-ID`, 
 }
 ```
 
-**400 — formato válido, conteúdo impossível de classificar** (imagem vazia, arquivo que não é imagem, imagem corrompida):
+**400 — formato válido, conteúdo impossível de classificar** (imagem vazia, arquivo que não é imagem, imagem corrompida ou com resolução excessiva):
 
 ```json
 {
@@ -251,7 +252,7 @@ Todos os erros seguem o mesmo contrato `SaidaErro` e devolvem o `X-Request-ID`, 
 | Código | Quando |
 |---|---|
 | **200** | predição ou consulta bem-sucedida; `/health` sempre |
-| **400** | imagem sem traço, upload que não é PNG/JPEG (inclusive texto renomeado para `.png`), imagem corrompida, arquivo vazio ou acima de 2 MB, lote acima do limite configurado |
+| **400** | imagem sem traço, upload que não é PNG/JPEG (inclusive texto renomeado para `.png`), imagem corrompida, arquivo vazio ou acima de 2 MB, imagem acima de 25 megapixels, lote acima do limite configurado |
 | **422** | texto ou número como string em campo numérico, pixel fora de [0, 1], `NaN`/`Infinity`, ≠ 784 pixels, campo extra ou ausente, JSON malformado, lote vazio ou com mais de 100 imagens |
 | **500** | exceção não prevista (comprovável com a rota de diagnóstico) |
 | **503** | modelo não carregado; o edital cita 200/400/422/500, e o 503 é o código semanticamente correto para "serviço sem o recurso necessário" |
@@ -340,24 +341,24 @@ Relatório completo, métricas por dígito e matriz de confusão: [`docs/RELATOR
 ## 9. Testes e qualidade
 
 ```bash
-pytest tests/api --cov=api                 # 272 testes da API, cobertura de 100%
-pytest tests/                              # 688 testes da plataforma inteira
+pytest tests/api --cov=api                 # 297 testes da API, cobertura de 100%
+pytest tests/                              # 727 testes da plataforma inteira
 ruff check api/ pipeline_offline/ tests/   # lint
 mypy api/ --ignore-missing-imports         # tipagem
 ```
 
 | Item | Resultado |
 |---|---|
-| Testes da API (`tests/api/`) | 272, **100% de cobertura** de `api/` (mínimo exigido no CI: 85%) |
-| Suíte completa | 688 testes (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
+| Testes da API (`tests/api/`) | 297, **100% de cobertura** de `api/` (mínimo exigido no CI: 85%) |
+| Suíte completa | 727 testes (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
 | Integração com dados reais | API real acerta 97,2% de 500 imagens de teste (roda quando o cache do MNIST existe) |
-| Coleção Postman | 30 requisições, 148 asserções, 0 falhas |
+| Coleção Postman | 31 requisições, 153 asserções, 0 falhas |
 
 **Pipeline de CI (GitHub Actions), executado em todo PR**, com merge na `develop`/`main` bloqueado sem o **CI Gate** verde:
 
 1. **Code Quality & Tests:** ruff, mypy e pytest da plataforma completa, com cobertura para o SonarCloud;
 2. **API — Qualidade, Testes e Smoke:** instala **só** `requirements-api.txt`, roda ruff, mypy, a guarda da Fase 3, pytest com `--cov-fail-under=85` e um smoke test com Uvicorn;
-3. **API — Coleção Postman (newman):** sobe a API normal e uma sem modelo e roda as 30 requisições;
+3. **API — Coleção Postman (newman):** sobe a API normal e uma sem modelo e roda as 31 requisições;
 4. **Security Scans:** TruffleHog (segredos), build e Trivy das imagens Docker (inclusive a da API, com teste do contêiner);
 5. **SonarCloud Quality Gate.**
 
@@ -372,7 +373,7 @@ Arquivos em [`docs/postman/`](docs/postman/): a coleção `API_MNIST.postman_col
 | 1. Monitoramento | 2 | `/health` ok e `/v1/modelo` com métricas |
 | 2. Inferência — sucesso | 5 | 7 por pixels, lote 0/3/9, uploads (6 e 7), eco do `X-Request-ID` |
 | 3. Erros 422 | 11 | texto, string numérica, faixa, tamanho, campo extra/ausente, JSON malformado, lote vazio/101, upload sem arquivo |
-| 4. Erros 400 | 5 | imagem vazia, `.txt`, texto disfarçado de PNG, PNG corrompido, imagem em branco |
+| 4. Erros 400 | 6 | imagem vazia, `.txt`, texto disfarçado de PNG, PNG corrompido, imagem em branco, PNG de 26 megapixels |
 | 5. Erros 404/405 | 2 | rota e método inexistentes |
 | 6. Erro 500 | 2 | 500 sem stack trace e API de pé logo depois |
 | 7. Cenário degradado | 3 | `/health` degradado e 503 sem modelo |
@@ -410,6 +411,7 @@ A coleção é gerada por [`scripts/gerar_colecao_postman.py`](scripts/gerar_col
 ## 12. Limitações e melhorias futuras
 
 - **Segurança:** a API não tem autenticação nem limite de requisições (*rate limiting*). Em produção, entraria uma API key ou OAuth2 e um limitador por cliente.
+- **Uploads:** a resolução é conferida no cabeçalho antes de decodificar (barra a "bomba de descompressão": um PNG de 241 KB com 15000×15000 pixels consumia 1,4 GB de RAM e agora recebe 400 em milissegundos). O limite de 2 MB, porém, só é aplicado depois que o servidor recebe o corpo; em produção, o tamanho máximo da requisição também ficaria no proxy reverso (por exemplo, `client_max_body_size` no Nginx).
 - **Escala:** um único processo Uvicorn; para carga alta, múltiplos *workers* atrás de um balanceador e o modelo exportado para ONNX para inferência mais rápida.
 - **MLOps:** o artefato é versionado no Git. O próximo passo seria um *Model Registry* (MLflow) com promoção de versões e monitoramento de *drift* nas entradas.
 - **Guardrail:** as faixas de atipicidade são estatísticas simples da imagem. Um detector de OOD treinado (por exemplo, distância de Mahalanobis nas ativações) seria mais preciso.

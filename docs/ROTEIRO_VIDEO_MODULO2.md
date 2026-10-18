@@ -126,13 +126,14 @@ Use o README §7.2 como apoio visual. Um ponto por fase:
 
 5. **Fase 5 — erros (≈30 s).**
    > "Todos os erros usam o mesmo formato: 400 para conteúdo impossível de classificar, 422 para contrato inválido, 503 sem modelo e 500 genérico, sem stack trace, com um id para achar o erro no log."
+   - *(opcional)* "E o upload é protegido contra imagem gigante: um PNG de poucos KB que declara 26 megapixels é recusado com 400 lendo só o cabeçalho, sem gastar memória decodificando."
    - Terminal 3: `curl http://localhost:8000/v1/_diagnostico/erro-interno` → **500** padronizado; em seguida `curl http://localhost:8000/health` → **200** ("a API continua de pé").
 
 6. **Qualidade (≈20 s).** Terminal 3:
    ```bash
    npx newman run docs/postman/API_MNIST.postman_collection.json -e docs/postman/API_MNIST.local.postman_environment.json
    ```
-   > "A coleção Postman tem 30 requisições e 148 testes, cobrindo 200, 400, 404, 405, 422, 500 e 503. A API tem 100% de cobertura de testes."
+   > "A coleção Postman tem 31 requisições e 153 testes, cobrindo 200, 400, 404, 405, 422, 500 e 503. A API tem 100% de cobertura de testes."
 
 ---
 
