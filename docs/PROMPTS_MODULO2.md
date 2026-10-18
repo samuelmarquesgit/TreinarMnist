@@ -204,3 +204,25 @@
 - **Falha de fixture corrigida:** `0,01×9 + 0,9 = 0,99` estourava a tolerância por erro de ponto flutuante; a base do teste passou a somar exatamente 1.
 
 **Resultado:** 32 testes novos; 83 em `tests/api/`, cobertura de 100% de `api/`. `SaidaModelo` validado com o JSON real de métricas da TM-029.
+
+---
+
+## P012 — TM-033 Serviço de inferência (#71)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-033-servico-inferencia`
+
+**Prompt (resumo):**
+> Continuar: carregador do artefato com verificação de integridade e serviço de inferência desacoplado do HTTP.
+
+**Decisões:**
+- **Exceções de domínio criadas aqui** (eram da TM-040), sem nenhuma dependência de HTTP: cada uma carrega status e código; a TM-040 só acrescenta os handlers.
+- **Carregador defensivo:** existência, SHA-256, formato `{pipeline, metadados}`, chaves obrigatórias, 10 classes, 784 features e `predict_proba`. Qualquer falha vira `ErroArtefatoInvalido`, que o `lifespan` (TM-035) transforma em estado degradado em vez de derrubar a API.
+- **Métricas opcionais:** sem o JSON, só o `GET /v1/modelo` fica indisponível; a inferência continua.
+- **Alerta de versão do scikit-learn** registrado no log, sem bloquear.
+- **Regra de negócio no serviço:** imagem com todos os pixels zero → `ErroEntradaInvalida` (400), indicando quais amostras do lote estão vazias.
+- **Uma chamada vetorizada a `predict_proba` por requisição**, também no lote.
+- **Desacoplamento verificado por AST:** um teste lê os imports de `services/` e falha se aparecer `fastapi` ou `starlette`.
+- **Fixture `artefato_temporario`** (LogisticRegression em dados sintéticos, no mesmo formato do artefato real): os testes da API não dependem do modelo de produção.
+- **Ajuste durante a revisão:** `prever()` validava a entrada duas vezes (chamava `prever_lote()`); a inferência foi extraída para `_inferir()`.
+
+**Resultado:** 32 testes novos (115 em `tests/api/`), cobertura de 100% de `api/`. O artefato real de produção carrega e reconhece o exemplo do Swagger como 7 com entropia < 0,05.

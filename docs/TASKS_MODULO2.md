@@ -500,14 +500,13 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-033 Implementar o serviço de inferência
 **feat · P0 · EPIC-15 · `api`, `fase-2` · `feat/tm-033-servico-inferencia` · TM-028, TM-032**
 
-- [ ] `api/services/carregador_artefato.py`: `carregar_artefato(caminho, caminho_checksum) -> ArtefatoModelo`; valida a existência do arquivo, o SHA-256 e as chaves obrigatórias de `metadados`; lança `ErroArtefatoInvalido`
-- [ ] `api/services/servico_inferencia.py`: classe `ServicoInferencia(pipeline, metadados)` com `prever(pixels: np.ndarray) -> ResultadoPredicao` e `prever_lote(...)`. **Sem nenhuma referência a HTTP, `Request` ou `HTTPException`** (desacoplamento exigido pela Fase 2)
-- [ ] Regra de negócio: vetor com soma de pixels = 0 → `ErroEntradaInvalida("Nenhum traço detectado")`
-- [ ] Medir `tempo_inferencia_ms` com `time.perf_counter()`
+- [x] `api/services/carregador_artefato.py`: `carregar_artefato(caminho, caminho_checksum) -> ArtefatoModelo`; valida a existência do arquivo, o SHA-256 e as chaves obrigatórias de `metadados`; lança `ErroArtefatoInvalido`
+- [x] `api/services/servico_inferencia.py`: classe `ServicoInferencia(pipeline, metadados)` com `prever(pixels: np.ndarray) -> ResultadoPredicao` e `prever_lote(...)`. **Sem nenhuma referência a HTTP, `Request` ou `HTTPException`** (desacoplamento exigido pela Fase 2)
+- [x] Regra de negócio: vetor com soma de pixels = 0 → `ErroEntradaInvalida("Nenhum traço detectado")`
+- [x] Medir `tempo_inferencia_ms` com `time.perf_counter()`
 
 **Validação:** testes unitários do serviço com um pipeline falso (`DummyClassifier`), sem FastAPI.
 **Commits:** `feat: implementa carregador de artefato com verificação de integridade` · `feat: implementa serviço de inferência desacoplado do http`
-
 ---
 
 #### TM-034 Implementar o pré-processamento de imagem dentro da API
@@ -822,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | #99 | Done |
 | TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | #100 | Done |
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | #101 | Done |
-| TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | In review |
-| TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | Backlog |
+| TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | #102 | Done |
+| TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | In review |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | | Backlog |
 | TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | | Backlog |
