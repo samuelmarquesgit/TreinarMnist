@@ -261,3 +261,22 @@
 - **`/` redireciona para `/docs`**, fora do Swagger: quem abre a URL base no navegador cai direto na documentação.
 
 **Resultado:** 9 testes novos (137 em `tests/api/`), cobertura de 100% de `api/`.
+
+---
+
+## P015 — TM-040 Tratamento centralizado de erros (#78)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-040-tratamento-erros`
+
+**Prompt (resumo):**
+> Continuar: mapear 200/400/422/500 (e 503) sem a API cair nem devolver erro sem tratamento.
+
+**Decisões:**
+- **Antecipada em relação à TM-037:** as rotas de predição lançam `ErroEntradaInvalida`; sem os handlers, isso viraria 500 em vez de 400. Os PRs saem na ordem 033 → 035 → 036 → 040 → 037.
+- **Um handler por origem**, todos devolvendo `SaidaErro`: domínio (400/503), validação Pydantic (422), roteamento (404/405) e qualquer outra exceção (500).
+- **422 traduzido para pt-BR** (campo sem o prefixo `body`, mensagem com os limites do `Field`, tipo e valor recebido). Listas grandes não são ecoadas na resposta, e `NaN` vira texto (o JSON não representa NaN).
+- **500 sem nenhum detalhe interno:** mensagem genérica + `id_requisicao`; o stack trace completo vai só para o log (`logger.exception`). Um teste confirma que a API continua respondendo depois do 500.
+- **`X-Request-ID`**: reaproveitado se o cliente enviar, gerado se não; devolvido no corpo e no cabeçalho.
+- **Rota de diagnóstico do 500** (`/v1/_diagnostico/erro-interno`): só existe com `MNIST_API_HABILITAR_DIAGNOSTICO=true`, fica fora do Swagger e emite um alerta no log ao ser habilitada. É a forma honesta de provar o 500 no Postman e no vídeo.
+
+**Resultado:** 17 testes novos (154 em `tests/api/`), cobertura de 100% de `api/`.
