@@ -491,7 +491,7 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 - [x] `api/schemas/saida.py`: `SaidaPredicao`, `SaidaLote`, `SaidaSaude`, `SaidaModelo` (§4.3) com `Field` em **todos** os campos (o edital pune Pydantic usado só na entrada)
 - [x] `@model_validator` em `SaidaPredicao`: `probabilidades` com 10 itens e soma ∈ [0,99; 1,01]; `classe_prevista` igual ao argmax
 - [x] `api/schemas/erro.py`: `SaidaErro`
-- [ ] Usar `response_model=` em todas as rotas e `responses={400: {"model": SaidaErro}, ...}` para documentar os erros no Swagger (preparado: `RESPOSTAS_ERRO_PREDICAO` em `api/schemas/erro.py`; aplicado nas rotas da TM-036/037)
+- [x] Usar `response_model=` em todas as rotas e `responses={400: {"model": SaidaErro}, ...}` para documentar os erros no Swagger (aplicado em todas as rotas nas TM-036 a TM-039; na TM-048 cada status ganhou um exemplo próprio)
 
 **Validação:** o `/docs` mostra os schemas de resposta, inclusive os de erro; teste unitário do validador de soma.
 **Commits:** `feat: implementa schemas de saída da predição e saúde` · `feat: implementa contrato único de erro da api`
@@ -778,10 +778,10 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 #### TM-051 Fazer o release final e entregar
 **chore · P0 · EPIC-17 · `modulo-2` · PR `develop → main` · todas as P0**
 
-- [ ] Todas as issues P0 fechadas; CI verde em `develop`
+- [x] Todas as issues P0 fechadas; CI verde em `develop` (29 de 30 tarefas concluídas; EPIC-14, 15 e 16 fechados; os 6 jobs do CI verdes)
 - [ ] PR `develop → main` com o resumo das entregas e `Closes` dos épicos
 - [ ] Tag `v2.0.0` + GitHub Release "Entrega Módulo 2 — API FastAPI"
-- [ ] Teste final **num clone limpo**: `git clone` → venv → `pip install -r requirements-api.txt` → `uvicorn api.main:app` → `/docs` funcionando
+- [x] Teste final **num clone limpo**: `git clone` → venv → `pip install -r requirements-api.txt` → `uvicorn api.main:app` → `/docs` funcionando (2026-10-18: checksum ok, 270 testes da API, `/docs` 200, predição do 7 e da imagem própria corretas)
 - [ ] Atualizar o README com o link do vídeo (último commit **antes** da submissão)
 - [ ] **Submeter no AVA até 03/11 às 22h:** link do GitHub (público) + link do vídeo
 - [ ] **Congelar o repositório:** nenhum push depois da submissão até a nota sair
@@ -821,8 +821,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | #117 | Done |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | #120 | Done |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
-| TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | In review |
-| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | Backlog |
+| TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | #121 | Done |
+| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | In progress |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
 
 ### Grafo de dependências (caminho crítico em destaque)

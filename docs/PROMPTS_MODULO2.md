@@ -546,3 +546,21 @@
 - A gravação, o ensaio e o upload são do autor; esses itens ficam abertos no plano.
 
 **Resultado:** `docs/ROTEIRO_VIDEO_MODULO2.md` com comandos testados (o nome do teste e a mensagem de erro citados foram conferidos).
+
+---
+
+## P031 — Publicação em fila e preparação da entrega (TM-051, parcial) (#90)
+
+**Data:** 2026-10-18 · **Branch:** `chore/tm-051-preparacao-entrega`
+
+**Prompt (resumo):**
+> Assim que terminar, pode ir continuando todas as tasks até terminar todas.
+
+**Decisões:**
+- **Desenvolvimento empilhado, publicação em fila.** Enquanto um PR esperava o CI (~8 min), a tarefa seguinte era desenvolvida numa branch criada sobre a anterior. Um script publicava as tarefas prontas uma a uma num `git worktree` separado: rebase sobre a `develop`, suíte completa, documentação, PR com template, auto-merge com CI Gate verde, issue fechada e card em Done. Foram 17 PRs (#105 a #121), todos verdes.
+- **A fila para em qualquer falha** (testes, conflito, CI, documentação), sem publicar nada pela metade. Isso aconteceu uma vez, por um arquivo da fila gravado com CRLF; o problema foi corrigido e a fila retomada.
+- **Teste num clone limpo** da `develop`: venv novo com só o `requirements-api.txt`, checksum do modelo ok, 270 testes da API (2 de integração pulados por falta do dataset, como esperado), `/docs` 200 e predições corretas.
+- **Fica para depois da gravação do vídeo** (decisão do autor): link do vídeo no README, tag `v2.0.0`, Release e congelamento do repositório, porque a última atualização do repositório conta como data de entrega.
+
+**Resultado:** 29 de 30 tarefas concluídas; EPIC-14, 15 e 16 fechados; `develop` com os 6 jobs do CI verdes.
+
