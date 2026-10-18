@@ -67,7 +67,10 @@ def test_log_nunca_contem_os_pixels(cliente, caplog):
     pixels = imagem_da_classe(5)[0].tolist()
     with caplog.at_level("DEBUG", logger="api_mnist"):
         assert cliente.post("/v1/predict", json={"pixels": pixels}).status_code == 200
-    assert "0.9" not in caplog.text
+    # Procura a representação real dos pixels enviados. Uma substring curta como "0.9" dava
+    # falso positivo quando a latência do log (ex.: "20.92ms") a continha por acaso.
+    assert repr(pixels[350]) not in caplog.text  # 0.8999999761581421 (float32 de 0.9)
+    assert str(pixels[350:355])[1:-1] not in caplog.text
     assert "pixels" not in caplog.text
 
 

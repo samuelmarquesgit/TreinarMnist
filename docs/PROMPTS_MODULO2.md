@@ -603,3 +603,31 @@
 - **Documentos do Módulo 1** (`ENTREGA`, `FLUXO_GITHUB_KANBAN`, `PLANEJAMENTO`, `ROTEIRO_GRAVACAO_VIDEO`, `roteiro_video`, `TASKS`, `prompt`) com aviso de documento histórico, sem reescrever o conteúdo original.
 - **`steering/`** (diretrizes vigentes): Python 3.12 no CI e no Docker; prefixos de branch reais; e a correção de uma afirmação falsa: `recarregar_modelos_salvos()` do Módulo 1 **não** valida hash. Quem valida o SHA-256 é o carregador da API.
 
+---
+
+## P034 — Vulnerabilidade apontada pelo SonarCloud (#130)
+
+**Data:** 2026-10-18 · **Branch:** `fix/sonar-path-traversal-persistencia`
+
+**Contexto:** ao conferir o merge da revisão de documentação na `main` (#129), o check externo "SonarCloud Code Analysis" estava reprovado na `develop`: **Security Rating E no código novo**. A causa era uma vulnerabilidade **BLOCKER** (`pythonsecurity:S2083`, *Path Traversal*) em `src/fachada.py`, no `_persistir_modelo()` do Módulo 1: o nome do modelo, vindo do MCP ou do Streamlit, compunha o caminho do arquivo. O código era de setembro, mas passou a contar como "código novo" na análise com a action atualizada (TM-044).
+
+**Decisões:**
+- **Explorabilidade:** o fluxo `treinar_modelo()` não era explorável, porque a fábrica recusa nomes desconhecidos antes de salvar; mas o método aceitava qualquer nome se chamado diretamente. Foi corrigido como defesa em profundidade.
+- **Correção:** `_caminho_seguro_modelo()` aceita só nomes registrados na `FabricaModelos` e confere com `realpath`/`commonpath` que o arquivo fica dentro de `artifacts/modelos/` (também no fallback `.pkl`).
+- **Causa de ter passado despercebido:** o job "SonarCloud Quality Gate" só enviava a análise, sem esperar o veredito. Agora usa `sonar.qualitygate.wait=true`: um gate reprovado reprova o CI.
+
+**Resultado:** 14 testes de regressão (nomes com `../`, absolutos, separadores do Windows, desconhecidos e vazios); suíte com 702 testes.
+
+---
+
+## P035 — Sanitização reconhecida pela análise de taint (#130, reaberta)
+
+**Data:** 2026-10-18 · **Branch:** `fix/sonar-path-traversal-allowlist`
+
+**Contexto:** depois do PR #131, a análise da `develop` (que no SonarCloud é a branch principal) **continuou** acusando S2083. O rastro mostrado pelo SonarCloud ia da ferramenta MCP (`mcp_servidor.py:60`) até o `open()` passando pela concatenação do caminho: a validação com `if ...: raise` não conta como sanitização, porque o caminho ainda era montado com a string recebida.
+
+**Decisões:**
+- **Trocar o dado do usuário por um valor confiável:** o nome usado no caminho passa a ser o item correspondente de `FabricaModelos.listar_disponiveis()`, nunca a string recebida. A checagem com `realpath`/`commonpath` continua como segunda barreira.
+- **O CI espera o gate só nas execuções de PR:** no plano gratuito, a análise disparada por push numa branch de tarefa não representa o PR e bloqueava merges sem relação com a mudança (ajuste feito no PR #131).
+- **A `main` só recebe a correção depois de confirmar na API do SonarCloud** que a `develop` ficou sem a vulnerabilidade e com o Quality Gate aprovado.
+
