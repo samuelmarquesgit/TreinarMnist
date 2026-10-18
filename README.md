@@ -3,7 +3,7 @@
 [![CI Pipeline](https://github.com/samuelmarquesgit/TreinarMnist/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelmarquesgit/TreinarMnist/actions)
 [![Python](https://img.shields.io/badge/Python-3.12%E2%80%933.14-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688.svg)](https://fastapi.tiangolo.com/)
-[![Testes](https://img.shields.io/badge/testes-727%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
+[![Testes](https://img.shields.io/badge/testes-731%20aprovados-brightgreen.svg)](#9-testes-e-qualidade)
 [![Cobertura da API](https://img.shields.io/badge/cobertura%20api%2F-100%25-brightgreen.svg)](#9-testes-e-qualidade)
 [![Postman](https://img.shields.io/badge/Postman-31%20requisi%C3%A7%C3%B5es-orange.svg)](docs/postman/)
 
@@ -342,7 +342,7 @@ Relatório completo, métricas por dígito e matriz de confusão: [`docs/RELATOR
 
 ```bash
 pytest tests/api --cov=api                 # 297 testes da API, cobertura de 100%
-pytest tests/                              # 727 testes da plataforma inteira
+pytest tests/                              # 731 testes da plataforma inteira (rodam sem internet)
 ruff check api/ pipeline_offline/ tests/   # lint
 mypy api/ --ignore-missing-imports         # tipagem
 ```
@@ -350,7 +350,7 @@ mypy api/ --ignore-missing-imports         # tipagem
 | Item | Resultado |
 |---|---|
 | Testes da API (`tests/api/`) | 297, **100% de cobertura** de `api/` (mínimo exigido no CI: 85%) |
-| Suíte completa | 727 testes (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
+| Suíte completa | 731 testes, todos executáveis sem acesso à internet (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
 | Integração com dados reais | API real acerta 97,2% de 500 imagens de teste (roda quando o cache do MNIST existe) |
 | Coleção Postman | 31 requisições, 153 asserções, 0 falhas |
 
