@@ -805,6 +805,7 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 - [x] Caso novo nos exemplos (`upload_imagem_gigante.png`, 34 KB) e na coleção Postman (31 requisições, 153 asserções)
 
 **Validação:** o mesmo PNG de 15000×15000 recebe 400 em 18 ms, sem alocar a imagem.
+
 ---
 
 #### TM-055 Atualizar dependências com vulnerabilidades conhecidas
@@ -814,6 +815,7 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 - [x] `chromadb` 1.5.9 sem versão corrigida: registrado nas limitações do README (os alertas são do servidor HTTP do Chroma, que o projeto não usa)
 
 **Validação:** `pip-audit -r requirements.txt` só com os alertas do `chromadb`; suíte completa e mypy verdes.
+
 ---
 
 #### TM-056 Eliminar a dependência de internet dos testes
@@ -826,6 +828,7 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 - [x] `test_inicializar_dados_duplicado` testava uma guarda que não existe; substituído por um teste de `_garantir_dados()`
 
 **Validação:** suíte completa sem rede: 731 testes, 0 falhas (antes: 18 falhas); tempo de 130 s para 27 s.
+
 ---
 
 #### TM-057 Ajustar a documentação apontada na auditoria
@@ -834,9 +837,9 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 - [x] README: link do vídeo do Módulo 1 no lugar do marcador antigo; tabela de branches completa; contexto da amostra de 500 imagens
 - [x] Este plano: nomes reais dos arquivos de teste da TM-043; TM-054 a TM-057 e rastreabilidade da TM-051
 - [x] `steering/politicas_governanca_ia.md`: referências a arquivos que não existem marcadas como "a criar"
-- [x] `.gitignore`: `docs/pdf/` (o PDF do edital fica só na máquina do autor)
----
+- [x] `.gitignore`: `docs/pdf/ProjetoAvaliativo2.pdf` (o PDF do edital fica só na máquina do autor; os demais arquivos de `docs/pdf/` são do Módulo 1 e continuam versionados)
 
+---
 
 ## 8. Rastreabilidade Task → Issue → Branch → PR
 
@@ -870,7 +873,7 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | #120 | Done |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | #121 | Done |
-| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126 | In progress |
+| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126, #129, #133 | In progress |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
 | TM-054 | Limite de resolução do upload | 16 | P1 | — | — | `fix/tm-054-limite-resolucao-upload` | | In review |
 | TM-055 | Dependências vulneráveis | 16 | P1 | — | — | `chore/tm-055-dependencias-vulneraveis` | | In review |

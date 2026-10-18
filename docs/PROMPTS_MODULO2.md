@@ -631,7 +631,6 @@
 - **O CI espera o gate só nas execuções de PR:** no plano gratuito, a análise disparada por push numa branch de tarefa não representa o PR e bloqueava merges sem relação com a mudança (ajuste feito no PR #131).
 - **A `main` só recebe a correção depois de confirmar na API do SonarCloud** que a `develop` ficou sem a vulnerabilidade e com o Quality Gate aprovado.
 
-
 ---
 
 ## P036 — Auditoria de qualidade de software e correções (TM-054 a TM-057)
