@@ -209,10 +209,15 @@ class FachadaPipelineIA:
         Raises:
             ValueError: Se o nome não for registrado ou o caminho escapar da pasta de modelos.
         """
-        if not FabricaModelos.esta_registrado(nome_modelo):
+        # O caminho é montado com o nome vindo da lista de modelos registrados (valor confiável),
+        # nunca com a string recebida: comparar e lançar exceção não basta para a análise de taint.
+        nome_confiavel = next(
+            (nome for nome in FabricaModelos.listar_disponiveis() if nome == nome_modelo), None
+        )
+        if nome_confiavel is None:
             raise ValueError(f"Nome de modelo não registrado: {nome_modelo!r}")
         base = os.path.realpath(_DIR_MODELOS)
-        caminho = os.path.realpath(os.path.join(base, f"{nome_modelo}{extensao}"))
+        caminho = os.path.realpath(os.path.join(base, f"{nome_confiavel}{extensao}"))
         if os.path.commonpath([base, caminho]) != base:
             raise ValueError(f"Caminho de modelo fora de {_DIR_MODELOS}: {nome_modelo!r}")
         return caminho
