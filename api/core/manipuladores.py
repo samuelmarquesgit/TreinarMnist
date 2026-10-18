@@ -134,7 +134,9 @@ async def tratar_erro_dominio(request: Request, exc: Exception) -> JSONResponse:
     """400 / 503 / outros erros previstos lançados por services e dependências."""
     assert isinstance(exc, ErroApiMnist)
     detalhes = [DetalheErro.model_validate(d) for d in exc.detalhes] if exc.detalhes else None
-    logger.info("%s %s → %d %s", request.method, request.url.path, exc.codigo_http, exc.codigo_erro)
+    logger.info(
+        "%s %s -> %d %s", request.method, request.url.path, exc.codigo_http, exc.codigo_erro
+    )
     return _resposta(request, exc.codigo_http, exc.codigo_erro, exc.mensagem, detalhes)
 
 

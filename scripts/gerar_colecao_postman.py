@@ -519,7 +519,7 @@ def main() -> None:
     )
     total = sum(len(p["item"]) for p in colecao["item"])
     print(
-        f"Coleção gerada: {total} requisições em {len(colecao['item'])} pastas → {DESTINO.relative_to(RAIZ).as_posix()}/"
+        f"Coleção gerada: {total} requisições em {len(colecao['item'])} pastas -> {DESTINO.relative_to(RAIZ).as_posix()}/"
     )
 
 

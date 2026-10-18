@@ -564,3 +564,20 @@
 
 **Resultado:** 29 de 30 tarefas concluídas; EPIC-14, 15 e 16 fechados; `develop` com os 6 jobs do CI verdes.
 
+---
+
+## P032 — Revisão após desligamento do notebook (#124)
+
+**Data:** 2026-10-18 · **Branch:** `fix/console-windows-cp1252`
+
+**Prompt (resumo):**
+> O notebook desligou no meio das tarefas; revisar o projeto para saber se está tudo 100% (contra o plano e o edital).
+
+**Verificações:**
+- **Estado do Git:** nenhum PR aberto, nenhum rebase ou merge pendente; `develop` e `main` com o mesmo conteúdo e CI verde. O desligamento aconteceu depois de todas as publicações.
+- **Travas órfãs no `.git`** (`packed-refs.lock`, `pr-56.lock` e um `maintenance.lock` antigo), sem nenhum processo git ativo: removidas; `git fsck` sem erros. O repositório fica dentro do OneDrive, que sincroniza a pasta `.git` e pode segurar arquivos durante operações do Git.
+- **Portão de qualidade local:** 656 testes, `api/` com 100% de cobertura, ruff, mypy, guarda da Fase 3 e checksum do modelo, tudo ok.
+- **GitHub:** 31 branches do Módulo 2 preservadas, repositório público, Kanban com tudo em Done exceto TM-051 e EPIC-17 (aguardam o vídeo).
+
+**Defeito encontrado e corrigido:** `scripts/gerar_colecao_postman.py` quebrava com `UnicodeEncodeError` no console padrão do Windows (cp1252) ao imprimir `→`; nos testes anteriores isso ficava escondido porque os scripts rodavam com `PYTHONIOENCODING=utf-8`. Logs com a mesma seta não quebravam (o stderr usa `backslashreplace`), mas apareciam como `→`. As três mensagens passaram a usar `->`, e um teste via AST impede a volta do problema (sem a correção, falha nos 3 pontos).
+
