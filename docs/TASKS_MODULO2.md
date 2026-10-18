@@ -875,10 +875,10 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | #121 | Done |
 | TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126, #129, #133 | In progress |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
-| TM-054 | Limite de resolução do upload | 16 | P1 | — | — | `fix/tm-054-limite-resolucao-upload` | | In review |
-| TM-055 | Dependências vulneráveis | 16 | P1 | — | — | `chore/tm-055-dependencias-vulneraveis` | | In review |
-| TM-056 | Testes sem internet | 16 | P2 | — | — | `test/tm-056-testes-dependentes-de-rede` | | In review |
-| TM-057 | Ajustes de documentação | 17 | P2 | — | — | `docs/tm-057-ajustes-documentacao` | | In review |
+| TM-054 | Limite de resolução do upload | 16 | P1 | — | #134 | `fix/tm-054-limite-resolucao-upload` | #138 | Done |
+| TM-055 | Dependências vulneráveis | 16 | P1 | — | #135 | `chore/tm-055-dependencias-vulneraveis` | #139 | Done |
+| TM-056 | Testes sem internet | 16 | P2 | — | #136 | `test/tm-056-testes-dependentes-de-rede` | #140 | Done |
+| TM-057 | Ajustes de documentação | 17 | P2 | — | #137 | `docs/tm-057-ajustes-documentacao` | #141 | Done |
 
 ### Grafo de dependências (caminho crítico em destaque)
 
