@@ -739,22 +739,21 @@ Nova seção principal no topo (o conteúdo do Módulo 1 vira uma seção de his
 
 Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo **todos os endpoints e todos os códigos de erro**, com testes que rodam também no CI.
 
-- [ ] `docs/postman/API_MNIST.postman_collection.json` (formato v2.1) com pastas:
+- [x] `docs/postman/API_MNIST.postman_collection.json` (formato v2.1) com pastas:
   - **Monitoramento:** `GET /health` (200, `modelo_carregado`, schema)
   - **Inferência — sucesso:** `/v1/predict` dígito 7 (200, `classe_prevista == 7`, soma das probabilidades ≈ 1), `/v1/predict/lote` (200, tamanho do lote), `/v1/predict/imagem` com `meu_numero.jpeg` e `bruno_7_com_barra.png` (200)
   - **Erros 422:** texto no pixel, 783 pixels, pixel `1.5`, pixel negativo, campo extra, corpo vazio, lote vazio, lote com 101 itens
   - **Erros 400:** vetor todo zero, upload `.txt`, imagem corrompida, imagem em branco
   - **Erro 500:** `GET /v1/_diagnostico/erro-interno` (corpo sem stack trace, com `id_requisicao`). Exige a API com `MNIST_API_HABILITAR_DIAGNOSTICO=true`
   - **Metadados:** `GET /v1/modelo` (200, métricas presentes)
-- [ ] Cada requisição com `pm.test(...)` validando **status, contrato `SaidaErro`/`SaidaPredicao` e headers** (`X-Request-ID`)
-- [ ] `docs/postman/API_MNIST.local.postman_environment.json` com `{{base_url}} = http://localhost:8000`
-- [ ] Payloads grandes (784 pixels) gerados no *pre-request script* ou lidos dos arquivos da TM-049, para a coleção ficar legível
-- [ ] Job `api-postman` no CI: sobe o uvicorn com o modo diagnóstico ligado e roda `npx newman run ... --reporters cli,junit`; o relatório JUnit vira artefato do workflow
-- [ ] Seção no README: como importar a coleção e o environment e como rodar com o newman
+- [x] Cada requisição com `pm.test(...)` validando **status, contrato `SaidaErro`/`SaidaPredicao` e headers** (`X-Request-ID`)
+- [x] `docs/postman/API_MNIST.local.postman_environment.json` com `{{base_url}} = http://localhost:8000`
+- [x] Payloads grandes (784 pixels) gerados no *pre-request script* ou lidos dos arquivos da TM-049, para a coleção ficar legível
+- [x] Job `api-postman` no CI: sobe o uvicorn com o modo diagnóstico ligado e roda `npx newman run ... --reporters cli,junit`; o relatório JUnit vira artefato do workflow
+- [x] Seção no README: como importar a coleção e o environment e como rodar com o newman
 
 **Validação:** `newman run docs/postman/API_MNIST.postman_collection.json -e docs/postman/API_MNIST.local.postman_environment.json` com 0 falhas, localmente e no CI.
 **Commits:** `test: adiciona coleção postman da api com testes de sucesso` · `test: adiciona casos de erro 400 422 e 500 na coleção postman` · `ci: executa coleção postman com newman no pipeline`
-
 ---
 
 #### TM-050 Escrever o roteiro do vídeo do Módulo 2
@@ -823,10 +822,10 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-046 | `main.py --modo api` + fix MCP | 16 | P2 | S3 | #84 | `fix/tm-046-cli-modo-api` | #116 | Done |
 | TM-047 | Streamlit consome API (opcional) | 16 | P3 | S3 | #85 | `feat/tm-047-streamlit-consome-api` | #117 | Done |
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | | Backlog |
-| TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | | In review |
+| TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | | Backlog |
 | TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | | Backlog |
-| TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | | Backlog |
+| TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | | In review |
 
 ### Grafo de dependências (caminho crítico em destaque)
 
