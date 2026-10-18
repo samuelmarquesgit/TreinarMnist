@@ -8,21 +8,42 @@ import chromadb
 logger = logging.getLogger(__name__)
 
 # ── Função de embedding com fallback gracioso ──────────────────────────────
+#
+# Criada na primeira utilização, e não no import: o SentenceTransformer baixa o modelo do
+# HuggingFace ao ser instanciado, e fazer isso no import obrigava qualquer código que importasse
+# este módulo (o servidor MCP e os testes dele, por exemplo) a ter acesso à internet.
 
-try:
-    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+_ef_padrao: Any = None
+_SENTENCE_TRANSFORMERS_OK = False
 
-    _ef_padrao: Any = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-    _SENTENCE_TRANSFORMERS_OK = True  # pragma: no cover
-except (ImportError, ValueError):
-    # Fallback: embedding padrão do ChromaDB (onnxruntime — sem dependência extra)
-    from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 
-    _ef_padrao = DefaultEmbeddingFunction()
-    _SENTENCE_TRANSFORMERS_OK = False
-    logger.warning(
-        "sentence_transformers não instalado — usando DefaultEmbeddingFunction do ChromaDB."
-    )
+def obter_funcao_embedding() -> Any:
+    """Devolve a função de embedding do RAG, criando-a só na primeira chamada.
+
+    Usa o ``SentenceTransformer`` (melhor qualidade) e, se ele não estiver instalado, o embedding
+    padrão do ChromaDB (onnxruntime, sem dependência extra).
+
+    Returns:
+        Função de embedding compartilhada pelas instâncias de :class:`SuporteRAG`.
+    """
+    global _ef_padrao, _SENTENCE_TRANSFORMERS_OK
+    if _ef_padrao is None:
+        try:
+            from chromadb.utils.embedding_functions import (
+                SentenceTransformerEmbeddingFunction,
+            )
+
+            _ef_padrao = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+            _SENTENCE_TRANSFORMERS_OK = True  # pragma: no cover
+        except (ImportError, ValueError):
+            from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+
+            _ef_padrao = DefaultEmbeddingFunction()
+            _SENTENCE_TRANSFORMERS_OK = False
+            logger.warning(
+                "sentence_transformers não instalado — usando DefaultEmbeddingFunction do ChromaDB."
+            )
+    return _ef_padrao
 
 
 class SuporteRAG:
@@ -45,7 +66,7 @@ class SuporteRAG:
 
         self.colecao = self.cliente.get_or_create_collection(
             name="suporte_mnist",
-            embedding_function=_ef_padrao,
+            embedding_function=obter_funcao_embedding(),
         )
         self._inicializar_base_conhecimento()
 
