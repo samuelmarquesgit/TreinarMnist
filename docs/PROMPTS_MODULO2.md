@@ -402,3 +402,23 @@
 - **Validação num venv limpo** só com `requirements-api.txt`: os 249 testes da API passam sem as dependências pesadas, condição para o job enxuto da TM-044.
 
 **Resultado:** 249 testes em `tests/api/` (na época), **100% de cobertura de `api/`**, acima do mínimo de 85%.
+
+---
+
+## P023 — TM-044 CI da API no GitHub Actions (#82)
+
+**Data:** 2026-10-17 · **Branch:** `ci/tm-044-ci-api`
+
+**Prompt (resumo):**
+> Continuar: job de CI da API com instalação leve, guarda da Fase 3, cobertura mínima e smoke test; resumo dos testes registrado em cada execução.
+
+**Decisões:**
+- **Job `api-qualidade-e-testes` instala só `requirements-api.txt`**: o próprio CI prova a independência da API.
+- **Guarda da Fase 3 no pipeline:** `grep` falha se aparecer `joblib.load`, `open(`, `read_bytes(` ou `read_text(` em `api/routers/`.
+- **Smoke test real:** sobe o Uvicorn, confere `/health` = ok e `/v1/predict` = 7 com o exemplo do Swagger.
+- **Resumo dos testes na página do Actions** (`.github/scripts/resumo_testes.py`, só biblioteca padrão): totais, falhas listadas e cobertura por pacote. Relatórios guardados por **30 dias** (antes, 1 dia), cobrindo o período de correção. É a melhoria de registro de testes discutida no início do projeto.
+- **Job principal ampliado:** ruff, mypy, cobertura e SonarCloud passam a incluir `api/` e `pipeline_offline/`.
+- **Actions fixadas por versão:** TruffleHog v3.99.2, Trivy v0.36.0 e `sonarqube-scan-action` v8.3.0, no lugar da `sonarcloud-github-action@master`, que está obsoleta.
+- **Achado:** um `sed` converteu o `ci.yml` para LF e o commit apareceu como arquivo inteiro alterado; refeito com CRLF antes do push.
+
+**Resultado:** Pipeline com 5 jobs (completo, API, segurança, SonarCloud e gate); o novo job entra no CI Gate obrigatório.
