@@ -298,3 +298,22 @@
 - **Antecipada em relação à TM-037**, para a rota de predição não precisar conter essa regra.
 
 **Resultado:** com o modelo real, o 7 limpo sai confiável e sem alerta, e a imagem saturada sai não confiável (atípica). 14 testes novos (168 em `tests/api/`), cobertura de 100%.
+
+---
+
+## P017 — TM-037 POST /v1/predict e /v1/predict/lote (#75)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-037-endpoint-predict`
+
+**Prompt (resumo):**
+> Continuar: endpoint de inferência que consome o schema validado, chama o serviço e devolve a predição com 200 (Fase 5).
+
+**Decisões:**
+- **Rotas finas:** o Pydantic valida (422), `Depends(obter_servico)` entrega o modelo em memória (503 se não houver), o serviço classifica (400 se a imagem for vazia) e a rota só converte entrada e saída. Sem `try/except` genérico: os erros sobem para os handlers da TM-040.
+- **`def` síncrono de propósito:** a inferência usa CPU, e o FastAPI roda rotas síncronas num *threadpool*, sem bloquear o *event loop*.
+- **Lote numa única chamada vetorizada** a `predict_proba`, com as predições na ordem recebida.
+- **Limite do lote em duas camadas:** o schema fixa o teto rígido de 100 (422) e a configuração `MNIST_API_TAMANHO_MAX_LOTE` pode reduzir esse limite, aplicado no serviço (400). Até aqui a configuração existia mas não era usada.
+- **Swagger:** `summary`, `description`, `response_description` e os erros 400/422/500/503 documentados com `SaidaErro`; o exemplo é o 7 real.
+- **Teste de que o modelo não é chamado** quando a validação falha.
+
+**Resultado:** 31 testes HTTP (199 em `tests/api/`), cobertura de 100%. Na API real, o exemplo do Swagger retorna 7 confiável e ruído retorna não confiável.
