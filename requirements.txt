@@ -1,63 +1,67 @@
+# Dependências completas da Plataforma Empresarial MNIST (Módulo 1) + API FastAPI (Módulo 2).
+# Versões fixas (==) para reprodutibilidade. Python suportado: 3.12 a 3.14. CI e Docker: 3.12.
+# Para rodar somente a API, use o arquivo enxuto requirements-api.txt.
+
 # Manipulação e Computação Científica
-numpy>=1.24.0
-pandas>=2.0.0
-scipy>=1.10.0
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
 
 # Aprendizado de Máquina e Estatística
-scikit-learn>=1.3.0
-joblib>=1.3.0
-
-# Deep Learning e Redes Neurais
-# tensorflow>=2.13.0; sys_platform != 'darwin' or platform_machine != 'arm64'
+scikit-learn==1.9.0
+joblib==1.6.0
 
 # Visão Computacional e Imagens
-Pillow>=10.0.0
-opencv-python-headless>=4.10.0
+Pillow==12.3.0
+opencv-python-headless==5.0.0.93
 
 # Visualização de Dados e Gráficos
-matplotlib>=3.7.0
-seaborn>=0.12.0
-plotly>=5.15.0
+matplotlib==3.11.1
+seaborn==0.13.2
+plotly==7.0.0
 
 # Interface Gráfica Frontend (Python Puro)
-streamlit>=1.28.0
-streamlit-drawable-canvas>=0.9.3
+streamlit==1.63.0
+streamlit-drawable-canvas==0.13.0
 
 # Banco de Dados Relacional (PostgreSQL)
-SQLAlchemy>=2.0.0
-psycopg2-binary>=2.9.0
+SQLAlchemy==2.0.52
+psycopg2-binary==2.9.12
 
 # Banco de Dados Não-Relacional (MongoDB)
-pymongo>=4.5.0
+pymongo==4.18.0
 
 # Banco de Dados Vetorial & RAG
-chromadb>=0.4.0
-sentence-transformers>=2.2.2
+chromadb==1.5.9
+sentence-transformers==6.0.1
 
-# Novos Desejáveis (timm e Pydantic)
-timm>=1.0.0
-pydantic>=2.5.0
-pydantic-settings>=2.2.0
+# Modelos de visão (ViT) e validação
+timm==1.0.29
+pydantic==2.13.5
+pydantic-settings==2.15.0
 
 # Protocolo MCP (Model Context Protocol) & Utilidades
-mcp>=1.0.0,<2.0.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
-pyyaml>=6.0.0
+mcp==1.29.1
+python-dotenv==1.2.3
+pyyaml==6.0.3
 
-# Ferramentas extras
-pytest>=8.0.0
-pytest-cov>=4.1.0
-flake8>=7.0.0
-mypy>=1.8.0
-ruff>=0.2.0
-langsmith>=0.1.0
-mcp<2.0.0
+# API REST de inferência (Módulo 2)
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+python-multipart==0.0.32
+httpx==0.28.1
 
-# Bibliotecas de Deep Learning (PyTorch)
+# Testes e qualidade
+pytest==9.1.1
+pytest-cov==7.1.0
+flake8==7.3.0
+mypy==2.3.1
+ruff==0.16.6
+
+# Bibliotecas de Deep Learning (PyTorch, build CPU)
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch>=2.0.0
-torchvision>=0.15.0
+torch==2.14.0
+torchvision==0.29.0
 
 # MLOps & Tracking
-mlflow>=2.10.0
+mlflow==3.16.0

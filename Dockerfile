@@ -1,5 +1,5 @@
 # Estagio 1: Build das dependencias
-FROM python:3.10-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
 
 # Estagio 2: Imagem final enxuta
-FROM python:3.10-slim
+FROM python:3.12-slim
 
 # Cria usuario nao-root por seguranca (Melhor pratica SecOps)
 RUN useradd -m -s /bin/bash mnist_user

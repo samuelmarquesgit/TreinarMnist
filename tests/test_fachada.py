@@ -140,13 +140,13 @@ def test_executar_benchmark_vazio():
 
 
 @patch("src.fachada.FachadaPipelineIA.treinar_modelo")
-def test_executar_benchmark_falha(mock_treinar):
+def test_executar_benchmark_falha(mock_treinar, tmp_path):
     fachada = FachadaPipelineIA()
     fachada.X_treino = np.array([[1]])
     fachada.X_teste = np.array([[2]])
     mock_treinar.side_effect = Exception("Falha simulada")
 
-    resultados = fachada.executar_benchmark(["RegressaoLogistica"], dir_saida="fake_dir")
+    resultados = fachada.executar_benchmark(["RegressaoLogistica"], dir_saida=str(tmp_path))
 
     res = resultados["RegressaoLogistica"]
     assert res.status == "erro"

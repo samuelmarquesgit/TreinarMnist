@@ -1,0 +1,32 @@
+# Nada de segredos, ambientes locais ou caches dentro das imagens Docker
+.env
+.git
+.github
+.venv
+venv
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.ruff_cache
+.pytest_cache
+.coverage
+coverage*.xml
+coverage_report.txt
+htmlcov
+junit*.xml
+
+# Dados e artefatos locais pesados (as imagens próprias em data/custom_digits continuam)
+data/torchvision_mnist
+data/mnist_cache.pkl
+artifacts
+chroma_db
+mlflow.db
+mlruns
+reports/*.db
+reports/*.json
+
+# Documentação de apoio que não roda em produção
+docs/diversos
+docs/pdf
+docs/Notebooks
+Claude outputs

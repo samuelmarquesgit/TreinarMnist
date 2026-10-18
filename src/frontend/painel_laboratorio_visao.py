@@ -226,10 +226,28 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
 
     st.divider()
     titulo_secao("Inferência e Ranking Top-K (Bubble Sort)")
+    from src.frontend.cliente_api import obter_url_api, prever_via_api
     from src.visao_computacional import processar_imagem_usuario
 
-    vetor = processar_imagem_usuario(img_array)
-    ranking_raw = _inferir_com_modelo(fachada, vetor)
+    # Módulo 2: com MNIST_API_URL definida, a inferência vai para a API FastAPI
+    resposta_api = None
+    url_api = obter_url_api()
+    if url_api:
+        resposta_api = prever_via_api(img_array, url_api)
+        if resposta_api:
+            st.caption(
+                f"🟢 API online · {resposta_api['nome_modelo']} v{resposta_api['versao_modelo']} · "
+                f"{resposta_api['tempo_inferencia_ms']:.1f} ms"
+            )
+        else:
+            st.caption("🔴 API offline ou imagem recusada · usando o modelo local")
+
+    ranking_raw: list[tuple] | None
+    if resposta_api:
+        ranking_raw = list(enumerate(resposta_api["probabilidades"]))
+    else:
+        vetor = processar_imagem_usuario(img_array)
+        ranking_raw = _inferir_com_modelo(fachada, vetor)
     if not ranking_raw:
         st.info("Treine um modelo no **Painel de Benchmarks** para ver a inferência aqui.")
         return
@@ -244,7 +262,11 @@ def _renderizar_pipeline_e_inferencia(fachada, img_array: np.ndarray) -> None:
 
     probs_array = np.array([p for _, p in sorted(ranking_raw, key=lambda x: x[0])])
     avaliacao = ValidadorFalsaCerteza().avaliar_predicao(probs_array, list(range(10)))
-    if avaliacao["alerta_overconfidence"]:  # type: ignore[call-overload]
+    if resposta_api:
+        alerta = bool(resposta_api["alerta_falsa_certeza"])
+    else:
+        alerta = bool(avaliacao["alerta_overconfidence"])  # type: ignore[call-overload]
+    if alerta:
         st.warning(
             "⚠️ Alerta de Falsa Certeza: confiança alta em classe potencialmente desconhecida."
         )

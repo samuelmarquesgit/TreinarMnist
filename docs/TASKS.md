@@ -3,6 +3,7 @@
 > **Versão:** 1.0  
 > **Data:** 2026-09-11  
 > **Fonte de verdade:** `docs/BACKLOG.md` (backlog priorizado completo)  
+> **Módulo 2 (API FastAPI):** as tarefas TM-023 em diante estão em [`docs/TASKS_MODULO2.md`](TASKS_MODULO2.md)  
 
 ---
 
