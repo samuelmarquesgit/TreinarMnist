@@ -1,5 +1,7 @@
 # Roteiro de Gravação de Vídeo — Apresentação do Projeto
 
+> 📌 **Documento histórico da primeira entrega** (Mini-Projeto do Módulo 2 do curso, set/2026), chamada de **"Módulo 1"** neste repositório para diferenciá-la do Projeto Avaliativo atual. O estado atual (API FastAPI) está no [README](../README.md) e em [`TASKS_MODULO2.md`](TASKS_MODULO2.md); os números e comandos abaixo refletem setembro/2026.
+
 > **Diretrizes Oficiais (Item 5.4 do Edital):**
 > - **Tempo máximo:** 10 minutos
 > - **Formato:** Horizontal (recomendado), rosto visível, boa iluminação
