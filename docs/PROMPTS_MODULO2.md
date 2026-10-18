@@ -317,3 +317,21 @@
 - **Teste de que o modelo não é chamado** quando a validação falha.
 
 **Resultado:** 31 testes HTTP (199 em `tests/api/`), cobertura de 100%. Na API real, o exemplo do Swagger retorna 7 confiável e ruído retorna não confiável.
+
+---
+
+## P018 — TM-034 Pré-processamento de imagem na API (#72)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-034-pre-processamento-imagem`
+
+**Prompt (resumo):**
+> Continuar: versão própria e enxuta do pipeline de visão do Módulo 1 dentro da API, com teste de paridade.
+
+**Decisões:**
+- **Porte fiel, etapa por etapa,** de `src/visao_computacional.py` (cinza, fundo preto, bounding box por contornos, 20×20 proporcional, centro de massa em 28×28, [0, 1]), sem importar `src/`.
+- **Entrada em bytes**, com validação da assinatura real do arquivo (*magic bytes* de PNG/JPEG) antes de decodificar.
+- **Imagem sem traço = 400** (`ErroEntradaInvalida`), em vez dos zeros silenciosos do Módulo 1.
+- **Decodificação com `IMREAD_COLOR`** + `BGR2GRAY`, o mesmo caminho do `cv2.imread` do original, condição para a paridade exata.
+- **Ajuste de tipagem:** os stubs do OpenCV devolvem tipos genéricos; `.astype(np.uint8, copy=False)` deixa o tipo explícito sem custo.
+
+**Resultado:** **paridade numérica exata** (diferença máxima 0,0) com o Módulo 1 na imagem própria e numa imagem sintética. O modelo real reconhece `meu_numero.jpeg` como 6 (confiança 0,986), conferido visualmente. 19 testes novos (218 em `tests/api/`), cobertura de 100%. O teste de paridade só depende de `cv2` e `numpy`, então roda também no job enxuto do CI.
