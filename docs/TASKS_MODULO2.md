@@ -589,18 +589,17 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-040 Implementar o tratamento centralizado de exceções
 **feat · P0 · EPIC-15 · `api`, `fase-5` · `feat/tm-040-tratamento-erros` · TM-032, TM-035**
 
-- [ ] `api/core/excecoes.py`: `ErroApiMnist` (base) → `ErroEntradaInvalida` (400), `ErroModeloIndisponivel` (503), `ErroArtefatoInvalido` (interno)
-- [ ] `app.add_exception_handler(...)` em `main.py` para:
+- [x] `api/core/excecoes.py`: `ErroApiMnist` (base) → `ErroEntradaInvalida` (400), `ErroModeloIndisponivel` (503), `ErroArtefatoInvalido` (interno)
+- [x] `app.add_exception_handler(...)` em `main.py` para:
   - `ErroEntradaInvalida` → 400 + `SaidaErro`
   - `ErroModeloIndisponivel` → 503 + `SaidaErro`
   - `RequestValidationError` → **422** + `SaidaErro` com `detalhes` traduzidos (campo, mensagem, valor recebido), mantendo o status 422
   - `Exception` → **500** + mensagem genérica, **sem stack trace na resposta**, com `logger.exception` e `id_requisicao`
-- [ ] Nenhuma rota usa `try/except` genérico: os erros sobem para os handlers
-- [ ] Rota de diagnóstico `GET /v1/_diagnostico/erro-interno`, que lança uma exceção proposital. Ela só é registrada quando `MNIST_API_HABILITAR_DIAGNOSTICO=true` (padrão `false`, fora do Swagger com `include_in_schema=False`). Serve para provar o 500 no Postman/newman (TM-052) e no vídeo sem alterar código
+- [x] Nenhuma rota usa `try/except` genérico: os erros sobem para os handlers
+- [x] Rota de diagnóstico `GET /v1/_diagnostico/erro-interno`, que lança uma exceção proposital. Ela só é registrada quando `MNIST_API_HABILITAR_DIAGNOSTICO=true` (padrão `false`, fora do Swagger com `include_in_schema=False`). Serve para provar o 500 no Postman/newman (TM-052) e no vídeo sem alterar código
 
 **Validação:** testes da TM-043 cobrem cada código; forçar um erro interno com `monkeypatch` → 500 com corpo padronizado e servidor de pé.
 **Commits:** `feat: implementa hierarquia de exceções da api` · `feat: implementa handlers padronizados para 400 422 500 e 503`
-
 ---
 
 #### TM-041 Incluir o guardrail de falsa certeza na resposta
@@ -823,11 +822,11 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | #103 | Done |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
 | TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
-| TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | | In review |
+| TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | #105 | Done |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | Backlog |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |
-| TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | | Backlog |
+| TM-040 | Tratamento de exceções | 15 | P0 | S2 | #78 | `feat/tm-040-tratamento-erros` | | In review |
 | TM-041 | Guardrail de falsa certeza | 15 | P1 | S3 | #79 | `feat/tm-041-guardrail-confianca` | | Backlog |
 | TM-042 | Middleware de observabilidade | 15 | P2 | S3 | #80 | `feat/tm-042-middleware-observabilidade` | | Backlog |
 | TM-043 | Suíte de testes da API | 16 | P0 | S3 | #81 | `test/tm-043-testes-api` | | Backlog |
