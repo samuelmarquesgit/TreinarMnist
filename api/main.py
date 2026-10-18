@@ -18,7 +18,7 @@ from api.core.config import Configuracoes, obter_configuracoes
 from api.core.excecoes import ErroArtefatoInvalido
 from api.core.manipuladores import registrar_manipuladores
 from api.core.registrador_log import configurar_logger, obter_logger
-from api.routers import diagnostico, saude
+from api.routers import diagnostico, predicao, saude
 from api.services.carregador_artefato import carregar_artefato
 from api.services.servico_inferencia import ServicoInferencia
 
@@ -74,6 +74,7 @@ async def ciclo_de_vida(aplicacao: FastAPI) -> AsyncIterator[None]:
             artefato.metadados,
             limiar_confianca=config.limiar_confianca,
             limiar_entropia=config.limiar_entropia,
+            tamanho_max_lote=config.tamanho_max_lote,
         )
         logger.info(
             "Modelo %s v%s carregado em %.0f ms (sha256 %s…).",
@@ -116,6 +117,7 @@ def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
     aplicacao.state.config = config
     registrar_manipuladores(aplicacao)
     aplicacao.include_router(saude.roteador)
+    aplicacao.include_router(predicao.roteador)
     if config.habilitar_diagnostico:
         logger.warning("Rota de diagnóstico de erro 500 HABILITADA (não use em produção).")
         aplicacao.include_router(diagnostico.roteador)
