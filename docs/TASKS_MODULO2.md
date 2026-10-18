@@ -460,11 +460,12 @@ O projeto anterior usa **apenas treino/teste (80/20)**. O edital do Módulo 2 ex
 #### TM-030 Criar o esqueleto do pacote `api/` e a configuração
 **feat · P0 · EPIC-15 · `api`, `fase-2` · `feat/tm-030-esqueleto-api` · TM-025**
 
-- [ ] Criar a estrutura da §3.1 com `__init__.py` em todos os subpacotes
-- [ ] `api/core/config.py`: classe `Configuracoes(BaseSettings)` com prefixo `MNIST_API_`: `caminho_modelo="models/modelo_mnist_v1.joblib"`, `caminho_metricas`, `caminho_checksum`, `versao_api="2.0.0"`, `limiar_confianca=0.85`, `limiar_entropia=0.3`, `tamanho_max_upload_bytes=2_097_152`, `tamanho_max_lote=100`
-- [ ] Caminhos **relativos à raiz do projeto**, resolvidos com `Path(__file__).resolve().parents[2]` (nunca `C:/Users/...`)
-- [ ] `api/main.py` mínimo: `FastAPI(title="API MNIST — Classificação de Dígitos", version=..., description=...)` com tags OpenAPI em pt-BR
-- [ ] Adicionar `MNIST_API_*` ao `.env.exemplo`
+- [x] Criar a estrutura da §3.1 com `__init__.py` em todos os subpacotes (`core`, `schemas`, `services`, `routers`; os módulos internos entram nas tarefas seguintes)
+- [x] `api/core/config.py`: classe `Configuracoes(BaseSettings)` com prefixo `MNIST_API_`: `caminho_modelo="models/modelo_mnist_v1.joblib"`, `caminho_metricas`, `caminho_checksum`, `versao_api="2.0.0"`, `limiar_confianca=0.85`, `limiar_entropia=0.3`, `tamanho_max_upload_bytes=2_097_152`, `tamanho_max_lote=100`
+- [x] Caminhos **relativos à raiz do projeto**, resolvidos com `Path(__file__).resolve().parents[2]` (nunca `C:/Users/...`), garantido por teste que procura caminhos absolutos em `api/`
+- [x] `api/main.py` mínimo: `FastAPI(title="API MNIST — Classificação de Dígitos", version=..., description=...)` com tags OpenAPI em pt-BR, criado pela fábrica `criar_aplicacao(config)` (usada também pelos testes)
+- [x] Adicionar `MNIST_API_*` ao `.env.exemplo` (validado: a própria classe de configuração lê o arquivo)
+- [x] Antecipar o teste de independência (TM-043): processo limpo com `import api.main` sem `src`, `torch`, `streamlit`, `chromadb`, `sqlalchemy`, `pymongo` ou `mlflow`
 
 **Validação:** `uvicorn api.main:app --reload` sobe; `http://localhost:8000/docs` abre.
 **Commits:** `feat: cria estrutura em camadas do pacote api` · `feat: implementa configurações da api com pydantic-settings`
@@ -819,8 +820,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-026 | Split treino/validação/teste | 14 | P0 | S1 | #64 | `feat/tm-026-split-treino-validacao-teste` | #96 | Done |
 | TM-027 | Treinar modelo campeão (MLP) | 14 | P0 | S1 | #65 | `feat/tm-027-treino-modelo-campeao` | #97 | Done |
 | TM-028 | Serializar pacote do modelo | 14 | P0 | S1 | #66 | `feat/tm-028-serializacao-modelo` | #98 | Done |
-| TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | | In review |
-| TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | Backlog |
+| TM-029 | Relatório de métricas | 14 | P0 | S1 | #67 | `feat/tm-029-relatorio-metricas` | #99 | Done |
+| TM-030 | Esqueleto `api/` + config | 15 | P0 | S2 | #68 | `feat/tm-030-esqueleto-api` | | In review |
 | TM-031 | Schemas de entrada | 15 | P0 | S2 | #69 | `feat/tm-031-schemas-entrada` | | Backlog |
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | | Backlog |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | | Backlog |
