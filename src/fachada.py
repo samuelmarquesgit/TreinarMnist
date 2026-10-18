@@ -189,6 +189,32 @@ class FachadaPipelineIA:
 
         return modelo
 
+    @staticmethod
+    def _caminho_seguro_modelo(nome_modelo: str, extensao: str) -> str:
+        """Monta o caminho do arquivo do modelo impedindo *path traversal* (SonarCloud S2083).
+
+        Aceita apenas nomes registrados na ``FabricaModelos`` e garante que o caminho resolvido
+        fique dentro de ``artifacts/modelos/``. Sem isso, um nome como ``../../x`` vindo do MCP ou
+        do Streamlit gravaria fora da pasta de modelos.
+
+        Args:
+            nome_modelo: Chave do modelo (deve existir na fábrica).
+            extensao: Extensão do arquivo (``.joblib`` ou ``.pkl``).
+
+        Returns:
+            Caminho do arquivo dentro de ``artifacts/modelos/``.
+
+        Raises:
+            ValueError: Se o nome não for registrado ou o caminho escapar da pasta de modelos.
+        """
+        if not FabricaModelos.esta_registrado(nome_modelo):
+            raise ValueError(f"Nome de modelo não registrado: {nome_modelo!r}")
+        base = os.path.realpath(_DIR_MODELOS)
+        caminho = os.path.realpath(os.path.join(base, f"{nome_modelo}{extensao}"))
+        if os.path.commonpath([base, caminho]) != base:
+            raise ValueError(f"Caminho de modelo fora de {_DIR_MODELOS}: {nome_modelo!r}")
+        return caminho
+
     def _persistir_modelo(self, nome_modelo: str, modelo: ModeloAbstratoIA) -> None:
         """Salva o modelo treinado em disco usando joblib.
 
@@ -198,9 +224,12 @@ class FachadaPipelineIA:
         Args:
             nome_modelo: Identificador do modelo (usado como nome de arquivo).
             modelo: Instância de ``ModeloAbstratoIA`` já treinada.
+
+        Raises:
+            ValueError: Se o nome não for um modelo registrado (proteção contra path traversal).
         """
+        caminho = self._caminho_seguro_modelo(nome_modelo, ".joblib")
         os.makedirs(_DIR_MODELOS, exist_ok=True)
-        caminho = os.path.join(_DIR_MODELOS, f"{nome_modelo}.joblib")
         try:
             import joblib  # type: ignore[import-untyped]
 
@@ -209,7 +238,7 @@ class FachadaPipelineIA:
         except ImportError:
             import pickle
 
-            caminho_pkl = os.path.join(_DIR_MODELOS, f"{nome_modelo}.pkl")
+            caminho_pkl = self._caminho_seguro_modelo(nome_modelo, ".pkl")
             with open(caminho_pkl, "wb") as fh:
                 pickle.dump(modelo, fh)
             logger.info("Modelo '%s' salvo (pickle) em disco: %s", nome_modelo, caminho_pkl)
