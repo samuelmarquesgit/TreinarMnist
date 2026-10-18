@@ -10,7 +10,6 @@ O serviço nunca lê o disco: o Pipeline chega pronto no construtor, criado uma 
 
 from __future__ import annotations
 
-import math
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -19,6 +18,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from api.core.excecoes import ErroEntradaInvalida
+from api.services import guardrail_confianca
+from api.services.guardrail_confianca import entropia_normalizada
+
+__all__ = ["ResultadoPredicao", "ServicoInferencia", "entropia_normalizada"]
 
 N_PIXELS = 784
 N_CLASSES = 10
@@ -26,46 +29,49 @@ N_CLASSES = 10
 
 @dataclass(frozen=True)
 class ResultadoPredicao:
-    """Predição de uma imagem.
+    """Predição de uma imagem, já avaliada pelo guardrail de falsa certeza.
 
     Attributes:
         classe_prevista: Dígito com maior probabilidade.
         confianca: Maior probabilidade.
         probabilidades: Distribuição completa (índice = dígito).
         entropia: Entropia de Shannon normalizada em [0, 1].
+        alerta_falsa_certeza: Certeza alta numa entrada atípica.
+        confiavel: Certeza alta numa entrada típica do MNIST.
+        motivos_atipicidade: Características da imagem fora da faixa do MNIST.
     """
 
     classe_prevista: int
     confianca: float
     probabilidades: list[float]
     entropia: float
-
-
-def entropia_normalizada(probabilidades: NDArray[np.floating]) -> float:
-    """Entropia de Shannon dividida pelo máximo (``log 10``): 0 = certeza, 1 = uniforme.
-
-    Args:
-        probabilidades: Distribuição sobre as 10 classes.
-
-    Returns:
-        Valor em [0, 1].
-    """
-    p = np.clip(np.asarray(probabilidades, dtype=np.float64), 1e-12, 1.0)
-    return float(min(1.0, max(0.0, -np.sum(p * np.log(p)) / math.log(len(p)))))
+    alerta_falsa_certeza: bool
+    confiavel: bool
+    motivos_atipicidade: tuple[str, ...]
 
 
 class ServicoInferencia:
     """Executa a inferência com o Pipeline carregado no ``lifespan``."""
 
-    def __init__(self, pipeline: Any, metadados: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        pipeline: Any,
+        metadados: dict[str, Any],
+        limiar_confianca: float = 0.85,
+        limiar_entropia: float = 0.3,
+    ) -> None:
         """Guarda o modelo em memória.
 
         Args:
             pipeline: Objeto com ``predict_proba`` (Pipeline do scikit-learn).
             metadados: Metadados do artefato (nome e versão do modelo).
+            limiar_confianca: Confiança mínima para uma predição confiável.
+            limiar_entropia: Entropia normalizada máxima para uma predição confiável.
         """
         self._pipeline = pipeline
         self.metadados = metadados
+        self.limiar_confianca = limiar_confianca
+        self.limiar_entropia = limiar_entropia
 
     @property
     def nome_modelo(self) -> str:
@@ -99,16 +105,24 @@ class ServicoInferencia:
             )
         return matriz
 
-    def _resultados(self, probabilidades: NDArray[np.floating]) -> list[ResultadoPredicao]:
+    def _resultados(
+        self, probabilidades: NDArray[np.floating], matriz: NDArray[np.float32]
+    ) -> list[ResultadoPredicao]:
         resultados = []
-        for linha in probabilidades:
+        for linha, pixels in zip(probabilidades, matriz, strict=True):
             classe = int(np.argmax(linha))
+            avaliacao = guardrail_confianca.avaliar(
+                linha, pixels, self.limiar_confianca, self.limiar_entropia
+            )
             resultados.append(
                 ResultadoPredicao(
                     classe_prevista=classe,
                     confianca=float(linha[classe]),
                     probabilidades=[float(v) for v in linha],
-                    entropia=entropia_normalizada(linha),
+                    entropia=avaliacao.entropia,
+                    alerta_falsa_certeza=avaliacao.alerta_falsa_certeza,
+                    confiavel=avaliacao.confiavel,
+                    motivos_atipicidade=avaliacao.motivos,
                 )
             )
         return resultados
@@ -149,4 +163,4 @@ class ServicoInferencia:
         inicio = time.perf_counter()
         probabilidades = self._pipeline.predict_proba(matriz)
         ms = (time.perf_counter() - inicio) * 1000
-        return self._resultados(probabilidades), ms
+        return self._resultados(probabilidades, matriz), ms
