@@ -16,8 +16,9 @@ from fastapi import FastAPI
 
 from api.core.config import Configuracoes, obter_configuracoes
 from api.core.excecoes import ErroArtefatoInvalido
+from api.core.manipuladores import registrar_manipuladores
 from api.core.registrador_log import configurar_logger, obter_logger
-from api.routers import saude
+from api.routers import diagnostico, saude
 from api.services.carregador_artefato import carregar_artefato
 from api.services.servico_inferencia import ServicoInferencia
 
@@ -108,7 +109,11 @@ def criar_aplicacao(config: Configuracoes | None = None) -> FastAPI:
         lifespan=ciclo_de_vida,
     )
     aplicacao.state.config = config
+    registrar_manipuladores(aplicacao)
     aplicacao.include_router(saude.roteador)
+    if config.habilitar_diagnostico:
+        logger.warning("Rota de diagnóstico de erro 500 HABILITADA (não use em produção).")
+        aplicacao.include_router(diagnostico.roteador)
     return aplicacao
 
 
