@@ -78,9 +78,10 @@ def resumo_cobertura(caminho: Path) -> list[str]:
 
 
 def main(argumentos: list[str]) -> None:
-    """Imprime o resumo completo no stdout."""
-    junit, cobertura, titulo = Path(argumentos[0]), Path(argumentos[1]), argumentos[2]
-    print("\n".join([f"## 🧪 {titulo}", "", *resumo_junit(junit), *resumo_cobertura(cobertura)]))
+    """Imprime o resumo completo no stdout (use ``-`` no lugar da cobertura para omiti-la)."""
+    junit, cobertura, titulo = Path(argumentos[0]), argumentos[1], argumentos[2]
+    secao_cobertura = [] if cobertura == "-" else resumo_cobertura(Path(cobertura))
+    print("\n".join([f"## 🧪 {titulo}", "", *resumo_junit(junit), *secao_cobertura]))
 
 
 if __name__ == "__main__":
