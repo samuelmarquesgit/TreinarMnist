@@ -540,13 +540,12 @@ Para manter a independência, a API ganha **sua própria versão enxuta** do pip
 #### TM-036 Implementar `GET /health`
 **feat · P0 · EPIC-15 · `api`, `fase-5` · `feat/tm-036-endpoint-health` · TM-035**
 
-- [ ] `api/routers/saude.py` com `APIRouter(tags=["Monitoramento"])`
-- [ ] Sempre **200 OK** com `SaidaSaude`: `status="ok"` se o modelo está em memória, `"degradado"` se não; `modelo_carregado`, nome e versão do modelo, `versao_api`, `tempo_atividade_segundos`
-- [ ] Não executa inferência nem acessa o disco
+- [x] `api/routers/saude.py` com `APIRouter(tags=["Monitoramento"])`
+- [x] Sempre **200 OK** com `SaidaSaude`: `status="ok"` se o modelo está em memória, `"degradado"` se não; `modelo_carregado`, nome e versão do modelo, `versao_api`, `tempo_atividade_segundos`
+- [x] Não executa inferência nem acessa o disco
 
 **Validação:** `curl /health` → 200 nos dois cenários (com e sem artefato).
 **Commits:** `feat: implementa endpoint de saúde com estado do modelo`
-
 ---
 
 #### TM-037 Implementar `POST /v1/predict` e `POST /v1/predict/lote`
@@ -823,8 +822,8 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | TM-032 | Schemas de saída e erro | 15 | P0 | S2 | #70 | `feat/tm-032-schemas-saida` | #102 | Done |
 | TM-033 | Serviço de inferência | 15 | P0 | S2 | #71 | `feat/tm-033-servico-inferencia` | #103 | Done |
 | TM-034 | Pré-processamento de imagem | 15 | P1 | S2 | #72 | `feat/tm-034-pre-processamento-imagem` | | Backlog |
-| TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | | In review |
-| TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | | Backlog |
+| TM-035 | Lifespan | 15 | P0 | S2 | #73 | `feat/tm-035-lifespan` | #104 | Done |
+| TM-036 | `GET /health` | 15 | P0 | S2 | #74 | `feat/tm-036-endpoint-health` | | In review |
 | TM-037 | `POST /v1/predict` (+ lote) | 15 | P0 | S2 | #75 | `feat/tm-037-endpoint-predict` | | Backlog |
 | TM-038 | `POST /v1/predict/imagem` | 15 | P1 | S3 | #76 | `feat/tm-038-endpoint-predict-imagem` | | Backlog |
 | TM-039 | `GET /v1/modelo` | 15 | P2 | S3 | #77 | `feat/tm-039-endpoint-modelo` | | Backlog |

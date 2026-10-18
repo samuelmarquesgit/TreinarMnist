@@ -7,6 +7,8 @@ dependência. Se o modelo não carregou no ``lifespan``, a dependência lança
 
 from __future__ import annotations
 
+import time
+
 from fastapi import Request
 
 from api.core.config import Configuracoes
@@ -33,6 +35,32 @@ def obter_servico(request: Request) -> ServicoInferencia:
             "O modelo não está carregado em memória. Verifique o GET /health e o log de inicialização."
         )
     return servico
+
+
+def obter_servico_opcional(request: Request) -> ServicoInferencia | None:
+    """Entrega o serviço se o modelo estiver em memória, ou ``None`` (usado pelo ``/health``).
+
+    Args:
+        request: Requisição atual.
+
+    Returns:
+        O serviço ou ``None``, sem lançar exceção.
+    """
+    servico: ServicoInferencia | None = getattr(request.app.state, "servico", None)
+    return servico
+
+
+def obter_tempo_atividade(request: Request) -> float:
+    """Segundos desde que o ``lifespan`` iniciou a aplicação.
+
+    Args:
+        request: Requisição atual.
+
+    Returns:
+        Tempo de atividade em segundos (0 se o ``lifespan`` ainda não rodou).
+    """
+    inicio: float | None = getattr(request.app.state, "inicio", None)
+    return 0.0 if inicio is None else max(0.0, time.monotonic() - inicio)
 
 
 def obter_artefato(request: Request) -> ArtefatoModelo:
