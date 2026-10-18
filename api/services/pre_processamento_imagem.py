@@ -4,7 +4,8 @@ Versão enxuta e independente de ``src/visao_computacional.py`` (Desafio C do M�
 pode importar ``src/``. O algoritmo é o mesmo, etapa por etapa, e um teste garante a paridade
 numérica com o original:
 
-1. validar a assinatura do arquivo (PNG ou JPEG) e decodificar os bytes;
+1. validar a assinatura do arquivo (PNG ou JPEG), conferir no cabeçalho que a resolução não passa
+   do limite de pixels e só então decodificar os bytes;
 2. converter para escala de cinza;
 3. garantir fundo preto e traço claro (inverte se a média > 127, como em papel branco);
 4. recortar a *bounding box* do traço (limiar 20, contornos externos);
@@ -14,9 +15,16 @@ numérica com o original:
 
 Diferença intencional: o original devolve zeros quando não acha traço; aqui isso é um erro de
 entrada (400), porque classificar uma imagem vazia não faz sentido.
+
+Proteção contra "bomba de descompressão": um PNG de poucos KB pode declarar 15000×15000 pixels
+e ocupar mais de 1 GB de RAM ao ser decodificado. Por isso a largura e a altura são lidas do
+cabeçalho (IHDR no PNG, marcador SOF no JPEG) **antes** do ``cv2.imdecode``, e a imagem é
+recusada com 400 acima de ``limite_pixels``.
 """
 
 from __future__ import annotations
+
+import struct
 
 import cv2
 import numpy as np
@@ -31,6 +39,10 @@ ASSINATURAS = {
 LIMIAR_BINARIZACAO = 20
 TAMANHO_INTERNO = 20
 TAMANHO_CANVAS = 28
+LIMITE_PIXELS_PADRAO = 25_000_000
+"""Resolução máxima aceita (25 megapixels): folga para fotos de celular de 12 MP, mas recusa
+imagens que estourariam a memória ao serem decodificadas."""
+MARCADORES_SOF_JPEG = frozenset(range(0xC0, 0xD0)) - {0xC4, 0xC8, 0xCC}
 
 
 def detectar_formato(conteudo: bytes) -> str:
@@ -61,31 +73,122 @@ def detectar_formato(conteudo: bytes) -> str:
     )
 
 
-def decodificar_cinza(conteudo: bytes) -> NDArray[np.uint8]:
+def ler_dimensoes(conteudo: bytes) -> tuple[int, int] | None:
+    """Lê largura e altura do cabeçalho do PNG ou JPEG sem decodificar os pixels.
+
+    Args:
+        conteudo: Bytes de um arquivo que já passou por :func:`detectar_formato`.
+
+    Returns:
+        ``(largura, altura)`` ou ``None`` se o cabeçalho estiver ausente ou malformado.
+    """
+    if conteudo.startswith(b"\x89PNG"):
+        if len(conteudo) < 24 or conteudo[12:16] != b"IHDR":
+            return None
+        largura, altura = struct.unpack(">II", conteudo[16:24])
+        return int(largura), int(altura)
+    return _ler_dimensoes_jpeg(conteudo)
+
+
+def _ler_dimensoes_jpeg(conteudo: bytes) -> tuple[int, int] | None:
+    """Percorre os marcadores do JPEG até o SOF (*Start of Frame*), que guarda a resolução.
+
+    Args:
+        conteudo: Bytes de um JPEG.
+
+    Returns:
+        ``(largura, altura)`` ou ``None`` se não houver SOF antes dos dados da imagem.
+    """
+    posicao, total = 2, len(conteudo)
+    while posicao + 4 <= total:
+        if conteudo[posicao] != 0xFF:
+            return None
+        marcador = conteudo[posicao + 1]
+        if marcador == 0xFF:  # byte de preenchimento
+            posicao += 1
+            continue
+        if marcador == 0x01 or 0xD0 <= marcador <= 0xD8:  # marcadores sem comprimento
+            posicao += 2
+            continue
+        if marcador in (0xD9, 0xDA):  # fim da imagem ou início dos dados antes do SOF
+            return None
+        comprimento = int.from_bytes(conteudo[posicao + 2 : posicao + 4], "big")
+        if comprimento < 2:
+            return None
+        if marcador in MARCADORES_SOF_JPEG:
+            if posicao + 9 > total:
+                return None
+            altura = int.from_bytes(conteudo[posicao + 5 : posicao + 7], "big")
+            largura = int.from_bytes(conteudo[posicao + 7 : posicao + 9], "big")
+            return largura, altura
+        posicao += 2 + comprimento
+    return None
+
+
+def _erro_imagem_corrompida() -> ErroEntradaInvalida:
+    """Monta o erro 400 de arquivo que não pode ser decodificado."""
+    return ErroEntradaInvalida(
+        "Não foi possível decodificar a imagem: o arquivo parece corrompido.",
+        detalhes=[
+            {
+                "campo": "arquivo",
+                "mensagem": "Falha na decodificação",
+                "tipo": "imagem_corrompida",
+            }
+        ],
+    )
+
+
+def validar_resolucao(conteudo: bytes, limite_pixels: int) -> None:
+    """Recusa, antes de decodificar, imagens com cabeçalho inválido ou resolução excessiva.
+
+    Args:
+        conteudo: Bytes de um PNG ou JPEG.
+        limite_pixels: Número máximo de pixels (largura × altura).
+
+    Raises:
+        ErroEntradaInvalida: Cabeçalho ilegível (imagem corrompida) ou resolução acima do limite.
+    """
+    dimensoes = ler_dimensoes(conteudo)
+    if dimensoes is None or 0 in dimensoes:
+        raise _erro_imagem_corrompida()
+    largura, altura = dimensoes
+    if largura * altura > limite_pixels:
+        raise ErroEntradaInvalida(
+            f"Imagem de {largura}×{altura} pixels acima do limite de "
+            f"{limite_pixels / 1_000_000:g} megapixels: reduza a resolução antes de enviar.",
+            detalhes=[
+                {
+                    "campo": "arquivo",
+                    "mensagem": f"Máximo de {limite_pixels} pixels (largura × altura)",
+                    "tipo": "imagem_grande_demais",
+                    "valor_recebido": f"{largura}x{altura}",
+                }
+            ],
+        )
+
+
+def decodificar_cinza(
+    conteudo: bytes, limite_pixels: int = LIMITE_PIXELS_PADRAO
+) -> NDArray[np.uint8]:
     """Decodifica os bytes e converte para escala de cinza (mesmo caminho do ``cv2.imread``).
 
     Args:
         conteudo: Bytes de um PNG ou JPEG.
+        limite_pixels: Resolução máxima aceita, conferida no cabeçalho antes de decodificar.
 
     Returns:
         Imagem ``(H, W)`` em ``uint8``.
 
     Raises:
-        ErroEntradaInvalida: Se o arquivo estiver corrompido ou não for decodificável.
+        ErroEntradaInvalida: Se o arquivo estiver corrompido, não for decodificável ou tiver
+            resolução acima do limite.
     """
     detectar_formato(conteudo)
+    validar_resolucao(conteudo, limite_pixels)
     imagem = cv2.imdecode(np.frombuffer(conteudo, dtype=np.uint8), cv2.IMREAD_COLOR)
-    if imagem is None:
-        raise ErroEntradaInvalida(
-            "Não foi possível decodificar a imagem: o arquivo parece corrompido.",
-            detalhes=[
-                {
-                    "campo": "arquivo",
-                    "mensagem": "Falha na decodificação",
-                    "tipo": "imagem_corrompida",
-                }
-            ],
-        )
+    if imagem is None or imagem.shape[0] * imagem.shape[1] > limite_pixels:
+        raise _erro_imagem_corrompida()
     return cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY).astype(np.uint8, copy=False)
 
 
@@ -176,19 +279,23 @@ def centralizar_por_centro_de_massa(imagem: NDArray[np.uint8]) -> NDArray[np.uin
     return canvas
 
 
-def bytes_para_vetor_mnist(conteudo: bytes) -> NDArray[np.float32]:
+def bytes_para_vetor_mnist(
+    conteudo: bytes, limite_pixels: int = LIMITE_PIXELS_PADRAO
+) -> NDArray[np.float32]:
     """Executa o pipeline completo: bytes de PNG/JPEG → vetor ``(1, 784)`` em [0, 1].
 
     Args:
         conteudo: Bytes do arquivo enviado.
+        limite_pixels: Resolução máxima aceita (largura × altura).
 
     Returns:
         Matriz ``(1, 784)`` em ``float32``, no mesmo formato do MNIST.
 
     Raises:
-        ErroEntradaInvalida: Formato não suportado, arquivo corrompido ou imagem sem traço.
+        ErroEntradaInvalida: Formato não suportado, arquivo corrompido, resolução acima do
+            limite ou imagem sem traço.
     """
-    cinza = garantir_fundo_preto(decodificar_cinza(conteudo))
+    cinza = garantir_fundo_preto(decodificar_cinza(conteudo, limite_pixels))
     canvas = centralizar_por_centro_de_massa(redimensionar_proporcional(recortar_traco(cinza)))
     return (canvas.astype(np.float32) / 255.0).reshape(1, TAMANHO_CANVAS * TAMANHO_CANVAS)
 
@@ -197,7 +304,10 @@ TIPOS_ACEITOS = {"image/png", "image/jpeg", "image/jpg"}
 
 
 def preparar_upload(
-    conteudo: bytes, tipo_declarado: str | None, limite_bytes: int
+    conteudo: bytes,
+    tipo_declarado: str | None,
+    limite_bytes: int,
+    limite_pixels: int = LIMITE_PIXELS_PADRAO,
 ) -> NDArray[np.float32]:
     """Valida o arquivo enviado e o converte para o formato MNIST.
 
@@ -210,13 +320,14 @@ def preparar_upload(
         conteudo: Bytes lidos do upload.
         tipo_declarado: ``Content-Type`` informado pelo cliente.
         limite_bytes: Tamanho máximo aceito.
+        limite_pixels: Resolução máxima aceita (largura × altura).
 
     Returns:
         Matriz ``(1, 784)`` pronta para o serviço de inferência.
 
     Raises:
         ErroEntradaInvalida: Arquivo vazio, acima do limite, tipo declarado não suportado,
-            assinatura inválida, imagem corrompida ou sem traço.
+            assinatura inválida, imagem corrompida, resolução excessiva ou sem traço.
     """
     if not conteudo:
         raise ErroEntradaInvalida(
@@ -248,4 +359,4 @@ def preparar_upload(
                 }
             ],
         )
-    return bytes_para_vetor_mnist(conteudo)
+    return bytes_para_vetor_mnist(conteudo, limite_pixels)
