@@ -33,9 +33,10 @@ def test_modelo_e_carregado_no_startup_e_liberado_no_shutdown(artefato_temporari
     assert app.state.artefato is None
 
 
-def test_joblib_load_executa_uma_unica_vez(artefato_temporario, monkeypatch):
-    """Prova da Fase 3: várias requisições, um único carregamento do disco."""
+def test_joblib_load_executa_uma_unica_vez_em_20_predicoes(artefato_temporario, monkeypatch):
+    """Prova da Fase 3: 20 predições reais via HTTP, um único carregamento do disco."""
     import api.services.carregador_artefato as carregador
+    from tests.api.conftest import imagem_da_classe
 
     chamadas = []
     original = carregador.joblib.load
@@ -44,8 +45,11 @@ def test_joblib_load_executa_uma_unica_vez(artefato_temporario, monkeypatch):
     )
     app = criar_aplicacao(config_para(artefato_temporario))
     with TestClient(app) as cliente:
-        for _ in range(20):
-            assert cliente.get("/openapi.json").status_code == 200
+        for i in range(20):
+            corpo = {"pixels": imagem_da_classe(i % 10)[0].tolist()}
+            resposta = cliente.post("/v1/predict", json=corpo)
+            assert resposta.status_code == 200
+            assert resposta.json()["classe_prevista"] == i % 10
     assert len(chamadas) == 1
 
 
