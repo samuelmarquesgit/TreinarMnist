@@ -118,3 +118,7 @@ data/mnist_cache.pkl
 
 # Saídas locais do assistente de IA (não fazem parte do projeto)
 Claude outputs/
+
+# Enunciado do edital do Módulo 2 (PDF): fica só na máquina do autor.
+# Os outros arquivos de docs/pdf/ são do Módulo 1 e continuam versionados.
+docs/pdf/ProjetoAvaliativo2.pdf

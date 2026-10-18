@@ -104,9 +104,9 @@ Embora o projeto atual use apenas dataset público MNIST, a arquitetura prevê c
 | Frequência | Responsável | Artefatos Atualizados |
 |------------|-------------|----------------------|
 | **Mensal** | Tech Lead | `docs/BACKLOG.md` (status tasks), `docs/TASKS.md` (rastreabilidade) |
-| **Por Release** | Engenharia + QA | `README.md`, `docs/ENTREGA.md`, `docs/PLANEJAMENTO.md`, `CHANGELOG.md` |
+| **Por Release** | Engenharia + QA | `README.md`, `docs/ENTREGA.md`, `docs/PLANEJAMENTO.md`, `CHANGELOG.md` (a criar; hoje as mudanças ficam nos PRs e nas Releases) |
 | **Semestral** | Comitê de Governança | `steering/politicas_governanca_ia.md`, `steering/diretrizes_desenvolvimento.md`, `steering/persona_engenheiro_ia.md` |
-| **Por Incidente Crítico** | Comitê + Jurídico (se aplicável) | Políticas afetadas + `docs/INCIDENT_LOG.md` |
+| **Por Incidente Crítico** | Comitê + Jurídico (se aplicável) | Políticas afetadas + `docs/INCIDENT_LOG.md` (a criar no primeiro incidente) |
 
 ---
 

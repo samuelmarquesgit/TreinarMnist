@@ -351,7 +351,7 @@ mypy api/ --ignore-missing-imports         # tipagem
 |---|---|
 | Testes da API (`tests/api/`) | 297, **100% de cobertura** de `api/` (mínimo exigido no CI: 85%) |
 | Suíte completa | 731 testes, todos executáveis sem acesso à internet (Módulo 1 + pipeline offline + API + CLI + compatibilidade de console) |
-| Integração com dados reais | API real acerta 97,2% de 500 imagens de teste (roda quando o cache do MNIST existe) |
+| Integração com dados reais | API real acerta 97,2% de uma amostra de 500 imagens de teste (roda quando o cache do MNIST existe). Com só 500 imagens, o intervalo de 95% é de cerca de ±1,2 p.p.; por isso o número é compatível com os 98,10% medidos nas 14 000 imagens |
 | Coleção Postman | 31 requisições, 153 asserções, 0 falhas |
 
 **Pipeline de CI (GitHub Actions), executado em todo PR**, com merge na `develop`/`main` bloqueado sem o **CI Gate** verde:
@@ -403,10 +403,12 @@ A coleção é gerada por [`scripts/gerar_colecao_postman.py`](scripts/gerar_col
 
 | Prefixo | Branches do Módulo 2 |
 |---|---|
-| `chore/` | `tm-023-preparacao-modulo2`, `tm-024-limpeza-repositorio`, `tm-025-dependencias-api` |
+| `chore/` | `tm-023-preparacao-modulo2`, `tm-024-limpeza-repositorio`, `tm-025-dependencias-api`, `tm-051-preparacao-entrega`, `tm-055-dependencias-vulneraveis` |
 | `feat/` | `tm-026-split-treino-validacao-teste`, `tm-027-treino-modelo-campeao`, `tm-028-serializacao-modelo`, `tm-029-relatorio-metricas`, `tm-030-esqueleto-api`, `tm-031-schemas-entrada`, `tm-032-schemas-saida`, `tm-033-servico-inferencia`, `tm-034-pre-processamento-imagem`, `tm-035-lifespan`, `tm-036-endpoint-health`, `tm-037-endpoint-predict`, `tm-038-endpoint-predict-imagem`, `tm-039-endpoint-modelo`, `tm-040-tratamento-erros`, `tm-041-guardrail-confianca`, `tm-042-middleware-observabilidade`, `tm-045-docker-api`, `tm-047-streamlit-consome-api` |
-| `test/` | `tm-043-testes-api`, `tm-052-colecao-postman`, `validacao-protecao-branch` |
-| `ci/` · `fix/` · `docs/` | `ci/tm-044-ci-api`, `fix/tm-046-cli-modo-api`, `docs/tm-048-readme-modulo2`, `docs/tm-049-exemplos-api`, `docs/tm-050-roteiro-video-modulo2` |
+| `test/` | `tm-043-testes-api`, `tm-052-colecao-postman`, `tm-056-testes-dependentes-de-rede`, `validacao-protecao-branch` |
+| `ci/` | `tm-044-ci-api` |
+| `fix/` | `tm-046-cli-modo-api`, `tm-054-limite-resolucao-upload`, `console-windows-cp1252`, `sonar-path-traversal-persistencia`, `sonar-path-traversal-allowlist` |
+| `docs/` | `tm-048-readme-modulo2`, `tm-049-exemplos-api`, `tm-050-roteiro-video-modulo2`, `revisao-documentacao`, `tm-057-ajustes-documentacao` |
 
 ## 12. Limitações e melhorias futuras
 
@@ -704,7 +706,7 @@ pytest tests/ -v --cov=src --cov-report=term-missing
 - `docs/roteiro_video.md` — Roteiro conciso (9 min)
 - `docs/ROTEIRO_GRAVACAO_VIDEO.md` — Roteiro detalhado com minutagem
 
-> **Link do Vídeo:** *[Inserir link do Google Drive aqui após gravação]*
+> **Link do Vídeo (Módulo 1):** https://www.youtube.com/watch?v=_m7E5uLl0XE
 
 ---
 
