@@ -12,17 +12,20 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 
-from api.dependencias import obter_servico
+from api.core.config import Configuracoes
+from api.dependencias import obter_config, obter_servico
 from api.schemas.entrada import EntradaLote, EntradaPixels
 from api.schemas.erro import RESPOSTAS_ERRO_PREDICAO
 from api.schemas.saida import SaidaLote, SaidaPredicao
+from api.services.pre_processamento_imagem import preparar_upload
 from api.services.servico_inferencia import ResultadoPredicao, ServicoInferencia
 
 roteador = APIRouter(prefix="/v1", tags=["Inferência"])
 
 Servico = Annotated[ServicoInferencia, Depends(obter_servico)]
+Config = Annotated[Configuracoes, Depends(obter_config)]
 
 
 def para_saida(
@@ -89,3 +92,28 @@ def prever_lote(entrada: EntradaLote, servico: Servico) -> SaidaLote:
         quantidade=len(resultados),
         tempo_total_ms=round(ms, 3),
     )
+
+
+@roteador.post(
+    "/predict/imagem",
+    response_model=SaidaPredicao,
+    responses=RESPOSTAS_ERRO_PREDICAO,
+    summary="Classifica um dígito a partir de uma imagem PNG ou JPEG",
+    description=(
+        "Recebe a foto ou o desenho de **um** dígito (PNG ou JPEG, até 2 MB, fundo claro ou "
+        "escuro) e aplica o mesmo pré-processamento do MNIST: recorte do traço, redimensionamento "
+        "para 20×20 e centralização por centro de massa em 28×28. Arquivo que não é imagem, "
+        "imagem corrompida ou sem traço gera **400**."
+    ),
+    response_description="Predição do dígito",
+)
+def prever_imagem(
+    servico: Servico,
+    config: Config,
+    arquivo: Annotated[UploadFile, File(description="Imagem PNG ou JPEG de um único dígito")],
+) -> SaidaPredicao:
+    """Classifica a imagem enviada."""
+    conteudo = arquivo.file.read(config.tamanho_max_upload_bytes + 1)
+    vetor = preparar_upload(conteudo, arquivo.content_type, config.tamanho_max_upload_bytes)
+    resultado, ms = servico.prever(vetor)
+    return para_saida(resultado, ms, servico)

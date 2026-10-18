@@ -191,3 +191,61 @@ def bytes_para_vetor_mnist(conteudo: bytes) -> NDArray[np.float32]:
     cinza = garantir_fundo_preto(decodificar_cinza(conteudo))
     canvas = centralizar_por_centro_de_massa(redimensionar_proporcional(recortar_traco(cinza)))
     return (canvas.astype(np.float32) / 255.0).reshape(1, TAMANHO_CANVAS * TAMANHO_CANVAS)
+
+
+TIPOS_ACEITOS = {"image/png", "image/jpeg", "image/jpg"}
+
+
+def preparar_upload(
+    conteudo: bytes, tipo_declarado: str | None, limite_bytes: int
+) -> NDArray[np.float32]:
+    """Valida o arquivo enviado e o converte para o formato MNIST.
+
+    A rota lê no máximo ``limite_bytes + 1`` bytes; se vier mais que o limite, o arquivo é
+    recusado sem processar. O tipo declarado (``Content-Type``) é conferido aqui e a assinatura
+    real do arquivo é conferida em :func:`detectar_formato`: um ``.txt`` renomeado para
+    ``.png`` não passa.
+
+    Args:
+        conteudo: Bytes lidos do upload.
+        tipo_declarado: ``Content-Type`` informado pelo cliente.
+        limite_bytes: Tamanho máximo aceito.
+
+    Returns:
+        Matriz ``(1, 784)`` pronta para o serviço de inferência.
+
+    Raises:
+        ErroEntradaInvalida: Arquivo vazio, acima do limite, tipo declarado não suportado,
+            assinatura inválida, imagem corrompida ou sem traço.
+    """
+    if not conteudo:
+        raise ErroEntradaInvalida(
+            "O arquivo enviado está vazio.",
+            detalhes=[
+                {"campo": "arquivo", "mensagem": "Arquivo com 0 bytes", "tipo": "arquivo_vazio"}
+            ],
+        )
+    if len(conteudo) > limite_bytes:
+        raise ErroEntradaInvalida(
+            f"Arquivo acima do limite de {limite_bytes / 1024 / 1024:.0f} MB.",
+            detalhes=[
+                {
+                    "campo": "arquivo",
+                    "mensagem": f"Máximo de {limite_bytes} bytes",
+                    "tipo": "arquivo_grande",
+                }
+            ],
+        )
+    if (tipo_declarado or "").split(";")[0].strip().lower() not in TIPOS_ACEITOS:
+        raise ErroEntradaInvalida(
+            f"Tipo de arquivo '{tipo_declarado}' não suportado: envie image/png ou image/jpeg.",
+            detalhes=[
+                {
+                    "campo": "arquivo",
+                    "mensagem": "Content-Type não suportado",
+                    "tipo": "tipo_invalido",
+                    "valor_recebido": tipo_declarado,
+                }
+            ],
+        )
+    return bytes_para_vetor_mnist(conteudo)
