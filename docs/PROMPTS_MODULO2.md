@@ -631,3 +631,23 @@
 - **O CI espera o gate só nas execuções de PR:** no plano gratuito, a análise disparada por push numa branch de tarefa não representa o PR e bloqueava merges sem relação com a mudança (ajuste feito no PR #131).
 - **A `main` só recebe a correção depois de confirmar na API do SonarCloud** que a `develop` ficou sem a vulnerabilidade e com o Quality Gate aprovado.
 
+
+---
+
+## P036 — Auditoria de qualidade de software e correções (TM-054 a TM-057)
+
+**Data:** 2026-10-18 · **Branches:** `fix/tm-054-limite-resolucao-upload` → `chore/tm-055-dependencias-vulneraveis` → `test/tm-056-testes-dependentes-de-rede` → `docs/tm-057-ajustes-documentacao` (empilhadas: cada uma parte da anterior e o merge segue essa ordem)
+
+**Prompt (resumo):**
+> Revisar toda a documentação e a qualidade de software para saber se há algo auditado que precisa melhorar; em seguida, implementar as melhorias no fluxo do projeto.
+
+**Método:** clone limpo da `main` com Python 3.12 (o mesmo do CI); suíte completa e da API; coleção Postman com newman; `ruff`, `mypy` (inclusive `--strict` em `api/`), `bandit`, `pip-audit`, `radon` e `vulture`; verificação automática de links e caminhos citados nos `.md`; leitura do código da API e do roteiro do vídeo contra o código.
+
+**Achados e decisões:**
+- **Bomba de descompressão no upload (TM-054):** reproduzida com um PNG de 241 KB e 15000×15000 pixels (5,5 s e cerca de 1,4 GB de RAM numa requisição). A resolução passou a ser lida no cabeçalho (IHDR/SOF) antes do `cv2.imdecode`, com 400 acima de 25 megapixels. O parser do JPEG trata cabeçalho ilegível como imagem corrompida, para não haver arquivo que passe pela checagem e mesmo assim seja decodificado. Depois da correção: 400 em 18 ms.
+- **Dependências (TM-055):** a API está limpa; na plataforma completa, `pymongo` e `mcp` foram para versões corrigidas da mesma série (sem saltar para o `mcp` 2.x, que quebra a API). O `chromadb` não tem correção publicada e ficou registrado como limitação.
+- **Testes dependentes de internet (TM-056):** as 18 falhas sem rede vinham de três defeitos de código (download no import, validação depois do carregamento do dataset e um teste que verificava uma guarda inexistente). Corrigidos na origem, sem marcar testes para pular.
+- **Documentação (TM-057):** marcador de vídeo antigo, tabela de branches incompleta, nomes de testes desatualizados no plano e referências a arquivos inexistentes.
+- **Fora do escopo:** o aviso de descontinuação do `TestClient` com `httpx` não quebra nada com as versões fixadas; os 6 painéis Streamlit com complexidade C/E são do Módulo 1.
+
+**Resultado:** API com 297 testes e 100% de cobertura; suíte completa com 731 testes, todos passando sem internet (27 s, antes 130 s); coleção Postman com 31 requisições, 153 asserções e 0 falhas; ruff, mypy e pip-audit da API limpos.
