@@ -385,3 +385,20 @@
 - **CORS restrito** ao painel Streamlit local (`localhost:8501`), preparando a TM-047; origens desconhecidas não recebem o cabeçalho.
 
 **Resultado:** 9 testes novos (247 em `tests/api/`), cobertura de 100% de `api/`.
+
+---
+
+## P022 — TM-043 Suíte de testes da API (#81)
+
+**Data:** 2026-10-17 · **Branch:** `test/tm-043-testes-api`
+
+**Prompt (resumo):**
+> Continuar: consolidar a suíte de testes da API com cobertura mínima de 85%, prova da Fase 3 e teste de integração com o modelo real.
+
+**Decisões:**
+- **A maior parte da suíte nasceu junto com cada tarefa** (schemas, serviços, lifespan, saúde, predição, erros, imagem, guardrail, middleware). Aqui ficaram só os dois itens que faltavam.
+- **Prova da Fase 3 com HTTP real:** 20 chamadas a `POST /v1/predict` (antes eram 20 ao `/openapi.json`) e o `joblib.load` executa exatamente uma vez.
+- **Integração ponta a ponta:** API real + modelo de produção + 500 imagens do teste via `/v1/predict/lote`; acurácia mínima de 0,95 (medido: **0,972**) e coincidência entre predição individual e em lote. Pulado com motivo explícito no CI, onde o dataset não existe.
+- **Validação num venv limpo** só com `requirements-api.txt`: os 249 testes da API passam sem as dependências pesadas, condição para o job enxuto da TM-044.
+
+**Resultado:** 249 testes em `tests/api/` (na época), **100% de cobertura de `api/`**, acima do mínimo de 85%.
