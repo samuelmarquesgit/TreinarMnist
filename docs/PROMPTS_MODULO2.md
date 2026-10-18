@@ -149,3 +149,22 @@
 
 **Resultado (teste, 14 000 imagens):** acurácia 0,9810 · F1 macro 0,9809 · ROC-AUC 0,9997 · log-loss 0,0782. Ganho de **+0,60 p.p.** sobre o Módulo 1, cerca de 5× o erro-padrão. Validação × teste: +0,04 p.p. (sem otimismo da seleção). Principal erro: 4 → 9 (29 de 266). 17 testes novos (359 na suíte), cobertura de 98% do módulo.
 
+---
+
+## P009 — TM-030 Esqueleto da API e configuração (#68)
+
+**Data:** 2026-10-17 · **Branch:** `feat/tm-030-esqueleto-api`
+
+**Prompt (resumo):**
+> Seguir com a Sprint S2: criar o pacote `api/` em camadas, a configuração com pydantic-settings e um `main.py` mínimo com Swagger.
+
+**Decisões:**
+- **Camadas exigidas pelo edital desde o primeiro commit** (`core/`, `schemas/`, `services/`, `routers/`, `main.py`), com docstrings que definem a responsabilidade de cada uma: por exemplo, `services/` não pode referenciar HTTP.
+- **Configuração com `Field`** (faixas `gt/ge/le`, padrão semver, nível de log): valor inválido no ambiente derruba a inicialização com erro claro, em vez de falhar no meio de uma requisição.
+- **Caminhos resolvidos pela raiz do projeto**, então a API funciona independentemente da pasta de onde o Uvicorn é chamado. Um teste proíbe caminhos absolutos no código.
+- **Fábrica `criar_aplicacao(config)`**: o Uvicorn usa `app`, e os testes criam aplicações com configurações diferentes (essencial para testar o estado degradado sem modelo na TM-035/036).
+- **Teste de independência antecipado** (era da TM-043): já protege a regra desde o primeiro módulo.
+- **Falsos positivos corrigidos nos próprios testes:** a regex casava com o `p://` de URLs, e a contagem exata de handlers do logger quebrava com os handlers de captura do pytest. A regex foi validada contra 7 casos (paths reais detectados, URLs ignoradas).
+
+**Resultado:** `uvicorn api.main:app` sobe; `/docs`, `/redoc` e `/openapi.json` respondem 200. 24 testes novos em `tests/api/` (383 na suíte), **cobertura de 100% de `api/`**.
+
