@@ -650,3 +650,18 @@
 - **Fora do escopo:** o aviso de descontinuação do `TestClient` com `httpx` não quebra nada com as versões fixadas; os 6 painéis Streamlit com complexidade C/E são do Módulo 1.
 
 **Resultado:** API com 297 testes e 100% de cobertura; suíte completa com 731 testes, todos passando sem internet (27 s, antes 130 s); coleção Postman com 31 requisições, 153 asserções e 0 falhas; ruff, mypy e pip-audit da API limpos.
+
+---
+
+## P037 — Link do vídeo e release final (TM-051, #90)
+
+**Data:** 2026-11-02 · **Branch:** `docs/tm-051-link-video`
+
+**Prompt (resumo):**
+> Este é o link de gravação do vídeo. Atualize todos os arquivos que estavam esperando essa informação, faça o commit para o GitHub e atualize as issues no Kanban para terminar o projeto.
+
+**Decisões:**
+- **O link entra no README §6**, junto com o link da Release `v2.0.0`; o plano (TM-050, TM-051, checklist final e §8) e o checklist do roteiro foram marcados como concluídos.
+- **O acesso ao vídeo foi conferido sem login** (o Drive respondeu 200, sem redirecionar para a autenticação), o que corresponde a "qualquer pessoa com o link: leitor".
+- **Ordem da entrega:** PR na `develop` → PR `develop → main` → tag `v2.0.0` e Release "Entrega Módulo 2 — API FastAPI" → fechamento de TM-051 (#90) e EPIC-17 (#60).
+- **Ficam a cargo do autor:** submeter os links no AVA até 03/11/2026 às 22h e não fazer push até a nota sair.
