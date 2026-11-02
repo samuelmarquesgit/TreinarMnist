@@ -159,7 +159,7 @@ Use o README §7.2 como apoio visual. Um ponto por fase:
 - [ ] As 6 perguntas do edital 5.4 respondidas (blocos 1 a 6)
 - [ ] Rosto visível e áudio claro
 - [ ] Nenhuma ferramenta de vídeo com IA usada
-- [ ] Vídeo no Google Drive com "qualquer pessoa com o link: leitor" (testar numa janela anônima)
-- [ ] Link colado no README (§6, "Links das evidências")
+- [x] Vídeo no Google Drive com "qualquer pessoa com o link: leitor" (testar numa janela anônima)
+- [x] Link colado no README (§6, "Links das evidências")
 - [ ] Links do GitHub e do vídeo submetidos no AVA **até 03/11/2026 às 22h**
 - [ ] Nenhum push depois da submissão até a nota sair

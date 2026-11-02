@@ -265,7 +265,8 @@ Mais exemplos executáveis estão em [`docs/exemplos_api/`](docs/exemplos_api/),
 
 | Evidência | Link |
 |---|---|
-| **Vídeo de apresentação do Módulo 2** (Google Drive) | _será adicionado após a gravação_ |
+| **Vídeo de apresentação do Módulo 2** (Google Drive) | https://drive.google.com/file/d/1GxumwDYQIjQPeURJbeXrvWqVbPRn4DF1/view?usp=drive_link |
+| **Release da entrega** | [`v2.0.0` — Entrega Módulo 2 — API FastAPI](https://github.com/samuelmarquesgit/TreinarMnist/releases/tag/v2.0.0) |
 | Repositório (público) | https://github.com/samuelmarquesgit/TreinarMnist |
 | Kanban do projeto | https://github.com/users/samuelmarquesgit/projects/6 |
 | Plano de tarefas (TM-023 a TM-052) | [`docs/TASKS_MODULO2.md`](docs/TASKS_MODULO2.md) |
@@ -408,7 +409,7 @@ A coleção é gerada por [`scripts/gerar_colecao_postman.py`](scripts/gerar_col
 | `test/` | `tm-043-testes-api`, `tm-052-colecao-postman`, `tm-056-testes-dependentes-de-rede`, `validacao-protecao-branch` |
 | `ci/` | `tm-044-ci-api` |
 | `fix/` | `tm-046-cli-modo-api`, `tm-054-limite-resolucao-upload`, `console-windows-cp1252`, `sonar-path-traversal-persistencia`, `sonar-path-traversal-allowlist` |
-| `docs/` | `tm-048-readme-modulo2`, `tm-049-exemplos-api`, `tm-050-roteiro-video-modulo2`, `revisao-documentacao`, `tm-057-ajustes-documentacao` |
+| `docs/` | `tm-048-readme-modulo2`, `tm-049-exemplos-api`, `tm-050-roteiro-video-modulo2`, `revisao-documentacao`, `tm-057-ajustes-documentacao`, `tm-051-link-video` |
 
 ## 12. Limitações e melhorias futuras
 
