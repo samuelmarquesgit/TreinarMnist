@@ -714,7 +714,7 @@ Nova seção principal no topo (o conteúdo do Módulo 1 vira uma seção de his
 - [x] **3. Tecnologias:** tabela com bibliotecas **e versões** (FastAPI, Uvicorn, Pydantic, pydantic-settings, scikit-learn, NumPy, OpenCV, joblib, pytest)
 - [x] **4. Instalação e execução:** `python -m venv .venv` → ativar (Windows/Linux) → `pip install -r requirements-api.txt` → (opcional) `python -m pipeline_offline.treinar_e_serializar` → `uvicorn api.main:app --reload` → abrir `http://localhost:8000/docs`; mais a alternativa Docker
 - [x] **5. Documentação da API:** tabela de endpoints, payloads JSON de exemplo (sucesso e erros 400/422/503), link `/docs` e `/redoc`, prints do Swagger em `docs/img/`
-- [ ] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0` (seção pronta; falta só o link)
+- [x] **6. Evidências:** **link do vídeo do Módulo 2** no Google Drive (modo leitor), link da Release `v2.0.0`
 - [x] Extras: diagrama Mermaid da §3.2 (**sem parênteses nos rótulos**), métricas da TM-029, decisões técnicas (independência, 503, guardrail), limitações e melhorias futuras, instruções da coleção Postman (TM-052)
 - [x] Seção **"Uso de Inteligência Artificial"**: o edital (item 8) restringe o uso de IA; registrar que o uso como assistente de desenvolvimento foi **autorizado pelo professor**, com revisão humana de todo o código e o histórico de prompts em `docs/prompt.md`
 
@@ -770,7 +770,7 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 | 8:30–10:00 | O que poderia melhorar | Ex.: autenticação por API key, rate limiting, MLflow Model Registry, ONNX, monitoramento de *drift*, deploy em nuvem |
 
 - [ ] Ensaiar e cronometrar (a cargo do autor)
-- [ ] Subir no Google Drive com o link "qualquer pessoa com o link: leitor" (a cargo do autor, após a gravação)
+- [x] Subir no Google Drive com o link "qualquer pessoa com o link: leitor" (vídeo gravado pelo autor; link no README §6)
 
 **Commits:** `docs: adiciona roteiro do vídeo do módulo 2`
 ---
@@ -779,12 +779,12 @@ Entrega pedida pelo autor: um arquivo pronto para importar no Postman, cobrindo 
 **chore · P0 · EPIC-17 · `modulo-2` · PR `develop → main` · todas as P0**
 
 - [x] Todas as issues P0 fechadas; CI verde em `develop` (29 de 30 tarefas concluídas; EPIC-14, 15 e 16 fechados; os 6 jobs do CI verdes)
-- [x] PR `develop → main` com o resumo das entregas (#123 e #126; os épicos EPIC-14, 15 e 16 foram fechados com comentário de conclusão)
-- [ ] Tag `v2.0.0` + GitHub Release "Entrega Módulo 2 — API FastAPI"
+- [x] PR `develop → main` com o resumo das entregas (#123, #126, #129, #133, #142 e o PR final com o link do vídeo; os épicos EPIC-14, 15 e 16 foram fechados com comentário de conclusão)
+- [x] Tag `v2.0.0` + GitHub Release "Entrega Módulo 2 — API FastAPI" (https://github.com/samuelmarquesgit/TreinarMnist/releases/tag/v2.0.0)
 - [x] Teste final **num clone limpo**: `git clone` → venv → `pip install -r requirements-api.txt` → `uvicorn api.main:app` → `/docs` funcionando (2026-10-18: checksum ok, 270 testes da API, `/docs` 200, predição do 7 e da imagem própria corretas)
-- [ ] Atualizar o README com o link do vídeo (último commit **antes** da submissão)
-- [ ] **Submeter no AVA até 03/11 às 22h:** link do GitHub (público) + link do vídeo
-- [ ] **Congelar o repositório:** nenhum push depois da submissão até a nota sair
+- [x] Atualizar o README com o link do vídeo (último commit **antes** da submissão)
+- [ ] **Submeter no AVA até 03/11 às 22h:** link do GitHub (público) + link do vídeo (a cargo do autor)
+- [ ] **Congelar o repositório:** nenhum push depois da submissão até a nota sair (a cargo do autor)
 
 **Commits:** `docs: adiciona link do vídeo do módulo 2 ao readme` · `chore: prepara release v2.0.0`
 
@@ -873,7 +873,7 @@ Um PNG de 241 KB com 15000×15000 pixels passava no limite de 2 MB e consumia ce
 | TM-048 | README Módulo 2 | 17 | P0 | S4 | #86 | `docs/tm-048-readme-modulo2` | #120 | Done |
 | TM-049 | Exemplos da API | 17 | P1 | S4 | #87 | `docs/tm-049-exemplos-api` | #118 | Done |
 | TM-050 | Roteiro do vídeo | 17 | P0 | S4 | #89 | `docs/tm-050-roteiro-video-modulo2` | #121 | Done |
-| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126, #129, #133 | In progress |
+| TM-051 | Release e entrega | 17 | P0 | S5 | #90 | PR `develop → main` | #123, #126, #129, #133, #142, #143, #144 | Done |
 | TM-052 | Coleção Postman + newman | 16 | P1 | S3 | #88 | `test/tm-052-colecao-postman` | #119 | Done |
 | TM-054 | Limite de resolução do upload | 16 | P1 | — | #134 | `fix/tm-054-limite-resolucao-upload` | #138 | Done |
 | TM-055 | Dependências vulneráveis | 16 | P1 | — | #135 | `chore/tm-055-dependencias-vulneraveis` | #139 | Done |
@@ -981,9 +981,9 @@ Referência: docs/TASKS_MODULO2.md#tm-0XX
 - [x] `requirements.txt` e `requirements-api.txt` com versões fixas
 - [x] Coleção Postman em `docs/postman/` cobrindo 200/400/422/500/503, com newman verde no CI
 - [x] Nenhum caminho absoluto; imagens próprias em `data/custom_digits/`
-- [ ] README com os 6 itens do 5.2 + link do vídeo (6 itens prontos; falta só o link do vídeo)
-- [ ] Branches `feat/*` mantidas; tudo mergeado em `main`; tag `v2.0.0` (branches mantidas e `main` atualizada; falta a tag)
-- [ ] Vídeo ≤ 10 min, com rosto, cobrindo as 6 perguntas; Drive em modo leitor
+- [x] README com os 6 itens do 5.2 + link do vídeo
+- [x] Branches `feat/*` mantidas; tudo mergeado em `main`; tag `v2.0.0`
+- [x] Vídeo ≤ 10 min, com rosto, cobrindo as 6 perguntas; Drive em modo leitor
 - [ ] Links submetidos no AVA **até 03/11/2026 às 22h**
 - [ ] Repositório congelado até a publicação da nota
 
